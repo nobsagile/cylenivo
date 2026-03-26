@@ -29,6 +29,15 @@ def get_cycle_times(import_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail=str(e))
 
 
+@router.get("/{import_id}/lead-times")
+def get_lead_times(import_id: str, db: Session = Depends(get_db)):
+    service = MetricsService(db)
+    try:
+        return ok(service.get_lead_times(import_id))
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
 @router.get("/{import_id}/time-in-status")
 def get_time_in_status(import_id: str, db: Session = Depends(get_db)):
     service = MetricsService(db)

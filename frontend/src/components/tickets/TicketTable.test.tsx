@@ -53,4 +53,21 @@ describe('TicketTable', () => {
     expect(link).toBeTruthy()
     expect(link.getAttribute('href')).toBe('https://test.atlassian.net/browse/ROAD-1')
   })
+
+  it('renders null cycle_time as dash', () => {
+    const nullCt: Ticket[] = [{
+      id: '3', external_id: 'ROAD-3', title: 'No cycle time', ticket_type: 'task',
+      created_at: '2026-01-07T09:00:00Z', external_link: null,
+      cycle_time_days: null, lead_time_days: null, current_status: 'Development', completed: false,
+    }]
+    renderWith(nullCt)
+    // Both cycle and lead time columns show "—"
+    const dashes = screen.getAllByText('—')
+    expect(dashes.length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('renders empty state when no tickets', () => {
+    renderWith([])
+    expect(screen.getByText('No tickets found')).toBeTruthy()
+  })
 })

@@ -15,19 +15,17 @@ export default function AnalyticsPage() {
   const { importId } = useParams<{ importId: string }>()
   const { data: metrics } = useMetrics(importId)
   const [cycleData, setCycleData] = useState<CycleTimesResponse | null>(null)
+  const [leadTimeValues, setLeadTimeValues] = useState<number[]>([])
   const [statusData, setStatusData] = useState<TimeInStatusResponse | null>(null)
 
   useEffect(() => {
     if (!importId) return
     api.metrics.cycleTimes(importId).then(setCycleData).catch(console.error)
+    api.metrics.leadTimes(importId).then((r) => setLeadTimeValues(r.values)).catch(console.error)
     api.metrics.timeInStatus(importId).then(setStatusData).catch(console.error)
   }, [importId])
 
   if (!metrics) return <div className="text-gray-400 text-sm">Loading…</div>
-
-  const leadTimes = (cycleData?.tickets ?? [])
-    .map(() => 0)
-    .filter((v) => v > 0)
 
   return (
     <div className="space-y-6">
@@ -63,7 +61,7 @@ export default function AnalyticsPage() {
         <TabsContent value="lead" className="mt-4">
           <Card className="shadow-sm">
             <CardContent className="pt-6">
-              <LeadTimeChart values={leadTimes} />
+              <LeadTimeChart values={leadTimeValues} />
             </CardContent>
           </Card>
         </TabsContent>

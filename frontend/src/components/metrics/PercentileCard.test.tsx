@@ -48,4 +48,15 @@ describe('PercentileCard', () => {
     renderWith(warningData)
     expect(screen.getByText(/Insufficient data/)).toBeTruthy()
   })
+
+  it('renders without crash when all values are null', () => {
+    renderWith(warningData)
+    // Should not throw — no "null days" text
+    expect(screen.queryByText(/null/)).toBeNull()
+  })
+
+  it('does not show warning when warning is null', () => {
+    renderWith(happyData)
+    expect(screen.queryByText(/Insufficient data/)).toBeNull()
+  })
 })

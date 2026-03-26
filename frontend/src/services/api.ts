@@ -59,6 +59,8 @@ export const api = {
       request<MetricsSummary>(`/api/v1/metrics/${importId}/summary`),
     cycleTimes: (importId: string) =>
       request<CycleTimesResponse>(`/api/v1/metrics/${importId}/cycle-times`),
+    leadTimes: (importId: string) =>
+      request<{ values: number[] }>(`/api/v1/metrics/${importId}/lead-times`),
     timeInStatus: (importId: string) =>
       request<TimeInStatusResponse>(`/api/v1/metrics/${importId}/time-in-status`),
   },

@@ -7,8 +7,9 @@ from app.database import get_db
 from app.repositories.config_repository import ConfigRepository
 from app.repositories.import_repository import ImportRepository
 from app.repositories.ticket_repository import TicketRepository
-from app.analyzers.cycle_time_analyzer import calculate_cycle_time, _first_transition_to
+from app.analyzers.cycle_time_analyzer import calculate_cycle_time
 from app.analyzers.lead_time_analyzer import calculate_lead_time
+from app.analyzers.utils import first_transition_to
 from app.schemas.ticket import TicketResponse, TicketDetailResponse, TicketTransitionResponse, PaginatedTickets
 
 router = APIRouter(prefix="/api/v1/tickets", tags=["tickets"])
@@ -25,7 +26,7 @@ def _enrich_ticket(ticket, config) -> dict:
     lt = calculate_lead_time(
         ticket.created_at, ticket.transitions, config.cycle_time_end_status, config.lead_time_start_status
     )
-    end_ts = _first_transition_to(ticket.transitions, config.cycle_time_end_status)
+    end_ts = first_transition_to(ticket.transitions, config.cycle_time_end_status)
     current_status = (
         sorted(ticket.transitions, key=lambda t: t.transitioned_at)[-1].to_status
         if ticket.transitions else None

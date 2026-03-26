@@ -8,8 +8,9 @@ from app.config import settings
 from app.models.llm_insight import LLMInsight
 from app.repositories.import_repository import ImportRepository
 from app.repositories.ticket_repository import TicketRepository
-from app.analyzers.cycle_time_analyzer import calculate_cycle_time, _first_transition_to
+from app.analyzers.cycle_time_analyzer import calculate_cycle_time
 from app.analyzers.lead_time_analyzer import calculate_lead_time
+from app.analyzers.utils import first_transition_to
 from app.analyzers.percentile_analyzer import calculate_percentiles
 
 LLM_PROMPT_TEMPLATE = """You are a flow analysis expert for software development teams.
@@ -88,7 +89,7 @@ class LLMService:
             )
             if ct is not None:
                 cycle_times.append(ct)
-                end_ts = _first_transition_to(ticket.transitions, config.cycle_time_end_status)
+                end_ts = first_transition_to(ticket.transitions, config.cycle_time_end_status)
                 completed_at_dates.append(end_ts)
                 ct_with_ticket.append((ct, ticket.external_id))
 

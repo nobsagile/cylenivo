@@ -8,6 +8,7 @@ from app.analyzers.cycle_time_analyzer import calculate_cycle_time
 from app.analyzers.lead_time_analyzer import calculate_lead_time
 from app.analyzers.percentile_analyzer import calculate_percentiles, calculate_throughput_per_week
 from app.analyzers.time_in_status_analyzer import calculate_time_in_status
+from app.analyzers.utils import first_transition_to
 from app.repositories.import_repository import ImportRepository
 from app.repositories.ticket_repository import TicketRepository
 
@@ -50,8 +51,7 @@ class MetricsService:
             if lt is not None:
                 lead_times.append(lt)
 
-            from app.analyzers.cycle_time_analyzer import _first_transition_to
-            end_ts = _first_transition_to(ticket.transitions, config.cycle_time_end_status)
+            end_ts = first_transition_to(ticket.transitions, config.cycle_time_end_status)
             if end_ts is not None:
                 completed_at_dates.append(end_ts)
 
@@ -102,8 +102,6 @@ class MetricsService:
         import_session, config = self._get_import_and_config(import_id)
         tickets = self.ticket_repo.list_all_by_import(import_id)
 
-        from app.analyzers.cycle_time_analyzer import _first_transition_to
-
         result = []
         for ticket in tickets:
             ct = calculate_cycle_time(
@@ -113,7 +111,7 @@ class MetricsService:
             )
             if ct is None:
                 continue
-            end_ts = _first_transition_to(ticket.transitions, config.cycle_time_end_status)
+            end_ts = first_transition_to(ticket.transitions, config.cycle_time_end_status)
             result.append({
                 "external_id": ticket.external_id,
                 "title": ticket.title,
@@ -123,6 +121,23 @@ class MetricsService:
             })
 
         return {"tickets": result}
+
+    def get_lead_times(self, import_id: str) -> dict:
+        import_session, config = self._get_import_and_config(import_id)
+        tickets = self.ticket_repo.list_all_by_import(import_id)
+
+        values = []
+        for ticket in tickets:
+            lt = calculate_lead_time(
+                ticket.created_at,
+                ticket.transitions,
+                config.cycle_time_end_status,
+                config.lead_time_start_status,
+            )
+            if lt is not None:
+                values.append(round(lt, 2))
+
+        return {"values": values}
 
     def get_time_in_status(self, import_id: str) -> dict:
         import_session, config = self._get_import_and_config(import_id)

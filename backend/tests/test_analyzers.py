@@ -135,9 +135,66 @@ def test_percentiles_insufficient_data():
     assert "n=5" in result["warning"]
 
 
+def test_cycle_time_start_reached_but_not_end():
+    transitions = [
+        make_transition("Ready for Development", dt(3)),
+        make_transition("Development", dt(5)),
+    ]
+    result = calculate_cycle_time(transitions, "Ready for Development", "Customer Feedback")
+    assert result is None
+
+
+# --- Lead Time ---
+
+def test_lead_time_no_transitions_returns_none():
+    result = calculate_lead_time(dt(1), [], "Customer Feedback", None)
+    assert result is None
+
+
+def test_lead_time_start_status_not_reached_returns_none():
+    transitions = [
+        make_transition("Customer Feedback", dt(10)),
+    ]
+    result = calculate_lead_time(dt(1), transitions, "Customer Feedback", "Up Next")
+    assert result is None
+
+
+# --- Percentiles ---
+
+def test_percentiles_empty_input():
+    result = calculate_percentiles([])
+    assert result["p50"] is None
+    assert result["p85"] is None
+    assert result["warning"] is not None
+    assert result["sample_size"] == 0
+
+
+# --- Time in Status ---
+
+def test_time_in_status_single_transition_uses_now():
+    transitions = [make_transition("Development", dt(1))]
+    result = calculate_time_in_status(transitions, ["Development"])
+    assert result["Development"] > 0  # time until utcnow
+
+
+def test_time_in_status_empty_transitions():
+    result = calculate_time_in_status([], ["Development", "Done"])
+    assert result == {"Development": 0.0, "Done": 0.0}
+
+
 # --- Throughput ---
 
 def test_throughput_calculation():
     dates = [dt(1) + timedelta(weeks=i // 2) for i in range(10)]
     result = calculate_throughput_per_week(dates)
     assert result == pytest.approx(2.0, rel=0.5)
+
+
+def test_throughput_single_date_returns_one():
+    result = calculate_throughput_per_week([dt(1)])
+    assert result == 1.0
+
+
+def test_throughput_empty_returns_zero():
+    result = calculate_throughput_per_week([])
+    assert result == 0.0

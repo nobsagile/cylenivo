@@ -55,4 +55,18 @@ describe('useMetrics', () => {
     await waitFor(() => expect(result.current.loading).toBe(false))
     expect(result.current.data?.project_key).toBe('ROAD')
   })
+
+  it('sets error state when fetch throws', async () => {
+    vi.mocked(api.metrics.summary).mockRejectedValue(new Error('Network error'))
+    const { result } = renderHook(() => useMetrics('test-id'))
+
+    await waitFor(() => expect(result.current.loading).toBe(false))
+    expect(result.current.error).toBe('Network error')
+    expect(result.current.data).toBeNull()
+  })
+
+  it('does not fetch when importId is undefined', () => {
+    renderHook(() => useMetrics(undefined))
+    expect(vi.mocked(api.metrics.summary)).not.toHaveBeenCalled()
+  })
 })
