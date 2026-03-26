@@ -18,6 +18,16 @@ class AnalyzeRequest(BaseModel):
     model: Optional[str] = None
 
 
+class ChatMessage(BaseModel):
+    role: str  # "user" | "assistant"
+    content: str
+
+
+class ChatRequest(BaseModel):
+    messages: list[ChatMessage]
+    model: Optional[str] = None
+
+
 @router.get("/status")
 def llm_status(db: Session = Depends(get_db)):
     service = LLMService(db)
@@ -39,6 +49,22 @@ def analyze(import_id: str, body: AnalyzeRequest = AnalyzeRequest(), db: Session
         "model_used": insight.model_used,
         "generated_at": insight.generated_at.isoformat(),
     })
+
+
+@router.post("/chat/{import_id}")
+def chat(import_id: str, body: ChatRequest, db: Session = Depends(get_db)):
+    service = LLMService(db)
+    try:
+        reply = service.chat(
+            import_id,
+            [m.model_dump() for m in body.messages],
+            body.model,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except RuntimeError:
+        raise HTTPException(status_code=503, detail="Ollama not available")
+    return ok({"reply": reply})
 
 
 @router.get("/insights/{import_id}")

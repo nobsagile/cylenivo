@@ -29,35 +29,49 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 
-def fetch_all_issues(base_url: str, project_key: str, auth: HTTPBasicAuth) -> list[dict]:
+def fetch_all_issues(base_url: str, project_key: str, auth: HTTPBasicAuth, months: int = 3, types: str = "") -> list[dict]:
     """Fetches all issues for a project with their changelogs using pagination."""
     issues = []
-    start_at = 0
-    max_results = 50  # Keep lower to avoid timeout on large projects
+    max_results = 50
+    type_filter = ""
+    if types:
+        quoted = ",".join(f'"{t.strip()}"' for t in types.split(","))
+        type_filter = f" AND issuetype in ({quoted})"
+    jql = f'project = "{project_key}" AND created >= "-{months * 30}d"{type_filter} ORDER BY created ASC'
 
     print(f"Fetching issues for project {project_key}...")
+    print(f"  JQL: {jql}")
+
+    next_page_token = None
 
     while True:
-        url = f"{base_url}/rest/api/3/search"
+        url = f"{base_url}/rest/api/3/search/jql"
         params = {
-            "jql": f"project = \"{project_key}\" ORDER BY created ASC",
+            "jql": jql,
             "expand": "changelog",
             "fields": "summary,issuetype,created,status,assignee,labels,story_points,customfield_10016",
-            "startAt": start_at,
             "maxResults": max_results,
         }
+        if next_page_token:
+            params["nextPageToken"] = next_page_token
+        else:
+            params["startAt"] = len(issues)
+
         response = requests.get(url, params=params, auth=auth)
         response.raise_for_status()
         data = response.json()
 
         batch = data.get("issues", [])
         issues.extend(batch)
-        total = data.get("total", 0)
-        print(f"  Fetched {len(issues)} / {total} issues", end="\r")
+        print(f"  Fetched {len(issues)} issues", end="\r")
 
-        if start_at + max_results >= total:
+        next_page_token = data.get("nextPageToken")
+        if next_page_token:
+            continue
+        elif len(batch) < max_results:
             break
-        start_at += max_results
+        elif "total" in data and len(issues) >= data["total"]:
+            break
 
     print(f"\nDone. Fetched {len(issues)} issues.")
     return issues
@@ -81,20 +95,13 @@ def transform_issue(issue: dict, base_url: str) -> dict:
 
     # Build transitions from changelog
     transitions = []
-
-    # The initial status at creation time
-    initial_status = fields.get("status", {}).get("name", "Unknown")
     created_at = parse_iso(fields.get("created"))
-
-    transitions.append({
-        "from_status": None,
-        "to_status": initial_status,
-        "transitioned_at": created_at,
-    })
 
     # Add all status changes from changelog
     histories = issue.get("changelog", {}).get("histories", [])
-    for history in sorted(histories, key=lambda h: h.get("created", "")):
+    sorted_histories = sorted(histories, key=lambda h: h.get("created", ""))
+
+    for history in sorted_histories:
         for item in history.get("items", []):
             if item.get("field") == "status":
                 transitions.append({
@@ -105,6 +112,19 @@ def transform_issue(issue: dict, base_url: str) -> dict:
 
     # Sort by date to be safe
     transitions.sort(key=lambda t: t["transitioned_at"] or "")
+
+    # Prepend the real initial status (= fromString of first status change)
+    # Fallback: current status if ticket was never moved
+    if transitions:
+        initial_status = transitions[0]["from_status"] or fields.get("status", {}).get("name", "Unknown")
+    else:
+        initial_status = fields.get("status", {}).get("name", "Unknown")
+
+    transitions.insert(0, {
+        "from_status": None,
+        "to_status": initial_status,
+        "transitioned_at": created_at,
+    })
 
     # Story points: try standard field and common custom field
     story_points = (
@@ -139,13 +159,15 @@ def main():
     parser.add_argument("--email", required=True, help="Your Atlassian account email")
     parser.add_argument("--token", required=True, help="Jira API token")
     parser.add_argument("--output", required=True, help="Output JSON file path")
+    parser.add_argument("--months", type=int, default=3, help="How many months back to fetch (default: 3)")
+    parser.add_argument("--types", default="", help="Comma-separated issue types to include, e.g. 'Story,Task,Bug'")
     args = parser.parse_args()
 
     base_url = args.url.rstrip("/")
     auth = HTTPBasicAuth(args.email, args.token)
 
     try:
-        issues = fetch_all_issues(base_url, args.project, auth)
+        issues = fetch_all_issues(base_url, args.project, auth, months=args.months, types=args.types)
     except requests.HTTPError as e:
         print(f"Error fetching from Jira: {e}", file=sys.stderr)
         print(f"Response: {e.response.text}", file=sys.stderr)

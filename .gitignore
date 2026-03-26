@@ -4,6 +4,9 @@ backend/app/__pycache__/
 backend/**/__pycache__/
 backend/*.db
 backend/.env
+connectors/.env
+connectors/export.json
+connectors/*.json
 *.pyc
 *.pyo
 .DS_Store

@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { api } from '@/services/api'
 import { useMetrics } from '@/hooks/useMetrics'
 import type { Ticket } from '@/types'
 import { TicketTable } from '@/components/tickets/TicketTable'
 import { Button } from '@/components/ui/button'
+
+const TYPE_FILTERS = ['', 'story', 'task', 'bug', 'sub-task']
 
 export default function TicketsPage() {
   const { t } = useTranslation()
@@ -29,20 +32,29 @@ export default function TicketsPage() {
       .catch(console.error)
   }, [importId, page, typeFilter])
 
+  const totalPages = Math.ceil(total / limit)
+
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-semibold text-gray-900">{t('nav.tickets')}</h2>
-        <div className="flex gap-2">
-          {['', 'story', 'task', 'bug'].map((type) => (
-            <Button
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('nav.tickets')}</h2>
+          <p className="text-sm text-gray-400 mt-0.5">{total} tickets total</p>
+        </div>
+
+        <div className="flex items-center gap-1.5 bg-gray-100 rounded-lg p-1">
+          {TYPE_FILTERS.map((type) => (
+            <button
               key={type}
-              variant={typeFilter === type ? 'default' : 'outline'}
-              size="sm"
               onClick={() => { setTypeFilter(type); setPage(1) }}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                typeFilter === type
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
             >
               {type || 'All'}
-            </Button>
+            </button>
           ))}
         </div>
       </div>
@@ -53,28 +65,33 @@ export default function TicketsPage() {
         p85={metrics?.cycle_time.p85}
       />
 
-      <div className="flex items-center justify-between mt-4 text-sm text-gray-600">
-        <span>{total} tickets total</span>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
-          >
-            Previous
-          </Button>
-          <span className="px-2 py-1">Page {page}</span>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page * limit >= total}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            Next
-          </Button>
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-2">
+          <p className="text-sm text-gray-400">
+            Page {page} of {totalPages}
+          </p>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => p - 1)}
+              className="h-8 w-8 p-0"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => p + 1)}
+              className="h-8 w-8 p-0"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

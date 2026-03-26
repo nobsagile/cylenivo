@@ -60,10 +60,13 @@ export const api = {
       request<TimeInStatusResponse>(`/api/v1/metrics/${importId}/time-in-status`),
   },
   tickets: {
-    list: (importId: string, params?: { type?: string; page?: number; limit?: number }) =>
-      request<PaginatedTickets>(
-        `/api/v1/tickets?import_id=${importId}&${new URLSearchParams(params as Record<string, string>)}`
-      ),
+    list: (importId: string, params?: { type?: string; page?: number; limit?: number }) => {
+      const p = new URLSearchParams({ import_id: importId })
+      if (params?.type) p.set('type', params.type)
+      if (params?.page) p.set('page', String(params.page))
+      if (params?.limit) p.set('limit', String(params.limit))
+      return request<PaginatedTickets>(`/api/v1/tickets?${p}`)
+    },
     get: (id: string) => request<TicketDetail>(`/api/v1/tickets/${id}`),
   },
   llm: {
@@ -76,5 +79,11 @@ export const api = {
       }),
     getInsight: (importId: string) =>
       request<LLMInsight>(`/api/v1/llm/insights/${importId}`),
+    chat: (importId: string, messages: { role: string; content: string }[]) =>
+      request<{ reply: string }>(`/api/v1/llm/chat/${importId}`, {
+        method: 'POST',
+        body: JSON.stringify({ messages }),
+        headers: { 'Content-Type': 'application/json' },
+      }),
   },
 }

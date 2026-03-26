@@ -158,6 +158,65 @@ class LLMService:
         self.db.refresh(insight)
         return insight
 
+    def _build_context(self, import_id: str) -> tuple[str, str]:
+        """Returns (system_prompt, project_key) with metrics context for chat."""
+        import_session = self.import_repo.get(import_id)
+        if not import_session:
+            raise ValueError(f"Import {import_id} not found")
+
+        config = import_session.config
+        tickets = self.ticket_repo.list_all_by_import(import_id)
+
+        cycle_times = []
+        lead_times = []
+        ct_with_ticket = []
+
+        for ticket in tickets:
+            ct = calculate_cycle_time(
+                ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status
+            )
+            if ct is not None:
+                cycle_times.append(ct)
+                ct_with_ticket.append((ct, ticket.external_id))
+            lt = calculate_lead_time(
+                ticket.created_at, ticket.transitions, config.cycle_time_end_status, config.lead_time_start_status
+            )
+            if lt is not None:
+                lead_times.append(lt)
+
+        percentiles = calculate_percentiles(cycle_times)
+        slowest = sorted(ct_with_ticket, reverse=True)[:5]
+
+        system_prompt = f"""You are a flow analysis expert for software development teams.
+You have access to the following data for project {import_session.project_key}:
+
+TICKETS: {len(tickets)} total, {len(cycle_times)} completed
+CYCLE TIME ({config.cycle_time_start_status} → {config.cycle_time_end_status}):
+  Median: {round(statistics.median(cycle_times), 1) if cycle_times else 'N/A'} days
+  P50: {percentiles.get('p50')} | P70: {percentiles.get('p70')} | P85: {percentiles.get('p85')} | P95: {percentiles.get('p95')} days
+LEAD TIME: Median {round(statistics.median(lead_times), 1) if lead_times else 'N/A'} days
+TOP 5 SLOWEST: {', '.join(f'{tid} ({round(ct,1)}d)' for ct, tid in slowest)}
+
+Answer questions about this data concisely and specifically. Use numbers from the data above."""
+
+        return system_prompt, import_session.project_key
+
+    def chat(self, import_id: str, messages: list[dict], model: str | None = None) -> str:
+        model = model or settings.OLLAMA_MODEL
+        system_prompt, _ = self._build_context(import_id)
+
+        ollama_messages = [{"role": "system", "content": system_prompt}] + messages
+
+        resp = httpx.post(
+            f"{settings.OLLAMA_BASE_URL}/api/chat",
+            json={"model": model, "messages": ollama_messages, "stream": False},
+            timeout=120.0,
+        )
+        if resp.status_code != 200:
+            raise RuntimeError("Ollama returned non-200 status")
+
+        return resp.json().get("message", {}).get("content", "")
+
     def get_insight(self, import_id: str) -> LLMInsight | None:
         return (
             self.db.query(LLMInsight)
