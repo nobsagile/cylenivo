@@ -72,27 +72,18 @@ export default function SettingsPage() {
 
         {/* Configurations */}
         <TabsContent value="configs">
-          <div className="flex justify-end mb-4">
-            <Button onClick={() => navigate('/settings/configs/new')} className="gap-1.5">
-              <Plus className="w-4 h-4" />
-              {t('settings.newConfig')}
-            </Button>
-          </div>
-
           {configs.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-gray-200 rounded-xl">
               <div className="p-3 rounded-xl bg-gray-100 mb-3">
                 <Settings2 className="w-6 h-6 text-gray-400" />
               </div>
               <p className="text-gray-600 font-medium">No configurations yet</p>
-              <p className="text-gray-400 text-sm mt-1">Create one to start importing data</p>
-              <Button
-                onClick={() => navigate('/settings/configs/new')}
-                variant="outline"
-                className="mt-4 gap-1.5"
-              >
+              <p className="text-gray-400 text-sm mt-1 max-w-xs">
+                Configurations are created automatically when you import data — statuses are read directly from your file.
+              </p>
+              <Button onClick={() => navigate('/import')} variant="outline" className="mt-4 gap-1.5">
                 <Plus className="w-4 h-4" />
-                Create first config
+                Import data
               </Button>
             </div>
           ) : (
