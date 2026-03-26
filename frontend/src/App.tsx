@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import DashboardPage from '@/pages/DashboardPage'
 import ImportPage from '@/pages/ImportPage'
@@ -7,13 +7,14 @@ import AnalyticsPage from '@/pages/AnalyticsPage'
 import InsightsPage from '@/pages/InsightsPage'
 import SettingsPage from '@/pages/SettingsPage'
 import ConfigFormPage from '@/pages/ConfigFormPage'
+import WelcomePage from '@/pages/WelcomePage'
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<AppShell />}>
-          <Route path="/" element={<Navigate to="/import" replace />} />
+          <Route path="/" element={<WelcomePage />} />
           <Route path="/import" element={<ImportPage />} />
           <Route path="/projects/:importId" element={<DashboardPage />} />
           <Route path="/projects/:importId/tickets" element={<TicketsPage />} />

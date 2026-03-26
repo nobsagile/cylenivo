@@ -9,6 +9,8 @@ from app.schemas.import_session import ImportFileSchema
 from app.schemas.ticket import ImportSessionResponse
 from app.services.import_service import ImportService
 from app.repositories.import_repository import ImportRepository
+from app.models.ticket import Ticket
+from app.models.ticket_transition import TicketTransition
 
 router = APIRouter(prefix="/api/v1/imports", tags=["imports"])
 
@@ -69,6 +71,23 @@ def get_import(import_id: str, db: Session = Depends(get_db)):
     r = ImportSessionResponse.model_validate(session)
     r.config_name = session.config.name if session.config else None
     return ok(r)
+
+
+@router.get("/{import_id}/statuses")
+def get_import_statuses(import_id: str, db: Session = Depends(get_db)):
+    repo = ImportRepository(db)
+    if not repo.get(import_id):
+        raise HTTPException(status_code=404, detail="Import not found")
+
+    rows = (
+        db.query(TicketTransition.to_status)
+        .join(Ticket, Ticket.id == TicketTransition.ticket_id)
+        .filter(Ticket.import_id == import_id)
+        .distinct()
+        .all()
+    )
+    statuses = sorted({r[0] for r in rows if r[0]})
+    return ok(statuses)
 
 
 @router.delete("/{import_id}", status_code=204)

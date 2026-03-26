@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
+import { Wand2 } from 'lucide-react'
 import {
   DndContext,
   closestCenter,
@@ -20,7 +21,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, X, Plus, ArrowLeft } from 'lucide-react'
 import { api } from '@/services/api'
-import type { ProjectConfig } from '@/types'
+import type { ProjectConfig, ImportSession } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -87,6 +88,12 @@ export default function ConfigFormPage() {
   const [cycleEnd, setCycleEnd] = useState('')
   const [leadStart, setLeadStart] = useState('')
   const [saving, setSaving] = useState(false)
+  const [imports, setImports] = useState<ImportSession[]>([])
+  const [loadingStatuses, setLoadingStatuses] = useState(false)
+
+  useEffect(() => {
+    api.imports.list().then(setImports).catch(console.error)
+  }, [])
 
   useEffect(() => {
     if (configId) {
@@ -114,6 +121,22 @@ export default function ConfigFormPage() {
         const newIndex = items.indexOf(over.id as string)
         return arrayMove(items, oldIndex, newIndex)
       })
+    }
+  }
+
+  async function loadFromImport(importId: string) {
+    if (!importId) return
+    setLoadingStatuses(true)
+    try {
+      const statuses = await api.imports.statuses(importId)
+      setStatusOrder(statuses)
+      setCycleStart('')
+      setCycleEnd('')
+      setLeadStart('')
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Error loading statuses')
+    } finally {
+      setLoadingStatuses(false)
     }
   }
 
@@ -178,6 +201,43 @@ export default function ConfigFormPage() {
           Define how cycle time and lead time are measured
         </p>
       </div>
+
+      {/* Load from import */}
+      {!isEdit && imports.length > 0 && (
+        <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 mb-6">
+          <div className="flex items-center gap-2 mb-2">
+            <Wand2 className="w-4 h-4 text-blue-600" />
+            <p className="text-sm font-semibold text-blue-800">Load statuses from import</p>
+          </div>
+          <p className="text-xs text-blue-600 mb-3">
+            Select an existing dataset to automatically detect all status values.
+          </p>
+          <div className="flex gap-2">
+            <select
+              defaultValue=""
+              onChange={(e) => loadFromImport(e.target.value)}
+              disabled={loadingStatuses}
+              className="flex-1 border border-blue-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+            >
+              <option value="">— select import —</option>
+              {imports.map((imp) => (
+                <option key={imp.id} value={imp.id}>
+                  {imp.project_key} — {new Date(imp.imported_at).toLocaleDateString('de-DE')}
+                  {imp.config_name ? ` (${imp.config_name})` : ''}
+                </option>
+              ))}
+            </select>
+            {loadingStatuses && (
+              <div className="flex items-center px-3 text-sm text-blue-600">Loading…</div>
+            )}
+          </div>
+          {statusOrder.length > 0 && (
+            <p className="text-xs text-blue-600 mt-2">
+              ✓ {statusOrder.length} statuses loaded — now select cycle time start and end below.
+            </p>
+          )}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Name */}

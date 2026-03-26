@@ -15,6 +15,7 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, options)
+  if (res.status === 204) return null as T
   const json = await res.json()
   if (!res.ok) throw new Error(json.error ?? 'Request failed')
   return json.data as T
@@ -50,6 +51,8 @@ export const api = {
     },
     delete: (id: string) =>
       request<null>(`/api/v1/imports/${id}`, { method: 'DELETE' }),
+    statuses: (id: string) =>
+      request<string[]>(`/api/v1/imports/${id}/statuses`),
   },
   metrics: {
     summary: (importId: string) =>
