@@ -18,24 +18,57 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { GripVertical, X, Plus, ArrowLeft } from 'lucide-react'
 import { api } from '@/services/api'
 import type { ProjectConfig } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
-function SortableStatus({ id, onRemove }: { id: string; onRemove: () => void }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
+function SortableStatus({
+  id,
+  highlight,
+  onRemove,
+}: {
+  id: string
+  highlight?: 'start' | 'end' | 'lead'
+  onRemove: () => void
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
   const style = { transform: CSS.Transform.toString(transform), transition }
+
+  const colors = {
+    start: 'border-blue-300 bg-blue-50 text-blue-800',
+    end: 'border-emerald-300 bg-emerald-50 text-emerald-800',
+    lead: 'border-violet-300 bg-violet-50 text-violet-800',
+  }
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-2 bg-white border border-gray-200 rounded px-3 py-2 text-sm"
+      className={`flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm transition-shadow ${
+        isDragging ? 'shadow-md z-10 relative' : ''
+      } ${highlight ? colors[highlight] : 'border-gray-200 bg-white text-gray-700'}`}
     >
-      <span {...attributes} {...listeners} className="cursor-grab text-gray-400">⠿</span>
-      <span className="flex-1">{id}</span>
-      <button onClick={onRemove} className="text-gray-400 hover:text-red-500">✕</button>
+      <span
+        {...attributes}
+        {...listeners}
+        className="cursor-grab text-gray-300 hover:text-gray-500 shrink-0"
+      >
+        <GripVertical className="w-4 h-4" />
+      </span>
+      <span className="flex-1 font-medium">{id}</span>
+      {highlight && (
+        <span className="text-[10px] font-semibold uppercase tracking-wide opacity-60">
+          {highlight === 'start' ? 'cycle start' : highlight === 'end' ? 'cycle end' : 'lead start'}
+        </span>
+      )}
+      <button
+        onClick={onRemove}
+        className="text-gray-300 hover:text-red-400 transition-colors shrink-0"
+      >
+        <X className="w-3.5 h-3.5" />
+      </button>
     </div>
   )
 }
@@ -92,6 +125,13 @@ export default function ConfigFormPage() {
     }
   }
 
+  function getHighlight(s: string): 'start' | 'end' | 'lead' | undefined {
+    if (s === cycleStart) return 'start'
+    if (s === cycleEnd) return 'end'
+    if (s === leadStart) return 'lead'
+    return undefined
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
@@ -118,20 +158,45 @@ export default function ConfigFormPage() {
     }
   }
 
+  const selectClass = "w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+
   return (
     <div className="max-w-lg">
-      <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-        {isEdit ? t('settings.editConfig') : t('settings.newConfig')}
-      </h2>
+      <button
+        onClick={() => navigate('/settings')}
+        className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 mb-6 transition-colors"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        Back to Settings
+      </button>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
+          {isEdit ? t('settings.editConfig') : t('settings.newConfig')}
+        </h2>
+        <p className="text-sm text-gray-400 mt-1">
+          Define how cycle time and lead time are measured
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} required />
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Name</label>
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. Product Team"
+            required
+          />
         </div>
 
+        {/* Base URL */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Base URL</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            Jira Base URL
+            <span className="text-gray-400 font-normal ml-1">(optional)</span>
+          </label>
           <Input
             value={baseUrl}
             onChange={(e) => setBaseUrl(e.target.value)}
@@ -139,79 +204,83 @@ export default function ConfigFormPage() {
           />
         </div>
 
+        {/* Status order */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Status Order</label>
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext items={statusOrder} strategy={verticalListSortingStrategy}>
-              <div className="space-y-1 mb-2">
-                {statusOrder.map((s) => (
-                  <SortableStatus
-                    key={s}
-                    id={s}
-                    onRemove={() => setStatusOrder((prev) => prev.filter((x) => x !== s))}
-                  />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
-          <div className="flex gap-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            Status Order
+            <span className="text-gray-400 font-normal ml-1">— drag to reorder</span>
+          </label>
+
+          {statusOrder.length > 0 && (
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={statusOrder} strategy={verticalListSortingStrategy}>
+                <div className="space-y-1.5 mb-2">
+                  {statusOrder.map((s) => (
+                    <SortableStatus
+                      key={s}
+                      id={s}
+                      highlight={getHighlight(s)}
+                      onRemove={() => setStatusOrder((prev) => prev.filter((x) => x !== s))}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          )}
+
+          <div className="flex gap-2 mt-2">
             <Input
               value={newStatus}
               onChange={(e) => setNewStatus(e.target.value)}
               placeholder="Add status…"
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addStatus())}
             />
-            <Button type="button" variant="outline" onClick={addStatus}>Add</Button>
+            <Button type="button" variant="outline" onClick={addStatus} className="gap-1.5 shrink-0">
+              <Plus className="w-3.5 h-3.5" />
+              Add
+            </Button>
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Cycle Time Start Status
-          </label>
-          <select
-            value={cycleStart}
-            onChange={(e) => setCycleStart(e.target.value)}
-            required
-            className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-          >
-            <option value="">— select —</option>
-            {statusOrder.map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
+        {/* Cycle time */}
+        <div className="rounded-xl border border-gray-200 p-4 space-y-3 bg-gray-50">
+          <p className="text-sm font-semibold text-gray-700">Cycle Time</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">Start Status</label>
+              <select value={cycleStart} onChange={(e) => setCycleStart(e.target.value)} required className={selectClass}>
+                <option value="">— select —</option>
+                {statusOrder.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">End Status</label>
+              <select value={cycleEnd} onChange={(e) => setCycleEnd(e.target.value)} required className={selectClass}>
+                <option value="">— select —</option>
+                {statusOrder.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Cycle Time End Status
-          </label>
-          <select
-            value={cycleEnd}
-            onChange={(e) => setCycleEnd(e.target.value)}
-            required
-            className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-          >
-            <option value="">— select —</option>
-            {statusOrder.map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
+        {/* Lead time */}
+        <div className="rounded-xl border border-gray-200 p-4 bg-gray-50">
+          <p className="text-sm font-semibold text-gray-700 mb-3">Lead Time</p>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">
+              Start Status
+              <span className="text-gray-400 font-normal ml-1">— leave empty to use ticket creation date</span>
+            </label>
+            <select value={leadStart} onChange={(e) => setLeadStart(e.target.value)} className={selectClass}>
+              <option value="">Use ticket creation date</option>
+              {statusOrder.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Lead Time Start Status (optional)
-          </label>
-          <select
-            value={leadStart}
-            onChange={(e) => setLeadStart(e.target.value)}
-            className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-          >
-            <option value="">Use ticket creation date</option>
-            {statusOrder.map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
-        </div>
-
-        <div className="flex gap-2 pt-2">
-          <Button type="submit" disabled={saving}>
-            {saving ? 'Saving…' : 'Save'}
+        <div className="flex gap-2 pt-1">
+          <Button type="submit" disabled={saving} className="gap-1.5">
+            {saving ? 'Saving…' : 'Save Configuration'}
           </Button>
           <Button type="button" variant="outline" onClick={() => navigate('/settings')}>
             Cancel
