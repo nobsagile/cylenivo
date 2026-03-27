@@ -7,7 +7,9 @@ import { mean, median } from '../lib/stats.js'
 import { calculateCycleTime } from '../analyzers/cycleTime.js'
 import { calculateLeadTime } from '../analyzers/leadTime.js'
 import { calculatePercentiles } from '../analyzers/percentiles.js'
-import { firstTransitionTo, type Transition } from '../analyzers/utils.js'
+import { firstTransitionTo, trimTransitionsToCycleWindow, type Transition } from '../analyzers/utils.js'
+import { calculateTimeInStatus } from '../analyzers/timeInStatus.js'
+import { calculateThroughputPerWeek } from '../analyzers/percentiles.js'
 import { DEFAULT_SYSTEM_PROMPT } from './llm-config.js'
 
 const llm = new Hono()
@@ -126,10 +128,41 @@ llm.post('/analyze/:importId', async (c) => {
   const slowest = ctWithTicket.sort((a, b) => b[0] - a[0]).slice(0, 5)
   const dateFrom = completedAtDates.length ? completedAtDates.reduce((a, b) => a < b ? a : b).toISOString().slice(0, 10) : 'N/A'
   const dateTo = completedAtDates.length ? completedAtDates.reduce((a, b) => a > b ? a : b).toISOString().slice(0, 10) : 'N/A'
+  const throughput = calculateThroughputPerWeek(completedAtDates)
+
+  // Time in status (only completed tickets, cycle window only)
+  const startIdx = config.status_order.indexOf(config.cycle_time_start_status)
+  const endIdx = config.status_order.indexOf(config.cycle_time_end_status)
+  const cycleStatuses = startIdx !== -1 && endIdx !== -1
+    ? config.status_order.slice(startIdx, endIdx + 1)
+    : config.status_order
+  const mode = (config.cycle_time_mode ?? 'first_last') as 'first_last' | 'first_first' | 'last_last'
+
+  const timeInStatusByStatus: Record<string, number[]> = {}
+  for (const s of cycleStatuses) timeInStatusByStatus[s] = []
+  for (const ticket of allTickets) {
+    const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status)
+    if (ct === null) continue
+    const windowed = trimTransitionsToCycleWindow(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, mode)
+    const durations = calculateTimeInStatus(windowed, cycleStatuses)
+    for (const [status, days] of Object.entries(durations)) {
+      if (days > 0) timeInStatusByStatus[status].push(days)
+    }
+  }
+  const timeInStatusLines = cycleStatuses
+    .map((s) => {
+      const vals = timeInStatusByStatus[s]
+      if (!vals.length) return `  ${s}: no data`
+      const avg = Math.round(mean(vals) * 10) / 10
+      const med = Math.round(median(vals) * 10) / 10
+      return `  ${s}: avg ${avg}d, median ${med}d`
+    })
+    .join('\n')
 
   const userContent = `PROJECT: ${imp.project_key}
 TICKETS ANALYZED: ${allTickets.length} total, ${cycleTimes.length} completed
 DATE RANGE: ${dateFrom} to ${dateTo}
+THROUGHPUT: ${throughput} tickets/week
 
 CYCLE TIME (from ${config.cycle_time_start_status} to ${config.cycle_time_end_status}):
   Mean: ${cycleTimes.length ? Math.round(mean(cycleTimes) * 10) / 10 : 'N/A'} days | Median: ${cycleTimes.length ? Math.round(median(cycleTimes) * 10) / 10 : 'N/A'} days
@@ -137,6 +170,9 @@ CYCLE TIME (from ${config.cycle_time_start_status} to ${config.cycle_time_end_st
 
 LEAD TIME (from ticket creation to ${config.cycle_time_end_status}):
   Mean: ${leadTimes.length ? Math.round(mean(leadTimes) * 10) / 10 : 'N/A'} days | Median: ${leadTimes.length ? Math.round(median(leadTimes) * 10) / 10 : 'N/A'} days
+
+AVERAGE TIME IN STATUS (completed tickets only):
+${timeInStatusLines}
 
 TOP 5 SLOWEST TICKETS (by cycle time):
 ${slowest.map(([ct, id]) => `  ${id}: ${Math.round(ct * 10) / 10} days`).join('\n')}
