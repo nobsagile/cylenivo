@@ -223,4 +223,21 @@ describe('calculateTimeInStatus', () => {
     expect(result['In Progress']).toBe(0)
     expect(result['Done']).toBe(0)
   })
+
+  it('terminal status (last transition) does not accumulate time to now', () => {
+    // Done is the last status — should be 0, not (now - Jan17)
+    const result = calculateTimeInStatus(sampleTransitions, ['In Progress', 'In Review', 'Done'])
+    expect(result['Done']).toBe(0)
+  })
+
+  it('non-terminal Done accumulates only until next transition', () => {
+    // Done → In Dev: 2 days in Done, then In Dev is terminal
+    const transitions = [
+      t('Done',       '2024-01-10T08:00:00Z'),
+      t('In Dev',     '2024-01-12T08:00:00Z'),
+    ]
+    const result = calculateTimeInStatus(transitions, ['Done', 'In Dev'])
+    expect(result['Done']).toBeCloseTo(2, 0)
+    expect(result['In Dev']).toBe(0)  // terminal — no forward projection
+  })
 })

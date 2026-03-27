@@ -237,6 +237,30 @@ describe('metrics / last_last mode', () => {
   })
 })
 
+// ─── external_link ───────────────────────────────────────────────────────────
+
+describe('metrics / external_link', () => {
+  it('external_link from fixture is stored and returned on ticket', async () => {
+    const configId = await createConfig()
+    const importId = await doImport(configId)
+    const res = await app.request(`/api/v1/tickets?import_id=${importId}&limit=100`)
+    const { data } = await res.json() as { data: { tickets: any[] } }
+    const tick1 = data.tickets.find((t: any) => t.external_id === 'TICK-1')
+    expect(tick1).toBeDefined()
+    expect(tick1.external_link).toBe('https://example.atlassian.net/browse/TICK-1')
+  })
+
+  it('ticket without external_link in fixture has null external_link', async () => {
+    const configId = await createConfig()
+    const importId = await doImport(configId)
+    const res = await app.request(`/api/v1/tickets?import_id=${importId}&limit=100`)
+    const { data } = await res.json() as { data: { tickets: any[] } }
+    const tick2 = data.tickets.find((t: any) => t.external_id === 'TICK-2')
+    expect(tick2).toBeDefined()
+    expect(tick2.external_link).toBeNull()
+  })
+})
+
 // ─── mode comparison ─────────────────────────────────────────────────────────
 
 describe('metrics / mode comparison sanity check', () => {
