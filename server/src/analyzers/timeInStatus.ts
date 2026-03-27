@@ -15,9 +15,8 @@ export function calculateTimeInStatus(
     const status = sorted[i].to_status
     if (!(status in result)) continue
     const enteredAt = new Date(sorted[i].transitioned_at)
-    const leftAt = i + 1 < sorted.length
-      ? new Date(sorted[i + 1].transitioned_at)
-      : new Date()
+    if (i + 1 >= sorted.length) continue  // terminal status — don't project forward
+    const leftAt = new Date(sorted[i + 1].transitioned_at)
     result[status] += (leftAt.getTime() - enteredAt.getTime()) / (1000 * 86400)
   }
 
