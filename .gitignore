@@ -13,3 +13,7 @@ connectors/*.json
 node_modules/
 frontend/dist/
 frontend/.env
+dist/
+.env
+server/dev.db
+server/dist/
