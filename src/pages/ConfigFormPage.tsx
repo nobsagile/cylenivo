@@ -194,6 +194,21 @@ export default function ConfigFormPage() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="max-w-lg">
+        <button
+          onClick={() => navigate('/settings')}
+          className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 mb-6 transition-colors"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Back to Settings
+        </button>
+        <div className="text-sm text-gray-400">Loading…</div>
+      </div>
+    )
+  }
+
   return (
     <div className="max-w-lg">
       <button
@@ -381,8 +396,8 @@ export default function ConfigFormPage() {
         )}
 
         <div className="flex gap-2 pt-1">
-          <Button type="submit" disabled={saving || loading} className="gap-1.5">
-            {saving ? 'Saving…' : loading ? 'Loading…' : 'Save Configuration'}
+          <Button type="submit" disabled={saving} className="gap-1.5">
+            {saving ? 'Saving…' : 'Save Configuration'}
           </Button>
           <Button type="button" variant="outline" onClick={() => navigate('/settings')}>
             Cancel
