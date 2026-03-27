@@ -411,8 +411,8 @@ export default function ImportPage() {
           {/* Date range */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Updated since
-              <span className="text-gray-400 font-normal ml-1">— optional, limits to recently updated tickets</span>
+              Import tickets updated after
+              <span className="text-gray-400 font-normal ml-1">— optional, skips tickets with no activity before this date</span>
             </label>
             <Input
               type="date"

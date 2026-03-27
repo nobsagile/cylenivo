@@ -59,7 +59,7 @@ function buildIssues(report: ImportHealthReport, cycleStart: string, cycleEnd: s
     issues.push({
       title: `Data includes transitions back to ${oldestYear}`,
       consequence: 'Throughput is averaged over the full date range — if old tickets are included, the weekly throughput number will be much lower than your current actual velocity. Cycle time averages may also reflect older team behaviour.',
-      recommendation: 'Re-import with the "Updated since" date filter (e.g. last 12–18 months) to get metrics that reflect how your team works today.',
+      recommendation: 'Re-import with the "Import tickets updated after" date filter (e.g. 12–18 months ago) to get metrics that reflect how your team works today.',
       severity: 'warn',
     })
   }
