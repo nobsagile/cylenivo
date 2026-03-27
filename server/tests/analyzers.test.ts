@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { firstTransitionTo, lastTransitionTo, type Transition } from '../src/analyzers/utils.js'
+import { firstTransitionTo, lastTransitionTo, trimTransitionsToCycleWindow, type Transition } from '../src/analyzers/utils.js'
 import { calculateCycleTime } from '../src/analyzers/cycleTime.js'
 import { calculateLeadTime } from '../src/analyzers/leadTime.js'
 import { calculatePercentiles, calculateThroughputPerWeek } from '../src/analyzers/percentiles.js'
@@ -137,6 +137,67 @@ const reworkTransitions: Transition[] = [
   t('Development',        '2024-02-05T08:00:00Z'),
   t('Customer Feedback',  '2024-02-15T08:00:00Z'),
 ]
+
+describe('trimTransitionsToCycleWindow', () => {
+  it('returns only transitions within cycle window for completed ticket', () => {
+    // Backlog (Jan1), In Dev (Jan5), Done (Jan10) — cycle: In Dev → Done
+    const transitions = [
+      t('Backlog', '2024-01-01T08:00:00Z'),
+      t('In Dev',  '2024-01-05T08:00:00Z'),
+      t('Done',    '2024-01-10T08:00:00Z'),
+    ]
+    const result = trimTransitionsToCycleWindow(transitions, 'In Dev', 'Done')
+    expect(result.map(tr => tr.to_status)).toEqual(['In Dev', 'Done'])
+  })
+
+  it('returns [] when ticket never entered cycleStart', () => {
+    const transitions = [
+      t('Backlog', '2016-01-01T08:00:00Z'),
+      t('Done',    '2016-01-05T08:00:00Z'),
+    ]
+    const result = trimTransitionsToCycleWindow(transitions, 'In Dev', 'Done')
+    expect(result).toHaveLength(0)
+  })
+
+  it('caps at last transition for incomplete ticket (no cycleEnd)', () => {
+    const transitions = [
+      t('Backlog', '2024-01-01T08:00:00Z'),
+      t('In Dev',  '2024-01-05T08:00:00Z'),
+      t('Review',  '2024-01-08T08:00:00Z'),
+      // no Done
+    ]
+    const result = trimTransitionsToCycleWindow(transitions, 'In Dev', 'Done')
+    expect(result.map(tr => tr.to_status)).toEqual(['In Dev', 'Review'])
+  })
+
+  it('excludes pre-cycle history (old workflow transitions before cycleStart)', () => {
+    // Old-style transitions from 2016, then modern workflow in 2024
+    const transitions = [
+      t('In Progress', '2016-09-15T08:00:00Z'),
+      t('QA',          '2016-09-16T08:00:00Z'),
+      t('Done',        '2016-09-17T08:00:00Z'),  // old Done — before cycleStart
+      t('Released',    '2024-11-27T08:00:00Z'),
+      t('In Dev',      '2024-12-01T08:00:00Z'),  // first cycleStart entry
+      t('Done',        '2024-12-05T08:00:00Z'),
+    ]
+    const result = trimTransitionsToCycleWindow(transitions, 'In Dev', 'Done')
+    expect(result.map(tr => tr.to_status)).toEqual(['In Dev', 'Done'])
+  })
+
+  it('uses last cycleEnd for rework ticket', () => {
+    // Dev → Done → Dev → Done: window = first Dev to last Done
+    const transitions = [
+      t('Backlog', '2024-01-01T08:00:00Z'),
+      t('Dev',     '2024-01-03T08:00:00Z'),
+      t('Done',    '2024-01-08T08:00:00Z'),
+      t('Dev',     '2024-01-10T08:00:00Z'),
+      t('Done',    '2024-01-15T08:00:00Z'),
+    ]
+    const result = trimTransitionsToCycleWindow(transitions, 'Dev', 'Done')
+    expect(result.map(tr => tr.to_status)).toEqual(['Dev', 'Done', 'Dev', 'Done'])
+    expect(result).not.toEqual(expect.arrayContaining([expect.objectContaining({ to_status: 'Backlog' })]))
+  })
+})
 
 describe('lastTransitionTo', () => {
   it('returns last matching transition', () => {

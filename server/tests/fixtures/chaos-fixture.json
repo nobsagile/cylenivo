@@ -1,0 +1,74 @@
+{
+  "_comment": "Chaos fixture: messy real-world Jira data. Config: cycle_start=In Dev, cycle_end=Done, status_order=[Backlog,In Dev,Review,Done]",
+  "source_type": "jira",
+  "project_key": "CHAOS",
+  "exported_at": "2026-01-01T00:00:00Z",
+  "tickets": [
+    {
+      "_comment": "Old-workflow ticket from 2016 — uses QA/Released, never touches In Dev or Done in the modern sense. Should be EXCLUDED from cycle/lead time and contribute ZERO to time-in-status.",
+      "external_id": "CHAOS-1",
+      "title": "Old workflow ticket",
+      "ticket_type": "story",
+      "created_at": "2016-09-15T12:00:00Z",
+      "transitions": [
+        { "from_status": null,        "to_status": "In Progress", "transitioned_at": "2016-09-15T12:00:00Z" },
+        { "from_status": "In Progress","to_status": "QA",         "transitioned_at": "2016-09-16T12:00:00Z" },
+        { "from_status": "QA",        "to_status": "Done",        "transitioned_at": "2016-09-17T12:00:00Z" },
+        { "from_status": "Done",      "to_status": "Released",    "transitioned_at": "2024-11-27T12:00:00Z" },
+        { "from_status": "Released",  "to_status": "Done",        "transitioned_at": "2025-10-13T12:00:00Z" }
+      ]
+    },
+    {
+      "_comment": "Normal modern ticket. cycle=5d (In Dev Jan5→Done Jan10), lead=9d (Jan1→Jan10). Pre-cycle Backlog history excluded.",
+      "external_id": "CHAOS-2",
+      "title": "Normal ticket",
+      "ticket_type": "story",
+      "created_at": "2024-01-01T12:00:00Z",
+      "transitions": [
+        { "from_status": null,       "to_status": "Backlog", "transitioned_at": "2024-01-01T12:00:00Z" },
+        { "from_status": "Backlog",  "to_status": "In Dev",  "transitioned_at": "2024-01-05T12:00:00Z" },
+        { "from_status": "In Dev",   "to_status": "Review",  "transitioned_at": "2024-01-08T12:00:00Z" },
+        { "from_status": "Review",   "to_status": "Done",    "transitioned_at": "2024-01-10T12:00:00Z" }
+      ]
+    },
+    {
+      "_comment": "Rework ticket: enters In Dev twice, Done twice. first_last=14d, time-in-status counts both In Dev periods.",
+      "external_id": "CHAOS-3",
+      "title": "Rework ticket",
+      "ticket_type": "story",
+      "created_at": "2024-01-01T12:00:00Z",
+      "transitions": [
+        { "from_status": null,      "to_status": "Backlog", "transitioned_at": "2024-01-01T12:00:00Z" },
+        { "from_status": "Backlog", "to_status": "In Dev",  "transitioned_at": "2024-01-01T12:00:00Z" },
+        { "from_status": "In Dev",  "to_status": "Done",    "transitioned_at": "2024-01-08T12:00:00Z" },
+        { "from_status": "Done",    "to_status": "In Dev",  "transitioned_at": "2024-01-10T12:00:00Z" },
+        { "from_status": "In Dev",  "to_status": "Done",    "transitioned_at": "2024-01-15T12:00:00Z" }
+      ]
+    },
+    {
+      "_comment": "Ticket with statuses completely outside status_order (Sprint, Deployed). These should not appear in time-in-status at all.",
+      "external_id": "CHAOS-4",
+      "title": "Ticket with unknown statuses",
+      "ticket_type": "task",
+      "created_at": "2024-02-01T12:00:00Z",
+      "transitions": [
+        { "from_status": null,      "to_status": "Sprint",   "transitioned_at": "2024-02-01T12:00:00Z" },
+        { "from_status": "Sprint",  "to_status": "In Dev",   "transitioned_at": "2024-02-03T12:00:00Z" },
+        { "from_status": "In Dev",  "to_status": "Deployed", "transitioned_at": "2024-02-07T12:00:00Z" },
+        { "from_status": "Deployed","to_status": "Done",     "transitioned_at": "2024-02-10T12:00:00Z" }
+      ]
+    },
+    {
+      "_comment": "Incomplete ticket — never reaches Done. Excluded from cycle/lead times, still present in time-in-status within cycle window.",
+      "external_id": "CHAOS-5",
+      "title": "Incomplete ticket",
+      "ticket_type": "bug",
+      "created_at": "2024-03-01T12:00:00Z",
+      "transitions": [
+        { "from_status": null,      "to_status": "Backlog", "transitioned_at": "2024-03-01T12:00:00Z" },
+        { "from_status": "Backlog", "to_status": "In Dev",  "transitioned_at": "2024-03-05T12:00:00Z" },
+        { "from_status": "In Dev",  "to_status": "Review",  "transitioned_at": "2024-03-08T12:00:00Z" }
+      ]
+    }
+  ]
+}

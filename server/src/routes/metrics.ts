@@ -8,7 +8,7 @@ import { calculateCycleTime, type CycleTimeMode } from '../analyzers/cycleTime.j
 import { calculateLeadTime } from '../analyzers/leadTime.js'
 import { calculatePercentiles, calculateThroughputPerWeek } from '../analyzers/percentiles.js'
 import { calculateTimeInStatus } from '../analyzers/timeInStatus.js'
-import { firstTransitionTo, type Transition } from '../analyzers/utils.js'
+import { firstTransitionTo, trimTransitionsToCycleWindow, type Transition } from '../analyzers/utils.js'
 
 const metrics = new Hono()
 
@@ -91,7 +91,8 @@ metrics.get('/:importId/summary', async (c) => {
   for (const s of config.status_order) timeInStatusByStatus[s] = []
 
   for (const ticket of allTickets) {
-    const durations = calculateTimeInStatus(ticket.transitions, config.status_order)
+    const windowed = trimTransitionsToCycleWindow(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status)
+    const durations = calculateTimeInStatus(windowed, config.status_order)
     for (const [status, days] of Object.entries(durations)) {
       timeInStatusByStatus[status].push(days)
     }
@@ -173,8 +174,10 @@ metrics.get('/:importId/time-in-status', async (c) => {
     external_id: ticket.external_id,
     title: ticket.title,
     status_durations: Object.fromEntries(
-      Object.entries(calculateTimeInStatus(ticket.transitions, config.status_order))
-        .map(([s, d]) => [s, Math.round(d * 100) / 100])
+      Object.entries(calculateTimeInStatus(
+        trimTransitionsToCycleWindow(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status),
+        config.status_order,
+      )).map(([s, d]) => [s, Math.round(d * 100) / 100])
     ),
   }))
 
