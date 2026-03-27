@@ -16,7 +16,11 @@ export function calculateTimeInStatus(
     if (!(status in result)) continue
     const enteredAt = new Date(sorted[i].transitioned_at)
     if (i + 1 >= sorted.length) continue  // terminal status — don't project forward
-    const leftAt = new Date(sorted[i + 1].transitioned_at)
+    const next = sorted[i + 1]
+    // If the next status is untracked AND this status re-appears later, it's a detour
+    // through untracked territory (e.g. Done→Released→Done bulk ops) — skip this period
+    if (!(next.to_status in result) && sorted.slice(i + 1).some(tr => tr.to_status === status)) continue
+    const leftAt = new Date(next.transitioned_at)
     result[status] += (leftAt.getTime() - enteredAt.getTime()) / (1000 * 86400)
   }
 

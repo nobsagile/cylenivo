@@ -240,4 +240,29 @@ describe('calculateTimeInStatus', () => {
     expect(result['Done']).toBeCloseTo(2, 0)
     expect(result['In Dev']).toBe(0)  // terminal — no forward projection
   })
+
+  it('transition through untracked status does not accumulate time (bulk-update noise)', () => {
+    // Done (2016) → Released (untracked, 2024) → Done (2025)
+    // The 8-year Done period should be ignored because next status is untracked
+    const transitions = [
+      t('Done',     '2016-09-16T08:00:00Z'),
+      t('Released', '2024-11-27T08:00:00Z'),  // untracked
+      t('Done',     '2025-10-13T08:00:00Z'),
+    ]
+    const result = calculateTimeInStatus(transitions, ['Done'])
+    expect(result['Done']).toBe(0)  // both Done periods ignored (untracked next / terminal)
+  })
+
+  it('rework through tracked statuses still accumulates correctly', () => {
+    // Dev → Done → Dev → Done: both Dev periods counted, both Done periods 0 (terminal or untracked next)
+    const transitions = [
+      t('Dev',  '2024-01-01T08:00:00Z'),
+      t('Done', '2024-01-06T08:00:00Z'),  // Done → Dev next (tracked) → counts
+      t('Dev',  '2024-01-08T08:00:00Z'),  // Dev → Done next (tracked) → counts
+      t('Done', '2024-01-11T08:00:00Z'),  // terminal → 0
+    ]
+    const result = calculateTimeInStatus(transitions, ['Dev', 'Done'])
+    expect(result['Dev']).toBeCloseTo(8, 0)   // 5d (Jan1→Jan6) + 3d (Jan8→Jan11)
+    expect(result['Done']).toBeCloseTo(2, 0)  // Done → Dev: 2 days (Jan6→Jan8)
+  })
 })
