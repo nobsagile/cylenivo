@@ -54,11 +54,16 @@ configs.put('/:id', async (c) => {
   if (!existing.length) return c.json({ data: null, error: 'Config not found' }, 404)
 
   const body = await c.req.json()
+  // Validate that required string fields are not set to empty string
+  if (body.cycle_time_start_status === '') return c.json({ data: null, error: 'cycle_time_start_status cannot be empty' }, 422)
+  if (body.cycle_time_end_status === '') return c.json({ data: null, error: 'cycle_time_end_status cannot be empty' }, 422)
+  if (body.name === '') return c.json({ data: null, error: 'name cannot be empty' }, 422)
+
   const updates: Partial<typeof projectConfigs.$inferInsert> = {}
   if (body.name !== undefined) updates.name = body.name
   if (body.source_type !== undefined) updates.source_type = body.source_type
   if (body.base_url !== undefined) updates.base_url = body.base_url
-  if (body.status_order !== undefined) updates.status_order = JSON.stringify(body.status_order)
+  if (Array.isArray(body.status_order) && body.status_order.length > 0) updates.status_order = JSON.stringify(body.status_order)
   if (body.cycle_time_start_status !== undefined) updates.cycle_time_start_status = body.cycle_time_start_status
   if (body.cycle_time_end_status !== undefined) updates.cycle_time_end_status = body.cycle_time_end_status
   if (body.cycle_time_mode !== undefined) updates.cycle_time_mode = body.cycle_time_mode

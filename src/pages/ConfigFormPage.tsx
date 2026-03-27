@@ -92,6 +92,8 @@ export default function ConfigFormPage() {
   const [cycleMode, setCycleMode] = useState<'first_last' | 'first_first' | 'last_last'>('first_last')
   const [leadStart, setLeadStart] = useState('')
   const [saving, setSaving] = useState(false)
+  const [loading, setLoading] = useState(isEdit)
+  const [formError, setFormError] = useState('')
   const [imports, setImports] = useState<ImportSession[]>([])
   const [loadingStatuses, setLoadingStatuses] = useState(false)
 
@@ -101,6 +103,7 @@ export default function ConfigFormPage() {
 
   useEffect(() => {
     if (configId) {
+      setLoading(true)
       api.configs.get(configId).then((c: ProjectConfig) => {
         setName(c.name)
         setBaseUrl(c.base_url ?? '')
@@ -109,7 +112,7 @@ export default function ConfigFormPage() {
         setCycleEnd(c.cycle_time_end_status)
         setCycleMode(c.cycle_time_mode ?? 'first_last')
         setLeadStart(c.lead_time_start_status ?? '')
-      })
+      }).catch(console.error).finally(() => setLoading(false))
     }
   }, [configId])
 
@@ -162,6 +165,10 @@ export default function ConfigFormPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setFormError('')
+    if (!cycleStart) { setFormError('Please select a Cycle Time start status.'); return }
+    if (!cycleEnd) { setFormError('Please select a Cycle Time end status.'); return }
+    if (statusOrder.length === 0) { setFormError('Add at least one status.'); return }
     setSaving(true)
     const body = {
       name,
@@ -181,7 +188,7 @@ export default function ConfigFormPage() {
       }
       navigate('/settings')
     } catch (e) {
-      alert(e instanceof Error ? e.message : 'Error')
+      setFormError(e instanceof Error ? e.message : 'Error saving configuration')
     } finally {
       setSaving(false)
     }
@@ -367,9 +374,15 @@ export default function ConfigFormPage() {
           </div>
         </div>
 
+        {formError && (
+          <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+            {formError}
+          </p>
+        )}
+
         <div className="flex gap-2 pt-1">
-          <Button type="submit" disabled={saving} className="gap-1.5">
-            {saving ? 'Saving…' : 'Save Configuration'}
+          <Button type="submit" disabled={saving || loading} className="gap-1.5">
+            {saving ? 'Saving…' : loading ? 'Loading…' : 'Save Configuration'}
           </Button>
           <Button type="button" variant="outline" onClick={() => navigate('/settings')}>
             Cancel
