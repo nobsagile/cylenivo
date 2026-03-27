@@ -116,6 +116,22 @@ export interface PaginatedTickets {
   limit: number
 }
 
+export interface SourceConnection {
+  id: string
+  name: string
+  source_type: 'jira'
+  base_url: string
+  email: string
+  created_at: string
+}
+
+export interface JiraFetchOptions {
+  project: string
+  limit: number
+  issue_types: string[]
+  done_only: boolean
+}
+
 export interface CreateConfigRequest {
   name: string
   source_type: string

@@ -3,22 +3,29 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
   Plus, Pencil, Trash2, ArrowRight, Settings2,
-  Database, FileJson, Calendar, Ticket,
+  Database, FileJson, Calendar, Ticket, Link2, CheckCircle2, XCircle, Loader2,
 } from 'lucide-react'
 import { api } from '@/services/api'
-import type { ProjectConfig, ImportSession } from '@/types'
+import type { ProjectConfig, ImportSession, SourceConnection } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import ConnectionDialog from '@/components/connections/ConnectionDialog'
 
 export default function SettingsPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [configs, setConfigs] = useState<ProjectConfig[]>([])
   const [imports, setImports] = useState<ImportSession[]>([])
+  const [connections, setConnections] = useState<SourceConnection[]>([])
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [editConn, setEditConn] = useState<SourceConnection | null>(null)
+  const [testingId, setTestingId] = useState<string | null>(null)
+  const [testResults, setTestResults] = useState<Record<string, 'ok' | 'error'>>({})
 
   useEffect(() => {
     api.configs.list().then(setConfigs).catch(console.error)
     api.imports.list().then(setImports).catch(console.error)
+    api.connections.list().then(setConnections).catch(console.error)
   }, [])
 
   async function handleDeleteConfig(id: string) {
@@ -39,6 +46,40 @@ export default function SettingsPage() {
     } catch (e) {
       alert(e instanceof Error ? e.message : 'Error')
     }
+  }
+
+  async function handleDeleteConnection(id: string) {
+    if (!window.confirm('Delete this connection?')) return
+    try {
+      await api.connections.delete(id)
+      setConnections((prev) => prev.filter((c) => c.id !== id))
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Error')
+    }
+  }
+
+  async function handleTestConnection(id: string) {
+    setTestingId(id)
+    try {
+      await api.connections.test(id)
+      setTestResults((prev) => ({ ...prev, [id]: 'ok' }))
+    } catch {
+      setTestResults((prev) => ({ ...prev, [id]: 'error' }))
+    } finally {
+      setTestingId(null)
+    }
+  }
+
+  function handleSaved(conn: SourceConnection) {
+    setConnections((prev) => {
+      const idx = prev.findIndex((c) => c.id === conn.id)
+      if (idx >= 0) {
+        const next = [...prev]
+        next[idx] = conn
+        return next
+      }
+      return [...prev, conn]
+    })
   }
 
   return (
@@ -65,6 +106,15 @@ export default function SettingsPage() {
             {imports.length > 0 && (
               <span className="ml-1 text-[11px] bg-gray-200 text-gray-600 rounded-full px-1.5 py-0.5 font-semibold">
                 {imports.length}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="connections" className="text-sm px-4 py-1.5 gap-1.5">
+            <Link2 className="w-3.5 h-3.5" />
+            Connections
+            {connections.length > 0 && (
+              <span className="ml-1 text-[11px] bg-gray-200 text-gray-600 rounded-full px-1.5 py-0.5 font-semibold">
+                {connections.length}
               </span>
             )}
           </TabsTrigger>
@@ -166,11 +216,7 @@ export default function SettingsPage() {
               </div>
               <p className="text-gray-600 font-medium">No datasets imported yet</p>
               <p className="text-gray-400 text-sm mt-1">Upload a Jira export to get started</p>
-              <Button
-                onClick={() => navigate('/import')}
-                variant="outline"
-                className="mt-4 gap-1.5"
-              >
+              <Button onClick={() => navigate('/import')} variant="outline" className="mt-4 gap-1.5">
                 <Plus className="w-4 h-4" />
                 Import data
               </Button>
@@ -228,7 +274,109 @@ export default function SettingsPage() {
             </div>
           )}
         </TabsContent>
+
+        {/* Connections */}
+        <TabsContent value="connections">
+          <div className="flex justify-end mb-4">
+            <Button
+              onClick={() => { setEditConn(null); setDialogOpen(true) }}
+              variant="outline"
+              className="gap-1.5"
+            >
+              <Plus className="w-4 h-4" />
+              Add Connection
+            </Button>
+          </div>
+
+          {connections.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-gray-200 rounded-xl">
+              <div className="p-3 rounded-xl bg-gray-100 mb-3">
+                <Link2 className="w-6 h-6 text-gray-400" />
+              </div>
+              <p className="text-gray-600 font-medium">No connections yet</p>
+              <p className="text-gray-400 text-sm mt-1 max-w-xs">
+                Connect to Jira directly to fetch tickets without exporting a file first.
+              </p>
+              <Button
+                onClick={() => { setEditConn(null); setDialogOpen(true) }}
+                variant="outline"
+                className="mt-4 gap-1.5"
+              >
+                <Plus className="w-4 h-4" />
+                Add Connection
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {connections.map((conn) => (
+                <div
+                  key={conn.id}
+                  className="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-200 shadow-sm hover:border-gray-300 transition-colors"
+                >
+                  <div className="p-2 rounded-lg bg-blue-50 border border-blue-100 shrink-0">
+                    <Link2 className="w-5 h-5 text-blue-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-gray-900">{conn.name}</p>
+                      <span className="text-[11px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-blue-100 text-blue-600">
+                        {conn.source_type}
+                      </span>
+                      {testResults[conn.id] === 'ok' && (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      )}
+                      {testResults[conn.id] === 'error' && (
+                        <XCircle className="w-4 h-4 text-red-400" />
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-400 mt-0.5">{conn.base_url} · {conn.email}</p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleTestConnection(conn.id)}
+                      disabled={testingId === conn.id}
+                      className="h-8 text-xs gap-1"
+                    >
+                      {testingId === conn.id
+                        ? <Loader2 className="w-3 h-3 animate-spin" />
+                        : null}
+                      Test
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => { setEditConn(conn); setDialogOpen(true) }}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDeleteConnection(conn.id)}
+                      className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:border-red-300"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
       </Tabs>
+
+      <ConnectionDialog
+        open={dialogOpen}
+        connection={editConn}
+        onClose={() => setDialogOpen(false)}
+        onSaved={(conn) => {
+          handleSaved(conn)
+          setDialogOpen(false)
+        }}
+      />
     </div>
   )
 }

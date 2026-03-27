@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   UploadCloud, CheckCircle2, FileJson, ArrowRight, ArrowLeft,
-  Plus, GripVertical, X, Loader2,
+  Plus, GripVertical, X, Loader2, Link2, Clock,
 } from 'lucide-react'
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor,
@@ -14,20 +14,23 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { api } from '@/services/api'
-import type { ProjectConfig } from '@/types'
+import type { ProjectConfig, SourceConnection, JiraFetchOptions } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
+import ConnectionDialog from '@/components/connections/ConnectionDialog'
 
-type Step = 'upload' | 'configure'
+type Step = 'source' | 'upload' | 'jira' | 'configure'
+type SourceMode = 'upload' | 'jira' | null
 
 interface FilePreview {
   project_key: string
   ticket_count: number
   statuses: string[]
-  raw: File
+  raw: File | null
+  fetched?: unknown // ImportFile from Jira fetch
 }
 
 function SortableStatus({ id, onRemove }: { id: string; onRemove: () => void }) {
@@ -65,11 +68,23 @@ function extractStatuses(data: Record<string, unknown>): string[] {
 export default function ImportPage() {
   const navigate = useNavigate()
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [step, setStep] = useState<Step>('upload')
+  const [step, setStep] = useState<Step>('source')
+  const [sourceMode, setSourceMode] = useState<SourceMode>(null)
   const [dragging, setDragging] = useState(false)
   const [preview, setPreview] = useState<FilePreview | null>(null)
 
-  // configure step
+  // Jira connect state
+  const [connections, setConnections] = useState<SourceConnection[]>([])
+  const [selectedConnId, setSelectedConnId] = useState('')
+  const [jiraProject, setJiraProject] = useState('')
+  const [jiraLimit, setJiraLimit] = useState(50)
+  const [jiraDoneOnly, setJiraDoneOnly] = useState(true)
+  const [jiraIssueTypes, setJiraIssueTypes] = useState(['Story', 'Task', 'Bug'])
+  const [fetching, setFetching] = useState(false)
+  const [fetchMsg, setFetchMsg] = useState('')
+  const [addConnOpen, setAddConnOpen] = useState(false)
+
+  // Configure step
   const [configs, setConfigs] = useState<ProjectConfig[]>([])
   const [configMode, setConfigMode] = useState<'existing' | 'new'>('existing')
   const [selectedConfigId, setSelectedConfigId] = useState('')
@@ -106,18 +121,51 @@ export default function ImportPage() {
     reader.readAsText(f)
   }
 
-  async function goToConfigure() {
-    if (!preview) return
+  async function goToConfigure(p?: FilePreview) {
+    const src = p ?? preview
+    if (!src) return
     const cfgs = await api.configs.list().catch(() => [])
     setConfigs(cfgs)
     setConfigMode(cfgs.length > 0 ? 'existing' : 'new')
     setSelectedConfigId(cfgs[0]?.id ?? '')
-    setStatusOrder(preview.statuses)
-    setNewName(`${preview.project_key} Config`)
+    setStatusOrder(src.statuses)
+    setNewName(`${src.project_key} Config`)
     setCycleStart('')
     setCycleEnd('')
     setLeadStart('')
     setStep('configure')
+  }
+
+  async function handleFetchFromJira() {
+    if (!selectedConnId || !jiraProject) return
+    setFetching(true)
+    setFetchMsg('Connecting to Jira…')
+    try {
+      const options: JiraFetchOptions = {
+        project: jiraProject.trim().toUpperCase(),
+        limit: jiraLimit,
+        issue_types: jiraIssueTypes,
+        done_only: jiraDoneOnly,
+      }
+      setFetchMsg(`Fetching tickets from ${options.project}…`)
+      const result = await api.connections.fetch(selectedConnId, options) as Record<string, unknown>
+      const statuses = extractStatuses(result)
+      const p: FilePreview = {
+        project_key: (result.project_key as string) ?? options.project,
+        ticket_count: (result.tickets as unknown[])?.length ?? 0,
+        statuses,
+        raw: null,
+        fetched: result,
+      }
+      setPreview(p)
+      setFetchMsg('')
+      await goToConfigure(p)
+    } catch (e) {
+      setFetchMsg('')
+      alert(e instanceof Error ? e.message : 'Fetch failed')
+    } finally {
+      setFetching(false)
+    }
   }
 
   function handleDragEnd(event: DragEndEvent) {
@@ -162,23 +210,251 @@ export default function ImportPage() {
         configId = newConfig.id
       }
 
-      const session = await api.imports.upload(preview.raw, configId)
-      navigate(`/projects/${session.id}`)
+      if (preview.raw) {
+        const session = await api.imports.upload(preview.raw, configId)
+        navigate(`/projects/${session.id}`)
+      } else if (preview.fetched) {
+        // Upload fetched JSON as a blob
+        const blob = new Blob([JSON.stringify(preview.fetched)], { type: 'application/json' })
+        const file = new File([blob], `${preview.project_key}-jira-export.json`, { type: 'application/json' })
+        const session = await api.imports.upload(file, configId)
+        navigate(`/projects/${session.id}`)
+      }
     } catch (e) {
       alert(e instanceof Error ? e.message : 'Error')
       setImporting(false)
     }
   }
 
-  // ── Step 1: Upload ──────────────────────────────────────────────────────
+  // ── Step: Source selection ───────────────────────────────────────────────
+  if (step === 'source') {
+    return (
+      <div className="max-w-lg">
+        <StepHeader current={1} total={3} />
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Choose your source</h2>
+          <p className="text-sm text-gray-400 mt-1">How would you like to import ticket data?</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          {/* Jira live */}
+          <button
+            onClick={async () => {
+              const conns = await api.connections.list().catch(() => [])
+              setConnections(conns)
+              setSelectedConnId(conns[0]?.id ?? '')
+              setSourceMode('jira')
+              setStep('jira')
+            }}
+            className="flex flex-col items-start gap-2 p-4 rounded-xl border-2 border-gray-200 bg-white text-left hover:border-blue-300 hover:bg-blue-50 transition-colors group"
+          >
+            <div className="p-2 rounded-lg bg-blue-100 group-hover:bg-blue-200 transition-colors">
+              <Link2 className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 text-sm">Jira</p>
+              <p className="text-xs text-gray-400 mt-0.5">Connect live</p>
+            </div>
+          </button>
+
+          {/* Upload file */}
+          <button
+            onClick={() => { setSourceMode('upload'); setStep('upload') }}
+            className="flex flex-col items-start gap-2 p-4 rounded-xl border-2 border-gray-200 bg-white text-left hover:border-gray-300 hover:bg-gray-50 transition-colors group"
+          >
+            <div className="p-2 rounded-lg bg-gray-100 group-hover:bg-gray-200 transition-colors">
+              <UploadCloud className="w-5 h-5 text-gray-600" />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 text-sm">Upload file</p>
+              <p className="text-xs text-gray-400 mt-0.5">JSON export</p>
+            </div>
+          </button>
+
+          {/* Trello — coming soon */}
+          <div className="flex flex-col items-start gap-2 p-4 rounded-xl border-2 border-dashed border-gray-100 bg-gray-50 opacity-60 cursor-not-allowed">
+            <div className="p-2 rounded-lg bg-gray-100">
+              <Clock className="w-5 h-5 text-gray-400" />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-500 text-sm">Trello</p>
+              <p className="text-xs text-gray-400 mt-0.5">Coming soon</p>
+            </div>
+          </div>
+
+          {/* Linear — coming soon */}
+          <div className="flex flex-col items-start gap-2 p-4 rounded-xl border-2 border-dashed border-gray-100 bg-gray-50 opacity-60 cursor-not-allowed">
+            <div className="p-2 rounded-lg bg-gray-100">
+              <Clock className="w-5 h-5 text-gray-400" />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-500 text-sm">Linear</p>
+              <p className="text-xs text-gray-400 mt-0.5">Coming soon</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Step: Jira connect ───────────────────────────────────────────────────
+  if (step === 'jira') {
+    const issueTypeOptions = ['Story', 'Task', 'Bug', 'Epic']
+    function toggleIssueType(t: string) {
+      setJiraIssueTypes((prev) =>
+        prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]
+      )
+    }
+
+    return (
+      <div className="max-w-lg">
+        <StepHeader current={2} total={3} />
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Fetch from Jira</h2>
+          <p className="text-sm text-gray-400 mt-1">Select a connection and configure what to fetch.</p>
+        </div>
+
+        <div className="space-y-4">
+          {/* Connection selector */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Connection</label>
+            {connections.length === 0 ? (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 flex items-center gap-3">
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-amber-800">No connections yet</p>
+                  <p className="text-xs text-amber-600 mt-0.5">Add a Jira connection in Settings first.</p>
+                </div>
+                <Button size="sm" variant="outline" onClick={() => setAddConnOpen(true)} className="gap-1.5 shrink-0">
+                  <Plus className="w-3.5 h-3.5" />
+                  Add
+                </Button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <Select value={selectedConnId} onValueChange={setSelectedConnId}>
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder="— select connection —" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {connections.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name} ({c.email})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button variant="outline" size="sm" onClick={() => setAddConnOpen(true)} className="shrink-0 gap-1">
+                  <Plus className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Project key */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Project Key</label>
+            <Input
+              value={jiraProject}
+              onChange={(e) => setJiraProject(e.target.value.toUpperCase())}
+              placeholder="e.g. TN, PROJ, MYTEAM"
+            />
+          </div>
+
+          {/* Issue types */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Issue Types</label>
+            <div className="flex flex-wrap gap-2">
+              {issueTypeOptions.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => toggleIssueType(t)}
+                  className={`px-3 py-1.5 text-sm rounded-lg border font-medium transition-colors ${
+                    jiraIssueTypes.includes(t)
+                      ? 'bg-blue-50 border-blue-300 text-blue-700'
+                      : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300'
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Options */}
+          <div className="flex items-center gap-6">
+            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={jiraDoneOnly}
+                onChange={(e) => setJiraDoneOnly(e.target.checked)}
+                className="rounded border-gray-300"
+              />
+              Done tickets only
+            </label>
+            <div className="flex items-center gap-2 text-sm text-gray-700">
+              <span>Max:</span>
+              <Input
+                type="number"
+                value={jiraLimit}
+                onChange={(e) => setJiraLimit(Number(e.target.value))}
+                className="w-20 h-8 text-sm"
+                min={1}
+                max={500}
+              />
+            </div>
+          </div>
+
+          {fetchMsg && (
+            <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
+              <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+              {fetchMsg}
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-3 mt-6">
+          <Button variant="outline" onClick={() => setStep('source')} className="gap-1.5">
+            <ArrowLeft className="w-4 h-4" /> Back
+          </Button>
+          <Button
+            onClick={handleFetchFromJira}
+            disabled={fetching || !selectedConnId || !jiraProject || jiraIssueTypes.length === 0}
+            className="flex-1 gap-2 h-11"
+          >
+            {fetching ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Fetching…</>
+            ) : (
+              <>Fetch from Jira <ArrowRight className="w-4 h-4" /></>
+            )}
+          </Button>
+        </div>
+
+        <ConnectionDialog
+          open={addConnOpen}
+          onClose={() => setAddConnOpen(false)}
+          onSaved={(conn) => {
+            setConnections((prev) => {
+              const idx = prev.findIndex((c) => c.id === conn.id)
+              if (idx >= 0) { const n = [...prev]; n[idx] = conn; return n }
+              return [...prev, conn]
+            })
+            setSelectedConnId(conn.id)
+            setAddConnOpen(false)
+          }}
+        />
+      </div>
+    )
+  }
+
+  // ── Step: Upload ─────────────────────────────────────────────────────────
   if (step === 'upload') {
     return (
       <div className="max-w-lg">
-        <StepHeader current={1} />
+        <StepHeader current={2} total={3} />
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Upload your export</h2>
           <p className="text-sm text-gray-400 mt-1">
-            Run the Jira connector script first to generate a JSON export file.
+            Drop a JSON file exported from Jira or another tool.
           </p>
         </div>
 
@@ -197,7 +473,7 @@ export default function ImportPage() {
             {preview ? (
               <>
                 <CheckCircle2 className="w-9 h-9 text-emerald-500 mb-3" />
-                <p className="text-sm font-semibold text-emerald-700">{preview.raw.name}</p>
+                <p className="text-sm font-semibold text-emerald-700">{preview.raw?.name}</p>
                 <p className="text-xs text-emerald-600 mt-0.5">Click to change file</p>
               </>
             ) : (
@@ -231,22 +507,27 @@ export default function ImportPage() {
           </div>
         )}
 
-        <Button
-          onClick={goToConfigure}
-          disabled={!preview}
-          className="w-full mt-6 gap-2 h-11"
-        >
-          Next: Configure
-          <ArrowRight className="w-4 h-4" />
-        </Button>
+        <div className="flex gap-3 mt-6">
+          <Button variant="outline" onClick={() => setStep('source')} className="gap-1.5">
+            <ArrowLeft className="w-4 h-4" /> Back
+          </Button>
+          <Button
+            onClick={() => goToConfigure()}
+            disabled={!preview}
+            className="flex-1 gap-2 h-11"
+          >
+            Next: Configure
+            <ArrowRight className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
     )
   }
 
-  // ── Step 2: Configure ───────────────────────────────────────────────────
+  // ── Step: Configure ──────────────────────────────────────────────────────
   return (
     <div className="max-w-lg">
-      <StepHeader current={2} />
+      <StepHeader current={3} total={3} />
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Configure metrics</h2>
         <p className="text-sm text-gray-400 mt-1">
@@ -387,7 +668,7 @@ export default function ImportPage() {
       )}
 
       <div className="flex gap-3 mt-6">
-        <Button variant="outline" onClick={() => setStep('upload')} className="gap-1.5">
+        <Button variant="outline" onClick={() => setStep(sourceMode === 'jira' ? 'jira' : 'upload')} className="gap-1.5">
           <ArrowLeft className="w-4 h-4" /> Back
         </Button>
         <Button
@@ -406,11 +687,11 @@ export default function ImportPage() {
   )
 }
 
-function StepHeader({ current }: { current: number }) {
-  const steps = ['Upload file', 'Configure', 'Done']
+function StepHeader({ current, total }: { current: number; total: number }) {
+  const labels = total === 3 ? ['Choose source', 'Upload / Connect', 'Configure'] : ['Upload file', 'Configure', 'Done']
   return (
     <div className="flex items-center gap-2 mb-8">
-      {steps.map((label, i) => {
+      {labels.map((label, i) => {
         const n = i + 1
         const done = n < current
         const active = n === current
@@ -426,7 +707,7 @@ function StepHeader({ current }: { current: number }) {
               </div>
               <span className={`text-sm font-medium ${active ? 'text-blue-600' : 'text-gray-400'}`}>{label}</span>
             </div>
-            {i < steps.length - 1 && <div className="w-8 h-px bg-gray-200" />}
+            {i < labels.length - 1 && <div className="w-8 h-px bg-gray-200" />}
           </div>
         )
       })}

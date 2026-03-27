@@ -9,6 +9,8 @@ import type {
   LLMInsight,
   PaginatedTickets,
   CreateConfigRequest,
+  SourceConnection,
+  JiraFetchOptions,
 } from '@/types'
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8765'
@@ -73,6 +75,31 @@ export const api = {
       return request<PaginatedTickets>(`/api/v1/tickets?${p}`)
     },
     get: (id: string) => request<TicketDetail>(`/api/v1/tickets/${id}`),
+  },
+  connections: {
+    list: () => request<SourceConnection[]>('/api/v1/connections'),
+    create: (body: Omit<SourceConnection, 'id' | 'created_at'> & { api_token: string }) =>
+      request<SourceConnection>('/api/v1/connections', {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    update: (id: string, body: Partial<Omit<SourceConnection, 'id' | 'created_at'> & { api_token?: string }>) =>
+      request<SourceConnection>(`/api/v1/connections/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    delete: (id: string) =>
+      request<null>(`/api/v1/connections/${id}`, { method: 'DELETE' }),
+    test: (id: string) =>
+      request<{ display_name: string; email: string }>(`/api/v1/connections/${id}/test`, { method: 'POST' }),
+    fetch: (id: string, options: JiraFetchOptions) =>
+      request<unknown>(`/api/v1/connections/${id}/fetch`, {
+        method: 'POST',
+        body: JSON.stringify(options),
+        headers: { 'Content-Type': 'application/json' },
+      }),
   },
   llm: {
     status: () => request<LLMStatus>('/api/v1/llm/status'),
