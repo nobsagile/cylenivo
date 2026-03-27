@@ -26,6 +26,10 @@ configs.get('/:id', async (c) => {
 
 configs.post('/', async (c) => {
   const body = await c.req.json()
+  const required = ['name', 'source_type', 'status_order', 'cycle_time_start_status', 'cycle_time_end_status']
+  for (const field of required) {
+    if (!body[field]) return c.json({ data: null, error: `Missing required field: ${field}` }, 422)
+  }
   const id = crypto.randomUUID()
   const now = new Date().toISOString()
   const row = {
