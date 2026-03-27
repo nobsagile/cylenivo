@@ -16,6 +16,11 @@ frontend/.env
 dist/
 .env
 server/dev.db
+server/dev.db-shm
+server/dev.db-wal
 server/dist/
+dev.db
+dev.db-shm
+dev.db-wal
 src-tauri/binaries/*
 !src-tauri/binaries/.gitkeep
