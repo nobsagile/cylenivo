@@ -24,3 +24,5 @@ dev.db-shm
 dev.db-wal
 src-tauri/binaries/*
 !src-tauri/binaries/.gitkeep
+CLAUDE.md
+SPEC.md
