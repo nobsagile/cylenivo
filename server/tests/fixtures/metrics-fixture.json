@@ -1,0 +1,61 @@
+{
+  "_comment": "Fixture with known exact values for metrics pipeline tests. All times at 12:00:00Z for clean 24h differences.",
+  "source_type": "jira",
+  "project_key": "TICK",
+  "exported_at": "2024-02-01T00:00:00Z",
+  "tickets": [
+    {
+      "_comment": "Simple straight-through ticket. cycle=5d (Jan5→Jan10), lead=9d (Jan1→Jan10)",
+      "external_id": "TICK-1",
+      "title": "Simple ticket",
+      "ticket_type": "story",
+      "created_at": "2024-01-01T12:00:00Z",
+      "transitions": [
+        { "from_status": null,      "to_status": "Backlog", "transitioned_at": "2024-01-01T12:00:00Z" },
+        { "from_status": "Backlog", "to_status": "Ready",   "transitioned_at": "2024-01-03T12:00:00Z" },
+        { "from_status": "Ready",   "to_status": "In Dev",  "transitioned_at": "2024-01-05T12:00:00Z" },
+        { "from_status": "In Dev",  "to_status": "Review",  "transitioned_at": "2024-01-08T12:00:00Z" },
+        { "from_status": "Review",  "to_status": "Done",    "transitioned_at": "2024-01-10T12:00:00Z" }
+      ]
+    },
+    {
+      "_comment": "Simple ticket skipping Ready. cycle=10d (Jan12→Jan22), lead=12d (Jan10→Jan22)",
+      "external_id": "TICK-2",
+      "title": "Fast ticket",
+      "ticket_type": "bug",
+      "created_at": "2024-01-10T12:00:00Z",
+      "transitions": [
+        { "from_status": null,      "to_status": "Backlog", "transitioned_at": "2024-01-10T12:00:00Z" },
+        { "from_status": "Backlog", "to_status": "In Dev",  "transitioned_at": "2024-01-12T12:00:00Z" },
+        { "from_status": "In Dev",  "to_status": "Done",    "transitioned_at": "2024-01-22T12:00:00Z" }
+      ]
+    },
+    {
+      "_comment": "Rework ticket: enters In Dev twice, Done twice. first_last=14d, first_first=7d, last_last=5d",
+      "_comment2": "first In Dev: Jan1, last In Dev: Jan10, first Done: Jan8, last Done: Jan15",
+      "_comment3": "lead first_last=21d (Dec25→Jan15), lead first_first=14d (Dec25→Jan8)",
+      "external_id": "TICK-3",
+      "title": "Rework ticket",
+      "ticket_type": "story",
+      "created_at": "2023-12-25T12:00:00Z",
+      "transitions": [
+        { "from_status": null,     "to_status": "Backlog", "transitioned_at": "2023-12-25T12:00:00Z" },
+        { "from_status": "Backlog","to_status": "In Dev",  "transitioned_at": "2024-01-01T12:00:00Z" },
+        { "from_status": "In Dev", "to_status": "Done",    "transitioned_at": "2024-01-08T12:00:00Z" },
+        { "from_status": "Done",   "to_status": "In Dev",  "transitioned_at": "2024-01-10T12:00:00Z" },
+        { "from_status": "In Dev", "to_status": "Done",    "transitioned_at": "2024-01-15T12:00:00Z" }
+      ]
+    },
+    {
+      "_comment": "Incomplete ticket: never reaches Done. Must be excluded from all cycle/lead time counts.",
+      "external_id": "TICK-4",
+      "title": "Incomplete ticket",
+      "ticket_type": "task",
+      "created_at": "2024-01-20T12:00:00Z",
+      "transitions": [
+        { "from_status": null,      "to_status": "Backlog", "transitioned_at": "2024-01-20T12:00:00Z" },
+        { "from_status": "Backlog", "to_status": "In Dev",  "transitioned_at": "2024-01-22T12:00:00Z" }
+      ]
+    }
+  ]
+}
