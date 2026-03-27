@@ -1,0 +1,179 @@
+import { Hono } from 'hono'
+import { eq, inArray, sql } from 'drizzle-orm'
+import { db } from '../db/index.js'
+import { projectConfigs, importSessions, tickets, ticketTransitions } from '../db/schema.js'
+import { ok } from '../lib/response.js'
+
+const imports = new Hono()
+
+interface TransitionInput {
+  from_status?: string | null
+  to_status: string
+  transitioned_at: string
+}
+
+interface TicketInput {
+  external_id: string
+  title: string
+  ticket_type: string
+  created_at: string
+  external_link?: string | null
+  transitions: TransitionInput[]
+  metadata?: Record<string, unknown> | null
+}
+
+interface ImportFile {
+  source_type: string
+  project_key: string
+  exported_at: string
+  tickets: TicketInput[]
+}
+
+function validateImportFile(raw: unknown): ImportFile {
+  const data = raw as Record<string, unknown>
+  if (!data.source_type || !data.project_key || !Array.isArray(data.tickets)) {
+    throw new Error('Invalid import file: missing source_type, project_key, or tickets')
+  }
+  if (data.source_type !== 'jira') {
+    throw new Error(`Unsupported source_type: ${data.source_type}`)
+  }
+  return data as unknown as ImportFile
+}
+
+function serializeSession(row: typeof importSessions.$inferSelect, configName?: string | null) {
+  return { ...row, config_name: configName ?? null }
+}
+
+imports.get('/', async (c) => {
+  const rows = await db.select().from(importSessions)
+  const configIds = [...new Set(rows.map(r => r.config_id))]
+  const cfgRows = configIds.length
+    ? await db.select().from(projectConfigs).where(inArray(projectConfigs.id, configIds))
+    : []
+  const cfgMap = Object.fromEntries(cfgRows.map(c => [c.id, c.name]))
+  return c.json(ok(rows.map(r => serializeSession(r, cfgMap[r.config_id]))))
+})
+
+imports.get('/:id', async (c) => {
+  const rows = await db.select().from(importSessions).where(eq(importSessions.id, c.req.param('id')))
+  if (!rows.length) return c.json({ data: null, error: 'Import not found' }, 404)
+  const cfgRows = await db.select().from(projectConfigs).where(eq(projectConfigs.id, rows[0].config_id))
+  return c.json(ok(serializeSession(rows[0], cfgRows[0]?.name)))
+})
+
+imports.get('/:id/statuses', async (c) => {
+  const id = c.req.param('id')
+  const imp = await db.select().from(importSessions).where(eq(importSessions.id, id))
+  if (!imp.length) return c.json({ data: null, error: 'Import not found' }, 404)
+
+  const ticketRows = await db.select({ id: tickets.id }).from(tickets).where(eq(tickets.import_id, id))
+  if (!ticketRows.length) return c.json(ok([]))
+
+  const ticketIds = ticketRows.map(t => t.id)
+  const transRows = await db
+    .select({ to_status: ticketTransitions.to_status })
+    .from(ticketTransitions)
+    .where(inArray(ticketTransitions.ticket_id, ticketIds))
+
+  const statuses = [...new Set(transRows.map(r => r.to_status).filter(Boolean))].sort()
+  return c.json(ok(statuses))
+})
+
+imports.post('/', async (c) => {
+  const body = await c.req.parseBody()
+  const file = body['file']
+  const configId = body['config_id'] as string
+
+  if (!file || typeof file === 'string') {
+    return c.json({ data: null, error: 'No file provided' }, 400)
+  }
+
+  let raw: unknown
+  try {
+    const text = await (file as File).text()
+    raw = JSON.parse(text)
+  } catch {
+    return c.json({ data: null, error: 'Invalid JSON file' }, 400)
+  }
+
+  let data: ImportFile
+  try {
+    data = validateImportFile(raw)
+  } catch (e) {
+    return c.json({ data: null, error: (e as Error).message }, 422)
+  }
+
+  const cfgRows = await db.select().from(projectConfigs).where(eq(projectConfigs.id, configId))
+  if (!cfgRows.length) return c.json({ data: null, error: `Config ${configId} not found` }, 404)
+
+  const importId = crypto.randomUUID()
+  const now = new Date().toISOString()
+  const fileName = (file as File).name || 'upload.json'
+
+  const sessionRow = {
+    id: importId,
+    config_id: configId,
+    source_type: data.source_type,
+    project_key: data.project_key,
+    file_name: fileName,
+    ticket_count: data.tickets.length,
+    imported_at: now,
+  }
+
+  const ticketRows: (typeof tickets.$inferInsert)[] = []
+  const transitionRows: (typeof ticketTransitions.$inferInsert)[] = []
+
+  for (const t of data.tickets) {
+    if (!t.external_id) {
+      return c.json({ data: null, error: 'Ticket missing external_id' }, 422)
+    }
+    const ticketId = crypto.randomUUID()
+    ticketRows.push({
+      id: ticketId,
+      import_id: importId,
+      external_id: t.external_id,
+      title: t.title,
+      ticket_type: t.ticket_type,
+      created_at: new Date(t.created_at).toISOString(),
+      external_link: t.external_link ?? null,
+      extra_metadata: t.metadata ? JSON.stringify(t.metadata) : null,
+    })
+
+    const sorted = [...t.transitions].sort(
+      (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime()
+    )
+    for (const tr of sorted) {
+      transitionRows.push({
+        id: crypto.randomUUID(),
+        ticket_id: ticketId,
+        from_status: tr.from_status ?? null,
+        to_status: tr.to_status,
+        transitioned_at: new Date(tr.transitioned_at).toISOString(),
+      })
+    }
+  }
+
+  await db.insert(importSessions).values(sessionRow)
+  if (ticketRows.length) await db.insert(tickets).values(ticketRows)
+  if (transitionRows.length) await db.insert(ticketTransitions).values(transitionRows)
+
+  return c.json(ok(serializeSession(sessionRow, cfgRows[0].name)), 201)
+})
+
+imports.delete('/:id', async (c) => {
+  const id = c.req.param('id')
+  const rows = await db.select().from(importSessions).where(eq(importSessions.id, id))
+  if (!rows.length) return c.json({ data: null, error: 'Import not found' }, 404)
+
+  // cascade: delete transitions → tickets → import
+  const ticketRows = await db.select({ id: tickets.id }).from(tickets).where(eq(tickets.import_id, id))
+  if (ticketRows.length) {
+    const ticketIds = ticketRows.map(t => t.id)
+    await db.delete(ticketTransitions).where(inArray(ticketTransitions.ticket_id, ticketIds))
+    await db.delete(tickets).where(inArray(tickets.id, ticketIds))
+  }
+  await db.delete(importSessions).where(eq(importSessions.id, id))
+  return new Response(null, { status: 204 })
+})
+
+export default imports
