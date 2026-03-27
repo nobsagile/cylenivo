@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Clock, Timer, TrendingUp, Layers, Upload } from 'lucide-react'
+import { Clock, Timer, TrendingUp, Layers, Upload, Info } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
+import { useImports } from '@/hooks/useImports'
 import { api } from '@/services/api'
 import type { CycleTimesResponse } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { PercentileCard } from '@/components/metrics/PercentileCard'
 import { CycleTimeChart } from '@/components/metrics/CycleTimeChart'
 
@@ -42,13 +44,79 @@ function MetricCard({ title, value, unit, icon: Icon, iconBg, iconColor }: Metri
   )
 }
 
+interface TicketsAnalyzedCardProps {
+  completed: number
+  total: number
+  withoutCycleStart: number
+  incomplete: number
+}
+
+function TicketsAnalyzedCard({ completed, total, withoutCycleStart, incomplete }: TicketsAnalyzedCardProps) {
+  const other = Math.max(0, total - completed - withoutCycleStart - incomplete)
+  return (
+    <Card className="shadow-sm">
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <p className="text-sm text-gray-500 font-medium">Analyzed</p>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64">
+                  <p className="font-semibold text-gray-800 mb-2">{total} tickets imported</p>
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">✓ Valid cycle times</span>
+                      <span className="font-semibold text-gray-900">{completed}</span>
+                    </div>
+                    {withoutCycleStart > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">No cycle start status</span>
+                        <span className="text-gray-500">{withoutCycleStart}</span>
+                      </div>
+                    )}
+                    {incomplete > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Started, never completed</span>
+                        <span className="text-gray-500">{incomplete}</span>
+                      </div>
+                    )}
+                    {other > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Other excluded</span>
+                        <span className="text-gray-500">{other}</span>
+                      </div>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+            <p className="mt-1.5 text-3xl font-bold text-gray-900 tracking-tight tabular-nums">
+              {completed}
+            </p>
+          </div>
+          <div className="p-2.5 rounded-xl shrink-0 bg-amber-50">
+            <Layers className="w-5 h-5 text-amber-600" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
 
 export default function DashboardPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
   const { data, loading } = useMetrics(importId)
+  const { data: imports } = useImports()
   const navigate = useNavigate()
   const [cycleTimesData, setCycleTimesData] = useState<CycleTimesResponse | null>(null)
+
+  const currentImport = imports.find(imp => imp.id === importId)
 
   useEffect(() => {
     if (importId) {
@@ -92,10 +160,10 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{data.project_key}</h2>
-        <p className="text-sm text-gray-400 mt-0.5">{data.ticket_count} tickets analyzed</p>
+        <p className="text-sm text-gray-400 mt-0.5">{data.completed_ticket_count} of {data.ticket_count} tickets analyzed</p>
       </div>
 
-<div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <MetricCard
           title={t('metrics.cycleTime')}
           value={data.cycle_time.median_days}
@@ -120,12 +188,11 @@ export default function DashboardPage() {
           iconBg="bg-emerald-50"
           iconColor="text-emerald-600"
         />
-        <MetricCard
-          title={t('metrics.ticketsAnalyzed')}
-          value={data.ticket_count}
-          icon={Layers}
-          iconBg="bg-amber-50"
-          iconColor="text-amber-600"
+        <TicketsAnalyzedCard
+          completed={data.completed_ticket_count}
+          total={data.ticket_count}
+          withoutCycleStart={currentImport?.health_report?.tickets_without_cycle_start ?? 0}
+          incomplete={currentImport?.health_report?.tickets_incomplete ?? 0}
         />
       </div>
 
