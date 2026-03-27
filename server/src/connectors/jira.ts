@@ -62,6 +62,8 @@ export async function testConnection(creds: JiraCredentials): Promise<{ display_
   return { display_name: data.displayName, email: data.emailAddress }
 }
 
+const JIRA_PAGE_SIZE = 100
+
 export async function fetchIssues(creds: JiraCredentials, options: JiraFetchOptions): Promise<any[]> {
   const { project, limit = 50, issue_types = ['Story', 'Task', 'Bug'], done_only = true, date_from } = options
   const typeList = issue_types.map(t => `"${t}"`).join(', ')
@@ -69,11 +71,20 @@ export async function fetchIssues(creds: JiraCredentials, options: JiraFetchOpti
   const dateFilter = date_from ? ` AND updated >= "${date_from}"` : ''
   const jql = `project = ${project} AND issuetype in (${typeList})${statusFilter}${dateFilter} ORDER BY updated DESC`
 
-  const data = await jiraGet(
-    creds,
-    `/search/jql?jql=${encodeURIComponent(jql)}&maxResults=${limit}&fields=summary,issuetype,created`
-  )
-  return data.issues ?? []
+  const all: any[] = []
+  let startAt = 0
+  while (all.length < limit) {
+    const pageSize = Math.min(JIRA_PAGE_SIZE, limit - all.length)
+    const data = await jiraGet(
+      creds,
+      `/search/jql?jql=${encodeURIComponent(jql)}&startAt=${startAt}&maxResults=${pageSize}&fields=summary,issuetype,created`
+    )
+    const issues: any[] = data.issues ?? []
+    all.push(...issues)
+    if (issues.length < pageSize || all.length >= limit) break
+    startAt += issues.length
+  }
+  return all.slice(0, limit)
 }
 
 export async function fetchChangelog(creds: JiraCredentials, issueKey: string): Promise<any[]> {
