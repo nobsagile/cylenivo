@@ -139,8 +139,8 @@ export interface JiraFetchOptions {
   project: string
   limit: number
   issue_types: string[]
-  done_only: boolean
-  date_from?: string
+  resolved_from?: string
+  resolved_to?: string
 }
 
 export interface CreateConfigRequest {

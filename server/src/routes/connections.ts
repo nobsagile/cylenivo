@@ -95,8 +95,8 @@ connections.post('/:id/fetch', async (c) => {
     project: body.project,
     limit: body.limit ?? 50,
     issue_types: body.issue_types ?? ['Story', 'Task', 'Bug'],
-    done_only: body.done_only ?? true,
-    date_from: body.date_from as string | undefined,
+    resolved_from: body.resolved_from as string | undefined,
+    resolved_to: body.resolved_to as string | undefined,
   }
 
   return streamSSE(c, async (stream) => {

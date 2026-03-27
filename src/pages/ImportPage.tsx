@@ -78,12 +78,12 @@ export default function ImportPage() {
   const [selectedConnId, setSelectedConnId] = useState('')
   const [jiraProject, setJiraProject] = useState('')
   const [jiraLimit, setJiraLimit] = useState(50)
-  const [jiraDoneOnly, setJiraDoneOnly] = useState(true)
   const [jiraIssueTypes, setJiraIssueTypes] = useState(['Story', 'Task', 'Bug'])
   const [fetching, setFetching] = useState(false)
   const [fetchMsg, setFetchMsg] = useState('')
   const [addConnOpen, setAddConnOpen] = useState(false)
-  const [jiraDateFrom, setJiraDateFrom] = useState('')
+  const [resolvedFrom, setResolvedFrom] = useState('')
+  const [resolvedTo, setResolvedTo] = useState('')
 
   // Configure step
   const [configs, setConfigs] = useState<ProjectConfig[]>([])
@@ -146,8 +146,8 @@ export default function ImportPage() {
         project: jiraProject.trim().toUpperCase(),
         limit: jiraLimit,
         issue_types: jiraIssueTypes,
-        done_only: jiraDoneOnly,
-        date_from: jiraDateFrom || undefined,
+        resolved_from: resolvedFrom || undefined,
+        resolved_to: resolvedTo || undefined,
       }
       setFetchMsg(`Fetching tickets from ${options.project}…`)
       const result = await api.connections.fetchStream(selectedConnId, options, (current, total, key) => {
@@ -385,41 +385,41 @@ export default function ImportPage() {
           </div>
 
           {/* Options */}
-          <div className="flex items-center gap-6">
-            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={jiraDoneOnly}
-                onChange={(e) => setJiraDoneOnly(e.target.checked)}
-                className="rounded border-gray-300"
-              />
-              Done tickets only
-            </label>
-            <div className="flex items-center gap-2 text-sm text-gray-700">
-              <span>Max:</span>
-              <Input
-                type="number"
-                value={jiraLimit}
-                onChange={(e) => setJiraLimit(Number(e.target.value))}
-                className="w-20 h-8 text-sm"
-                min={1}
-                max={500}
-              />
-            </div>
+          <div className="flex items-center gap-2 text-sm text-gray-700">
+            <span>Max tickets:</span>
+            <Input
+              type="number"
+              value={jiraLimit}
+              onChange={(e) => setJiraLimit(Number(e.target.value))}
+              className="w-20 h-8 text-sm"
+              min={1}
+              max={500}
+            />
           </div>
 
           {/* Date range */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Import tickets updated after
-              <span className="text-gray-400 font-normal ml-1">— optional, skips tickets with no activity before this date</span>
-            </label>
-            <Input
-              type="date"
-              value={jiraDateFrom}
-              onChange={(e) => setJiraDateFrom(e.target.value)}
-              className="w-48"
-            />
+            <p className="text-sm font-medium text-gray-700 mb-1.5">
+              Completed between
+              <span className="text-gray-400 font-normal ml-1">— optional, only imports tickets resolved in this window</span>
+            </p>
+            <div className="flex items-center gap-2">
+              <Input
+                type="date"
+                value={resolvedFrom}
+                onChange={(e) => setResolvedFrom(e.target.value)}
+                className="w-44"
+                placeholder="From"
+              />
+              <span className="text-gray-400 text-sm">to</span>
+              <Input
+                type="date"
+                value={resolvedTo}
+                onChange={(e) => setResolvedTo(e.target.value)}
+                className="w-44"
+                placeholder="To"
+              />
+            </div>
           </div>
 
           {fetchMsg && (
