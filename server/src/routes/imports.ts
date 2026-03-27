@@ -41,10 +41,15 @@ function validateImportFile(raw: unknown): ImportFile {
   return data as unknown as ImportFile
 }
 
-function serializeSession(row: typeof importSessions.$inferSelect, configName?: string | null) {
+function serializeSession(
+  row: typeof importSessions.$inferSelect,
+  cfg?: { name: string | null; cycle_time_start_status: string; cycle_time_end_status: string } | null,
+) {
   return {
     ...row,
-    config_name: configName ?? null,
+    config_name: cfg?.name ?? null,
+    cycle_time_start_status: cfg?.cycle_time_start_status ?? null,
+    cycle_time_end_status: cfg?.cycle_time_end_status ?? null,
     health_report: row.health_report ? JSON.parse(row.health_report) : null,
   }
 }
@@ -55,7 +60,7 @@ imports.get('/', async (c) => {
   const cfgRows = configIds.length
     ? await db.select().from(projectConfigs).where(inArray(projectConfigs.id, configIds))
     : []
-  const cfgMap = Object.fromEntries(cfgRows.map(c => [c.id, c.name]))
+  const cfgMap = Object.fromEntries(cfgRows.map(c => [c.id, c]))
   return c.json(ok(rows.map(r => serializeSession(r, cfgMap[r.config_id]))))
 })
 
@@ -63,7 +68,7 @@ imports.get('/:id', async (c) => {
   const rows = await db.select().from(importSessions).where(eq(importSessions.id, c.req.param('id')))
   if (!rows.length) return c.json({ data: null, error: 'Import not found' }, 404)
   const cfgRows = await db.select().from(projectConfigs).where(eq(projectConfigs.id, rows[0].config_id))
-  return c.json(ok(serializeSession(rows[0], cfgRows[0]?.name)))
+  return c.json(ok(serializeSession(rows[0], cfgRows[0] ?? null)))
 })
 
 imports.get('/:id/statuses', async (c) => {
@@ -172,7 +177,7 @@ imports.post('/', async (c) => {
   if (ticketRows.length) await db.insert(tickets).values(ticketRows)
   if (transitionRows.length) await db.insert(ticketTransitions).values(transitionRows)
 
-  return c.json(ok(serializeSession(sessionRow, cfgRows[0].name)), 201)
+  return c.json(ok(serializeSession(sessionRow, cfgRows[0])), 201)
 })
 
 imports.delete('/:id', async (c) => {

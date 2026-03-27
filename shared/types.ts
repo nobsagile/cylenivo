@@ -27,6 +27,8 @@ export interface ImportSession {
   ticket_count: number
   imported_at: string
   config_name?: string
+  cycle_time_start_status?: string | null
+  cycle_time_end_status?: string | null
   health_report?: ImportHealthReport | null
 }
 

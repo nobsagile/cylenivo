@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Clock, Timer, TrendingUp, Layers, Upload, AlertTriangle, X } from 'lucide-react'
+import { Clock, Timer, TrendingUp, Layers, Upload } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
-import { useImports } from '@/hooks/useImports'
 import { api } from '@/services/api'
-import type { CycleTimesResponse, ImportHealthReport } from '@/types'
+import type { CycleTimesResponse } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { PercentileCard } from '@/components/metrics/PercentileCard'
@@ -43,51 +42,13 @@ function MetricCard({ title, value, unit, icon: Icon, iconBg, iconColor }: Metri
   )
 }
 
-function HealthReportBanner({ report }: { report: ImportHealthReport }) {
-  const [dismissed, setDismissed] = useState(false)
-  if (dismissed) return null
-
-  const issues: string[] = []
-  if (report.tickets_without_cycle_start > 0)
-    issues.push(`${report.tickets_without_cycle_start} ticket${report.tickets_without_cycle_start > 1 ? 's' : ''} never entered the cycle start status`)
-  if (report.tickets_incomplete > 0)
-    issues.push(`${report.tickets_incomplete} ticket${report.tickets_incomplete > 1 ? 's' : ''} started but never completed`)
-  if (report.unknown_statuses.length > 0)
-    issues.push(`Unknown statuses in data: ${report.unknown_statuses.join(', ')}`)
-  if (report.oldest_transition_date) {
-    const year = new Date(report.oldest_transition_date).getFullYear()
-    const currentYear = new Date().getFullYear()
-    if (currentYear - year > 2)
-      issues.push(`Data includes transitions as far back as ${year}`)
-  }
-
-  if (issues.length === 0) return null
-
-  return (
-    <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 flex gap-3">
-      <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-amber-800 mb-1">Data quality notices</p>
-        <ul className="text-xs text-amber-700 space-y-0.5 list-disc list-inside">
-          {issues.map((issue) => <li key={issue}>{issue}</li>)}
-        </ul>
-      </div>
-      <button onClick={() => setDismissed(true)} className="text-amber-400 hover:text-amber-600 shrink-0">
-        <X className="w-4 h-4" />
-      </button>
-    </div>
-  )
-}
 
 export default function DashboardPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
   const { data, loading } = useMetrics(importId)
-  const { data: imports } = useImports()
   const navigate = useNavigate()
   const [cycleTimesData, setCycleTimesData] = useState<CycleTimesResponse | null>(null)
-
-  const currentImport = imports.find(imp => imp.id === importId)
 
   useEffect(() => {
     if (importId) {
@@ -134,11 +95,7 @@ export default function DashboardPage() {
         <p className="text-sm text-gray-400 mt-0.5">{data.ticket_count} tickets analyzed</p>
       </div>
 
-      {currentImport?.health_report && (
-        <HealthReportBanner report={currentImport.health_report} />
-      )}
-
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+<div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <MetricCard
           title={t('metrics.cycleTime')}
           value={data.cycle_time.median_days}
