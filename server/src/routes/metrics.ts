@@ -134,7 +134,9 @@ metrics.get('/:importId/cycle-times', async (c) => {
   for (const ticket of allTickets) {
     const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, config.cycle_time_mode)
     if (ct === null) continue
-    const endTs = firstTransitionTo(ticket.transitions, config.cycle_time_end_status)
+    const endTs = config.cycle_time_mode === 'first_first'
+      ? firstTransitionTo(ticket.transitions, config.cycle_time_end_status)
+      : lastTransitionTo(ticket.transitions, config.cycle_time_end_status)
     result.push({
       external_id: ticket.external_id,
       title: ticket.title,
