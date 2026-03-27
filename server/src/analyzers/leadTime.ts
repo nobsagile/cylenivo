@@ -1,12 +1,17 @@
-import { firstTransitionTo, type Transition } from './utils.js'
+import { firstTransitionTo, lastTransitionTo, type Transition } from './utils.js'
+import type { CycleTimeMode } from './cycleTime.js'
 
 export function calculateLeadTime(
   ticketCreatedAt: Date,
   transitions: Transition[],
   endStatus: string,
   leadTimeStartStatus?: string | null,
+  mode: CycleTimeMode = 'first_last',
 ): number | null {
-  const endTs = firstTransitionTo(transitions, endStatus)
+  const endTs = mode === 'first_first'
+    ? firstTransitionTo(transitions, endStatus)
+    : lastTransitionTo(transitions, endStatus)
+
   if (endTs === null) return null
 
   let startTs: Date

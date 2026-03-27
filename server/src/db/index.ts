@@ -19,6 +19,7 @@ const CREATE_TABLES_SQL = `
     status_order TEXT NOT NULL,
     cycle_time_start_status TEXT NOT NULL,
     cycle_time_end_status TEXT NOT NULL,
+    cycle_time_mode TEXT NOT NULL DEFAULT 'first_last',
     lead_time_start_status TEXT,
     created_at TEXT NOT NULL
   );
@@ -64,5 +65,11 @@ const CREATE_TABLES_SQL = `
 export async function migrate() {
   for (const stmt of CREATE_TABLES_SQL.split(';').map(s => s.trim()).filter(Boolean)) {
     sqlite.exec(stmt)
+  }
+  // Add columns introduced after initial schema (safe to re-run)
+  try {
+    sqlite.exec(`ALTER TABLE project_configs ADD COLUMN cycle_time_mode TEXT NOT NULL DEFAULT 'first_last'`)
+  } catch {
+    // column already exists
   }
 }

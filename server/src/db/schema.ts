@@ -8,6 +8,7 @@ export const projectConfigs = sqliteTable('project_configs', {
   status_order: text('status_order').notNull(), // JSON array
   cycle_time_start_status: text('cycle_time_start_status').notNull(),
   cycle_time_end_status: text('cycle_time_end_status').notNull(),
+  cycle_time_mode: text('cycle_time_mode').notNull().default('first_last'),
   lead_time_start_status: text('lead_time_start_status'),
   created_at: text('created_at').notNull(),
 })

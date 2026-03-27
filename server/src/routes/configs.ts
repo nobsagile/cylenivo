@@ -40,6 +40,7 @@ configs.post('/', async (c) => {
     status_order: JSON.stringify(body.status_order),
     cycle_time_start_status: body.cycle_time_start_status,
     cycle_time_end_status: body.cycle_time_end_status,
+    cycle_time_mode: body.cycle_time_mode ?? 'first_last',
     lead_time_start_status: body.lead_time_start_status ?? null,
     created_at: now,
   }
@@ -60,6 +61,7 @@ configs.put('/:id', async (c) => {
   if (body.status_order !== undefined) updates.status_order = JSON.stringify(body.status_order)
   if (body.cycle_time_start_status !== undefined) updates.cycle_time_start_status = body.cycle_time_start_status
   if (body.cycle_time_end_status !== undefined) updates.cycle_time_end_status = body.cycle_time_end_status
+  if (body.cycle_time_mode !== undefined) updates.cycle_time_mode = body.cycle_time_mode
   if (body.lead_time_start_status !== undefined) updates.lead_time_start_status = body.lead_time_start_status
 
   await db.update(projectConfigs).set(updates).where(eq(projectConfigs.id, id))

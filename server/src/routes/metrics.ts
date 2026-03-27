@@ -4,7 +4,7 @@ import { db } from '../db/index.js'
 import { projectConfigs, importSessions, tickets, ticketTransitions } from '../db/schema.js'
 import { ok } from '../lib/response.js'
 import { mean, median } from '../lib/stats.js'
-import { calculateCycleTime } from '../analyzers/cycleTime.js'
+import { calculateCycleTime, type CycleTimeMode } from '../analyzers/cycleTime.js'
 import { calculateLeadTime } from '../analyzers/leadTime.js'
 import { calculatePercentiles, calculateThroughputPerWeek } from '../analyzers/percentiles.js'
 import { calculateTimeInStatus } from '../analyzers/timeInStatus.js'
@@ -18,7 +18,11 @@ async function getImportWithConfig(importId: string) {
   const imp = impRows[0]
   const cfgRows = await db.select().from(projectConfigs).where(eq(projectConfigs.id, imp.config_id))
   if (!cfgRows.length) return null
-  const config = { ...cfgRows[0], status_order: JSON.parse(cfgRows[0].status_order) as string[] }
+  const config = {
+    ...cfgRows[0],
+    status_order: JSON.parse(cfgRows[0].status_order) as string[],
+    cycle_time_mode: (cfgRows[0].cycle_time_mode ?? 'first_last') as CycleTimeMode,
+  }
   return { imp, config }
 }
 
@@ -53,7 +57,7 @@ metrics.get('/:importId/summary', async (c) => {
   const completedAtDates: Date[] = []
 
   for (const ticket of allTickets) {
-    const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status)
+    const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, config.cycle_time_mode)
     if (ct !== null) {
       cycleTimes.push(ct)
       const endTs = firstTransitionTo(ticket.transitions, config.cycle_time_end_status)
@@ -64,6 +68,7 @@ metrics.get('/:importId/summary', async (c) => {
       ticket.transitions,
       config.cycle_time_end_status,
       config.lead_time_start_status,
+      config.cycle_time_mode,
     )
     if (lt !== null) leadTimes.push(lt)
   }
@@ -124,7 +129,7 @@ metrics.get('/:importId/cycle-times', async (c) => {
 
   const result = []
   for (const ticket of allTickets) {
-    const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status)
+    const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, config.cycle_time_mode)
     if (ct === null) continue
     const endTs = firstTransitionTo(ticket.transitions, config.cycle_time_end_status)
     result.push({
@@ -151,6 +156,7 @@ metrics.get('/:importId/lead-times', async (c) => {
       ticket.transitions,
       config.cycle_time_end_status,
       config.lead_time_start_status,
+      config.cycle_time_mode,
     )
     if (lt !== null) values.push(Math.round(lt * 100) / 100)
   }

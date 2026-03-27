@@ -13,3 +13,13 @@ export function firstTransitionTo(transitions: Transition[], status: string): Da
   }
   return null
 }
+
+export function lastTransitionTo(transitions: Transition[], status: string): Date | null {
+  const sorted = [...transitions].sort(
+    (a, b) => new Date(b.transitioned_at).getTime() - new Date(a.transitioned_at).getTime()
+  )
+  for (const t of sorted) {
+    if (t.to_status === status) return new Date(t.transitioned_at)
+  }
+  return null
+}

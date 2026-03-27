@@ -86,6 +86,7 @@ export default function ConfigFormPage() {
   const [newStatus, setNewStatus] = useState('')
   const [cycleStart, setCycleStart] = useState('')
   const [cycleEnd, setCycleEnd] = useState('')
+  const [cycleMode, setCycleMode] = useState<'first_last' | 'first_first' | 'last_last'>('first_last')
   const [leadStart, setLeadStart] = useState('')
   const [saving, setSaving] = useState(false)
   const [imports, setImports] = useState<ImportSession[]>([])
@@ -103,6 +104,7 @@ export default function ConfigFormPage() {
         setStatusOrder(c.status_order)
         setCycleStart(c.cycle_time_start_status)
         setCycleEnd(c.cycle_time_end_status)
+        setCycleMode(c.cycle_time_mode ?? 'first_last')
         setLeadStart(c.lead_time_start_status ?? '')
       })
     }
@@ -165,6 +167,7 @@ export default function ConfigFormPage() {
       status_order: statusOrder,
       cycle_time_start_status: cycleStart,
       cycle_time_end_status: cycleEnd,
+      cycle_time_mode: cycleMode,
       lead_time_start_status: leadStart || undefined,
     }
     try {
@@ -320,6 +323,18 @@ export default function ConfigFormPage() {
                 {statusOrder.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">Measurement Mode</label>
+            <select
+              value={cycleMode}
+              onChange={(e) => setCycleMode(e.target.value as typeof cycleMode)}
+              className={selectClass}
+            >
+              <option value="first_last">First in / Last out — first entry into start, last entry into end (recommended)</option>
+              <option value="first_first">First in / First out — first entry into start, first entry into end</option>
+              <option value="last_last">Last in / Last out — last entry into start, last entry into end</option>
+            </select>
           </div>
         </div>
 
