@@ -80,7 +80,7 @@ metrics.get('/:importId/summary', async (c) => {
 
   const buildStats = (times: number[], percentiles: ReturnType<typeof calculatePercentiles>) => ({
     mean_days: times.length ? Math.round(mean(times) * 100) / 100 : null,
-    median_days: times.length ? Math.round(median(times) * 100) / 100 : null,
+    median_days: times.length ? (() => { const s = [...times].sort((a, b) => a - b); return s[Math.floor(s.length * 50 / 100)] })() : null,
     p50: percentiles.p50,
     p70: percentiles.p70,
     p85: percentiles.p85,
