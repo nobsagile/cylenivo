@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { firstTransitionTo, type Transition } from '../src/analyzers/utils.js'
+import { firstTransitionTo, lastTransitionTo, type Transition } from '../src/analyzers/utils.js'
 import { calculateCycleTime } from '../src/analyzers/cycleTime.js'
 import { calculateLeadTime } from '../src/analyzers/leadTime.js'
 import { calculatePercentiles, calculateThroughputPerWeek } from '../src/analyzers/percentiles.js'
@@ -119,6 +119,90 @@ describe('calculateThroughputPerWeek', () => {
 
   it('returns 0 for empty input', () => {
     expect(calculateThroughputPerWeek([])).toBe(0)
+  })
+})
+
+// Ticket with rework: enters Preparation twice, Customer Feedback twice
+// Day 0: → Preparation (start)
+// Day 10: → Review
+// Day 20: → Preparation (back to start, rework)
+// Day 30: → Customer Feedback (end, first time)
+// Day 35: → Development (rejected)
+// Day 45: → Customer Feedback (end, last time — really done)
+const reworkTransitions: Transition[] = [
+  t('Preparation',        '2024-01-01T08:00:00Z'),
+  t('Review',             '2024-01-11T08:00:00Z'),
+  t('Preparation',        '2024-01-21T08:00:00Z'),
+  t('Customer Feedback',  '2024-01-31T08:00:00Z'),
+  t('Development',        '2024-02-05T08:00:00Z'),
+  t('Customer Feedback',  '2024-02-15T08:00:00Z'),
+]
+
+describe('lastTransitionTo', () => {
+  it('returns last matching transition', () => {
+    const result = lastTransitionTo(reworkTransitions, 'Customer Feedback')
+    expect(result?.toISOString()).toBe(new Date('2024-02-15T08:00:00Z').toISOString())
+  })
+
+  it('returns null for unknown status', () => {
+    expect(lastTransitionTo(reworkTransitions, 'Unknown')).toBeNull()
+  })
+})
+
+describe('calculateCycleTime — measurement modes', () => {
+  // first_last: first Preparation (Jan 1) → last Customer Feedback (Feb 15) = 45 days
+  it('first_last: from first start to last end (default)', () => {
+    const result = calculateCycleTime(reworkTransitions, 'Preparation', 'Customer Feedback', 'first_last')
+    expect(result).toBeCloseTo(45, 0)
+  })
+
+  // first_first: first Preparation (Jan 1) → first Customer Feedback (Jan 31) = 30 days
+  it('first_first: from first start to first end', () => {
+    const result = calculateCycleTime(reworkTransitions, 'Preparation', 'Customer Feedback', 'first_first')
+    expect(result).toBeCloseTo(30, 0)
+  })
+
+  // last_last: last Preparation (Jan 21) → last Customer Feedback (Feb 15) = 25 days
+  it('last_last: from last start to last end', () => {
+    const result = calculateCycleTime(reworkTransitions, 'Preparation', 'Customer Feedback', 'last_last')
+    expect(result).toBeCloseTo(25, 0)
+  })
+
+  it('returns null when end is before start (last_last)', () => {
+    // last Preparation (Jan 21) is after last Customer Feedback if we had only one early CF
+    const transitions: Transition[] = [
+      t('Customer Feedback', '2024-01-10T08:00:00Z'),
+      t('Preparation',       '2024-01-20T08:00:00Z'),
+    ]
+    expect(calculateCycleTime(transitions, 'Preparation', 'Customer Feedback', 'last_last')).toBeNull()
+  })
+
+  it('default mode is first_last', () => {
+    const withDefault = calculateCycleTime(reworkTransitions, 'Preparation', 'Customer Feedback')
+    const withExplicit = calculateCycleTime(reworkTransitions, 'Preparation', 'Customer Feedback', 'first_last')
+    expect(withDefault).toBe(withExplicit)
+  })
+})
+
+describe('calculateLeadTime — measurement modes', () => {
+  const createdAt = new Date('2023-12-22T08:00:00Z') // 10 days before first Preparation
+
+  // first_last: created (Dec 22) → last Customer Feedback (Feb 15) = 55 days
+  it('first_last: created_at to last end', () => {
+    const result = calculateLeadTime(createdAt, reworkTransitions, 'Customer Feedback', null, 'first_last')
+    expect(result).toBeCloseTo(55, 0)
+  })
+
+  // first_first: created (Dec 22) → first Customer Feedback (Jan 31) = 40 days
+  it('first_first: created_at to first end', () => {
+    const result = calculateLeadTime(createdAt, reworkTransitions, 'Customer Feedback', null, 'first_first')
+    expect(result).toBeCloseTo(40, 0)
+  })
+
+  // with lead_time_start_status: first Preparation (Jan 1) → last Customer Feedback (Feb 15) = 45 days
+  it('first_last with lead_time_start_status: first start status to last end', () => {
+    const result = calculateLeadTime(createdAt, reworkTransitions, 'Customer Feedback', 'Preparation', 'first_last')
+    expect(result).toBeCloseTo(45, 0)
   })
 })
 
