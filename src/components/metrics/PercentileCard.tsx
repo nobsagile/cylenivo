@@ -48,7 +48,7 @@ export function PercentileCard({ data }: Props) {
                     </span>
                   </div>
                   <span className="text-sm font-semibold text-gray-800 tabular-nums">
-                    {val != null ? `${val} ${t('metrics.days')}` : '—'}
+                    {val != null ? `${val.toFixed(1)} ${t('metrics.days')}` : '—'}
                   </span>
                 </div>
                 <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">

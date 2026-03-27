@@ -38,10 +38,10 @@ function renderWith(data: PercentileStats) {
 describe('PercentileCard', () => {
   it('renders P50/P70/P85/P95 values', () => {
     renderWith(happyData)
-    expect(screen.getByText(/7 days/)).toBeTruthy()
-    expect(screen.getByText(/9 days/)).toBeTruthy()
-    expect(screen.getByText(/12 days/)).toBeTruthy()
-    expect(screen.getByText(/18 days/)).toBeTruthy()
+    expect(screen.getByText(/7\.0 days/)).toBeTruthy()
+    expect(screen.getByText(/9\.0 days/)).toBeTruthy()
+    expect(screen.getByText(/12\.0 days/)).toBeTruthy()
+    expect(screen.getByText(/18\.0 days/)).toBeTruthy()
   })
 
   it('shows warning message when warning prop is set', () => {

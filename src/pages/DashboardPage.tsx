@@ -166,7 +166,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <MetricCard
           title={t('metrics.cycleTime')}
-          value={data.cycle_time.median_days}
+          value={data.cycle_time.median_days != null ? +data.cycle_time.median_days.toFixed(1) : null}
           unit={t('metrics.days')}
           icon={Clock}
           iconBg="bg-blue-50"
@@ -174,7 +174,7 @@ export default function DashboardPage() {
         />
         <MetricCard
           title={t('metrics.leadTime')}
-          value={data.lead_time.median_days}
+          value={data.lead_time.median_days != null ? +data.lead_time.median_days.toFixed(1) : null}
           unit={t('metrics.days')}
           icon={Timer}
           iconBg="bg-violet-50"
@@ -182,7 +182,7 @@ export default function DashboardPage() {
         />
         <MetricCard
           title={t('metrics.throughput')}
-          value={data.throughput_per_week}
+          value={data.throughput_per_week != null ? +data.throughput_per_week.toFixed(1) : null}
           unit={t('metrics.perWeek')}
           icon={TrendingUp}
           iconBg="bg-emerald-50"
