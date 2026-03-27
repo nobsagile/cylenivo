@@ -11,6 +11,7 @@ import {
 } from 'recharts'
 import type { TooltipProps } from 'recharts'
 import type { CycleTimeTicket } from '@/types'
+import { ChartTooltip } from './ChartTooltip'
 
 interface Props {
   tickets: CycleTimeTicket[]
@@ -21,11 +22,11 @@ function CycleTooltip({ active, payload }: TooltipProps<number, string>) {
   if (!active || !payload?.length) return null
   const d = payload[0].payload as { x: number; y: number; name: string }
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-md px-3 py-2 text-xs">
+    <ChartTooltip>
       <p className="font-semibold text-gray-800 mb-1">{d.name}</p>
       <p className="text-gray-500">{new Date(d.x).toLocaleDateString()}</p>
       <p className="text-blue-700 font-medium">{d.y.toFixed(1)} days</p>
-    </div>
+    </ChartTooltip>
   )
 }
 
@@ -40,10 +41,10 @@ export function CycleTimeChart({ tickets, p85 }: Props) {
     )
   }
 
-  const data = tickets.map((t) => ({
-    x: new Date(t.completed_at).getTime(),
-    y: t.cycle_time_days,
-    name: t.external_id,
+  const data = tickets.map((ticket) => ({
+    x: new Date(ticket.completed_at).getTime(),
+    y: ticket.cycle_time_days,
+    name: ticket.external_id,
   }))
 
   return (

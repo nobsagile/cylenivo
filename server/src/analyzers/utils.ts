@@ -25,27 +25,37 @@ export function lastTransitionTo(transitions: Transition[], status: string): Dat
 }
 
 /**
- * Trims transitions to the cycle window: from the first entry into cycleStart
- * to the last entry into cycleEnd (or the last known transition for incomplete tickets).
+ * Trims transitions to the cycle window, respecting the measurement mode.
+ * - first_last / first_first: window starts at first entry into cycleStart
+ * - last_last: window starts at last entry into cycleStart
+ * End boundary: last entry into cycleEnd (or first for first_first),
+ * falling back to last known transition for incomplete tickets.
  * Returns [] if the ticket never entered cycleStart.
  */
 export function trimTransitionsToCycleWindow(
   transitions: Transition[],
   cycleStart: string,
   cycleEnd: string,
+  mode: 'first_last' | 'first_first' | 'last_last' = 'first_last',
 ): Transition[] {
   const sorted = [...transitions].sort(
     (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime()
   )
-  const startIdx = sorted.findIndex(t => t.to_status === cycleStart)
-  if (startIdx === -1) return []
+  const startEntries = sorted.filter(t => t.to_status === cycleStart)
+  if (!startEntries.length) return []
 
-  const windowStart = new Date(sorted[startIdx].transitioned_at).getTime()
+  const startEntry = mode === 'last_last'
+    ? startEntries[startEntries.length - 1]
+    : startEntries[0]
+  const windowStart = new Date(startEntry.transitioned_at).getTime()
 
-  const endTransitions = sorted.filter(t => t.to_status === cycleEnd)
-  const windowEnd = endTransitions.length > 0
-    ? new Date(endTransitions[endTransitions.length - 1].transitioned_at).getTime()
-    : new Date(sorted[sorted.length - 1].transitioned_at).getTime()
+  const endEntries = sorted.filter(t => t.to_status === cycleEnd)
+  const endEntry = mode === 'first_first' && endEntries.length
+    ? endEntries[0]
+    : endEntries.length
+      ? endEntries[endEntries.length - 1]
+      : sorted[sorted.length - 1]
+  const windowEnd = new Date(endEntry.transitioned_at).getTime()
 
   return sorted.filter(t => {
     const ts = new Date(t.transitioned_at).getTime()

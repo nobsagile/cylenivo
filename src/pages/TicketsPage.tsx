@@ -8,7 +8,7 @@ import type { Ticket } from '@/types'
 import { TicketTable } from '@/components/tickets/TicketTable'
 import { Button } from '@/components/ui/button'
 
-const TYPE_FILTERS = ['', 'story', 'task', 'bug', 'sub-task']
+const TYPE_FILTERS = ['', 'story', 'task', 'bug']
 
 export default function TicketsPage() {
   const { t } = useTranslation()
@@ -19,18 +19,19 @@ export default function TicketsPage() {
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
   const [typeFilter, setTypeFilter] = useState('')
+  const [analyzedOnly, setAnalyzedOnly] = useState(true)
   const limit = 50
 
   useEffect(() => {
     if (!importId) return
     api.tickets
-      .list(importId, { type: typeFilter || undefined, page, limit })
+      .list(importId, { type: typeFilter || undefined, page, limit, completed_only: analyzedOnly || undefined })
       .then((res) => {
         setTickets(res.tickets)
         setTotal(res.total)
       })
       .catch(console.error)
-  }, [importId, page, typeFilter])
+  }, [importId, page, typeFilter, analyzedOnly])
 
   const totalPages = Math.ceil(total / limit)
 
@@ -39,23 +40,35 @@ export default function TicketsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('nav.tickets')}</h2>
-          <p className="text-sm text-gray-400 mt-0.5">{total} tickets total</p>
+          <p className="text-sm text-gray-400 mt-0.5">{total} tickets</p>
         </div>
 
-        <div className="flex items-center gap-1.5 bg-gray-100 rounded-lg p-1">
-          {TYPE_FILTERS.map((type) => (
-            <button
-              key={type}
-              onClick={() => { setTypeFilter(type); setPage(1) }}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                typeFilter === type
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              {type || 'All'}
-            </button>
-          ))}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => { setAnalyzedOnly(!analyzedOnly); setPage(1) }}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+              analyzedOnly
+                ? 'bg-blue-50 text-blue-700 border-blue-200'
+                : 'bg-white text-gray-500 border-gray-200 hover:text-gray-700'
+            }`}
+          >
+            Analyzed only
+          </button>
+          <div className="flex items-center gap-1.5 bg-gray-100 rounded-lg p-1">
+            {TYPE_FILTERS.map((type) => (
+              <button
+                key={type}
+                onClick={() => { setTypeFilter(type); setPage(1) }}
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  typeFilter === type
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                {type || 'All'}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

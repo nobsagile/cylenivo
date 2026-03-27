@@ -174,13 +174,13 @@ describe('metrics / first_last mode (default)', () => {
     expect(tick3.status_durations['In Dev']).toBeCloseTo(12, 0)
   })
 
-  it('incomplete ticket TICK-4 appears in time-in-status but not in cycle times', async () => {
+  it('incomplete ticket TICK-4 excluded from both time-in-status and cycle times', async () => {
     const configId = await createConfig({ cycle_time_mode: 'first_last' })
     const importId = await doImport(configId)
     const [ct, tis] = await Promise.all([getCycleTimes(importId), getTimeInStatus(importId)])
 
     expect(ct.find((t: any) => t.external_id === 'TICK-4')).toBeUndefined()
-    expect(tis.find((t: any) => t.external_id === 'TICK-4')).toBeDefined()
+    expect(tis.find((t: any) => t.external_id === 'TICK-4')).toBeUndefined()
   })
 })
 
@@ -357,13 +357,11 @@ describe('metrics / chaos data — old workflows, unknown statuses, rework', () 
     expect(ct.find((t: any) => t.external_id === 'CHAOS-1')).toBeUndefined()
   })
 
-  it('old-workflow ticket (CHAOS-1) contributes zero to time-in-status', async () => {
+  it('old-workflow ticket (CHAOS-1) excluded from time-in-status (no valid cycle time)', async () => {
     const configId = await createConfig(CHAOS_CONFIG)
     const importId = await doImport(configId, CHAOS)
     const tis = await getTimeInStatus(importId)
-    const c1 = tis.find((t: any) => t.external_id === 'CHAOS-1')
-    expect(c1).toBeDefined()
-    expect(Object.values(c1.status_durations as Record<string, number>).every(d => d === 0)).toBe(true)
+    expect(tis.find((t: any) => t.external_id === 'CHAOS-1')).toBeUndefined()
   })
 
   it('normal ticket (CHAOS-2) has correct cycle time ignoring pre-cycle Backlog', async () => {
@@ -387,12 +385,12 @@ describe('metrics / chaos data — old workflows, unknown statuses, rework', () 
     expect(c4tis.status_durations['Deployed']).toBeUndefined()
   })
 
-  it('incomplete ticket (CHAOS-5) excluded from cycle times but present in time-in-status', async () => {
+  it('incomplete ticket (CHAOS-5) excluded from both cycle times and time-in-status', async () => {
     const configId = await createConfig(CHAOS_CONFIG)
     const importId = await doImport(configId, CHAOS)
     const [ct, tis] = await Promise.all([getCycleTimes(importId), getTimeInStatus(importId)])
     expect(ct.find((t: any) => t.external_id === 'CHAOS-5')).toBeUndefined()
-    expect(tis.find((t: any) => t.external_id === 'CHAOS-5')).toBeDefined()
+    expect(tis.find((t: any) => t.external_id === 'CHAOS-5')).toBeUndefined()
   })
 
   it('summary only includes 3 completed tickets (CHAOS-1 old-workflow, CHAOS-5 incomplete excluded)', async () => {

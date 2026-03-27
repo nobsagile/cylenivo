@@ -198,6 +198,29 @@ describe('trimTransitionsToCycleWindow', () => {
     expect(result.map(tr => tr.to_status)).toEqual(['Dev', 'Done', 'Dev', 'Done'])
     expect(result).not.toEqual(expect.arrayContaining([expect.objectContaining({ to_status: 'Backlog' })]))
   })
+
+  it('last_last mode: starts at last cycleStart entry', () => {
+    const transitions = [
+      t('Backlog', '2024-01-01T08:00:00Z'),
+      t('Dev',     '2024-01-03T08:00:00Z'),  // first Dev — excluded in last_last
+      t('Backlog', '2024-01-05T08:00:00Z'),
+      t('Dev',     '2024-01-08T08:00:00Z'),  // last Dev — window starts here
+      t('Done',    '2024-01-15T08:00:00Z'),
+    ]
+    const result = trimTransitionsToCycleWindow(transitions, 'Dev', 'Done', 'last_last')
+    expect(result.map(tr => tr.to_status)).toEqual(['Dev', 'Done'])
+  })
+
+  it('first_first mode: ends at first cycleEnd entry', () => {
+    const transitions = [
+      t('Dev',  '2024-01-03T08:00:00Z'),
+      t('Done', '2024-01-08T08:00:00Z'),  // first Done — window ends here
+      t('Dev',  '2024-01-10T08:00:00Z'),
+      t('Done', '2024-01-15T08:00:00Z'),
+    ]
+    const result = trimTransitionsToCycleWindow(transitions, 'Dev', 'Done', 'first_first')
+    expect(result.map(tr => tr.to_status)).toEqual(['Dev', 'Done'])
+  })
 })
 
 describe('lastTransitionTo', () => {
@@ -332,6 +355,41 @@ describe('calculateTimeInStatus', () => {
     const result = calculateTimeInStatus(transitions, ['Dev', 'Done'])
     expect(result['Dev']).toBeCloseTo(8, 0)   // 5d (Jan1→Jan6) + 3d (Jan8→Jan11)
     expect(result['Done']).toBeCloseTo(2, 0)  // Done → Dev: 2 days (Jan6→Jan8)
+  })
+})
+
+describe('calculateTimeInStatus — real ticket verification (TN-16322, last_last)', () => {
+  // TN-16322: clean single-pass ticket, verified against Jira history
+  // last_last window: last Preparation (Dec 18 11:03:51) → last CF (Jan 8 10:31:01)
+  // Expected: Preparation 0.07d, RFD 10.93d, Development 9.97d, all others 0
+  const statuses = ['Backlog', 'Up Next', 'Preparation', 'Ready For Development', 'Development', 'Customer Feedback', 'Ready for Release', 'Done']
+  const tn16322 = [
+    t('Up Next',                '2025-12-15T12:20:52Z'),
+    t('Preparation',            '2025-12-18T11:03:51Z'),
+    t('Ready For Development',  '2025-12-18T12:43:15Z'),
+    t('Development',            '2025-12-29T11:07:13Z'),
+    t('Customer Feedback',      '2026-01-08T10:31:01Z'),
+    t('Ready for Release',      '2026-01-12T15:13:42Z'),
+    t('Done',                   '2026-01-20T17:01:11Z'),
+  ]
+
+  it('trimmed window contains exactly Preparation → CF', () => {
+    const windowed = trimTransitionsToCycleWindow(tn16322, 'Preparation', 'Customer Feedback', 'last_last')
+    expect(windowed.map(tr => tr.to_status)).toEqual(['Preparation', 'Ready For Development', 'Development', 'Customer Feedback'])
+  })
+
+  it('time in status matches manual calculation', () => {
+    const windowed = trimTransitionsToCycleWindow(tn16322, 'Preparation', 'Customer Feedback', 'last_last')
+    const result = calculateTimeInStatus(windowed, statuses)
+    expect(result['Backlog']).toBe(0)
+    expect(result['Up Next']).toBe(0)
+    expect(result['Preparation']).toBeCloseTo(0.07, 1)
+    expect(result['Ready For Development']).toBeCloseTo(10.93, 1)
+    expect(result['Development']).toBeCloseTo(9.97, 1)
+    expect(result['Customer Feedback']).toBe(0)  // terminal in window
+    // sum ≈ cycle time (20.98d)
+    const sum = result['Preparation'] + result['Ready For Development'] + result['Development']
+    expect(sum).toBeCloseTo(20.97, 1)
   })
 })
 

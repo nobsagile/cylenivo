@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { eq, inArray, sql } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { projectConfigs, importSessions, tickets, ticketTransitions } from '../db/schema.js'
 import { ok } from '../lib/response.js'
@@ -52,6 +52,7 @@ ticketsRouter.get('/', async (c) => {
   const page = Math.max(1, Number(c.req.query('page') ?? 1))
   const limit = Math.min(200, Math.max(1, Number(c.req.query('limit') ?? 50)))
   const type = c.req.query('type')
+  const completedOnly = c.req.query('completed_only') === '1'
   const offset = (page - 1) * limit
 
   const impRows = await db.select().from(importSessions).where(eq(importSessions.id, importId))
@@ -60,30 +61,20 @@ ticketsRouter.get('/', async (c) => {
   const cfgRows = await db.select().from(projectConfigs).where(eq(projectConfigs.id, impRows[0].config_id))
   const config = { ...cfgRows[0], status_order: JSON.parse(cfgRows[0].status_order) as string[] }
 
-  let query = db.select().from(tickets).where(eq(tickets.import_id, importId))
-  // For type filter we need to rebuild — use raw drizzle condition
-  let ticketRows: (typeof tickets.$inferSelect)[]
-  let total: number
-
+  // For completed_only we must enrich-then-filter; fetch all matching rows first
+  let allRows: (typeof tickets.$inferSelect)[]
   if (type) {
-    const { and } = await import('drizzle-orm')
-    ticketRows = await db.select().from(tickets)
+    allRows = await db.select().from(tickets)
       .where(and(eq(tickets.import_id, importId), eq(tickets.ticket_type, type)))
-      .limit(limit).offset(offset)
-    const countResult = await db.select({ count: sql<number>`count(*)` }).from(tickets)
-      .where(and(eq(tickets.import_id, importId), eq(tickets.ticket_type, type)))
-    total = Number(countResult[0].count)
   } else {
-    ticketRows = await db.select().from(tickets).where(eq(tickets.import_id, importId)).limit(limit).offset(offset)
-    const countResult = await db.select({ count: sql<number>`count(*)` }).from(tickets).where(eq(tickets.import_id, importId))
-    total = Number(countResult[0].count)
+    allRows = await db.select().from(tickets).where(eq(tickets.import_id, importId))
   }
 
-  if (!ticketRows.length) {
-    return c.json(ok({ tickets: [], total, page, limit }))
+  if (!allRows.length) {
+    return c.json(ok({ tickets: [], total: 0, page, limit }))
   }
 
-  const ticketIds = ticketRows.map(t => t.id)
+  const ticketIds = allRows.map(t => t.id)
   const transRows = await db.select().from(ticketTransitions).where(inArray(ticketTransitions.ticket_id, ticketIds))
 
   const transMap: Record<string, Transition[]> = {}
@@ -96,8 +87,12 @@ ticketsRouter.get('/', async (c) => {
     })
   }
 
-  const enriched = ticketRows.map(t => enrichTicket(t, transMap[t.id] ?? [], config))
-  return c.json(ok({ tickets: enriched, total, page, limit }))
+  let enriched = allRows.map(t => enrichTicket(t, transMap[t.id] ?? [], config))
+  if (completedOnly) enriched = enriched.filter(t => t.cycle_time_days !== null)
+
+  const total = enriched.length
+  const paginated = enriched.slice(offset, offset + limit)
+  return c.json(ok({ tickets: paginated, total, page, limit }))
 })
 
 ticketsRouter.get('/:id', async (c) => {

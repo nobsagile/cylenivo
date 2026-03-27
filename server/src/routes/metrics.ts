@@ -89,14 +89,22 @@ metrics.get('/:importId/summary', async (c) => {
     warning: percentiles.warning,
   })
 
+  const startIdx = config.status_order.indexOf(config.cycle_time_start_status)
+  const endIdx = config.status_order.indexOf(config.cycle_time_end_status)
+  const cycleStatuses = startIdx !== -1 && endIdx !== -1
+    ? config.status_order.slice(startIdx, endIdx + 1)
+    : config.status_order
+
   const timeInStatusByStatus: Record<string, number[]> = {}
-  for (const s of config.status_order) timeInStatusByStatus[s] = []
+  for (const s of cycleStatuses) timeInStatusByStatus[s] = []
 
   for (const ticket of allTickets) {
-    const windowed = trimTransitionsToCycleWindow(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status)
-    const durations = calculateTimeInStatus(windowed, config.status_order)
+    const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, config.cycle_time_mode)
+    if (ct === null) continue
+    const windowed = trimTransitionsToCycleWindow(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, config.cycle_time_mode)
+    const durations = calculateTimeInStatus(windowed, cycleStatuses)
     for (const [status, days] of Object.entries(durations)) {
-      timeInStatusByStatus[status].push(days)
+      if (days > 0) timeInStatusByStatus[status].push(days)
     }
   }
 
@@ -174,18 +182,26 @@ metrics.get('/:importId/time-in-status', async (c) => {
   const { imp, config } = ctx
   const allTickets = await getTicketsWithTransitions(imp.id)
 
-  const result = allTickets.map(ticket => ({
-    external_id: ticket.external_id,
-    title: ticket.title,
-    status_durations: Object.fromEntries(
-      Object.entries(calculateTimeInStatus(
-        trimTransitionsToCycleWindow(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status),
-        config.status_order,
-      )).map(([s, d]) => [s, Math.round(d * 100) / 100])
-    ),
-  }))
+  const startIdx = config.status_order.indexOf(config.cycle_time_start_status)
+  const endIdx = config.status_order.indexOf(config.cycle_time_end_status)
+  const cycleStatuses = startIdx !== -1 && endIdx !== -1
+    ? config.status_order.slice(startIdx, endIdx + 1)
+    : config.status_order
 
-  return c.json(ok({ statuses: config.status_order, tickets: result }))
+  const result = allTickets
+    .filter(ticket => calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, config.cycle_time_mode) !== null)
+    .map(ticket => ({
+      external_id: ticket.external_id,
+      title: ticket.title,
+      status_durations: Object.fromEntries(
+        Object.entries(calculateTimeInStatus(
+          trimTransitionsToCycleWindow(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, config.cycle_time_mode),
+          cycleStatuses,
+        )).map(([s, d]) => [s, Math.round(d * 100) / 100])
+      ),
+    }))
+
+  return c.json(ok({ statuses: cycleStatuses, tickets: result }))
 })
 
 export default metrics

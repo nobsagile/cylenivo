@@ -8,10 +8,23 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
+import type { TooltipProps } from 'recharts'
+import { ChartTooltip } from './ChartTooltip'
 
 interface Props {
   values: number[]
   bucketSize?: number
+}
+
+function LeadTooltip({ active, payload }: TooltipProps<number, string>) {
+  if (!active || !payload?.length) return null
+  const d = payload[0].payload as { range: string; count: number }
+  return (
+    <ChartTooltip>
+      <p className="font-semibold text-gray-800 mb-1">{d.range} days</p>
+      <p className="text-violet-700 font-medium">{d.count} tickets</p>
+    </ChartTooltip>
+  )
 }
 
 export function LeadTimeChart({ values, bucketSize = 5 }: Props) {
@@ -22,16 +35,19 @@ export function LeadTimeChart({ values, bucketSize = 5 }: Props) {
   }
 
   const max = Math.max(...values)
-  const buckets: Record<string, number> = {}
+  const buckets: { range: string; count: number }[] = []
   for (let i = 0; i <= max; i += bucketSize) {
-    buckets[`${i}–${i + bucketSize}`] = 0
+    const key = `${i}–${i + bucketSize}`
+    buckets.push({ range: key, count: 0 })
   }
   for (const v of values) {
-    const bucket = Math.floor(v / bucketSize) * bucketSize
-    const key = `${bucket}–${bucket + bucketSize}`
-    buckets[key] = (buckets[key] ?? 0) + 1
+    const idx = Math.floor(v / bucketSize)
+    if (buckets[idx]) buckets[idx].count++
   }
-  const data = Object.entries(buckets).map(([range, count]) => ({ range, count }))
+  // trim trailing empty buckets
+  let last = buckets.length - 1
+  while (last > 0 && buckets[last].count === 0) last--
+  const data = buckets.slice(0, last + 1)
 
   return (
     <div>
@@ -40,8 +56,8 @@ export function LeadTimeChart({ values, bucketSize = 5 }: Props) {
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="range" tick={{ fontSize: 11 }} />
-          <YAxis tick={{ fontSize: 11 }} />
-          <Tooltip />
+          <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+          <Tooltip content={<LeadTooltip />} wrapperStyle={{ zIndex: 100 }} />
           <Bar dataKey="count" fill="#8b5cf6" />
         </BarChart>
       </ResponsiveContainer>

@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
 import { CycleTimeChart } from '@/components/metrics/CycleTimeChart'
 import { LeadTimeChart } from '@/components/metrics/LeadTimeChart'
-import { TimeInStatusChart } from '@/components/metrics/TimeInStatusChart'
+import { AvgTimeInStatusChart, PerTicketBreakdownChart } from '@/components/metrics/TimeInStatusChart'
 
 export default function AnalyticsPage() {
   const { t } = useTranslation()
@@ -66,16 +66,23 @@ export default function AnalyticsPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="status" className="mt-4">
-          <Card className="shadow-sm">
-            <CardContent className="pt-6">
-              {statusData && metrics ? (
-                <TimeInStatusChart timeInStatusData={statusData} summary={metrics} />
-              ) : (
-                <div className="text-gray-400 text-sm">Loading…</div>
-              )}
-            </CardContent>
-          </Card>
+        <TabsContent value="status" className="mt-4 space-y-4">
+          {statusData && metrics ? (
+            <>
+              <Card className="shadow-sm">
+                <CardContent className="pt-6">
+                  <AvgTimeInStatusChart timeInStatusData={statusData} summary={metrics} />
+                </CardContent>
+              </Card>
+              <Card className="shadow-sm">
+                <CardContent className="pt-6">
+                  <PerTicketBreakdownChart timeInStatusData={statusData} />
+                </CardContent>
+              </Card>
+            </>
+          ) : (
+            <div className="text-gray-400 text-sm">Loading…</div>
+          )}
         </TabsContent>
       </Tabs>
     </div>
