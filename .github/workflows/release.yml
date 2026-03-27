@@ -68,7 +68,7 @@ jobs:
         run: |
           npx @yao-pkg/pkg dist/bundle.cjs \
             --targets ${{ matrix.server-pkg-target }} \
-            --output ../src-tauri/binaries/flow-analyzer-server-${{ matrix.target }} \
+            --output ../src-tauri/binaries/cylenivo-server-${{ matrix.target }} \
             --public \
             --public-packages "*"
 
@@ -78,7 +78,7 @@ jobs:
         run: |
           npx @yao-pkg/pkg dist/bundle.cjs `
             --targets ${{ matrix.server-pkg-target }} `
-            --output ../src-tauri/binaries/flow-analyzer-server-${{ matrix.target }}.exe `
+            --output ../src-tauri/binaries/cylenivo-server-${{ matrix.target }}.exe `
             --public `
             --public-packages "*"
 

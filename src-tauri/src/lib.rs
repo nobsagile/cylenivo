@@ -17,12 +17,12 @@ pub fn run() {
             // Resolve OS-appropriate data directory for the SQLite file
             let app_data_dir = app.path().app_data_dir()?;
             std::fs::create_dir_all(&app_data_dir)?;
-            let db_path = app_data_dir.join("flow-analyzer.db");
+            let db_path = app_data_dir.join("cylenivo.db");
 
             // Spawn the Hono server sidecar
             let (_rx, _child) = app
                 .shell()
-                .sidecar("flow-analyzer-server")
+                .sidecar("cylenivo-server")
                 .expect("flow-analyzer-server sidecar not configured")
                 .env("DB_PATH", db_path.to_string_lossy().as_ref())
                 .env("SERVER_PORT", "8765")

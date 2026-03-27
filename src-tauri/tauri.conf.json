@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "FlowAnalyzer",
+  "productName": "Cylenivo",
   "version": "0.1.0",
-  "identifier": "dev.flowanalyzer.app",
+  "identifier": "com.cylenivo.app",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Flow Analyzer",
+        "title": "Cylenivo",
         "width": 1280,
         "height": 800,
         "minWidth": 1024,
@@ -36,7 +36,7 @@
       "icons/icon.ico"
     ],
     "externalBin": [
-      "binaries/flow-analyzer-server"
+      "binaries/cylenivo-server"
     ]
   }
 }
