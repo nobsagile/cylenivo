@@ -29,7 +29,9 @@ export default function SettingsPage() {
   const [editConn, setEditConn] = useState<SourceConnection | null>(null)
   const [testingId, setTestingId] = useState<string | null>(null)
   const [testResults, setTestResults] = useState<Record<string, 'ok' | 'error'>>({})
+  const [activeTab, setActiveTab] = useState('configs')
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null)
+  const [errorMsg, setErrorMsg] = useState<{ title: string; description: string; action?: string } | null>(null)
   const [showConnBanner, setShowConnBanner] = useState(false)
 
   useEffect(() => {
@@ -66,7 +68,16 @@ export default function SettingsPage() {
         setConnections((prev) => prev.filter((c) => c.id !== id))
       }
     } catch (e) {
-      alert(e instanceof Error ? e.message : 'Error')
+      const msg = e instanceof Error ? e.message : 'Error'
+      if (type === 'config' && msg.toLowerCase().includes('associated imports')) {
+        setErrorMsg({
+          title: 'Configuration is in use',
+          description: 'This configuration is used by one or more datasets. Delete those datasets first, then try again.',
+          action: 'datasets',
+        })
+      } else {
+        setErrorMsg({ title: 'Could not delete', description: msg })
+      }
     }
   }
 
@@ -123,7 +134,7 @@ export default function SettingsPage() {
         <p className="text-sm text-gray-400 mt-1">Manage your connections, configurations and datasets</p>
       </div>
 
-      <Tabs defaultValue="configs">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-gray-100 p-1 h-auto mb-6">
           <TabsTrigger value="configs" className="text-sm px-4 py-1.5 gap-1.5">
             <Settings2 className="w-3.5 h-3.5" />
@@ -455,6 +466,19 @@ export default function SettingsPage() {
           confirmLabel={confirmMeta[pendingDelete.type].label}
           onConfirm={executeDelete}
           onCancel={() => setPendingDelete(null)}
+        />
+      )}
+
+      {errorMsg && (
+        <ConfirmDialog
+          open
+          title={errorMsg.title}
+          description={errorMsg.description}
+          cancelLabel="Close"
+          confirmLabel={errorMsg.action === 'datasets' ? 'Go to Datasets' : undefined}
+          destructive={false}
+          onConfirm={errorMsg.action === 'datasets' ? () => { setErrorMsg(null); setActiveTab('datasets') } : undefined}
+          onCancel={() => setErrorMsg(null)}
         />
       )}
     </div>

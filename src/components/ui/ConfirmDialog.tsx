@@ -14,7 +14,9 @@ interface Props {
   title: string
   description?: string
   confirmLabel?: string
-  onConfirm: () => void
+  cancelLabel?: string
+  destructive?: boolean
+  onConfirm?: () => void
   onCancel: () => void
 }
 
@@ -22,7 +24,9 @@ export default function ConfirmDialog({
   open,
   title,
   description,
-  confirmLabel = 'Delete',
+  confirmLabel,
+  cancelLabel = 'Cancel',
+  destructive = true,
   onConfirm,
   onCancel,
 }: Props) {
@@ -34,13 +38,17 @@ export default function ConfirmDialog({
           {description && <AlertDialogDescription>{description}</AlertDialogDescription>}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancel}>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={onConfirm}
-            className="bg-red-600 text-white hover:bg-red-700 focus:ring-red-500"
-          >
-            {confirmLabel}
-          </AlertDialogAction>
+          <AlertDialogCancel onClick={onCancel}>{cancelLabel}</AlertDialogCancel>
+          {onConfirm && confirmLabel && (
+            <AlertDialogAction
+              onClick={onConfirm}
+              className={destructive
+                ? 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500'
+                : undefined}
+            >
+              {confirmLabel}
+            </AlertDialogAction>
+          )}
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
