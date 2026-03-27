@@ -110,15 +110,18 @@ llm.post('/analyze/:importId', async (c) => {
   const cycleTimes: number[] = []
   const leadTimes: number[] = []
   const completedAtDates: Date[] = []
-  const ctWithTicket: [number, string][] = []
+  const ctWithTicket: [number, string, string, string][] = [] // [ct, id, title, type]
+  const ctByType: Record<string, number[]> = {}
 
   for (const ticket of allTickets) {
     const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, (config.cycle_time_mode ?? 'first_last') as 'first_last' | 'first_first' | 'last_last')
     if (ct !== null) {
       cycleTimes.push(ct)
-      ctWithTicket.push([ct, ticket.external_id])
+      ctWithTicket.push([ct, ticket.external_id, ticket.title, ticket.ticket_type])
       const endTs = firstTransitionTo(ticket.transitions, config.cycle_time_end_status)
       if (endTs) completedAtDates.push(endTs)
+      if (!ctByType[ticket.ticket_type]) ctByType[ticket.ticket_type] = []
+      ctByType[ticket.ticket_type].push(ct)
     }
     const lt = calculateLeadTime(new Date(ticket.created_at), ticket.transitions, config.cycle_time_end_status, config.lead_time_start_status, (config.cycle_time_mode ?? 'first_last') as 'first_last' | 'first_first' | 'last_last')
     if (lt !== null) leadTimes.push(lt)
@@ -159,6 +162,15 @@ llm.post('/analyze/:importId', async (c) => {
     })
     .join('\n')
 
+  const typeLines = Object.entries(ctByType)
+    .sort((a, b) => b[1].length - a[1].length)
+    .map(([type, times]) => {
+      const med = Math.round(median(times) * 10) / 10
+      const avg = Math.round(mean(times) * 10) / 10
+      return `  ${type}: ${times.length} tickets, avg ${avg}d, median ${med}d`
+    })
+    .join('\n')
+
   const userContent = `PROJECT: ${imp.project_key}
 TICKETS ANALYZED: ${allTickets.length} total, ${cycleTimes.length} completed
 DATE RANGE: ${dateFrom} to ${dateTo}
@@ -174,8 +186,11 @@ LEAD TIME (from ticket creation to ${config.cycle_time_end_status}):
 AVERAGE TIME IN STATUS (completed tickets only):
 ${timeInStatusLines}
 
+CYCLE TIME BY TICKET TYPE:
+${typeLines}
+
 TOP 5 SLOWEST TICKETS (by cycle time):
-${slowest.map(([ct, id]) => `  ${id}: ${Math.round(ct * 10) / 10} days`).join('\n')}
+${slowest.map(([ct, id, title, type]) => `  ${id} [${type}]: ${Math.round(ct * 10) / 10}d — ${title}`).join('\n')}
 
 Please provide:
 1. Key observations (max 3 bullet points, be specific with numbers)
