@@ -5,23 +5,27 @@ import { projectConfigs, importSessions, tickets, ticketTransitions } from '../d
 import { ok } from '../lib/response.js'
 import { calculateCycleTime } from '../analyzers/cycleTime.js'
 import { calculateLeadTime } from '../analyzers/leadTime.js'
-import { firstTransitionTo, type Transition } from '../analyzers/utils.js'
+import { firstTransitionTo, lastTransitionTo, type Transition } from '../analyzers/utils.js'
 
 const ticketsRouter = new Hono()
 
 function enrichTicket(
   ticket: typeof tickets.$inferSelect,
   transitions: Transition[],
-  config: { cycle_time_start_status: string; cycle_time_end_status: string; lead_time_start_status: string | null },
+  config: { cycle_time_start_status: string; cycle_time_end_status: string; lead_time_start_status: string | null; cycle_time_mode: string },
 ) {
-  const ct = calculateCycleTime(transitions, config.cycle_time_start_status, config.cycle_time_end_status)
+  const mode = config.cycle_time_mode as 'first_last' | 'first_first' | 'last_last'
+  const ct = calculateCycleTime(transitions, config.cycle_time_start_status, config.cycle_time_end_status, mode)
   const lt = calculateLeadTime(
     new Date(ticket.created_at),
     transitions,
     config.cycle_time_end_status,
     config.lead_time_start_status,
+    mode,
   )
-  const endTs = firstTransitionTo(transitions, config.cycle_time_end_status)
+  const endTs = mode === 'first_first'
+    ? firstTransitionTo(transitions, config.cycle_time_end_status)
+    : lastTransitionTo(transitions, config.cycle_time_end_status)
   const sorted = [...transitions].sort(
     (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime()
   )
