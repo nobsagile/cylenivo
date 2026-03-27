@@ -7,6 +7,7 @@ import type {
   TimeInStatusResponse,
   LLMStatus,
   LLMInsight,
+  LlmConfig,
   PaginatedTickets,
   CreateConfigRequest,
   SourceConnection,
@@ -130,6 +131,26 @@ export const api = {
       }
       throw new Error('Stream ended without result')
     },
+  },
+  llmConfig: {
+    get: () => request<LlmConfig | null>('/api/v1/llm-config'),
+    save: (body: {
+      provider: string
+      base_url?: string
+      api_key?: string
+      model: string
+      system_prompt: string
+    }) => request<LlmConfig>('/api/v1/llm-config', {
+      method: 'PUT',
+      body: JSON.stringify(body),
+      headers: { 'Content-Type': 'application/json' },
+    }),
+    delete: () => request<null>('/api/v1/llm-config', { method: 'DELETE' }),
+    ollamaModels: (baseUrl?: string) => {
+      const p = baseUrl ? `?base_url=${encodeURIComponent(baseUrl)}` : ''
+      return request<{ models: string[] }>(`/api/v1/llm-config/ollama-models${p}`)
+    },
+    openaiModels: () => request<{ models: string[] }>('/api/v1/llm-config/openai-models'),
   },
   llm: {
     status: () => request<LLMStatus>('/api/v1/llm/status'),

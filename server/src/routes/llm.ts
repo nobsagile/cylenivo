@@ -1,42 +1,58 @@
 import { Hono } from 'hono'
 import { eq, inArray } from 'drizzle-orm'
 import { db } from '../db/index.js'
-import { projectConfigs, importSessions, tickets, ticketTransitions, llmInsights } from '../db/schema.js'
+import { projectConfigs, importSessions, tickets, ticketTransitions, llmInsights, llmConfig } from '../db/schema.js'
 import { ok } from '../lib/response.js'
 import { mean, median } from '../lib/stats.js'
 import { calculateCycleTime } from '../analyzers/cycleTime.js'
 import { calculateLeadTime } from '../analyzers/leadTime.js'
 import { calculatePercentiles } from '../analyzers/percentiles.js'
 import { firstTransitionTo, type Transition } from '../analyzers/utils.js'
+import { DEFAULT_SYSTEM_PROMPT } from './llm-config.js'
 
 const llm = new Hono()
 
-const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434'
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL ?? 'qwen3:14b'
+const CONFIG_ID = 'default'
 
-const LLM_PROMPT_TEMPLATE = `You are a flow analysis expert for software development teams.
-Analyze the following metrics and identify patterns, bottlenecks, and anomalies.
-Be concise and actionable. Focus on what the team should pay attention to.
+type LlmConfigRow = typeof llmConfig.$inferSelect
 
-PROJECT: {project_key}
-TICKETS ANALYZED: {ticket_count} total, {completed_count} completed
-DATE RANGE: {date_from} to {date_to}
+async function getLlmConfig(): Promise<LlmConfigRow | null> {
+  const rows = await db.select().from(llmConfig).where(eq(llmConfig.id, CONFIG_ID))
+  return rows.length ? rows[0] : null
+}
 
-CYCLE TIME (from {cycle_start} to {cycle_end}):
-  Mean: {cycle_mean} days | Median: {cycle_median} days
-  P50: {p50} days | P70: {p70} days | P85: {p85} days | P95: {p95} days
-
-LEAD TIME (from ticket creation to {cycle_end}):
-  Mean: {lead_mean} days | Median: {lead_median} days
-
-TOP 5 SLOWEST TICKETS (by cycle time):
-{slow_tickets_formatted}
-
-Please provide:
-1. Key observations (max 3 bullet points, be specific with numbers)
-2. The main bottleneck you see and why
-3. One concrete, actionable suggestion for the team
-`
+async function callLLM(
+  config: LlmConfigRow,
+  messages: { role: string; content: string }[],
+): Promise<string> {
+  if (config.provider === 'ollama') {
+    const baseUrl = config.base_url ?? 'http://localhost:11434'
+    const resp = await fetch(`${baseUrl}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: config.model, messages, stream: false }),
+      signal: AbortSignal.timeout(120000),
+    })
+    if (!resp.ok) throw new Error('LLM not available')
+    const data = await resp.json() as { message?: { content?: string } }
+    return data.message?.content ?? ''
+  } else {
+    const baseUrl = config.provider === 'openai'
+      ? 'https://api.openai.com'
+      : (config.base_url ?? '')
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    if (config.api_key) headers['Authorization'] = `Bearer ${config.api_key}`
+    const resp = await fetch(`${baseUrl}/v1/chat/completions`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ model: config.model, messages, stream: false }),
+      signal: AbortSignal.timeout(120000),
+    })
+    if (!resp.ok) throw new Error('LLM not available')
+    const data = await resp.json() as { choices?: { message?: { content?: string } }[] }
+    return data.choices?.[0]?.message?.content ?? ''
+  }
+}
 
 async function getContext(importId: string) {
   const impRows = await db.select().from(importSessions).where(eq(importSessions.id, importId))
@@ -63,26 +79,31 @@ async function getContext(importId: string) {
 }
 
 llm.get('/status', async (c) => {
-  try {
-    const resp = await fetch(`${OLLAMA_BASE_URL}/api/tags`, { signal: AbortSignal.timeout(5000) })
-    if (resp.ok) {
-      const data = await resp.json() as { models?: { name: string }[] }
-      const models = (data.models ?? []).map((m) => m.name)
-      return c.json(ok({ available: true, models, recommended_model: OLLAMA_MODEL }))
-    }
-  } catch {
-    // fall through
+  const cfg = await getLlmConfig()
+  if (!cfg) return c.json(ok({ configured: false, provider: null, model: null, available: false }))
+
+  if (cfg.provider === 'ollama') {
+    const baseUrl = cfg.base_url ?? 'http://localhost:11434'
+    try {
+      const resp = await fetch(`${baseUrl}/api/tags`, { signal: AbortSignal.timeout(5000) })
+      if (resp.ok) {
+        return c.json(ok({ configured: true, provider: cfg.provider, model: cfg.model, available: true }))
+      }
+    } catch { /* fall through */ }
+    return c.json(ok({ configured: true, provider: cfg.provider, model: cfg.model, available: false }))
   }
-  return c.json(ok({ available: false, models: [], recommended_model: OLLAMA_MODEL }))
+
+  // OpenAI / openai_compatible — assume reachable
+  return c.json(ok({ configured: true, provider: cfg.provider, model: cfg.model, available: true }))
 })
 
 llm.post('/analyze/:importId', async (c) => {
+  const cfg = await getLlmConfig()
+  if (!cfg) return c.json({ data: null, error: 'LLM not configured' }, 503)
+
   const ctx = await getContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
   const { imp, config, allTickets } = ctx
-
-  const body = await c.req.json().catch(() => ({})) as { model?: string }
-  const model = body.model ?? OLLAMA_MODEL
 
   const cycleTimes: number[] = []
   const leadTimes: number[] = []
@@ -106,39 +127,39 @@ llm.post('/analyze/:importId', async (c) => {
   const dateFrom = completedAtDates.length ? completedAtDates.reduce((a, b) => a < b ? a : b).toISOString().slice(0, 10) : 'N/A'
   const dateTo = completedAtDates.length ? completedAtDates.reduce((a, b) => a > b ? a : b).toISOString().slice(0, 10) : 'N/A'
 
-  const prompt = LLM_PROMPT_TEMPLATE
-    .replace('{project_key}', imp.project_key)
-    .replace('{ticket_count}', String(allTickets.length))
-    .replace('{completed_count}', String(cycleTimes.length))
-    .replace('{date_from}', dateFrom)
-    .replace('{date_to}', dateTo)
-    .replace('{cycle_start}', config.cycle_time_start_status)
-    .replace('{cycle_end}', config.cycle_time_end_status)
-    .replace('{cycle_mean}', cycleTimes.length ? String(Math.round(mean(cycleTimes) * 10) / 10) : 'N/A')
-    .replace('{cycle_median}', cycleTimes.length ? String(Math.round(median(cycleTimes) * 10) / 10) : 'N/A')
-    .replace('{p50}', String(percentiles.p50))
-    .replace('{p70}', String(percentiles.p70))
-    .replace('{p85}', String(percentiles.p85))
-    .replace('{p95}', String(percentiles.p95))
-    .replace('{lead_mean}', leadTimes.length ? String(Math.round(mean(leadTimes) * 10) / 10) : 'N/A')
-    .replace('{lead_median}', leadTimes.length ? String(Math.round(median(leadTimes) * 10) / 10) : 'N/A')
-    .replace('{slow_tickets_formatted}', slowest.map(([ct, id]) => `  ${id}: ${Math.round(ct * 10) / 10} days`).join('\n'))
+  const userContent = `PROJECT: ${imp.project_key}
+TICKETS ANALYZED: ${allTickets.length} total, ${cycleTimes.length} completed
+DATE RANGE: ${dateFrom} to ${dateTo}
+
+CYCLE TIME (from ${config.cycle_time_start_status} to ${config.cycle_time_end_status}):
+  Mean: ${cycleTimes.length ? Math.round(mean(cycleTimes) * 10) / 10 : 'N/A'} days | Median: ${cycleTimes.length ? Math.round(median(cycleTimes) * 10) / 10 : 'N/A'} days
+  P50: ${percentiles.p50} days | P70: ${percentiles.p70} days | P85: ${percentiles.p85} days | P95: ${percentiles.p95} days
+
+LEAD TIME (from ticket creation to ${config.cycle_time_end_status}):
+  Mean: ${leadTimes.length ? Math.round(mean(leadTimes) * 10) / 10 : 'N/A'} days | Median: ${leadTimes.length ? Math.round(median(leadTimes) * 10) / 10 : 'N/A'} days
+
+TOP 5 SLOWEST TICKETS (by cycle time):
+${slowest.map(([ct, id]) => `  ${id}: ${Math.round(ct * 10) / 10} days`).join('\n')}
+
+Please provide:
+1. Key observations (max 3 bullet points, be specific with numbers)
+2. The main bottleneck you see and why
+3. One concrete, actionable suggestion for the team`
+
+  const systemPrompt = cfg.system_prompt || DEFAULT_SYSTEM_PROMPT
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: userContent },
+  ]
 
   let insightText: string
   try {
-    const resp = await fetch(`${OLLAMA_BASE_URL}/api/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model, prompt, stream: false }),
-      signal: AbortSignal.timeout(120000),
-    })
-    if (!resp.ok) return c.json({ data: null, error: 'Ollama not available' }, 503)
-    const data = await resp.json() as { response?: string }
-    insightText = data.response ?? ''
-  } catch {
-    return c.json({ data: null, error: 'Ollama not available' }, 503)
+    insightText = await callLLM(cfg, messages)
+  } catch (e) {
+    return c.json({ data: null, error: e instanceof Error ? e.message : 'LLM not available' }, 503)
   }
 
+  const model = cfg.model
   const now = new Date().toISOString()
   const existing = await db.select().from(llmInsights).where(eq(llmInsights.import_id, imp.id))
 
@@ -160,12 +181,14 @@ llm.post('/analyze/:importId', async (c) => {
 })
 
 llm.post('/chat/:importId', async (c) => {
+  const cfg = await getLlmConfig()
+  if (!cfg) return c.json({ data: null, error: 'LLM not configured' }, 503)
+
   const ctx = await getContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
   const { imp, config, allTickets } = ctx
 
-  const body = await c.req.json() as { messages: { role: string; content: string }[]; model?: string }
-  const model = body.model ?? OLLAMA_MODEL
+  const body = await c.req.json() as { messages: { role: string; content: string }[] }
 
   const cycleTimes: number[] = []
   const leadTimes: number[] = []
@@ -181,8 +204,7 @@ llm.post('/chat/:importId', async (c) => {
   const percentiles = calculatePercentiles(cycleTimes)
   const slowest = ctWithTicket.sort((a, b) => b[0] - a[0]).slice(0, 5)
 
-  const systemPrompt = `You are a flow analysis expert for software development teams.
-You have access to the following data for project ${imp.project_key}:
+  const dataContext = `You have access to the following data for project ${imp.project_key}:
 
 TICKETS: ${allTickets.length} total, ${cycleTimes.length} completed
 CYCLE TIME (${config.cycle_time_start_status} → ${config.cycle_time_end_status}):
@@ -193,21 +215,14 @@ TOP 5 SLOWEST: ${slowest.map(([ct, id]) => `${id} (${Math.round(ct * 10) / 10}d)
 
 Answer questions about this data concisely and specifically. Use numbers from the data above.`
 
+  const systemPrompt = (cfg.system_prompt || DEFAULT_SYSTEM_PROMPT) + '\n\n' + dataContext
   const messages = [{ role: 'system', content: systemPrompt }, ...body.messages]
 
   let reply: string
   try {
-    const resp = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model, messages, stream: false }),
-      signal: AbortSignal.timeout(120000),
-    })
-    if (!resp.ok) return c.json({ data: null, error: 'Ollama not available' }, 503)
-    const data = await resp.json() as { message?: { content?: string } }
-    reply = data.message?.content ?? ''
-  } catch {
-    return c.json({ data: null, error: 'Ollama not available' }, 503)
+    reply = await callLLM(cfg, messages)
+  } catch (e) {
+    return c.json({ data: null, error: e instanceof Error ? e.message : 'LLM not available' }, 503)
   }
 
   return c.json(ok({ reply }))

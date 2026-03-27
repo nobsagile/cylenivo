@@ -108,9 +108,20 @@ export interface TimeInStatusResponse {
 }
 
 export interface LLMStatus {
+  configured: boolean
+  provider: string | null
+  model: string | null
   available: boolean
-  models: string[]
-  recommended_model: string
+}
+
+export interface LlmConfig {
+  id: string
+  provider: 'ollama' | 'openai' | 'openai_compatible'
+  base_url: string | null
+  model: string
+  system_prompt: string
+  key_set: boolean
+  created_at: string
 }
 
 export interface LLMInsight {

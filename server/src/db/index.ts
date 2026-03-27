@@ -95,4 +95,15 @@ export async function migrate() {
   try {
     sqlite.exec(`ALTER TABLE import_sessions ADD COLUMN health_report TEXT`)
   } catch { /* already exists */ }
+  try {
+    sqlite.exec(`CREATE TABLE IF NOT EXISTS llm_config (
+      id TEXT PRIMARY KEY,
+      provider TEXT NOT NULL,
+      base_url TEXT,
+      api_key TEXT,
+      model TEXT NOT NULL,
+      system_prompt TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    )`)
+  } catch { /* already exists */ }
 }

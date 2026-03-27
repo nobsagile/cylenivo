@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import {
   Plus, Pencil, Trash2, ArrowRight, Settings2,
   Database, FileJson, Calendar, Ticket, Link2, CheckCircle2, XCircle, Loader2, ArrowRight as ArrowRightIcon,
-  X,
+  X, Bot, RefreshCw, ChevronDown,
 } from 'lucide-react'
 import { api } from '@/services/api'
-import type { ProjectConfig, ImportSession, SourceConnection } from '@/types'
+import type { ProjectConfig, ImportSession, SourceConnection, LlmConfig } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import ConnectionDialog from '@/components/connections/ConnectionDialog'
@@ -19,9 +19,14 @@ interface PendingDelete {
   label: string
 }
 
+const DEFAULT_SYSTEM_PROMPT = 'You are a flow analysis expert for software development teams. Analyze flow metrics data and provide clear, actionable insights. Be specific with numbers and focus on what matters most to the team.'
+
+const OPENAI_MODELS = ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-turbo']
+
 export default function SettingsPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const location = useLocation()
   const [configs, setConfigs] = useState<ProjectConfig[]>([])
   const [imports, setImports] = useState<ImportSession[]>([])
   const [connections, setConnections] = useState<SourceConnection[]>([])
@@ -29,16 +34,111 @@ export default function SettingsPage() {
   const [editConn, setEditConn] = useState<SourceConnection | null>(null)
   const [testingId, setTestingId] = useState<string | null>(null)
   const [testResults, setTestResults] = useState<Record<string, 'ok' | 'error'>>({})
-  const [activeTab, setActiveTab] = useState('configs')
+  const [activeTab, setActiveTab] = useState((location.state as { tab?: string } | null)?.tab ?? 'configs')
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null)
   const [errorMsg, setErrorMsg] = useState<{ title: string; description: string; action?: string } | null>(null)
   const [showConnBanner, setShowConnBanner] = useState(false)
+
+  // LLM config state
+  const [llmConfig, setLlmConfig] = useState<LlmConfig | null>(null)
+  const [llmLoaded, setLlmLoaded] = useState(false)
+  const [llmProvider, setLlmProvider] = useState<'ollama' | 'openai' | 'openai_compatible'>('ollama')
+  const [llmBaseUrl, setLlmBaseUrl] = useState('http://localhost:11434')
+  const [llmApiKey, setLlmApiKey] = useState('')
+  const [llmModel, setLlmModel] = useState('')
+  const [llmSystemPrompt, setLlmSystemPrompt] = useState(DEFAULT_SYSTEM_PROMPT)
+  const [llmModels, setLlmModels] = useState<string[]>([])
+  const [llmModelsLoading, setLlmModelsLoading] = useState(false)
+  const [llmSaving, setLlmSaving] = useState(false)
+  const [llmTestResult, setLlmTestResult] = useState<'ok' | 'error' | null>(null)
+  const [llmTesting, setLlmTesting] = useState(false)
 
   useEffect(() => {
     api.configs.list().then(setConfigs).catch(console.error)
     api.imports.list().then(setImports).catch(console.error)
     api.connections.list().then(setConnections).catch(console.error)
+    api.llmConfig.get().then((cfg) => {
+      setLlmLoaded(true)
+      if (cfg) {
+        setLlmConfig(cfg)
+        setLlmProvider(cfg.provider)
+        setLlmBaseUrl(cfg.base_url ?? (cfg.provider === 'ollama' ? 'http://localhost:11434' : ''))
+        setLlmModel(cfg.model)
+        setLlmSystemPrompt(cfg.system_prompt)
+      }
+    }).catch(console.error)
   }, [])
+
+  const loadModels = useCallback(async (provider: typeof llmProvider, baseUrl: string) => {
+    setLlmModelsLoading(true)
+    setLlmModels([])
+    try {
+      if (provider === 'ollama') {
+        const { models } = await api.llmConfig.ollamaModels(baseUrl)
+        setLlmModels(models)
+        if (models.length && !llmModel) setLlmModel(models[0])
+      } else {
+        setLlmModels(OPENAI_MODELS)
+        if (!llmModel) setLlmModel(OPENAI_MODELS[0])
+      }
+    } catch { /* ignore */ }
+    setLlmModelsLoading(false)
+  }, [llmModel])
+
+  async function handleLlmProviderChange(p: typeof llmProvider) {
+    setLlmProvider(p)
+    setLlmModel('')
+    setLlmTestResult(null)
+    const defaultUrl = p === 'ollama' ? 'http://localhost:11434' : ''
+    setLlmBaseUrl(defaultUrl)
+    await loadModels(p, defaultUrl)
+  }
+
+  async function handleDiscoverModels() {
+    await loadModels(llmProvider, llmBaseUrl)
+  }
+
+  async function handleLlmSave() {
+    setLlmSaving(true)
+    try {
+      const saved = await api.llmConfig.save({
+        provider: llmProvider,
+        base_url: llmBaseUrl || undefined,
+        api_key: llmApiKey || undefined,
+        model: llmModel,
+        system_prompt: llmSystemPrompt,
+      })
+      setLlmConfig(saved)
+      setLlmApiKey('')
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Error saving')
+    }
+    setLlmSaving(false)
+  }
+
+  async function handleLlmDisconnect() {
+    await api.llmConfig.delete()
+    setLlmConfig(null)
+    setLlmProvider('ollama')
+    setLlmBaseUrl('http://localhost:11434')
+    setLlmApiKey('')
+    setLlmModel('')
+    setLlmSystemPrompt(DEFAULT_SYSTEM_PROMPT)
+    setLlmModels([])
+    setLlmTestResult(null)
+  }
+
+  async function handleLlmTest() {
+    setLlmTesting(true)
+    setLlmTestResult(null)
+    try {
+      const status = await api.llm.status()
+      setLlmTestResult(status.available ? 'ok' : 'error')
+    } catch {
+      setLlmTestResult('error')
+    }
+    setLlmTesting(false)
+  }
 
   async function handleDeleteConfig(id: string, name: string) {
     setPendingDelete({ type: 'config', id, label: name })
@@ -161,6 +261,13 @@ export default function SettingsPage() {
               <span className="ml-1 text-[11px] bg-gray-200 text-gray-600 rounded-full px-1.5 py-0.5 font-semibold">
                 {connections.length}
               </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="ai" className="text-sm px-4 py-1.5 gap-1.5">
+            <Bot className="w-3.5 h-3.5" />
+            AI
+            {llmConfig && (
+              <span className="ml-1 w-2 h-2 rounded-full bg-emerald-500 inline-block" />
             )}
           </TabsTrigger>
         </TabsList>
@@ -443,6 +550,174 @@ export default function SettingsPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* AI */}
+        <TabsContent value="ai">
+          <p className="text-xs text-gray-400 mb-5">
+            Configure the AI model used for flow analysis and chat. API keys are stored locally and never leave your device.
+          </p>
+
+          {llmLoaded && (
+            <div className="space-y-5">
+              {/* Active config banner */}
+              {llmConfig && (
+                <div className="flex items-center gap-3 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <div className="flex-1 text-sm text-emerald-800">
+                    <span className="font-semibold">{llmConfig.provider}</span>
+                    <span className="mx-1.5 opacity-50">·</span>
+                    <span className="font-mono text-xs">{llmConfig.model}</span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleLlmDisconnect}
+                    className="h-8 text-xs text-red-500 hover:text-red-700 hover:border-red-300 shrink-0"
+                  >
+                    Disconnect
+                  </Button>
+                </div>
+              )}
+
+              {/* Provider selector */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1.5">Provider</label>
+                <div className="flex gap-2">
+                  {(['ollama', 'openai', 'openai_compatible'] as const).map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => handleLlmProviderChange(p)}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                        llmProvider === p
+                          ? 'bg-blue-50 text-blue-700 border-blue-300'
+                          : 'bg-white text-gray-500 border-gray-200 hover:text-gray-700'
+                      }`}
+                    >
+                      {p === 'openai_compatible' ? 'OpenAI compatible' : p === 'openai' ? 'OpenAI' : 'Ollama'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Base URL */}
+              {(llmProvider === 'ollama' || llmProvider === 'openai_compatible') && (
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                    {llmProvider === 'ollama' ? 'Ollama URL' : 'Base URL'}
+                  </label>
+                  <input
+                    type="text"
+                    value={llmBaseUrl}
+                    onChange={(e) => setLlmBaseUrl(e.target.value)}
+                    placeholder={llmProvider === 'ollama' ? 'http://localhost:11434' : 'https://your-api.example.com'}
+                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              )}
+
+              {/* API key */}
+              {(llmProvider === 'openai' || llmProvider === 'openai_compatible') && (
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                    API Key {llmConfig?.key_set && <span className="font-normal text-emerald-600">· saved</span>}
+                  </label>
+                  <input
+                    type="password"
+                    value={llmApiKey}
+                    onChange={(e) => setLlmApiKey(e.target.value)}
+                    placeholder={llmConfig?.key_set ? '••••••••  (leave empty to keep current)' : 'sk-...'}
+                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              )}
+
+              {/* Model */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-semibold text-gray-600">Model</label>
+                  {llmProvider === 'ollama' && (
+                    <button
+                      onClick={handleDiscoverModels}
+                      disabled={llmModelsLoading}
+                      className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 disabled:opacity-50"
+                    >
+                      {llmModelsLoading
+                        ? <><RefreshCw className="w-3 h-3 animate-spin" />Discovering…</>
+                        : <><RefreshCw className="w-3 h-3" />Discover models</>
+                      }
+                    </button>
+                  )}
+                </div>
+                {llmModels.length > 0 ? (
+                  <div className="relative">
+                    <select
+                      value={llmModel}
+                      onChange={(e) => setLlmModel(e.target.value)}
+                      className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                    >
+                      {llmModels.map((m) => <option key={m} value={m}>{m}</option>)}
+                    </select>
+                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  </div>
+                ) : (
+                  <input
+                    type="text"
+                    value={llmModel}
+                    onChange={(e) => setLlmModel(e.target.value)}
+                    placeholder={llmProvider === 'ollama' ? 'e.g. qwen3:14b (click Discover)' : 'e.g. gpt-4o'}
+                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                )}
+              </div>
+
+              {/* System prompt */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1.5">System Prompt</label>
+                <textarea
+                  value={llmSystemPrompt}
+                  onChange={(e) => setLlmSystemPrompt(e.target.value)}
+                  rows={4}
+                  className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+                />
+                <button
+                  onClick={() => setLlmSystemPrompt(DEFAULT_SYSTEM_PROMPT)}
+                  className="mt-1 text-xs text-gray-400 hover:text-gray-600"
+                >
+                  Reset to default
+                </button>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-3">
+                <Button
+                  onClick={handleLlmSave}
+                  disabled={llmSaving || !llmModel}
+                  className="gap-1.5"
+                >
+                  {llmSaving ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Saving…</> : 'Save'}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleLlmTest}
+                  disabled={llmTesting || !llmConfig}
+                  className="gap-1.5"
+                >
+                  {llmTesting ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Testing…</> : 'Test connection'}
+                </Button>
+                {llmTestResult === 'ok' && (
+                  <span className="flex items-center gap-1 text-sm text-emerald-600">
+                    <CheckCircle2 className="w-4 h-4" />Connected
+                  </span>
+                )}
+                {llmTestResult === 'error' && (
+                  <span className="flex items-center gap-1 text-sm text-red-500">
+                    <XCircle className="w-4 h-4" />Not reachable
+                  </span>
+                )}
+              </div>
             </div>
           )}
         </TabsContent>

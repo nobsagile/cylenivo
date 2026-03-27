@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
-import { Sparkles, Wifi, WifiOff, RefreshCw, Bot, User, Send } from 'lucide-react'
+import { Sparkles, Wifi, WifiOff, RefreshCw, Bot, User, Send, Settings } from 'lucide-react'
 import { api } from '@/services/api'
-import { useOllamaStatus } from '@/hooks/useOllamaStatus'
-import type { LLMInsight } from '@/types'
+import type { LLMInsight, LLMStatus } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -37,7 +36,9 @@ function MarkdownContent({ text }: { text: string }) {
 export default function InsightsPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
-  const { data: status } = useOllamaStatus()
+  const navigate = useNavigate()
+  const [llmStatus, setLlmStatus] = useState<LLMStatus | null>(null)
+  const [llmStatusLoaded, setLlmStatusLoaded] = useState(false)
   const [insight, setInsight] = useState<LLMInsight | null>(null)
   const [analyzing, setAnalyzing] = useState(false)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
@@ -45,6 +46,12 @@ export default function InsightsPage() {
   const [chatLoading, setChatLoading] = useState(false)
   const chatEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    api.llm.status()
+      .then((s) => { setLlmStatus(s); setLlmStatusLoaded(true) })
+      .catch(() => { setLlmStatus({ configured: false, provider: null, model: null, available: false }); setLlmStatusLoaded(true) })
+  }, [])
 
   useEffect(() => {
     if (!importId) return
@@ -81,7 +88,7 @@ export default function InsightsPage() {
     try {
       const { reply } = await api.llm.chat(importId, newMessages)
       setChatMessages([...newMessages, { role: 'assistant', content: reply }])
-    } catch (e) {
+    } catch {
       setChatMessages([...newMessages, {
         role: 'assistant',
         content: '_Error: Could not get a response._',
@@ -99,7 +106,36 @@ export default function InsightsPage() {
     }
   }
 
-  const ollamaAvailable = status?.available ?? false
+  const configured = llmStatus?.configured ?? false
+  const available = llmStatus?.available ?? false
+
+  if (llmStatusLoaded && !configured) {
+    return (
+      <div className="max-w-3xl space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('insights.title')}</h2>
+          <p className="text-sm text-gray-400 mt-0.5">AI-powered analysis of your flow metrics</p>
+        </div>
+        <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-gray-200 rounded-xl">
+          <div className="p-3 rounded-xl bg-gray-100 mb-3">
+            <Bot className="w-6 h-6 text-gray-400" />
+          </div>
+          <p className="text-gray-600 font-medium">No AI model configured</p>
+          <p className="text-gray-400 text-sm mt-1 max-w-xs">
+            Configure an LLM in Settings → AI to enable analysis and chat.
+          </p>
+          <Button
+            variant="outline"
+            className="mt-4 gap-1.5"
+            onClick={() => navigate('/settings', { state: { tab: 'ai' } })}
+          >
+            <Settings className="w-4 h-4" />
+            Go to Settings → AI
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -108,38 +144,38 @@ export default function InsightsPage() {
         <p className="text-sm text-gray-400 mt-0.5">AI-powered analysis of your flow metrics</p>
       </div>
 
-      {/* Ollama status */}
-      <div className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-sm ${
-        ollamaAvailable
-          ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-          : 'bg-amber-50 border-amber-200 text-amber-800'
-      }`}>
-        {ollamaAvailable ? (
-          <>
-            <Wifi className="w-4 h-4 shrink-0" />
-            <span>
-              <span className="font-semibold">{t('insights.ollamaOnline')}</span>
-              {status?.recommended_model && (
-                <span className="ml-1.5 opacity-70">— {status.recommended_model}</span>
-              )}
-            </span>
-          </>
-        ) : (
-          <>
-            <WifiOff className="w-4 h-4 shrink-0" />
-            <span>
-              <span className="font-semibold">{t('insights.ollamaOffline')}</span>
-              <code className="ml-1.5 text-xs bg-amber-100 px-1.5 py-0.5 rounded">
-                {t('insights.ollamaHint')}
-              </code>
-            </span>
-          </>
-        )}
-      </div>
+      {/* LLM status */}
+      {llmStatusLoaded && (
+        <div className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-sm ${
+          available
+            ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+            : 'bg-amber-50 border-amber-200 text-amber-800'
+        }`}>
+          {available ? (
+            <>
+              <Wifi className="w-4 h-4 shrink-0" />
+              <span>
+                <span className="font-semibold">{llmStatus?.provider}</span>
+                {llmStatus?.model && (
+                  <span className="ml-1.5 opacity-70 font-mono text-xs">— {llmStatus.model}</span>
+                )}
+              </span>
+            </>
+          ) : (
+            <>
+              <WifiOff className="w-4 h-4 shrink-0" />
+              <span>
+                <span className="font-semibold">LLM not reachable</span>
+                <span className="ml-1.5 opacity-70 text-xs">Check your configuration in Settings → AI</span>
+              </span>
+            </>
+          )}
+        </div>
+      )}
 
       {/* Analysis section */}
       <div className="flex items-center gap-3">
-        <Button onClick={runAnalysis} disabled={!ollamaAvailable || analyzing} className="gap-2">
+        <Button onClick={runAnalysis} disabled={!available || analyzing} className="gap-2">
           {analyzing ? (
             <><RefreshCw className="w-4 h-4 animate-spin" />{t('insights.analyzing')}</>
           ) : insight ? (
@@ -171,7 +207,7 @@ export default function InsightsPage() {
         </Card>
       )}
 
-      {!insight && !analyzing && ollamaAvailable && (
+      {!insight && !analyzing && available && (
         <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-gray-200 rounded-xl">
           <div className="p-3 rounded-xl bg-gray-100 mb-3">
             <Sparkles className="w-6 h-6 text-gray-400" />
@@ -182,7 +218,7 @@ export default function InsightsPage() {
       )}
 
       {/* Chat section */}
-      {ollamaAvailable && (
+      {available && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <h3 className="text-base font-semibold text-gray-800">Chat with AI</h3>

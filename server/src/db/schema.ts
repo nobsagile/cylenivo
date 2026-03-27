@@ -60,3 +60,13 @@ export const llmInsights = sqliteTable('llm_insights', {
   insight_text: text('insight_text').notNull(),
   generated_at: text('generated_at').notNull(),
 })
+
+export const llmConfig = sqliteTable('llm_config', {
+  id: text('id').primaryKey(), // always 'default'
+  provider: text('provider').notNull(), // 'ollama' | 'openai' | 'openai_compatible'
+  base_url: text('base_url'),
+  api_key: text('api_key'),
+  model: text('model').notNull(),
+  system_prompt: text('system_prompt').notNull(),
+  created_at: text('created_at').notNull(),
+})
