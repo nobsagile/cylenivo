@@ -17,6 +17,7 @@ export interface ImportTicket {
   title: string
   ticket_type: string
   created_at: string
+  external_link?: string
   transitions: Array<{
     from_status: string | null
     to_status: string
@@ -122,6 +123,7 @@ export async function buildImportFile(
       title: issue.fields.summary,
       ticket_type: mapIssueType(issue.fields.issuetype.name),
       created_at: issue.fields.created,
+      external_link: `${creds.base_url}/browse/${issue.key}`,
       transitions: extractTransitions(histories),
     })
   }
