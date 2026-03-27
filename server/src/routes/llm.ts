@@ -113,14 +113,14 @@ llm.post('/analyze/:importId', async (c) => {
   const ctWithTicket: [number, string][] = []
 
   for (const ticket of allTickets) {
-    const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status)
+    const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, (config.cycle_time_mode ?? 'first_last') as 'first_last' | 'first_first' | 'last_last')
     if (ct !== null) {
       cycleTimes.push(ct)
       ctWithTicket.push([ct, ticket.external_id])
       const endTs = firstTransitionTo(ticket.transitions, config.cycle_time_end_status)
       if (endTs) completedAtDates.push(endTs)
     }
-    const lt = calculateLeadTime(new Date(ticket.created_at), ticket.transitions, config.cycle_time_end_status, config.lead_time_start_status)
+    const lt = calculateLeadTime(new Date(ticket.created_at), ticket.transitions, config.cycle_time_end_status, config.lead_time_start_status, (config.cycle_time_mode ?? 'first_last') as 'first_last' | 'first_first' | 'last_last')
     if (lt !== null) leadTimes.push(lt)
   }
 
@@ -141,7 +141,7 @@ llm.post('/analyze/:importId', async (c) => {
   const timeInStatusByStatus: Record<string, number[]> = {}
   for (const s of cycleStatuses) timeInStatusByStatus[s] = []
   for (const ticket of allTickets) {
-    const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status)
+    const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, (config.cycle_time_mode ?? 'first_last') as 'first_last' | 'first_first' | 'last_last')
     if (ct === null) continue
     const windowed = trimTransitionsToCycleWindow(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, mode)
     const durations = calculateTimeInStatus(windowed, cycleStatuses)
@@ -231,9 +231,9 @@ llm.post('/chat/:importId', async (c) => {
   const ctWithTicket: [number, string][] = []
 
   for (const ticket of allTickets) {
-    const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status)
+    const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, (config.cycle_time_mode ?? 'first_last') as 'first_last' | 'first_first' | 'last_last')
     if (ct !== null) { cycleTimes.push(ct); ctWithTicket.push([ct, ticket.external_id]) }
-    const lt = calculateLeadTime(new Date(ticket.created_at), ticket.transitions, config.cycle_time_end_status, config.lead_time_start_status)
+    const lt = calculateLeadTime(new Date(ticket.created_at), ticket.transitions, config.cycle_time_end_status, config.lead_time_start_status, (config.cycle_time_mode ?? 'first_last') as 'first_last' | 'first_first' | 'last_last')
     if (lt !== null) leadTimes.push(lt)
   }
 
