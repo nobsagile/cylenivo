@@ -3,6 +3,7 @@ import { eq, inArray, sql } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { projectConfigs, importSessions, tickets, ticketTransitions } from '../db/schema.js'
 import { ok } from '../lib/response.js'
+import { buildHealthReport } from '../analyzers/healthReport.js'
 
 const imports = new Hono()
 
@@ -41,7 +42,11 @@ function validateImportFile(raw: unknown): ImportFile {
 }
 
 function serializeSession(row: typeof importSessions.$inferSelect, configName?: string | null) {
-  return { ...row, config_name: configName ?? null }
+  return {
+    ...row,
+    config_name: configName ?? null,
+    health_report: row.health_report ? JSON.parse(row.health_report) : null,
+  }
 }
 
 imports.get('/', async (c) => {
@@ -110,6 +115,15 @@ imports.post('/', async (c) => {
   const now = new Date().toISOString()
   const fileName = (file as File).name || 'upload.json'
 
+  const cfg = cfgRows[0]
+  const statusOrder = JSON.parse(cfg.status_order) as string[]
+  const healthReport = buildHealthReport(
+    data.tickets,
+    statusOrder,
+    cfg.cycle_time_start_status,
+    cfg.cycle_time_end_status,
+  )
+
   const sessionRow = {
     id: importId,
     config_id: configId,
@@ -118,6 +132,7 @@ imports.post('/', async (c) => {
     file_name: fileName,
     ticket_count: data.tickets.length,
     imported_at: now,
+    health_report: JSON.stringify(healthReport),
   }
 
   const ticketRows: (typeof tickets.$inferInsert)[] = []

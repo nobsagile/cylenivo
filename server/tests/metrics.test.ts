@@ -241,6 +241,41 @@ describe('metrics / last_last mode', () => {
   })
 })
 
+// ─── health report ───────────────────────────────────────────────────────────
+
+describe('metrics / health report', () => {
+  it('import returns health_report with correct counts for chaos fixture', async () => {
+    const configId = await createConfig(CHAOS_CONFIG)
+    const form = new FormData()
+    form.append('file', new Blob([JSON.stringify(CHAOS)], { type: 'application/json' }), 'chaos.json')
+    form.append('config_id', configId)
+    const res = await app.request('/api/v1/imports', { method: 'POST', body: form })
+    const { data } = await res.json() as { data: any }
+
+    expect(data.health_report).toBeDefined()
+    // CHAOS-1 never enters 'In Dev' → tickets_without_cycle_start = 1
+    expect(data.health_report.tickets_without_cycle_start).toBe(1)
+    // CHAOS-5 enters 'In Dev' but not 'Done' → tickets_incomplete = 1
+    expect(data.health_report.tickets_incomplete).toBe(1)
+    // 'Sprint' and 'Deployed' from CHAOS-4 are not in status_order
+    expect(data.health_report.unknown_statuses).toContain('Sprint')
+    expect(data.health_report.unknown_statuses).toContain('Deployed')
+  })
+
+  it('import response includes health_report when listing sessions', async () => {
+    const configId = await createConfig(CHAOS_CONFIG)
+    const form = new FormData()
+    form.append('file', new Blob([JSON.stringify(CHAOS)], { type: 'application/json' }), 'chaos.json')
+    form.append('config_id', configId)
+    await app.request('/api/v1/imports', { method: 'POST', body: form })
+
+    const res = await app.request('/api/v1/imports')
+    const { data } = await res.json() as { data: any[] }
+    expect(data[0].health_report).toBeDefined()
+    expect(data[0].health_report.tickets_without_cycle_start).toBe(1)
+  })
+})
+
 // ─── external_link ───────────────────────────────────────────────────────────
 
 describe('metrics / external_link', () => {

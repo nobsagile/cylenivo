@@ -11,6 +11,13 @@ export interface ProjectConfig {
   created_at: string
 }
 
+export interface ImportHealthReport {
+  tickets_without_cycle_start: number
+  tickets_incomplete: number
+  unknown_statuses: string[]
+  oldest_transition_date: string | null
+}
+
 export interface ImportSession {
   id: string
   config_id: string
@@ -20,6 +27,7 @@ export interface ImportSession {
   ticket_count: number
   imported_at: string
   config_name?: string
+  health_report?: ImportHealthReport | null
 }
 
 export interface TicketTransition {

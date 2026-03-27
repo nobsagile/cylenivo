@@ -21,6 +21,7 @@ export const importSessions = sqliteTable('import_sessions', {
   file_name: text('file_name').notNull(),
   ticket_count: integer('ticket_count').notNull().default(0),
   imported_at: text('imported_at').notNull(),
+  health_report: text('health_report'), // JSON
 })
 
 export const tickets = sqliteTable('tickets', {

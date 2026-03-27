@@ -31,7 +31,8 @@ const CREATE_TABLES_SQL = `
     project_key TEXT NOT NULL,
     file_name TEXT NOT NULL,
     ticket_count INTEGER NOT NULL DEFAULT 0,
-    imported_at TEXT NOT NULL
+    imported_at TEXT NOT NULL,
+    health_report TEXT
   );
 
   CREATE TABLE IF NOT EXISTS tickets (
@@ -90,5 +91,8 @@ export async function migrate() {
       api_token TEXT NOT NULL,
       created_at TEXT NOT NULL
     )`)
+  } catch { /* already exists */ }
+  try {
+    sqlite.exec(`ALTER TABLE import_sessions ADD COLUMN health_report TEXT`)
   } catch { /* already exists */ }
 }

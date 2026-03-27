@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { firstTransitionTo, lastTransitionTo, trimTransitionsToCycleWindow, type Transition } from '../src/analyzers/utils.js'
+import { buildHealthReport } from '../src/analyzers/healthReport.js'
 import { calculateCycleTime } from '../src/analyzers/cycleTime.js'
 import { calculateLeadTime } from '../src/analyzers/leadTime.js'
 import { calculatePercentiles, calculateThroughputPerWeek } from '../src/analyzers/percentiles.js'
@@ -325,5 +326,57 @@ describe('calculateTimeInStatus', () => {
     const result = calculateTimeInStatus(transitions, ['Dev', 'Done'])
     expect(result['Dev']).toBeCloseTo(8, 0)   // 5d (Jan1→Jan6) + 3d (Jan8→Jan11)
     expect(result['Done']).toBeCloseTo(2, 0)  // Done → Dev: 2 days (Jan6→Jan8)
+  })
+})
+
+describe('buildHealthReport', () => {
+  const statusOrder = ['Backlog', 'In Dev', 'Review', 'Done']
+
+  it('counts tickets that never entered cycle start', () => {
+    const tickets = [
+      { transitions: [t('Backlog', '2024-01-01'), t('Done', '2024-01-05')] },  // no In Dev
+      { transitions: [t('In Dev', '2024-01-01'), t('Done', '2024-01-05')] },   // has In Dev
+    ]
+    const report = buildHealthReport(tickets, statusOrder, 'In Dev', 'Done')
+    expect(report.tickets_without_cycle_start).toBe(1)
+  })
+
+  it('counts tickets that entered cycle start but never reached cycle end', () => {
+    const tickets = [
+      { transitions: [t('In Dev', '2024-01-01'), t('Review', '2024-01-04')] },  // no Done
+      { transitions: [t('In Dev', '2024-01-01'), t('Done', '2024-01-05')] },    // has Done
+    ]
+    const report = buildHealthReport(tickets, statusOrder, 'In Dev', 'Done')
+    expect(report.tickets_incomplete).toBe(1)
+  })
+
+  it('detects statuses not in status_order', () => {
+    const tickets = [
+      { transitions: [t('In Dev', '2024-01-01'), t('QA', '2024-01-03'), t('Done', '2024-01-05')] },
+      { transitions: [t('In Dev', '2024-01-01'), t('Released', '2024-01-06'), t('Done', '2024-01-07')] },
+    ]
+    const report = buildHealthReport(tickets, statusOrder, 'In Dev', 'Done')
+    expect(report.unknown_statuses).toContain('QA')
+    expect(report.unknown_statuses).toContain('Released')
+    expect(report.unknown_statuses).not.toContain('Done')
+  })
+
+  it('reports oldest transition date', () => {
+    const tickets = [
+      { transitions: [t('In Dev', '2024-03-01'), t('Done', '2024-03-05')] },
+      { transitions: [t('In Dev', '2016-09-15'), t('Done', '2016-09-17')] },
+    ]
+    const report = buildHealthReport(tickets, statusOrder, 'In Dev', 'Done')
+    expect(report.oldest_transition_date).toContain('2016')
+  })
+
+  it('returns clean report for perfect data', () => {
+    const tickets = [
+      { transitions: [t('In Dev', '2024-01-01'), t('Review', '2024-01-03'), t('Done', '2024-01-05')] },
+    ]
+    const report = buildHealthReport(tickets, statusOrder, 'In Dev', 'Done')
+    expect(report.tickets_without_cycle_start).toBe(0)
+    expect(report.tickets_incomplete).toBe(0)
+    expect(report.unknown_statuses).toHaveLength(0)
   })
 })
