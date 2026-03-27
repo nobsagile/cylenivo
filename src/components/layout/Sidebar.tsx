@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
-import { LayoutDashboard, Ticket, BarChart2, Sparkles, Upload, Settings, Activity } from 'lucide-react'
+import { LayoutDashboard, Ticket, BarChart2, Sparkles, Upload, Settings, Activity, Plus } from 'lucide-react'
 import { useImports } from '@/hooks/useImports'
 import {
   Select,
@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
 
 export function Sidebar() {
   const { t } = useTranslation()
@@ -40,26 +41,44 @@ export function Sidebar() {
         <span className="font-semibold text-gray-900 text-sm tracking-tight">Cylenivo</span>
       </div>
 
-      {/* Import selector */}
+      {/* Project selector */}
       <div className="px-3 py-3 border-b border-gray-100">
         <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider mb-2 px-1">
-          Dataset
+          Project
         </p>
-        <Select
-          value={importId ?? ''}
-          onValueChange={(id) => id && navigate(`/projects/${id}`)}
-        >
-          <SelectTrigger className="w-full text-sm h-9">
-            <SelectValue placeholder="— select import —" />
-          </SelectTrigger>
-          <SelectContent>
-            {imports.map((imp) => (
-              <SelectItem key={imp.id} value={imp.id}>
-                {imp.project_key} – {new Date(imp.imported_at).toLocaleDateString('de-DE')}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {imports.length === 0 ? (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/import')}
+            className="w-full gap-1.5 text-xs h-9 text-gray-500"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Import first dataset
+          </Button>
+        ) : (
+          <Select
+            value={importId ?? ''}
+            onValueChange={(id) => id && navigate(`/projects/${id}`)}
+          >
+            <SelectTrigger className="w-full text-sm h-9">
+              <SelectValue placeholder="— select project —" />
+            </SelectTrigger>
+            <SelectContent>
+              {imports.map((imp) => (
+                <SelectItem key={imp.id} value={imp.id}>
+                  <span className="font-medium">{imp.project_key}</span>
+                  {imp.config_name && (
+                    <span className="text-gray-400 ml-1">· {imp.config_name}</span>
+                  )}
+                  <span className="text-gray-400 ml-1">
+                    · {new Date(imp.imported_at).toLocaleDateString('de-DE')}
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       {/* Primary nav */}
@@ -79,9 +98,21 @@ export function Sidebar() {
             ))}
           </div>
         ) : (
-          <p className="text-xs text-gray-400 px-3 py-2 leading-relaxed">
-            Select a dataset above to view analytics.
-          </p>
+          <div className="px-2 py-3">
+            <p className="text-xs font-medium text-gray-500 mb-1">No data yet</p>
+            <p className="text-xs text-gray-400 leading-relaxed mb-3">
+              Import your first dataset to start analyzing.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/import')}
+              className="gap-1.5 text-xs h-8 w-full"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              Import data
+            </Button>
+          </div>
         )}
       </nav>
 

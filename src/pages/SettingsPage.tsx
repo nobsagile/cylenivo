@@ -3,13 +3,21 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
   Plus, Pencil, Trash2, ArrowRight, Settings2,
-  Database, FileJson, Calendar, Ticket, Link2, CheckCircle2, XCircle, Loader2,
+  Database, FileJson, Calendar, Ticket, Link2, CheckCircle2, XCircle, Loader2, ArrowRight as ArrowRightIcon,
+  X,
 } from 'lucide-react'
 import { api } from '@/services/api'
 import type { ProjectConfig, ImportSession, SourceConnection } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import ConnectionDialog from '@/components/connections/ConnectionDialog'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
+
+interface PendingDelete {
+  type: 'config' | 'import' | 'connection'
+  id: string
+  label: string
+}
 
 export default function SettingsPage() {
   const { t } = useTranslation()
@@ -21,6 +29,8 @@ export default function SettingsPage() {
   const [editConn, setEditConn] = useState<SourceConnection | null>(null)
   const [testingId, setTestingId] = useState<string | null>(null)
   const [testResults, setTestResults] = useState<Record<string, 'ok' | 'error'>>({})
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null)
+  const [showConnBanner, setShowConnBanner] = useState(false)
 
   useEffect(() => {
     api.configs.list().then(setConfigs).catch(console.error)
@@ -28,31 +38,33 @@ export default function SettingsPage() {
     api.connections.list().then(setConnections).catch(console.error)
   }, [])
 
-  async function handleDeleteConfig(id: string) {
-    if (!window.confirm(t('settings.confirmDelete'))) return
-    try {
-      await api.configs.delete(id)
-      setConfigs((prev) => prev.filter((c) => c.id !== id))
-    } catch (e) {
-      alert(e instanceof Error ? e.message : 'Error')
-    }
+  async function handleDeleteConfig(id: string, name: string) {
+    setPendingDelete({ type: 'config', id, label: name })
   }
 
-  async function handleDeleteImport(id: string) {
-    if (!window.confirm('Delete this dataset? This cannot be undone.')) return
-    try {
-      await api.imports.delete(id)
-      setImports((prev) => prev.filter((i) => i.id !== id))
-    } catch (e) {
-      alert(e instanceof Error ? e.message : 'Error')
-    }
+  async function handleDeleteImport(id: string, label: string) {
+    setPendingDelete({ type: 'import', id, label })
   }
 
-  async function handleDeleteConnection(id: string) {
-    if (!window.confirm('Delete this connection?')) return
+  async function handleDeleteConnection(id: string, name: string) {
+    setPendingDelete({ type: 'connection', id, label: name })
+  }
+
+  async function executeDelete() {
+    if (!pendingDelete) return
+    const { type, id } = pendingDelete
+    setPendingDelete(null)
     try {
-      await api.connections.delete(id)
-      setConnections((prev) => prev.filter((c) => c.id !== id))
+      if (type === 'config') {
+        await api.configs.delete(id)
+        setConfigs((prev) => prev.filter((c) => c.id !== id))
+      } else if (type === 'import') {
+        await api.imports.delete(id)
+        setImports((prev) => prev.filter((i) => i.id !== id))
+      } else {
+        await api.connections.delete(id)
+        setConnections((prev) => prev.filter((c) => c.id !== id))
+      }
     } catch (e) {
       alert(e instanceof Error ? e.message : 'Error')
     }
@@ -71,6 +83,7 @@ export default function SettingsPage() {
   }
 
   function handleSaved(conn: SourceConnection) {
+    const isNew = !connections.find((c) => c.id === conn.id)
     setConnections((prev) => {
       const idx = prev.findIndex((c) => c.id === conn.id)
       if (idx >= 0) {
@@ -80,13 +93,34 @@ export default function SettingsPage() {
       }
       return [...prev, conn]
     })
+    if (isNew && connections.length === 0) {
+      setShowConnBanner(true)
+    }
+  }
+
+  const confirmMeta: Record<PendingDelete['type'], { title: string; description: string; label: string }> = {
+    config: {
+      title: 'Delete configuration?',
+      description: 'This cannot be undone. Existing datasets using this configuration will not be affected.',
+      label: 'Delete',
+    },
+    import: {
+      title: 'Delete dataset?',
+      description: 'All imported tickets and metrics for this dataset will be permanently deleted.',
+      label: 'Delete',
+    },
+    connection: {
+      title: 'Delete connection?',
+      description: 'Stored credentials will be removed. Existing datasets will not be affected.',
+      label: 'Delete',
+    },
   }
 
   return (
     <div className="max-w-2xl">
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('settings.title')}</h2>
-        <p className="text-sm text-gray-400 mt-1">Manage configurations and imported datasets</p>
+        <p className="text-sm text-gray-400 mt-1">Manage your connections, configurations and datasets</p>
       </div>
 
       <Tabs defaultValue="configs">
@@ -122,6 +156,10 @@ export default function SettingsPage() {
 
         {/* Configurations */}
         <TabsContent value="configs">
+          <p className="text-xs text-gray-400 mb-5">
+            Measurement rules — define which statuses mark cycle time start and end.
+            One configuration can be reused for multiple datasets of the same team.
+          </p>
           {configs.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-gray-200 rounded-xl">
               <div className="p-3 rounded-xl bg-gray-100 mb-3">
@@ -129,7 +167,7 @@ export default function SettingsPage() {
               </div>
               <p className="text-gray-600 font-medium">No configurations yet</p>
               <p className="text-gray-400 text-sm mt-1 max-w-xs">
-                Configurations are created automatically when you import data — statuses are read directly from your file.
+                A configuration is created automatically when you import your first dataset.
               </p>
               <Button onClick={() => navigate('/import')} variant="outline" className="mt-4 gap-1.5">
                 <Plus className="w-4 h-4" />
@@ -188,7 +226,7 @@ export default function SettingsPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDeleteConfig(config.id)}
+                      onClick={() => handleDeleteConfig(config.id, config.name)}
                       className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:border-red-300"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -202,6 +240,10 @@ export default function SettingsPage() {
 
         {/* Datasets */}
         <TabsContent value="datasets">
+          <p className="text-xs text-gray-400 mb-5">
+            Imported ticket snapshots — each dataset uses one configuration to calculate metrics.
+            Import the same project again over time to track trends.
+          </p>
           <div className="flex justify-end mb-4">
             <Button onClick={() => navigate('/import')} variant="outline" className="gap-1.5">
               <Plus className="w-4 h-4" />
@@ -215,7 +257,7 @@ export default function SettingsPage() {
                 <Database className="w-6 h-6 text-gray-400" />
               </div>
               <p className="text-gray-600 font-medium">No datasets imported yet</p>
-              <p className="text-gray-400 text-sm mt-1">Upload a Jira export to get started</p>
+              <p className="text-gray-400 text-sm mt-1">Connect to Jira or upload an export to get started</p>
               <Button onClick={() => navigate('/import')} variant="outline" className="mt-4 gap-1.5">
                 <Plus className="w-4 h-4" />
                 Import data
@@ -263,7 +305,7 @@ export default function SettingsPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDeleteImport(imp.id)}
+                      onClick={() => handleDeleteImport(imp.id, `${imp.project_key} · ${new Date(imp.imported_at).toLocaleDateString('de-DE')}`)}
                       className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:border-red-300"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -277,6 +319,35 @@ export default function SettingsPage() {
 
         {/* Connections */}
         <TabsContent value="connections">
+          <p className="text-xs text-gray-400 mb-4">
+            Stored Jira credentials — saved once, reused for all imports. The API token is never sent to the browser after saving.
+          </p>
+
+          {/* Post-save banner */}
+          {showConnBanner && (
+            <div className="flex items-center gap-3 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 mb-5">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+              <div className="flex-1 text-sm text-emerald-800">
+                <span className="font-semibold">Connection added!</span>
+                {' '}Now go to Import to fetch your first dataset.
+              </div>
+              <Button
+                size="sm"
+                onClick={() => navigate('/import')}
+                className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white h-8 shrink-0"
+              >
+                Import data
+                <ArrowRightIcon className="w-3.5 h-3.5" />
+              </Button>
+              <button
+                onClick={() => setShowConnBanner(false)}
+                className="text-emerald-500 hover:text-emerald-700 shrink-0 ml-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
           <div className="flex justify-end mb-4">
             <Button
               onClick={() => { setEditConn(null); setDialogOpen(true) }}
@@ -295,7 +366,7 @@ export default function SettingsPage() {
               </div>
               <p className="text-gray-600 font-medium">No connections yet</p>
               <p className="text-gray-400 text-sm mt-1 max-w-xs">
-                Connect to Jira directly to fetch tickets without exporting a file first.
+                Add your Jira credentials once — then fetch tickets directly from the Import wizard.
               </p>
               <Button
                 onClick={() => { setEditConn(null); setDialogOpen(true) }}
@@ -339,9 +410,7 @@ export default function SettingsPage() {
                       disabled={testingId === conn.id}
                       className="h-8 text-xs gap-1"
                     >
-                      {testingId === conn.id
-                        ? <Loader2 className="w-3 h-3 animate-spin" />
-                        : null}
+                      {testingId === conn.id && <Loader2 className="w-3 h-3 animate-spin" />}
                       Test
                     </Button>
                     <Button
@@ -355,7 +424,7 @@ export default function SettingsPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDeleteConnection(conn.id)}
+                      onClick={() => handleDeleteConnection(conn.id, conn.name)}
                       className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:border-red-300"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -377,6 +446,17 @@ export default function SettingsPage() {
           setDialogOpen(false)
         }}
       />
+
+      {pendingDelete && (
+        <ConfirmDialog
+          open
+          title={confirmMeta[pendingDelete.type].title}
+          description={confirmMeta[pendingDelete.type].description}
+          confirmLabel={confirmMeta[pendingDelete.type].label}
+          onConfirm={executeDelete}
+          onCancel={() => setPendingDelete(null)}
+        />
+      )}
     </div>
   )
 }

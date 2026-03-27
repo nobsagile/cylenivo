@@ -34,9 +34,9 @@ export default function WelcomePage() {
         <Activity className="w-7 h-7 text-white" />
       </div>
 
-      <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Welcome to Flow Analyzer</h1>
+      <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Welcome to Cylenivo</h1>
       <p className="text-gray-400 mt-3 max-w-md text-base leading-relaxed">
-        Understand your team's delivery speed. Analyze cycle time, lead time, and throughput from your Jira data.
+        Understand your team's delivery speed. Connect to Jira directly or upload an export file — analyze cycle time, lead time and throughput in minutes.
       </p>
 
       {/* Features */}
@@ -62,7 +62,7 @@ export default function WelcomePage() {
         <ArrowRight className="w-4 h-4" />
       </Button>
       <p className="text-xs text-gray-400 mt-3">
-        You'll upload a JSON export from Jira — takes about 2 minutes.
+        Connect to Jira directly or upload an export — takes about 2 minutes.
       </p>
     </div>
   )
