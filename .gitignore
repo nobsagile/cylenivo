@@ -17,3 +17,5 @@ dist/
 .env
 server/dev.db
 server/dist/
+src-tauri/binaries/*
+!src-tauri/binaries/.gitkeep

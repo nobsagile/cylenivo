@@ -1,11 +1,14 @@
-import { createClient } from '@libsql/client'
-import { drizzle } from 'drizzle-orm/libsql'
+import Database from 'better-sqlite3'
+import { drizzle } from 'drizzle-orm/better-sqlite3'
 import * as schema from './schema.js'
 
-const DB_PATH = process.env.DB_PATH ?? 'file:dev.db'
+const DB_PATH = process.env.DB_PATH ?? 'dev.db'
 
-const client = createClient({ url: DB_PATH })
-export const db = drizzle(client, { schema })
+const sqlite = new Database(DB_PATH)
+sqlite.pragma('journal_mode = WAL')
+sqlite.pragma('foreign_keys = ON')
+
+export const db = drizzle(sqlite, { schema })
 
 const CREATE_TABLES_SQL = `
   CREATE TABLE IF NOT EXISTS project_configs (
@@ -60,8 +63,6 @@ const CREATE_TABLES_SQL = `
 
 export async function migrate() {
   for (const stmt of CREATE_TABLES_SQL.split(';').map(s => s.trim()).filter(Boolean)) {
-    await client.execute(stmt)
+    sqlite.exec(stmt)
   }
-  await client.execute('PRAGMA journal_mode = WAL')
-  await client.execute('PRAGMA foreign_keys = ON')
 }
