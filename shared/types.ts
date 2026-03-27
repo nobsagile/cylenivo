@@ -130,6 +130,7 @@ export interface JiraFetchOptions {
   limit: number
   issue_types: string[]
   done_only: boolean
+  date_from?: string
 }
 
 export interface CreateConfigRequest {

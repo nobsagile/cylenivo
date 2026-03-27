@@ -42,7 +42,7 @@ export function TimeInStatusChart({ timeInStatusData, summary }: Props) {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis type="number" tick={{ fontSize: 11 }} unit=" d" />
             <YAxis dataKey="status" type="category" tick={{ fontSize: 11 }} width={150} />
-            <Tooltip formatter={(v) => [`${v} days`]} />
+            <Tooltip formatter={(v) => [`${v} days`]} wrapperStyle={{ zIndex: 100 }} />
             <Bar dataKey="days" fill="#3b82f6" />
           </BarChart>
         </ResponsiveContainer>
@@ -56,8 +56,8 @@ export function TimeInStatusChart({ timeInStatusData, summary }: Props) {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={60} />
               <YAxis tick={{ fontSize: 11 }} unit=" d" />
-              <Tooltip />
-              <Legend />
+              <Tooltip wrapperStyle={{ zIndex: 100 }} />
+              <Legend wrapperStyle={{ zIndex: 10 }} />
               {statuses.map((status, i) => (
                 <Bar key={status} dataKey={status} stackId="a" fill={COLORS[i % COLORS.length]} />
               ))}

@@ -42,6 +42,16 @@ export const ticketTransitions = sqliteTable('ticket_transitions', {
   transitioned_at: text('transitioned_at').notNull(),
 })
 
+export const sourceConnections = sqliteTable('source_connections', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  source_type: text('source_type').notNull(), // "jira"
+  base_url: text('base_url').notNull(),
+  email: text('email').notNull(),
+  api_token: text('api_token').notNull(),
+  created_at: text('created_at').notNull(),
+})
+
 export const llmInsights = sqliteTable('llm_insights', {
   id: text('id').primaryKey(),
   import_id: text('import_id').notNull().references(() => importSessions.id),

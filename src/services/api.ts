@@ -94,12 +94,41 @@ export const api = {
       request<null>(`/api/v1/connections/${id}`, { method: 'DELETE' }),
     test: (id: string) =>
       request<{ display_name: string; email: string }>(`/api/v1/connections/${id}/test`, { method: 'POST' }),
-    fetch: (id: string, options: JiraFetchOptions) =>
-      request<unknown>(`/api/v1/connections/${id}/fetch`, {
+    fetchStream: async (
+      id: string,
+      options: JiraFetchOptions,
+      onProgress: (current: number, total: number, key: string) => void,
+    ): Promise<unknown> => {
+      const res = await fetch(`${BASE_URL}/api/v1/connections/${id}/fetch`, {
         method: 'POST',
         body: JSON.stringify(options),
         headers: { 'Content-Type': 'application/json' },
-      }),
+      })
+      if (!res.ok) {
+        const json = await res.json()
+        throw new Error(json.error ?? 'Fetch failed')
+      }
+      const reader = res.body!.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() ?? ''
+        for (const line of lines) {
+          if (!line.startsWith('data:')) continue
+          const raw = line.slice(5).trim()
+          if (!raw) continue
+          const msg = JSON.parse(raw) as { type: string; current: number; total: number; key: string; result: unknown; message: string }
+          if (msg.type === 'progress') onProgress(msg.current, msg.total, msg.key)
+          else if (msg.type === 'done') return msg.result
+          else if (msg.type === 'error') throw new Error(msg.message)
+        }
+      }
+      throw new Error('Stream ended without result')
+    },
   },
   llm: {
     status: () => request<LLMStatus>('/api/v1/llm/status'),

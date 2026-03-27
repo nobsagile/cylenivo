@@ -9,11 +9,24 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts'
+import type { TooltipProps } from 'recharts'
 import type { CycleTimeTicket } from '@/types'
 
 interface Props {
   tickets: CycleTimeTicket[]
   p85?: number | null
+}
+
+function CycleTooltip({ active, payload }: TooltipProps<number, string>) {
+  if (!active || !payload?.length) return null
+  const d = payload[0].payload as { x: number; y: number; name: string }
+  return (
+    <div className="bg-white border border-gray-200 rounded-lg shadow-md px-3 py-2 text-xs">
+      <p className="font-semibold text-gray-800 mb-1">{d.name}</p>
+      <p className="text-gray-500">{new Date(d.x).toLocaleDateString()}</p>
+      <p className="text-blue-700 font-medium">{d.y.toFixed(1)} days</p>
+    </div>
+  )
 }
 
 export function CycleTimeChart({ tickets, p85 }: Props) {
@@ -47,10 +60,7 @@ export function CycleTimeChart({ tickets, p85 }: Props) {
             tick={{ fontSize: 11 }}
           />
           <YAxis dataKey="y" tick={{ fontSize: 11 }} unit=" d" />
-          <Tooltip
-            formatter={(value) => [`${value} days`, 'Cycle Time']}
-            labelFormatter={(label) => new Date(label).toLocaleDateString()}
-          />
+          <Tooltip content={<CycleTooltip />} wrapperStyle={{ zIndex: 100 }} />
           <Scatter data={data} fill="#3b82f6" />
           {p85 != null && (
             <ReferenceLine y={p85} stroke="#ef4444" strokeDasharray="4 4" label={{ value: 'P85', fontSize: 11 }} />

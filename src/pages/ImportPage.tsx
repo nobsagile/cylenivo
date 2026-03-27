@@ -83,6 +83,7 @@ export default function ImportPage() {
   const [fetching, setFetching] = useState(false)
   const [fetchMsg, setFetchMsg] = useState('')
   const [addConnOpen, setAddConnOpen] = useState(false)
+  const [jiraDateFrom, setJiraDateFrom] = useState('')
 
   // Configure step
   const [configs, setConfigs] = useState<ProjectConfig[]>([])
@@ -146,9 +147,12 @@ export default function ImportPage() {
         limit: jiraLimit,
         issue_types: jiraIssueTypes,
         done_only: jiraDoneOnly,
+        date_from: jiraDateFrom || undefined,
       }
       setFetchMsg(`Fetching tickets from ${options.project}…`)
-      const result = await api.connections.fetch(selectedConnId, options) as Record<string, unknown>
+      const result = await api.connections.fetchStream(selectedConnId, options, (current, total, key) => {
+        setFetchMsg(`Fetching ticket ${current}/${total} (${key})…`)
+      }) as Record<string, unknown>
       const statuses = extractStatuses(result)
       const p: FilePreview = {
         project_key: (result.project_key as string) ?? options.project,
@@ -402,6 +406,20 @@ export default function ImportPage() {
                 max={500}
               />
             </div>
+          </div>
+
+          {/* Date range */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Updated since
+              <span className="text-gray-400 font-normal ml-1">— optional, limits to recently updated tickets</span>
+            </label>
+            <Input
+              type="date"
+              value={jiraDateFrom}
+              onChange={(e) => setJiraDateFrom(e.target.value)}
+              className="w-48"
+            />
           </div>
 
           {fetchMsg && (

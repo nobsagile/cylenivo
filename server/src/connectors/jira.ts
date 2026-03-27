@@ -9,6 +9,7 @@ export interface JiraFetchOptions {
   limit?: number
   issue_types?: string[]
   done_only?: boolean
+  date_from?: string
 }
 
 export interface ImportTicket {
@@ -61,10 +62,11 @@ export async function testConnection(creds: JiraCredentials): Promise<{ display_
 }
 
 export async function fetchIssues(creds: JiraCredentials, options: JiraFetchOptions): Promise<any[]> {
-  const { project, limit = 50, issue_types = ['Story', 'Task', 'Bug'], done_only = true } = options
+  const { project, limit = 50, issue_types = ['Story', 'Task', 'Bug'], done_only = true, date_from } = options
   const typeList = issue_types.map(t => `"${t}"`).join(', ')
   const statusFilter = done_only ? ' AND status = Done' : ''
-  const jql = `project = ${project} AND issuetype in (${typeList})${statusFilter} ORDER BY updated DESC`
+  const dateFilter = date_from ? ` AND updated >= "${date_from}"` : ''
+  const jql = `project = ${project} AND issuetype in (${typeList})${statusFilter}${dateFilter} ORDER BY updated DESC`
 
   const data = await jiraGet(
     creds,

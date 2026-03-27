@@ -53,6 +53,16 @@ const CREATE_TABLES_SQL = `
     transitioned_at TEXT NOT NULL
   );
 
+  CREATE TABLE IF NOT EXISTS source_connections (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    source_type TEXT NOT NULL,
+    base_url TEXT NOT NULL,
+    email TEXT NOT NULL,
+    api_token TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  );
+
   CREATE TABLE IF NOT EXISTS llm_insights (
     id TEXT PRIMARY KEY,
     import_id TEXT NOT NULL REFERENCES import_sessions(id),
@@ -69,7 +79,16 @@ export async function migrate() {
   // Add columns introduced after initial schema (safe to re-run)
   try {
     sqlite.exec(`ALTER TABLE project_configs ADD COLUMN cycle_time_mode TEXT NOT NULL DEFAULT 'first_last'`)
-  } catch {
-    // column already exists
-  }
+  } catch { /* column already exists */ }
+  try {
+    sqlite.exec(`CREATE TABLE IF NOT EXISTS source_connections (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      source_type TEXT NOT NULL,
+      base_url TEXT NOT NULL,
+      email TEXT NOT NULL,
+      api_token TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    )`)
+  } catch { /* already exists */ }
 }

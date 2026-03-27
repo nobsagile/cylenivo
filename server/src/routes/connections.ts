@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { streamSSE } from 'hono/streaming'
 import { eq } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { sourceConnections } from '../db/schema.js'
@@ -90,17 +91,24 @@ connections.post('/:id/fetch', async (c) => {
   if (!body.project) return c.json({ data: null, error: 'Missing required field: project' }, 422)
 
   const creds: JiraCredentials = { base_url: conn.base_url, email: conn.email, api_token: conn.api_token }
-  try {
-    const importFile = await buildImportFile(creds, {
-      project: body.project,
-      limit: body.limit ?? 50,
-      issue_types: body.issue_types ?? ['Story', 'Task', 'Bug'],
-      done_only: body.done_only ?? true,
-    })
-    return c.json(ok(importFile))
-  } catch (e) {
-    return c.json({ data: null, error: e instanceof Error ? e.message : 'Fetch failed' }, 400)
+  const options = {
+    project: body.project,
+    limit: body.limit ?? 50,
+    issue_types: body.issue_types ?? ['Story', 'Task', 'Bug'],
+    done_only: body.done_only ?? true,
+    date_from: body.date_from as string | undefined,
   }
+
+  return streamSSE(c, async (stream) => {
+    try {
+      const importFile = await buildImportFile(creds, options, async (current, total, key) => {
+        await stream.writeSSE({ data: JSON.stringify({ type: 'progress', current, total, key }) })
+      })
+      await stream.writeSSE({ data: JSON.stringify({ type: 'done', result: importFile }) })
+    } catch (e) {
+      await stream.writeSSE({ data: JSON.stringify({ type: 'error', message: e instanceof Error ? e.message : 'Fetch failed' }) })
+    }
+  })
 })
 
 export default connections
