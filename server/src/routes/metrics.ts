@@ -8,7 +8,7 @@ import { calculateCycleTime, type CycleTimeMode } from '../analyzers/cycleTime.j
 import { calculateLeadTime } from '../analyzers/leadTime.js'
 import { calculatePercentiles, calculateThroughputPerWeek } from '../analyzers/percentiles.js'
 import { calculateTimeInStatus } from '../analyzers/timeInStatus.js'
-import { firstTransitionTo, trimTransitionsToCycleWindow, type Transition } from '../analyzers/utils.js'
+import { firstTransitionTo, lastTransitionTo, trimTransitionsToCycleWindow, type Transition } from '../analyzers/utils.js'
 
 const metrics = new Hono()
 
@@ -60,7 +60,9 @@ metrics.get('/:importId/summary', async (c) => {
     const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, config.cycle_time_mode)
     if (ct !== null) {
       cycleTimes.push(ct)
-      const endTs = firstTransitionTo(ticket.transitions, config.cycle_time_end_status)
+      const endTs = config.cycle_time_mode === 'first_first'
+        ? firstTransitionTo(ticket.transitions, config.cycle_time_end_status)
+        : lastTransitionTo(ticket.transitions, config.cycle_time_end_status)
       if (endTs) completedAtDates.push(endTs)
     }
     const lt = calculateLeadTime(
