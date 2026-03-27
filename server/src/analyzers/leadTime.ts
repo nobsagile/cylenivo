@@ -18,7 +18,9 @@ export function calculateLeadTime(
   if (!leadTimeStartStatus) {
     startTs = ticketCreatedAt
   } else {
-    const found = firstTransitionTo(transitions, leadTimeStartStatus)
+    const found = mode === 'last_last'
+      ? lastTransitionTo(transitions, leadTimeStartStatus)
+      : firstTransitionTo(transitions, leadTimeStartStatus)
     if (found === null) return null
     startTs = found
   }

@@ -266,6 +266,12 @@ describe('calculateLeadTime — measurement modes', () => {
     const result = calculateLeadTime(createdAt, reworkTransitions, 'Customer Feedback', 'Preparation', 'first_last')
     expect(result).toBeCloseTo(45, 0)
   })
+
+  // last_last with lead_time_start_status: last Preparation (Jan 21) → last Customer Feedback (Feb 15) = 25 days
+  it('last_last with lead_time_start_status: last start status to last end', () => {
+    const result = calculateLeadTime(createdAt, reworkTransitions, 'Customer Feedback', 'Preparation', 'last_last')
+    expect(result).toBeCloseTo(25, 0)
+  })
 })
 
 describe('calculateTimeInStatus', () => {
