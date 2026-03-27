@@ -24,6 +24,9 @@ import { api } from '@/services/api'
 import type { ProjectConfig, ImportSession } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select'
 
 function SortableStatus({
   id,
@@ -184,8 +187,6 @@ export default function ConfigFormPage() {
     }
   }
 
-  const selectClass = "w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-
   return (
     <div className="max-w-lg">
       <button
@@ -216,20 +217,19 @@ export default function ConfigFormPage() {
             Select an existing dataset to automatically detect all status values.
           </p>
           <div className="flex gap-2">
-            <select
-              defaultValue=""
-              onChange={(e) => loadFromImport(e.target.value)}
-              disabled={loadingStatuses}
-              className="flex-1 border border-blue-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              <option value="">— select import —</option>
-              {imports.map((imp) => (
-                <option key={imp.id} value={imp.id}>
-                  {imp.project_key} — {new Date(imp.imported_at).toLocaleDateString('de-DE')}
-                  {imp.config_name ? ` (${imp.config_name})` : ''}
-                </option>
-              ))}
-            </select>
+            <Select onValueChange={loadFromImport} disabled={loadingStatuses}>
+              <SelectTrigger className="flex-1 border-blue-200 focus:ring-blue-500">
+                <SelectValue placeholder="— select import —" />
+              </SelectTrigger>
+              <SelectContent>
+                {imports.map((imp) => (
+                  <SelectItem key={imp.id} value={imp.id}>
+                    {imp.project_key} — {new Date(imp.imported_at).toLocaleDateString('de-DE')}
+                    {imp.config_name ? ` (${imp.config_name})` : ''}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {loadingStatuses && (
               <div className="flex items-center px-3 text-sm text-blue-600">Loading…</div>
             )}
@@ -311,30 +311,39 @@ export default function ConfigFormPage() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1.5">Start Status</label>
-              <select value={cycleStart} onChange={(e) => setCycleStart(e.target.value)} required className={selectClass}>
-                <option value="">— select —</option>
-                {statusOrder.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
+              <Select value={cycleStart} onValueChange={setCycleStart} required>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="— select —" />
+                </SelectTrigger>
+                <SelectContent>
+                  {statusOrder.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1.5">End Status</label>
-              <select value={cycleEnd} onChange={(e) => setCycleEnd(e.target.value)} required className={selectClass}>
-                <option value="">— select —</option>
-                {statusOrder.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
+              <Select value={cycleEnd} onValueChange={setCycleEnd} required>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="— select —" />
+                </SelectTrigger>
+                <SelectContent>
+                  {statusOrder.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1.5">Measurement Mode</label>
-            <select
-              value={cycleMode}
-              onChange={(e) => setCycleMode(e.target.value as typeof cycleMode)}
-              className={selectClass}
-            >
-              <option value="first_last">First in / Last out — first entry into start, last entry into end (recommended)</option>
-              <option value="first_first">First in / First out — first entry into start, first entry into end</option>
-              <option value="last_last">Last in / Last out — last entry into start, last entry into end</option>
-            </select>
+            <Select value={cycleMode} onValueChange={(v) => setCycleMode(v as typeof cycleMode)}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="first_last">First in / Last out — recommended</SelectItem>
+                <SelectItem value="first_first">First in / First out — time to first done</SelectItem>
+                <SelectItem value="last_last">Last in / Last out — last active period only</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -346,10 +355,15 @@ export default function ConfigFormPage() {
               Start Status
               <span className="text-gray-400 font-normal ml-1">— leave empty to use ticket creation date</span>
             </label>
-            <select value={leadStart} onChange={(e) => setLeadStart(e.target.value)} className={selectClass}>
-              <option value="">Use ticket creation date</option>
-              {statusOrder.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
+            <Select value={leadStart || '__created__'} onValueChange={(v) => setLeadStart(v === '__created__' ? '' : v)}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__created__">Use ticket creation date</SelectItem>
+                {statusOrder.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

@@ -17,6 +17,9 @@ import { api } from '@/services/api'
 import type { ProjectConfig } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select'
 
 type Step = 'upload' | 'configure'
 
@@ -167,8 +170,6 @@ export default function ImportPage() {
     }
   }
 
-  const selectClass = 'w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-
   // ── Step 1: Upload ──────────────────────────────────────────────────────
   if (step === 'upload') {
     return (
@@ -275,13 +276,18 @@ export default function ImportPage() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Configuration</label>
-            <select value={selectedConfigId} onChange={(e) => setSelectedConfigId(e.target.value)} className={selectClass}>
-              {configs.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name} — {c.cycle_time_start_status} → {c.cycle_time_end_status}
-                </option>
-              ))}
-            </select>
+            <Select value={selectedConfigId} onValueChange={setSelectedConfigId}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="— select —" />
+              </SelectTrigger>
+              <SelectContent>
+                {configs.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name} — {c.cycle_time_start_status} → {c.cycle_time_end_status}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           {selectedConfigId && (() => {
             const cfg = configs.find((c) => c.id === selectedConfigId)
@@ -339,17 +345,25 @@ export default function ImportPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1.5">Start Status</label>
-                <select value={cycleStart} onChange={(e) => setCycleStart(e.target.value)} className={selectClass}>
-                  <option value="">— select —</option>
-                  {statusOrder.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
+                <Select value={cycleStart} onValueChange={setCycleStart}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="— select —" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {statusOrder.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1.5">End Status</label>
-                <select value={cycleEnd} onChange={(e) => setCycleEnd(e.target.value)} className={selectClass}>
-                  <option value="">— select —</option>
-                  {statusOrder.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
+                <Select value={cycleEnd} onValueChange={setCycleEnd}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="— select —" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {statusOrder.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
@@ -359,10 +373,15 @@ export default function ImportPage() {
             <label className="block text-xs font-medium text-gray-500 mb-1.5">
               Start Status <span className="font-normal text-gray-400">— empty = ticket creation date</span>
             </label>
-            <select value={leadStart} onChange={(e) => setLeadStart(e.target.value)} className={selectClass}>
-              <option value="">Use ticket creation date</option>
-              {statusOrder.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
+            <Select value={leadStart || '__created__'} onValueChange={(v) => setLeadStart(v === '__created__' ? '' : v)}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__created__">Use ticket creation date</SelectItem>
+                {statusOrder.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       )}

@@ -201,13 +201,15 @@ export default function InsightsPage() {
                       'What is our P85 cycle time?',
                       'Where are the biggest bottlenecks?',
                     ].map((suggestion) => (
-                      <button
+                      <Button
                         key={suggestion}
+                        variant="outline"
+                        size="sm"
                         onClick={() => { setChatInput(suggestion); inputRef.current?.focus() }}
-                        className="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-blue-300 hover:text-blue-600 transition-colors"
+                        className="text-xs h-7 rounded-full"
                       >
                         {suggestion}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>
