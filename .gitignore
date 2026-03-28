@@ -26,5 +26,6 @@ src-tauri/binaries/*
 !src-tauri/binaries/.gitkeep
 CLAUDE.md
 SPEC.md
+DESIGN.md
 test-export.json
 *.export.json
