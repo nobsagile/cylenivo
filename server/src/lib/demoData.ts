@@ -25,7 +25,7 @@ export interface DemoFixture {
 export const DEMO_IMPROVING: DemoFixture = {
   "source_type": "jira",
   "project_key": "ALPHA",
-  "exported_at": "2026-03-28T11:28:31.989Z",
+  "exported_at": "2026-03-28T17:41:48.008Z",
   "tickets": [
     {
       "external_id": "ALPHA-1",
@@ -84,183 +84,102 @@ export const DEMO_IMPROVING: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-30T05:48:00.000Z"
+          "transitioned_at": "2025-08-05T01:00:18.023Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-08-03T13:00:00.000Z"
+          "transitioned_at": "2025-08-09T14:02:08.605Z"
         }
       ]
     },
     {
       "external_id": "ALPHA-3",
-      "title": "Fix date picker timezone offset",
-      "ticket_type": "bug",
-      "created_at": "2025-07-17T12:01:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-07-17T15:27:57.870Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-07-20T12:01:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-07-29T12:01:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-08-01T12:01:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-4",
-      "title": "Resolve deep link 404 error",
-      "ticket_type": "bug",
-      "created_at": "2025-07-09T13:14:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-07-09T14:27:59.832Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-07-14T13:14:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-07-23T13:14:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-07-26T13:14:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-5",
-      "title": "Resolve double-submit on form",
-      "ticket_type": "bug",
-      "created_at": "2025-07-02T08:39:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-07-02T11:34:32.910Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-07-08T08:39:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-07-20T08:39:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-07-24T08:39:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-6",
-      "title": "Add SSO provider support",
+      "title": "Integrate webhook notifications",
       "ticket_type": "story",
-      "created_at": "2025-06-29T08:21:00.000Z",
+      "created_at": "2025-07-07T08:10:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-06-29T10:59:30.217Z"
+          "transitioned_at": "2025-07-07T10:22:25.522Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-03T08:21:00.000Z"
+          "transitioned_at": "2025-07-14T08:10:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-18T08:21:00.000Z"
+          "transitioned_at": "2025-07-26T08:10:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-07-23T08:21:00.000Z"
+          "transitioned_at": "2025-07-30T08:10:00.000Z"
         }
       ],
       "metadata": {
-        "story_points": 1
+        "story_points": 2
       }
     },
     {
-      "external_id": "ALPHA-7",
-      "title": "Fix tooltip positioning",
-      "ticket_type": "bug",
-      "created_at": "2025-07-07T15:07:00.000Z",
+      "external_id": "ALPHA-4",
+      "title": "Implement user authentication flow",
+      "ticket_type": "story",
+      "created_at": "2025-07-04T13:12:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-07-07T17:35:11.282Z"
+          "transitioned_at": "2025-07-04T16:17:06.629Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-14T15:07:00.000Z"
+          "transitioned_at": "2025-07-07T13:12:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-27T09:07:00.000Z"
+          "transitioned_at": "2025-07-21T01:12:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-07-31T15:07:00.000Z"
+          "transitioned_at": "2025-07-25T13:12:00.000Z"
         }
-      ]
+      ],
+      "metadata": {
+        "story_points": 4
+      }
     },
     {
-      "external_id": "ALPHA-8",
-      "title": "Build onboarding wizard",
+      "external_id": "ALPHA-5",
+      "title": "Add multi-select bulk actions",
       "ticket_type": "story",
-      "created_at": "2025-07-12T10:26:00.000Z",
+      "created_at": "2025-07-16T14:55:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-07-12T13:21:57.821Z"
+          "transitioned_at": "2025-07-16T18:43:11.064Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-19T10:26:00.000Z"
+          "transitioned_at": "2025-07-18T14:55:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-01T22:26:00.000Z"
+          "transitioned_at": "2025-07-30T14:55:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-08-06T10:26:00.000Z"
+          "transitioned_at": "2025-08-03T14:55:00.000Z"
         }
       ],
       "metadata": {
@@ -268,30 +187,130 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-9",
-      "title": "Add weekly email digest",
+      "external_id": "ALPHA-6",
+      "title": "Build CSV export feature",
       "ticket_type": "story",
-      "created_at": "2025-07-06T15:54:00.000Z",
+      "created_at": "2025-07-10T16:04:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-07-06T18:03:49.936Z"
+          "transitioned_at": "2025-07-10T19:50:19.333Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-08T15:54:00.000Z"
+          "transitioned_at": "2025-07-16T16:04:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-21T09:54:00.000Z"
+          "transitioned_at": "2025-07-27T22:04:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-07-25T15:54:00.000Z"
+          "transitioned_at": "2025-07-31T16:04:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 4
+      }
+    },
+    {
+      "external_id": "ALPHA-7",
+      "title": "Add custom field support",
+      "ticket_type": "story",
+      "created_at": "2025-07-10T16:26:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-07-10T18:06:45.722Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-07-15T16:26:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-02T16:26:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-08-08T16:26:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 2
+      }
+    },
+    {
+      "external_id": "ALPHA-8",
+      "title": "Fix incorrect percentage display",
+      "ticket_type": "bug",
+      "created_at": "2025-07-20T16:25:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-07-20T17:57:08.711Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-07-25T16:25:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-04T06:49:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-04T18:49:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-21T09:15:07.562Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-08-28T12:00:36.518Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-9",
+      "title": "Build notification preferences",
+      "ticket_type": "story",
+      "created_at": "2025-07-18T09:58:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-07-18T12:56:58.813Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-07-21T09:58:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-05T09:58:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-08-10T09:58:00.000Z"
         }
       ],
       "metadata": {
@@ -300,565 +319,70 @@ export const DEMO_IMPROVING: DemoFixture = {
     },
     {
       "external_id": "ALPHA-10",
-      "title": "Migrate to structured logging",
-      "ticket_type": "task",
-      "created_at": "2025-07-07T09:39:00.000Z",
+      "title": "Add keyboard shortcut support",
+      "ticket_type": "story",
+      "created_at": "2025-07-10T15:19:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-07-07T10:52:27.621Z"
+          "transitioned_at": "2025-07-10T17:11:31.116Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-11T09:39:00.000Z"
+          "transitioned_at": "2025-07-16T15:19:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-27T03:39:00.000Z"
+          "transitioned_at": "2025-07-23T20:07:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-07-24T08:07:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-06T07:59:30.225Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-08-01T09:39:00.000Z"
+          "transitioned_at": "2025-08-11T21:39:08.893Z"
         }
-      ]
+      ],
+      "metadata": {
+        "story_points": 2
+      }
     },
     {
       "external_id": "ALPHA-11",
-      "title": "Document REST API endpoints",
-      "ticket_type": "task",
-      "created_at": "2025-07-16T11:00:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-07-16T13:43:24.324Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-07-22T11:00:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-05T17:00:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-08-10T11:00:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-12",
-      "title": "Refactor API client layer",
-      "ticket_type": "task",
-      "created_at": "2025-06-29T14:42:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-06-29T16:09:51.107Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-07-02T14:42:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-07-16T02:42:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-07-20T14:42:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-13",
-      "title": "Redesign settings page layout",
+      "title": "Add real-time collaboration",
       "ticket_type": "story",
-      "created_at": "2025-07-02T09:33:00.000Z",
+      "created_at": "2025-07-03T13:29:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-07-02T11:25:52.669Z"
+          "transitioned_at": "2025-07-03T14:08:58.173Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-05T09:33:00.000Z"
+          "transitioned_at": "2025-07-06T13:29:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-26T09:33:00.000Z"
+          "transitioned_at": "2025-07-26T19:29:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-08-02T09:33:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
-    },
-    {
-      "external_id": "ALPHA-14",
-      "title": "Fix incorrect percentage display",
-      "ticket_type": "bug",
-      "created_at": "2025-07-08T13:32:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-07-08T14:51:26.128Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-07-13T13:32:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-07-28T13:32:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-08-02T13:32:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-15",
-      "title": "Build team overview dashboard",
-      "ticket_type": "story",
-      "created_at": "2025-07-15T10:07:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-07-15T10:45:54.430Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-07-18T10:07:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-07-30T10:07:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-08-03T10:07:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 1
-      }
-    },
-    {
-      "external_id": "ALPHA-16",
-      "title": "Add multi-select bulk actions",
-      "ticket_type": "story",
-      "created_at": "2025-08-06T09:52:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-06T13:18:28.729Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-11T09:52:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-27T21:52:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-09-02T09:52:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
-    },
-    {
-      "external_id": "ALPHA-17",
-      "title": "Build activity feed component",
-      "ticket_type": "story",
-      "created_at": "2025-08-07T16:29:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-07T19:56:04.229Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-14T16:29:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-25T22:29:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-08-29T16:29:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 1
-      }
-    },
-    {
-      "external_id": "ALPHA-18",
-      "title": "Build CSV export feature",
-      "ticket_type": "story",
-      "created_at": "2025-08-18T15:37:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-18T19:06:07.343Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-25T15:37:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-09-08T21:37:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-09-13T15:37:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
-    },
-    {
-      "external_id": "ALPHA-19",
-      "title": "Implement data retention policy",
-      "ticket_type": "story",
-      "created_at": "2025-08-14T10:50:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-14T12:36:48.450Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-16T10:50:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-24T01:14:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-24T13:14:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-30T06:02:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-09-04T10:50:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 1
-      }
-    },
-    {
-      "external_id": "ALPHA-20",
-      "title": "Fix drag-and-drop reorder bug",
-      "ticket_type": "bug",
-      "created_at": "2025-08-16T09:16:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-16T09:56:00.714Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-18T09:16:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-09-03T03:16:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-09-08T09:16:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-21",
-      "title": "Add custom field support",
-      "ticket_type": "story",
-      "created_at": "2025-08-01T13:31:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-01T15:39:29.751Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-05T13:31:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-21T07:31:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-08-26T13:31:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
-    },
-    {
-      "external_id": "ALPHA-22",
-      "title": "Integrate webhook notifications",
-      "ticket_type": "story",
-      "created_at": "2025-08-10T12:38:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-10T13:36:18.799Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-14T12:38:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-19T07:50:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-19T19:50:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-23T10:14:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-08-26T12:38:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 1
-      }
-    },
-    {
-      "external_id": "ALPHA-23",
-      "title": "Upgrade dependencies to latest",
-      "ticket_type": "task",
-      "created_at": "2025-07-30T15:03:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-07-30T16:21:14.342Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-03T15:03:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-17T03:03:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-08-21T15:03:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-24",
-      "title": "Fix memory leak in polling loop",
-      "ticket_type": "bug",
-      "created_at": "2025-08-15T12:48:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-15T13:55:08.088Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-20T12:48:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-29T08:00:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-29T20:00:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-09-05T10:24:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-09-11T12:48:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-25",
-      "title": "Implement user authentication flow",
-      "ticket_type": "story",
-      "created_at": "2025-08-11T16:01:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-11T17:41:56.748Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-15T16:01:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-28T10:01:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-09-01T16:01:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 8
-      }
-    },
-    {
-      "external_id": "ALPHA-26",
-      "title": "Add keyboard shortcut support",
-      "ticket_type": "story",
-      "created_at": "2025-08-07T15:56:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-07T18:25:23.554Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-13T15:56:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-28T15:56:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-09-02T15:56:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
-    },
-    {
-      "external_id": "ALPHA-27",
-      "title": "Build notification preferences",
-      "ticket_type": "story",
-      "created_at": "2025-08-08T16:59:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-08T18:33:49.856Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-14T16:59:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-28T04:59:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-09-01T16:59:00.000Z"
+          "transitioned_at": "2025-08-02T13:29:00.000Z"
         }
       ],
       "metadata": {
@@ -866,152 +390,92 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-28",
-      "title": "Remove deprecated API calls",
-      "ticket_type": "task",
-      "created_at": "2025-08-04T11:31:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-04T14:10:45.062Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-11T11:31:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-26T11:31:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-08-31T11:31:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-29",
-      "title": "Fix broken layout on small screens",
-      "ticket_type": "bug",
-      "created_at": "2025-08-01T13:46:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-01T16:46:06.854Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-07T13:46:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-21T01:46:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-08-25T13:46:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-30",
-      "title": "Fix incorrect sort order",
-      "ticket_type": "bug",
-      "created_at": "2025-08-09T16:40:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-09T18:42:59.061Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-13T16:40:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-23T10:40:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-08-26T16:40:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-31",
-      "title": "Fix session timeout handling",
-      "ticket_type": "bug",
-      "created_at": "2025-07-28T11:49:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-07-28T14:42:30.208Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-04T11:49:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-07T16:37:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-08-08T04:37:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-08-10T14:13:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-08-12T11:49:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-32",
+      "external_id": "ALPHA-12",
       "title": "Implement full-text search",
       "ticket_type": "story",
-      "created_at": "2025-08-12T16:53:00.000Z",
+      "created_at": "2025-07-23T13:59:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-08-12T17:43:57.275Z"
+          "transitioned_at": "2025-07-23T15:04:52.509Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-16T16:53:00.000Z"
+          "transitioned_at": "2025-07-25T13:59:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-30T04:53:00.000Z"
+          "transitioned_at": "2025-08-04T07:59:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-09-03T16:53:00.000Z"
+          "transitioned_at": "2025-08-07T13:59:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 2
+      }
+    },
+    {
+      "external_id": "ALPHA-13",
+      "title": "Build onboarding wizard",
+      "ticket_type": "story",
+      "created_at": "2025-07-05T16:19:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-07-05T18:57:16.959Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-07-09T16:19:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-07-24T16:19:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-07-29T16:19:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 4
+      }
+    },
+    {
+      "external_id": "ALPHA-14",
+      "title": "Add weekly email digest",
+      "ticket_type": "story",
+      "created_at": "2025-07-03T09:41:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-07-03T10:37:13.893Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-07-06T09:41:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-07-19T21:41:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-07-24T09:41:00.000Z"
         }
       ],
       "metadata": {
@@ -1019,8 +483,541 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-33",
+      "external_id": "ALPHA-15",
+      "title": "Resolve save race condition",
+      "ticket_type": "bug",
+      "created_at": "2025-07-21T15:26:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-07-21T18:58:12.142Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-07-23T15:26:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-08T09:26:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-08-13T15:26:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-16",
+      "title": "Resolve double-submit on form",
+      "ticket_type": "bug",
+      "created_at": "2025-08-16T09:23:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-16T13:19:44.587Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-21T09:23:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-31T21:23:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-04T09:23:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-17",
+      "title": "Extract shared UI components",
+      "ticket_type": "task",
+      "created_at": "2025-07-30T12:40:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-07-30T16:38:12.353Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-05T12:40:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-14T12:40:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-08-17T12:40:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-18",
+      "title": "Fix incorrect sort order",
+      "ticket_type": "bug",
+      "created_at": "2025-08-08T15:40:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-08T19:26:52.900Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-12T15:40:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-26T03:40:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-08-30T15:40:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-19",
+      "title": "Add SSO provider support",
+      "ticket_type": "story",
+      "created_at": "2025-07-27T13:43:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-07-27T17:17:41.255Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-03T13:43:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-11T01:43:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-08-13T13:43:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 4
+      }
+    },
+    {
+      "external_id": "ALPHA-20",
+      "title": "Build team overview dashboard",
+      "ticket_type": "story",
+      "created_at": "2025-08-06T13:42:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-06T16:56:48.366Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-12T13:42:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-19T07:42:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-08-21T13:42:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 4
+      }
+    },
+    {
+      "external_id": "ALPHA-21",
+      "title": "Build activity feed component",
+      "ticket_type": "story",
+      "created_at": "2025-08-04T10:08:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-04T11:34:09.238Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-09T10:08:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-20T16:08:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-08-24T10:08:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 4
+      }
+    },
+    {
+      "external_id": "ALPHA-22",
+      "title": "Fix flaky test in CI pipeline",
+      "ticket_type": "bug",
+      "created_at": "2025-08-20T08:52:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-20T11:07:31.071Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-24T08:52:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-27T13:40:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-28T01:40:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-02T13:54:59.168Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-04T22:35:41.669Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-23",
       "title": "Implement role-based permissions",
+      "ticket_type": "story",
+      "created_at": "2025-07-29T16:45:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-07-29T20:02:14.431Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-03T16:45:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-15T16:45:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-08-19T16:45:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 8
+      }
+    },
+    {
+      "external_id": "ALPHA-24",
+      "title": "Add pagination to results list",
+      "ticket_type": "story",
+      "created_at": "2025-08-02T14:40:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-02T18:35:05.742Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-07T14:40:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-10T19:28:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-11T07:28:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-16T02:35:03.057Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-08-18T03:55:12.939Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 2
+      }
+    },
+    {
+      "external_id": "ALPHA-25",
+      "title": "Build public API endpoints",
+      "ticket_type": "story",
+      "created_at": "2025-08-17T10:31:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-17T14:17:25.367Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-24T10:31:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-06T04:31:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-10T10:31:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 4
+      }
+    },
+    {
+      "external_id": "ALPHA-26",
+      "title": "Fix broken layout on small screens",
+      "ticket_type": "bug",
+      "created_at": "2025-08-11T12:32:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-11T16:28:42.369Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-18T12:32:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-01T00:32:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-05T12:32:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-27",
+      "title": "Implement audit log view",
+      "ticket_type": "story",
+      "created_at": "2025-08-18T10:52:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-18T12:33:19.554Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-22T10:52:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-05T16:52:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-10T10:52:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 8
+      }
+    },
+    {
+      "external_id": "ALPHA-28",
+      "title": "Resolve import validation error",
+      "ticket_type": "bug",
+      "created_at": "2025-08-20T12:16:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-20T15:27:57.247Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-25T12:16:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-05T00:16:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-08T12:16:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-29",
+      "title": "Fix memory leak in polling loop",
+      "ticket_type": "bug",
+      "created_at": "2025-08-05T08:29:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-05T11:20:48.194Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-12T08:29:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-28T02:29:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-02T08:29:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-30",
+      "title": "Implement data retention policy",
+      "ticket_type": "story",
+      "created_at": "2025-08-01T08:07:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-01T11:30:55.029Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-05T08:07:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-16T14:07:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-08-20T08:07:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 4
+      }
+    },
+    {
+      "external_id": "ALPHA-31",
+      "title": "Redesign settings page layout",
+      "ticket_type": "story",
+      "created_at": "2025-08-15T13:54:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-15T15:36:28.001Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-22T13:54:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-08-28T04:18:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-28T16:18:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-07T00:18:59.536Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-11T00:19:25.051Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 1
+      }
+    },
+    {
+      "external_id": "ALPHA-32",
+      "title": "Integrate webhook notifications",
       "ticket_type": "story",
       "created_at": "2025-08-07T13:06:00.000Z",
       "transitions": [
@@ -1050,289 +1047,40 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-34",
-      "title": "Add pagination to results list",
-      "ticket_type": "story",
-      "created_at": "2025-09-21T13:50:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-09-21T16:36:19.195Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-09-25T13:50:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-09-28T18:38:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-09-29T06:38:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-01T16:14:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-10-03T13:50:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 4
-      }
-    },
-    {
-      "external_id": "ALPHA-35",
-      "title": "Fix flaky test in CI pipeline",
-      "ticket_type": "bug",
-      "created_at": "2025-08-31T08:46:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-31T12:18:46.669Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-09-04T08:46:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-09-13T08:46:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-09-16T08:46:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-36",
-      "title": "Build public API endpoints",
-      "ticket_type": "story",
-      "created_at": "2025-09-14T09:46:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-09-14T10:44:20.989Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-09-17T09:46:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-09-24T03:46:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-09-26T09:46:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 4
-      }
-    },
-    {
-      "external_id": "ALPHA-37",
-      "title": "Resolve save race condition",
-      "ticket_type": "bug",
-      "created_at": "2025-08-30T16:34:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-30T17:13:53.034Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-09-02T16:34:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-09-14T16:34:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-09-18T16:34:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-38",
-      "title": "Resolve import validation error",
-      "ticket_type": "bug",
-      "created_at": "2025-09-02T13:30:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-09-02T16:59:01.490Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-09-05T13:30:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-09-10T08:42:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-09-10T20:42:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-09-14T11:06:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-09-17T13:30:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-39",
-      "title": "Add real-time collaboration",
-      "ticket_type": "story",
-      "created_at": "2025-09-14T12:40:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-09-14T16:35:35.913Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-09-16T12:40:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-09-24T00:40:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-09-26T12:40:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
-    },
-    {
-      "external_id": "ALPHA-40",
-      "title": "Implement audit log view",
-      "ticket_type": "story",
-      "created_at": "2025-08-31T12:02:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-08-31T13:48:21.375Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-09-07T12:02:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-09-17T06:02:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-09-20T12:02:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
-    },
-    {
-      "external_id": "ALPHA-41",
+      "external_id": "ALPHA-33",
       "title": "Implement user authentication flow",
       "ticket_type": "story",
-      "created_at": "2025-09-18T13:48:00.000Z",
+      "created_at": "2025-08-21T13:50:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-09-18T16:21:12.083Z"
+          "transitioned_at": "2025-08-21T16:36:19.195Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-20T13:48:00.000Z"
+          "transitioned_at": "2025-08-25T13:50:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-30T07:48:00.000Z"
+          "transitioned_at": "2025-08-29T23:26:00.000Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-10-03T13:48:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
-    },
-    {
-      "external_id": "ALPHA-42",
-      "title": "Build onboarding wizard",
-      "ticket_type": "story",
-      "created_at": "2025-09-15T08:41:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-09-15T10:28:29.395Z"
-        },
-        {
-          "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-18T08:41:00.000Z"
+          "transitioned_at": "2025-08-30T11:26:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-25T20:41:00.000Z"
+          "transitioned_at": "2025-09-06T23:36:20.450Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-09-28T08:41:00.000Z"
+          "transitioned_at": "2025-09-10T04:49:20.643Z"
         }
       ],
       "metadata": {
@@ -1340,40 +1088,394 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-43",
-      "title": "Build activity feed component",
+      "external_id": "ALPHA-34",
+      "title": "Add keyboard shortcut support",
       "ticket_type": "story",
-      "created_at": "2025-09-11T12:26:00.000Z",
+      "created_at": "2025-08-27T14:25:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-09-11T15:34:17.968Z"
+          "transitioned_at": "2025-08-27T17:41:20.724Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-15T12:26:00.000Z"
+          "transitioned_at": "2025-09-03T14:25:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-20T07:38:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-09-20T19:38:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-09-24T10:02:00.000Z"
+          "transitioned_at": "2025-09-12T14:25:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-09-27T12:26:00.000Z"
+          "transitioned_at": "2025-09-15T14:25:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 8
+      }
+    },
+    {
+      "external_id": "ALPHA-35",
+      "title": "Redesign settings page layout",
+      "ticket_type": "story",
+      "created_at": "2025-09-15T10:08:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-09-15T12:44:35.128Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-20T10:08:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-29T10:08:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-10-02T10:08:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 1
+      }
+    },
+    {
+      "external_id": "ALPHA-36",
+      "title": "Configure staging environment",
+      "ticket_type": "task",
+      "created_at": "2025-09-12T10:02:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-09-12T13:01:30.589Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-15T10:02:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-25T04:02:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-28T10:02:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-37",
+      "title": "Implement data retention policy",
+      "ticket_type": "story",
+      "created_at": "2025-09-11T09:51:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-09-11T10:49:37.979Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-13T09:51:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-21T15:51:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-24T09:51:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 1
+      }
+    },
+    {
+      "external_id": "ALPHA-38",
+      "title": "Implement role-based permissions",
+      "ticket_type": "story",
+      "created_at": "2025-08-31T16:49:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-31T18:02:01.429Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-04T16:49:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-14T10:49:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-17T16:49:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 8
+      }
+    },
+    {
+      "external_id": "ALPHA-39",
+      "title": "Build onboarding wizard",
+      "ticket_type": "story",
+      "created_at": "2025-09-19T11:25:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-09-19T13:40:49.973Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-22T11:25:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-25T16:13:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-26T04:13:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-10-01T10:11:01.887Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-10-03T16:10:11.267Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 1
+      }
+    },
+    {
+      "external_id": "ALPHA-40",
+      "title": "Optimize slow dashboard query",
+      "ticket_type": "task",
+      "created_at": "2025-09-10T12:28:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-09-10T14:37:49.866Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-15T12:28:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-24T12:28:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-27T12:28:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-41",
+      "title": "Fix date picker timezone offset",
+      "ticket_type": "bug",
+      "created_at": "2025-08-29T11:43:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-29T13:11:35.592Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-05T11:43:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-13T17:43:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-16T11:43:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-42",
+      "title": "Add performance benchmarks",
+      "ticket_type": "task",
+      "created_at": "2025-09-10T12:45:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-09-10T15:45:07.095Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-12T12:45:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-20T00:45:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-22T12:45:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-43",
+      "title": "Set up error monitoring alerts",
+      "ticket_type": "task",
+      "created_at": "2025-08-27T12:29:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-27T14:55:34.984Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-02T12:29:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-10T18:29:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-13T12:29:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-44",
+      "title": "Document REST API endpoints",
+      "ticket_type": "task",
+      "created_at": "2025-09-19T16:48:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-09-19T17:36:44.518Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-21T16:48:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-10-06T16:48:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-10-11T16:48:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-45",
+      "title": "Add custom field support",
+      "ticket_type": "story",
+      "created_at": "2025-09-02T15:27:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-09-02T18:14:42.150Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-09T15:27:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-21T15:27:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-25T15:27:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 1
+      }
+    },
+    {
+      "external_id": "ALPHA-46",
+      "title": "Add real-time collaboration",
+      "ticket_type": "story",
+      "created_at": "2025-09-09T11:38:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-09-09T13:34:00.297Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-16T11:38:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-20T23:38:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-22T11:38:00.000Z"
         }
       ],
       "metadata": {
@@ -1381,124 +1483,30 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-44",
-      "title": "Fix null reference on empty state",
-      "ticket_type": "bug",
-      "created_at": "2025-09-19T08:30:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-09-19T11:23:11.829Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-09-23T08:30:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-01T14:30:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-10-04T08:30:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-45",
-      "title": "Fix incorrect sort order",
-      "ticket_type": "bug",
-      "created_at": "2025-09-19T15:57:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-09-19T17:00:27.335Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-09-25T15:57:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-02T20:45:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-10-03T08:45:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-08T18:21:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-10-13T15:57:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-46",
-      "title": "Add performance benchmarks",
-      "ticket_type": "task",
-      "created_at": "2025-09-16T10:50:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-09-16T14:33:51.050Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-09-20T10:50:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-01T16:50:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-10-05T10:50:00.000Z"
-        }
-      ]
-    },
-    {
       "external_id": "ALPHA-47",
-      "title": "Redesign settings page layout",
+      "title": "Implement audit log view",
       "ticket_type": "story",
-      "created_at": "2025-08-31T10:37:00.000Z",
+      "created_at": "2025-09-16T12:22:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-08-31T13:20:26.377Z"
+          "transitioned_at": "2025-09-16T15:04:32.797Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-04T10:37:00.000Z"
+          "transitioned_at": "2025-09-23T12:22:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-11T22:37:00.000Z"
+          "transitioned_at": "2025-10-03T06:22:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-09-14T10:37:00.000Z"
+          "transitioned_at": "2025-10-06T12:22:00.000Z"
         }
       ],
       "metadata": {
@@ -1507,207 +1515,160 @@ export const DEMO_IMPROVING: DemoFixture = {
     },
     {
       "external_id": "ALPHA-48",
-      "title": "Fix drag-and-drop reorder bug",
-      "ticket_type": "bug",
-      "created_at": "2025-09-03T13:53:00.000Z",
+      "title": "Build public API endpoints",
+      "ticket_type": "story",
+      "created_at": "2025-09-12T15:26:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-09-03T15:43:04.832Z"
+          "transitioned_at": "2025-09-12T18:51:18.586Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-07T13:53:00.000Z"
+          "transitioned_at": "2025-09-17T15:26:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-16T13:53:00.000Z"
+          "transitioned_at": "2025-09-23T15:26:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-09-19T13:53:00.000Z"
+          "transitioned_at": "2025-09-25T15:26:00.000Z"
         }
-      ]
+      ],
+      "metadata": {
+        "story_points": 4
+      }
     },
     {
       "external_id": "ALPHA-49",
-      "title": "Fix incorrect percentage display",
-      "ticket_type": "bug",
-      "created_at": "2025-08-31T13:04:00.000Z",
+      "title": "Add SSO provider support",
+      "ticket_type": "story",
+      "created_at": "2025-09-08T12:37:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-08-31T16:21:02.832Z"
+          "transitioned_at": "2025-09-08T15:49:01.817Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-05T13:04:00.000Z"
+          "transitioned_at": "2025-09-15T12:37:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-16T19:04:00.000Z"
+          "transitioned_at": "2025-09-20T07:49:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-20T19:49:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-27T08:20:58.895Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-09-20T13:04:00.000Z"
+          "transitioned_at": "2025-09-30T03:26:06.993Z"
         }
-      ]
+      ],
+      "metadata": {
+        "story_points": 1
+      }
     },
     {
       "external_id": "ALPHA-50",
-      "title": "Resolve double-submit on form",
-      "ticket_type": "bug",
-      "created_at": "2025-09-19T09:40:00.000Z",
+      "title": "Upgrade dependencies to latest",
+      "ticket_type": "task",
+      "created_at": "2025-09-15T13:00:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-09-19T12:09:01.218Z"
+          "transitioned_at": "2025-09-15T16:23:27.558Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-25T09:40:00.000Z"
+          "transitioned_at": "2025-09-19T13:00:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-10-02T21:40:00.000Z"
+          "transitioned_at": "2025-09-24T19:00:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-10-05T09:40:00.000Z"
+          "transitioned_at": "2025-09-26T13:00:00.000Z"
         }
       ]
     },
     {
       "external_id": "ALPHA-51",
-      "title": "Resolve import validation error",
-      "ticket_type": "bug",
-      "created_at": "2025-09-01T16:00:00.000Z",
+      "title": "Add weekly email digest",
+      "ticket_type": "story",
+      "created_at": "2025-09-11T15:34:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-09-01T18:20:01.674Z"
+          "transitioned_at": "2025-09-11T18:07:30.789Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-03T16:00:00.000Z"
+          "transitioned_at": "2025-09-15T15:34:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-06T20:48:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-09-07T08:48:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-09-09T18:24:00.000Z"
+          "transitioned_at": "2025-09-23T21:34:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-09-11T16:00:00.000Z"
+          "transitioned_at": "2025-09-26T15:34:00.000Z"
         }
-      ]
+      ],
+      "metadata": {
+        "story_points": 4
+      }
     },
     {
       "external_id": "ALPHA-52",
-      "title": "Fix flaky test in CI pipeline",
-      "ticket_type": "bug",
-      "created_at": "2025-09-04T09:44:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-09-04T10:24:28.924Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-09-09T09:44:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-09-17T15:44:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-09-20T09:44:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-53",
-      "title": "Fix null reference on empty state",
-      "ticket_type": "bug",
-      "created_at": "2025-09-09T13:11:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-09-09T16:09:31.989Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-09-11T13:11:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-09-20T13:11:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-09-23T13:11:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-54",
-      "title": "Add SSO provider support",
+      "title": "Add pagination to results list",
       "ticket_type": "story",
-      "created_at": "2025-09-02T13:58:00.000Z",
+      "created_at": "2025-09-19T16:25:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-09-02T16:53:33.989Z"
+          "transitioned_at": "2025-09-19T18:06:01.629Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-09T13:58:00.000Z"
+          "transitioned_at": "2025-09-24T16:25:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-20T19:58:00.000Z"
+          "transitioned_at": "2025-10-04T10:25:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-09-24T13:58:00.000Z"
+          "transitioned_at": "2025-10-07T16:25:00.000Z"
         }
       ],
       "metadata": {
@@ -1715,30 +1676,86 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-55",
-      "title": "Implement data retention policy",
-      "ticket_type": "story",
-      "created_at": "2025-09-23T12:58:00.000Z",
+      "external_id": "ALPHA-53",
+      "title": "Remove deprecated API calls",
+      "ticket_type": "task",
+      "created_at": "2025-09-20T10:09:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-09-23T15:44:52.603Z"
+          "transitioned_at": "2025-09-20T14:05:21.539Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-25T12:58:00.000Z"
+          "transitioned_at": "2025-09-23T10:09:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-10-01T12:58:00.000Z"
+          "transitioned_at": "2025-10-03T04:09:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-10-03T12:58:00.000Z"
+          "transitioned_at": "2025-10-06T10:09:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-54",
+      "title": "Migrate to structured logging",
+      "ticket_type": "task",
+      "created_at": "2025-08-31T16:13:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-08-31T17:47:18.956Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-07T16:13:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-19T16:13:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-23T16:13:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-55",
+      "title": "Build team overview dashboard",
+      "ticket_type": "story",
+      "created_at": "2025-09-04T12:21:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-09-04T13:28:00.616Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-08T12:21:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-09-19T00:21:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-09-22T12:21:00.000Z"
         }
       ],
       "metadata": {
@@ -1747,119 +1764,67 @@ export const DEMO_IMPROVING: DemoFixture = {
     },
     {
       "external_id": "ALPHA-56",
-      "title": "Build public API endpoints",
-      "ticket_type": "story",
-      "created_at": "2025-10-10T11:13:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-10-10T15:01:17.999Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-10-13T11:13:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-19T11:13:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-10-21T11:13:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
-    },
-    {
-      "external_id": "ALPHA-57",
-      "title": "Build team overview dashboard",
-      "ticket_type": "story",
-      "created_at": "2025-10-16T13:32:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-10-16T16:05:20.216Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-10-23T13:32:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-28T19:32:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-10-30T13:32:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
-    },
-    {
-      "external_id": "ALPHA-58",
-      "title": "Fix broken layout on small screens",
+      "title": "Fix null reference on empty state",
       "ticket_type": "bug",
-      "created_at": "2025-10-05T09:00:00.000Z",
+      "created_at": "2025-10-07T13:27:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-10-05T10:50:14.890Z"
+          "transitioned_at": "2025-10-07T16:15:39.737Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-10-11T09:00:00.000Z"
+          "transitioned_at": "2025-10-12T13:27:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-10-18T03:00:00.000Z"
+          "transitioned_at": "2025-10-20T19:27:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-10-20T09:00:00.000Z"
+          "transitioned_at": "2025-10-23T13:27:00.000Z"
         }
       ]
     },
     {
-      "external_id": "ALPHA-59",
+      "external_id": "ALPHA-57",
       "title": "Build CSV export feature",
       "ticket_type": "story",
-      "created_at": "2025-10-06T14:08:00.000Z",
+      "created_at": "2025-10-04T08:07:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-10-06T15:23:11.387Z"
+          "transitioned_at": "2025-10-04T09:36:02.168Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-10-12T14:08:00.000Z"
+          "transitioned_at": "2025-10-09T08:07:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-10-17T02:08:00.000Z"
+          "transitioned_at": "2025-10-11T17:43:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-10-12T05:43:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-10-15T19:51:07.689Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-10-18T14:08:00.000Z"
+          "transitioned_at": "2025-10-17T08:46:02.414Z"
         }
       ],
       "metadata": {
@@ -1867,30 +1832,40 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-60",
-      "title": "Add multi-select bulk actions",
+      "external_id": "ALPHA-58",
+      "title": "Build activity feed component",
       "ticket_type": "story",
-      "created_at": "2025-09-26T09:20:00.000Z",
+      "created_at": "2025-10-05T11:36:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-09-26T12:50:17.030Z"
+          "transitioned_at": "2025-10-05T14:57:20.594Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-10-03T09:20:00.000Z"
+          "transitioned_at": "2025-10-09T11:36:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-10-10T21:20:00.000Z"
+          "transitioned_at": "2025-10-11T21:12:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-10-12T09:12:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-10-15T15:28:12.203Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-10-13T09:20:00.000Z"
+          "transitioned_at": "2025-10-17T01:00:51.718Z"
         }
       ],
       "metadata": {
@@ -1898,30 +1873,241 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-61",
-      "title": "Add custom field support",
-      "ticket_type": "story",
-      "created_at": "2025-10-04T11:09:00.000Z",
+      "external_id": "ALPHA-59",
+      "title": "Add database index for search",
+      "ticket_type": "task",
+      "created_at": "2025-10-10T13:45:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-10-04T13:39:23.846Z"
+          "transitioned_at": "2025-10-10T15:40:06.332Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-10-11T11:09:00.000Z"
+          "transitioned_at": "2025-10-17T13:45:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-10-19T17:09:00.000Z"
+          "transitioned_at": "2025-10-23T13:45:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-10-22T11:09:00.000Z"
+          "transitioned_at": "2025-10-25T13:45:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-60",
+      "title": "Build notification preferences",
+      "ticket_type": "story",
+      "created_at": "2025-10-17T08:32:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-10-17T11:07:36.042Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-10-22T08:32:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-10-26T02:32:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-10-27T08:32:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 4
+      }
+    },
+    {
+      "external_id": "ALPHA-61",
+      "title": "Fix drag-and-drop reorder bug",
+      "ticket_type": "bug",
+      "created_at": "2025-09-30T16:23:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-09-30T18:45:35.983Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-10-06T16:23:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-10-13T10:23:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-10-15T16:23:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-62",
+      "title": "Add multi-select bulk actions",
+      "ticket_type": "story",
+      "created_at": "2025-10-19T10:35:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-10-19T12:53:30.515Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-10-23T10:35:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-10-30T04:35:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-11-01T10:35:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 4
+      }
+    },
+    {
+      "external_id": "ALPHA-63",
+      "title": "Implement full-text search",
+      "ticket_type": "story",
+      "created_at": "2025-09-30T08:07:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-09-30T11:17:48.065Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-10-04T08:07:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-10-08T02:07:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-10-09T08:07:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 2
+      }
+    },
+    {
+      "external_id": "ALPHA-64",
+      "title": "Build public API endpoints",
+      "ticket_type": "story",
+      "created_at": "2025-10-16T10:35:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-10-16T11:28:41.070Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-10-19T10:35:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-10-25T10:35:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-10-27T10:35:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 2
+      }
+    },
+    {
+      "external_id": "ALPHA-65",
+      "title": "Add SSO provider support",
+      "ticket_type": "story",
+      "created_at": "2025-09-29T13:52:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-09-29T17:18:58.512Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-10-02T13:52:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-10-07T19:52:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-10-09T13:52:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 8
+      }
+    },
+    {
+      "external_id": "ALPHA-66",
+      "title": "Add multi-select bulk actions",
+      "ticket_type": "story",
+      "created_at": "2025-10-08T12:24:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-10-08T16:16:05.179Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-10-10T12:24:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-10-13T12:24:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-10-14T12:24:00.000Z"
         }
       ],
       "metadata": {
@@ -1929,227 +2115,71 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-62",
-      "title": "Configure staging environment",
-      "ticket_type": "task",
-      "created_at": "2025-10-20T12:40:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-10-20T16:19:09.984Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-10-25T12:40:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-11-01T06:40:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-11-03T12:40:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-63",
-      "title": "Integrate webhook notifications",
-      "ticket_type": "story",
-      "created_at": "2025-10-10T11:19:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-10-10T12:59:34.062Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-10-14T11:19:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-21T23:19:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-10-24T11:19:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 8
-      }
-    },
-    {
-      "external_id": "ALPHA-64",
-      "title": "Optimize slow dashboard query",
-      "ticket_type": "task",
-      "created_at": "2025-10-12T13:24:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-10-12T14:40:33.281Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-10-19T13:24:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-25T13:24:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-10-27T13:24:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-65",
-      "title": "Add keyboard shortcut support",
-      "ticket_type": "story",
-      "created_at": "2025-10-16T12:27:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-10-16T16:26:22.707Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-10-20T12:27:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-23T12:27:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-10-24T12:27:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
-    },
-    {
-      "external_id": "ALPHA-66",
-      "title": "Add real-time collaboration",
-      "ticket_type": "story",
-      "created_at": "2025-10-01T15:22:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-10-01T19:11:08.512Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-10-03T15:22:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-06T10:34:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-10-06T22:34:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-09T00:58:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-10-10T15:22:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 8
-      }
-    },
-    {
       "external_id": "ALPHA-67",
-      "title": "Fix date picker timezone offset",
-      "ticket_type": "bug",
-      "created_at": "2025-10-18T09:58:00.000Z",
+      "title": "Redesign settings page layout",
+      "ticket_type": "story",
+      "created_at": "2025-10-16T15:14:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-10-18T11:55:40.084Z"
+          "transitioned_at": "2025-10-16T17:30:53.863Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-10-22T09:58:00.000Z"
+          "transitioned_at": "2025-10-22T15:14:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-10-26T00:22:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-10-26T12:22:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-29T05:10:00.000Z"
+          "transitioned_at": "2025-10-31T15:14:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-10-31T09:58:00.000Z"
+          "transitioned_at": "2025-11-03T15:14:00.000Z"
         }
-      ]
+      ],
+      "metadata": {
+        "story_points": 1
+      }
     },
     {
       "external_id": "ALPHA-68",
-      "title": "Add pagination to results list",
+      "title": "Add real-time collaboration",
       "ticket_type": "story",
-      "created_at": "2025-09-28T16:45:00.000Z",
+      "created_at": "2025-09-28T08:57:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-09-28T17:41:08.394Z"
+          "transitioned_at": "2025-09-28T11:39:55.647Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-10-01T16:45:00.000Z"
+          "transitioned_at": "2025-10-04T08:57:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-10-06T22:45:00.000Z"
+          "transitioned_at": "2025-10-08T08:57:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-10-08T20:57:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-10-15T10:56:50.162Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-10-08T16:45:00.000Z"
+          "transitioned_at": "2025-10-18T06:39:37.374Z"
         }
       ],
       "metadata": {
@@ -2158,63 +2188,7 @@ export const DEMO_IMPROVING: DemoFixture = {
     },
     {
       "external_id": "ALPHA-69",
-      "title": "Fix tooltip positioning",
-      "ticket_type": "bug",
-      "created_at": "2025-10-15T12:49:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-10-15T13:19:20.790Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-10-18T12:49:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-26T00:49:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-10-28T12:49:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-70",
-      "title": "Add database index for search",
-      "ticket_type": "task",
-      "created_at": "2025-10-22T14:37:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-10-22T17:20:19.316Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-10-24T14:37:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-26T20:37:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-10-27T14:37:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-71",
-      "title": "Fix memory leak in polling loop",
+      "title": "Resolve deep link 404 error",
       "ticket_type": "bug",
       "created_at": "2025-10-03T08:16:00.000Z",
       "transitions": [
@@ -2241,8 +2215,8 @@ export const DEMO_IMPROVING: DemoFixture = {
       ]
     },
     {
-      "external_id": "ALPHA-72",
-      "title": "Implement full-text search",
+      "external_id": "ALPHA-70",
+      "title": "Implement user authentication flow",
       "ticket_type": "story",
       "created_at": "2025-10-03T16:56:00.000Z",
       "transitions": [
@@ -2272,8 +2246,8 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-73",
-      "title": "Implement audit log view",
+      "external_id": "ALPHA-71",
+      "title": "Implement role-based permissions",
       "ticket_type": "story",
       "created_at": "2025-10-09T08:52:00.000Z",
       "transitions": [
@@ -2303,8 +2277,8 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-74",
-      "title": "Implement role-based permissions",
+      "external_id": "ALPHA-72",
+      "title": "Implement full-text search",
       "ticket_type": "story",
       "created_at": "2025-10-01T13:36:00.000Z",
       "transitions": [
@@ -2334,8 +2308,8 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-75",
-      "title": "Build notification preferences",
+      "external_id": "ALPHA-73",
+      "title": "Build activity feed component",
       "ticket_type": "story",
       "created_at": "2025-10-13T15:51:00.000Z",
       "transitions": [
@@ -2362,12 +2336,43 @@ export const DEMO_IMPROVING: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-10-23T01:27:00.000Z"
+          "transitioned_at": "2025-10-25T04:55:19.257Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-10-24T15:51:00.000Z"
+          "transitioned_at": "2025-10-27T00:34:53.224Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 4
+      }
+    },
+    {
+      "external_id": "ALPHA-74",
+      "title": "Add keyboard shortcut support",
+      "ticket_type": "story",
+      "created_at": "2025-10-20T16:05:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-10-20T19:36:45.891Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-10-24T16:05:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-11-01T22:05:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-11-04T16:05:00.000Z"
         }
       ],
       "metadata": {
@@ -2375,99 +2380,89 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-76",
-      "title": "Resolve deep link 404 error",
+      "external_id": "ALPHA-75",
+      "title": "Fix session timeout handling",
       "ticket_type": "bug",
-      "created_at": "2025-10-09T16:54:00.000Z",
+      "created_at": "2025-09-28T16:44:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-10-09T19:08:17.099Z"
+          "transitioned_at": "2025-09-28T18:16:19.078Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-10-11T16:54:00.000Z"
+          "transitioned_at": "2025-10-02T16:44:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-10-19T04:54:00.000Z"
+          "transitioned_at": "2025-10-10T04:44:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-10-21T16:54:00.000Z"
+          "transitioned_at": "2025-10-12T16:44:00.000Z"
         }
       ]
+    },
+    {
+      "external_id": "ALPHA-76",
+      "title": "Integrate webhook notifications",
+      "ticket_type": "story",
+      "created_at": "2025-09-28T10:02:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-09-28T10:50:48.107Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-10-04T10:02:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-10-08T22:02:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-10-10T10:02:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 4
+      }
     },
     {
       "external_id": "ALPHA-77",
       "title": "Add weekly email digest",
       "ticket_type": "story",
-      "created_at": "2025-10-02T16:03:00.000Z",
+      "created_at": "2025-10-15T15:44:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-10-02T19:08:34.307Z"
+          "transitioned_at": "2025-10-15T17:55:06.386Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-10-09T16:03:00.000Z"
+          "transitioned_at": "2025-10-20T15:44:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-10-16T10:03:00.000Z"
+          "transitioned_at": "2025-10-26T15:44:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-10-18T16:03:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
-    },
-    {
-      "external_id": "ALPHA-78",
-      "title": "Add multi-select bulk actions",
-      "ticket_type": "story",
-      "created_at": "2025-10-16T09:15:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-10-16T12:32:28.611Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-10-18T09:15:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-19T23:39:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-10-20T11:39:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-10-21T16:27:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-10-22T09:15:00.000Z"
+          "transitioned_at": "2025-10-28T15:44:00.000Z"
         }
       ],
       "metadata": {
@@ -2475,157 +2470,130 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-79",
-      "title": "Add weekly email digest",
-      "ticket_type": "story",
-      "created_at": "2025-10-02T15:52:00.000Z",
+      "external_id": "ALPHA-78",
+      "title": "Refactor API client layer",
+      "ticket_type": "task",
+      "created_at": "2025-10-12T11:11:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-10-02T18:41:52.395Z"
+          "transitioned_at": "2025-10-12T14:27:03.722Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-10-08T15:52:00.000Z"
+          "transitioned_at": "2025-10-17T11:11:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-10-14T15:52:00.000Z"
+          "transitioned_at": "2025-10-21T23:11:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-10-16T15:52:00.000Z"
+          "transitioned_at": "2025-10-23T11:11:00.000Z"
         }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
+      ]
+    },
+    {
+      "external_id": "ALPHA-79",
+      "title": "Extract shared UI components",
+      "ticket_type": "task",
+      "created_at": "2025-10-08T15:15:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-10-08T17:52:15.773Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-10-10T15:15:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-10-14T15:15:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-10-15T03:15:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-10-20T15:47:13.505Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-10-23T00:35:19.293Z"
+        }
+      ]
     },
     {
       "external_id": "ALPHA-80",
-      "title": "Fix session timeout handling",
+      "title": "Fix tooltip positioning",
       "ticket_type": "bug",
-      "created_at": "2025-11-05T14:21:00.000Z",
+      "created_at": "2025-11-18T12:43:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-05T17:06:21.043Z"
+          "transitioned_at": "2025-11-18T16:03:13.528Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-08T14:21:00.000Z"
+          "transitioned_at": "2025-11-25T12:43:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-12T08:21:00.000Z"
+          "transitioned_at": "2025-11-28T12:43:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-11-13T14:21:00.000Z"
+          "transitioned_at": "2025-11-29T12:43:00.000Z"
         }
       ]
     },
     {
       "external_id": "ALPHA-81",
-      "title": "Fix export data truncation",
+      "title": "Resolve deep link 404 error",
       "ticket_type": "bug",
-      "created_at": "2025-11-10T11:51:00.000Z",
+      "created_at": "2025-11-16T16:29:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-10T12:33:42.112Z"
+          "transitioned_at": "2025-11-16T19:08:25.369Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-13T11:51:00.000Z"
+          "transitioned_at": "2025-11-19T16:29:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-19T11:51:00.000Z"
+          "transitioned_at": "2025-11-23T10:29:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-11-21T11:51:00.000Z"
+          "transitioned_at": "2025-11-24T16:29:00.000Z"
         }
       ]
     },
     {
       "external_id": "ALPHA-82",
-      "title": "Build CSV export feature",
-      "ticket_type": "story",
-      "created_at": "2025-11-01T11:58:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-11-01T14:58:31.752Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-11-05T11:58:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-11-09T05:58:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-11-10T11:58:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 8
-      }
-    },
-    {
-      "external_id": "ALPHA-83",
       "title": "Implement data retention policy",
-      "ticket_type": "story",
-      "created_at": "2025-11-15T14:53:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-11-15T16:16:01.801Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-11-19T14:53:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-11-22T14:53:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-11-23T14:53:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 4
-      }
-    },
-    {
-      "external_id": "ALPHA-84",
-      "title": "Add SSO provider support",
       "ticket_type": "story",
       "created_at": "2025-11-06T16:24:00.000Z",
       "transitions": [
@@ -2652,196 +2620,247 @@ export const DEMO_IMPROVING: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-19T02:00:00.000Z"
+          "transitioned_at": "2025-11-21T20:10:48.230Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-11-20T16:24:00.000Z"
+          "transitioned_at": "2025-11-23T22:08:34.615Z"
         }
       ],
       "metadata": {
-        "story_points": 8
+        "story_points": 4
       }
+    },
+    {
+      "external_id": "ALPHA-83",
+      "title": "Fix broken layout on small screens",
+      "ticket_type": "bug",
+      "created_at": "2025-11-11T15:24:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-11-11T17:46:17.760Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-11-15T15:24:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-11-18T01:00:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-11-18T13:00:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-11-21T21:56:34.221Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-11-23T08:37:57.458Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-84",
+      "title": "Add database index for search",
+      "ticket_type": "task",
+      "created_at": "2025-10-31T15:17:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-10-31T19:16:14.263Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-11-03T15:17:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-11-07T09:17:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-11-08T15:17:00.000Z"
+        }
+      ]
     },
     {
       "external_id": "ALPHA-85",
-      "title": "Resolve save race condition",
-      "ticket_type": "bug",
-      "created_at": "2025-11-06T13:51:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-11-06T15:38:01.876Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-11-10T13:51:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-11-14T07:51:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-11-15T13:51:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-86",
-      "title": "Integrate webhook notifications",
+      "title": "Build team overview dashboard",
       "ticket_type": "story",
-      "created_at": "2025-11-07T09:05:00.000Z",
+      "created_at": "2025-11-19T13:23:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-07T10:35:05.426Z"
+          "transitioned_at": "2025-11-19T14:29:46.917Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-14T09:05:00.000Z"
+          "transitioned_at": "2025-11-25T13:23:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-21T03:05:00.000Z"
+          "transitioned_at": "2025-11-30T01:23:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-11-23T09:05:00.000Z"
+          "transitioned_at": "2025-12-01T13:23:00.000Z"
         }
       ],
       "metadata": {
-        "story_points": 8
+        "story_points": 2
       }
     },
     {
-      "external_id": "ALPHA-87",
-      "title": "Fix broken layout on small screens",
+      "external_id": "ALPHA-86",
+      "title": "Fix export data truncation",
       "ticket_type": "bug",
-      "created_at": "2025-11-19T16:38:00.000Z",
+      "created_at": "2025-11-11T09:41:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-19T19:46:18.955Z"
+          "transitioned_at": "2025-11-11T12:20:47.473Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-23T16:38:00.000Z"
+          "transitioned_at": "2025-11-17T09:41:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-26T16:38:00.000Z"
+          "transitioned_at": "2025-11-19T19:17:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-11-20T07:17:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-11-23T17:31:10.009Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-11-27T16:38:00.000Z"
+          "transitioned_at": "2025-11-25T04:45:48.584Z"
         }
       ]
     },
     {
-      "external_id": "ALPHA-88",
-      "title": "Fix flaky test in CI pipeline",
-      "ticket_type": "bug",
-      "created_at": "2025-11-09T12:39:00.000Z",
+      "external_id": "ALPHA-87",
+      "title": "Build notification preferences",
+      "ticket_type": "story",
+      "created_at": "2025-11-05T08:29:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-09T15:32:35.915Z"
+          "transitioned_at": "2025-11-05T11:45:18.302Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-12T12:39:00.000Z"
+          "transitioned_at": "2025-11-07T08:29:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-17T00:39:00.000Z"
+          "transitioned_at": "2025-11-11T20:29:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-11-18T12:39:00.000Z"
+          "transitioned_at": "2025-11-13T08:29:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 1
+      }
+    },
+    {
+      "external_id": "ALPHA-88",
+      "title": "Fix null reference on empty state",
+      "ticket_type": "bug",
+      "created_at": "2025-10-30T08:49:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-10-30T11:08:54.512Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-11-05T08:49:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-11-08T13:37:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-11-09T01:37:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-11-13T15:42:36.927Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-11-15T14:53:35.610Z"
         }
       ]
     },
     {
       "external_id": "ALPHA-89",
-      "title": "Fix memory leak in polling loop",
-      "ticket_type": "bug",
-      "created_at": "2025-10-31T12:45:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-10-31T13:21:08.415Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-11-03T12:45:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-11-08T00:45:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-11-09T12:45:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-90",
-      "title": "Add real-time collaboration",
+      "title": "Implement audit log view",
       "ticket_type": "story",
-      "created_at": "2025-11-08T12:50:00.000Z",
+      "created_at": "2025-11-09T14:44:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-08T13:55:50.066Z"
+          "transitioned_at": "2025-11-09T16:57:39.801Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-15T12:50:00.000Z"
+          "transitioned_at": "2025-11-16T14:44:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-17T22:26:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-11-18T10:26:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-11-20T05:38:00.000Z"
+          "transitioned_at": "2025-11-19T14:44:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-11-21T12:50:00.000Z"
+          "transitioned_at": "2025-11-20T14:44:00.000Z"
         }
       ],
       "metadata": {
@@ -2849,239 +2868,229 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-91",
-      "title": "Fix null reference on empty state",
+      "external_id": "ALPHA-90",
+      "title": "Resolve double-submit on form",
       "ticket_type": "bug",
-      "created_at": "2025-11-18T12:07:00.000Z",
+      "created_at": "2025-11-06T13:16:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-18T14:47:51.566Z"
+          "transitioned_at": "2025-11-06T17:09:26.210Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-21T12:07:00.000Z"
+          "transitioned_at": "2025-11-13T13:16:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-24T12:07:00.000Z"
+          "transitioned_at": "2025-11-16T13:16:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-11-25T12:07:00.000Z"
+          "transitioned_at": "2025-11-17T13:16:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-91",
+      "title": "Refactor API client layer",
+      "ticket_type": "task",
+      "created_at": "2025-11-07T13:59:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-11-07T17:06:08.574Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-11-13T13:59:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-11-17T07:59:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-11-18T13:59:00.000Z"
         }
       ]
     },
     {
       "external_id": "ALPHA-92",
-      "title": "Fix tooltip positioning",
-      "ticket_type": "bug",
-      "created_at": "2025-11-15T15:21:00.000Z",
+      "title": "Add rate limiting to endpoints",
+      "ticket_type": "task",
+      "created_at": "2025-11-06T13:02:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-15T16:03:31.997Z"
+          "transitioned_at": "2025-11-06T14:14:01.583Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-18T15:21:00.000Z"
+          "transitioned_at": "2025-11-10T13:02:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-24T15:21:00.000Z"
+          "transitioned_at": "2025-11-16T13:02:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-11-26T15:21:00.000Z"
+          "transitioned_at": "2025-11-18T13:02:00.000Z"
         }
       ]
     },
     {
       "external_id": "ALPHA-93",
-      "title": "Fix incorrect percentage display",
-      "ticket_type": "bug",
-      "created_at": "2025-11-23T10:47:00.000Z",
+      "title": "Build onboarding wizard",
+      "ticket_type": "story",
+      "created_at": "2025-10-25T09:11:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-23T12:20:00.463Z"
+          "transitioned_at": "2025-10-25T13:04:36.559Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-25T10:47:00.000Z"
+          "transitioned_at": "2025-11-01T09:11:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-12-02T04:47:00.000Z"
+          "transitioned_at": "2025-11-05T03:11:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-12-04T10:47:00.000Z"
+          "transitioned_at": "2025-11-06T09:11:00.000Z"
         }
-      ]
+      ],
+      "metadata": {
+        "story_points": 2
+      }
     },
     {
       "external_id": "ALPHA-94",
-      "title": "Resolve double-submit on form",
-      "ticket_type": "bug",
-      "created_at": "2025-11-20T15:51:00.000Z",
+      "title": "Remove deprecated API calls",
+      "ticket_type": "task",
+      "created_at": "2025-11-09T16:42:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-20T19:31:01.782Z"
+          "transitioned_at": "2025-11-09T20:07:54.679Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-25T15:51:00.000Z"
+          "transitioned_at": "2025-11-15T16:42:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-12-01T15:51:00.000Z"
+          "transitioned_at": "2025-11-18T16:42:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-12-03T15:51:00.000Z"
+          "transitioned_at": "2025-11-19T16:42:00.000Z"
         }
       ]
     },
     {
       "external_id": "ALPHA-95",
-      "title": "Fix date picker timezone offset",
+      "title": "Resolve save race condition",
       "ticket_type": "bug",
-      "created_at": "2025-10-31T14:13:00.000Z",
+      "created_at": "2025-11-18T09:33:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-10-31T15:45:28.898Z"
+          "transitioned_at": "2025-11-18T11:13:46.772Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-06T14:13:00.000Z"
+          "transitioned_at": "2025-11-24T09:33:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-08T14:13:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-11-09T02:13:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-11-10T14:13:00.000Z"
+          "transitioned_at": "2025-11-27T09:33:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-11-11T14:13:00.000Z"
+          "transitioned_at": "2025-11-28T09:33:00.000Z"
         }
       ]
     },
     {
       "external_id": "ALPHA-96",
-      "title": "Redesign settings page layout",
-      "ticket_type": "story",
-      "created_at": "2025-11-06T16:44:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-11-06T18:23:42.999Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-11-09T16:44:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-11-15T16:44:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-11-17T16:44:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 4
-      }
-    },
-    {
-      "external_id": "ALPHA-97",
-      "title": "Extract shared UI components",
+      "title": "Optimize slow dashboard query",
       "ticket_type": "task",
-      "created_at": "2025-11-14T10:15:00.000Z",
+      "created_at": "2025-11-21T11:49:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-14T11:32:39.751Z"
+          "transitioned_at": "2025-11-21T12:27:24.925Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-18T10:15:00.000Z"
+          "transitioned_at": "2025-11-23T11:49:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-24T10:15:00.000Z"
+          "transitioned_at": "2025-11-26T11:49:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-11-26T10:15:00.000Z"
+          "transitioned_at": "2025-11-27T11:49:00.000Z"
         }
       ]
     },
     {
-      "external_id": "ALPHA-98",
-      "title": "Implement role-based permissions",
+      "external_id": "ALPHA-97",
+      "title": "Add pagination to results list",
       "ticket_type": "story",
-      "created_at": "2025-11-21T14:11:00.000Z",
+      "created_at": "2025-10-30T08:11:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-21T16:27:41.313Z"
+          "transitioned_at": "2025-10-30T11:58:05.070Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-24T14:11:00.000Z"
+          "transitioned_at": "2025-11-02T08:11:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-30T14:11:00.000Z"
+          "transitioned_at": "2025-11-07T14:11:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-12-02T14:11:00.000Z"
+          "transitioned_at": "2025-11-09T08:11:00.000Z"
         }
       ],
       "metadata": {
@@ -3089,548 +3098,186 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-99",
-      "title": "Resolve save race condition",
-      "ticket_type": "bug",
-      "created_at": "2025-11-01T13:52:00.000Z",
+      "external_id": "ALPHA-98",
+      "title": "Build CSV export feature",
+      "ticket_type": "story",
+      "created_at": "2025-11-11T12:28:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-01T14:38:03.258Z"
+          "transitioned_at": "2025-11-11T14:50:25.045Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-04T13:52:00.000Z"
+          "transitioned_at": "2025-11-18T12:28:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-06T13:52:00.000Z"
+          "transitioned_at": "2025-11-20T12:28:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-07T01:52:00.000Z"
+          "transitioned_at": "2025-11-21T00:28:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-08T13:52:00.000Z"
+          "transitioned_at": "2025-11-24T09:48:59.791Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-11-09T13:52:00.000Z"
+          "transitioned_at": "2025-11-25T20:40:51.130Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 4
+      }
+    },
+    {
+      "external_id": "ALPHA-99",
+      "title": "Fix memory leak in polling loop",
+      "ticket_type": "bug",
+      "created_at": "2025-11-05T10:13:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-11-05T12:07:43.809Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-11-09T10:13:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-11-13T22:13:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-11-15T10:13:00.000Z"
         }
       ]
     },
     {
       "external_id": "ALPHA-100",
-      "title": "Add keyboard shortcut support",
+      "title": "Add custom field support",
       "ticket_type": "story",
-      "created_at": "2025-11-10T10:30:00.000Z",
+      "created_at": "2025-11-01T08:16:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-10T11:55:09.929Z"
+          "transitioned_at": "2025-11-01T10:17:07.321Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-13T10:30:00.000Z"
+          "transitioned_at": "2025-11-04T08:16:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-19T10:30:00.000Z"
+          "transitioned_at": "2025-11-08T02:16:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-11-21T10:30:00.000Z"
+          "transitioned_at": "2025-11-09T08:16:00.000Z"
         }
       ],
       "metadata": {
-        "story_points": 2
+        "story_points": 8
       }
     },
     {
       "external_id": "ALPHA-101",
-      "title": "Build public API endpoints",
-      "ticket_type": "story",
-      "created_at": "2025-11-11T13:07:00.000Z",
+      "title": "Fix session timeout handling",
+      "ticket_type": "bug",
+      "created_at": "2025-10-31T14:49:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-11T15:32:27.519Z"
+          "transitioned_at": "2025-10-31T17:27:43.015Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-13T13:07:00.000Z"
+          "transitioned_at": "2025-11-05T14:49:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-18T01:07:00.000Z"
+          "transitioned_at": "2025-11-10T20:49:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-11-19T13:07:00.000Z"
+          "transitioned_at": "2025-11-12T14:49:00.000Z"
         }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
+      ]
     },
     {
       "external_id": "ALPHA-102",
-      "title": "Add pagination to results list",
-      "ticket_type": "story",
-      "created_at": "2025-11-10T12:04:00.000Z",
+      "title": "Fix drag-and-drop reorder bug",
+      "ticket_type": "bug",
+      "created_at": "2025-11-06T12:08:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-10T15:10:01.420Z"
+          "transitioned_at": "2025-11-06T13:48:49.286Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-14T12:04:00.000Z"
+          "transitioned_at": "2025-11-10T12:08:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-16T12:04:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-11-17T00:04:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-11-18T12:04:00.000Z"
+          "transitioned_at": "2025-11-14T06:08:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-11-19T12:04:00.000Z"
+          "transitioned_at": "2025-11-15T12:08:00.000Z"
         }
-      ],
-      "metadata": {
-        "story_points": 1
-      }
+      ]
     },
     {
       "external_id": "ALPHA-103",
       "title": "Build team overview dashboard",
       "ticket_type": "story",
-      "created_at": "2025-11-13T11:38:00.000Z",
+      "created_at": "2025-11-07T15:39:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-13T15:20:34.874Z"
+          "transitioned_at": "2025-11-07T16:27:31.402Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-11-16T11:38:00.000Z"
+          "transitioned_at": "2025-11-11T15:39:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-22T11:38:00.000Z"
+          "transitioned_at": "2025-11-15T09:39:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-11-24T11:38:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 4
-      }
-    },
-    {
-      "external_id": "ALPHA-104",
-      "title": "Fix drag-and-drop reorder bug",
-      "ticket_type": "bug",
-      "created_at": "2025-11-12T10:29:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-11-12T12:16:58.671Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-11-15T10:29:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-11-19T22:29:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-11-21T10:29:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-105",
-      "title": "Add custom field support",
-      "ticket_type": "story",
-      "created_at": "2025-11-06T10:46:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-11-06T12:46:40.306Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-11-08T10:46:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-11-12T04:46:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-11-13T10:46:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 4
-      }
-    },
-    {
-      "external_id": "ALPHA-106",
-      "title": "Implement user authentication flow",
-      "ticket_type": "story",
-      "created_at": "2025-12-17T10:33:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-12-17T13:44:30.774Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-21T10:33:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-23T16:33:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-24T10:33:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
-    },
-    {
-      "external_id": "ALPHA-107",
-      "title": "Resolve import validation error",
-      "ticket_type": "bug",
-      "created_at": "2025-12-18T16:46:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-12-18T19:30:45.651Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-24T16:46:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-27T16:46:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-28T16:46:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-108",
-      "title": "Implement full-text search",
-      "ticket_type": "story",
-      "created_at": "2025-12-07T10:36:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-12-07T12:12:04.721Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-14T10:36:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-18T04:36:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-19T10:36:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 8
-      }
-    },
-    {
-      "external_id": "ALPHA-109",
-      "title": "Set up error monitoring alerts",
-      "ticket_type": "task",
-      "created_at": "2025-12-02T08:03:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-12-02T09:31:56.764Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-06T08:03:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-09T08:03:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-10T08:03:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-110",
-      "title": "Optimize slow dashboard query",
-      "ticket_type": "task",
-      "created_at": "2025-12-10T10:28:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-12-10T13:31:38.897Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-16T10:28:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-19T10:28:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-20T10:28:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-111",
-      "title": "Build onboarding wizard",
-      "ticket_type": "story",
-      "created_at": "2025-12-13T12:36:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-12-13T15:19:02.650Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-20T12:36:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-22T18:36:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-23T12:36:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
-    },
-    {
-      "external_id": "ALPHA-112",
-      "title": "Build activity feed component",
-      "ticket_type": "story",
-      "created_at": "2025-11-28T08:17:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-11-28T10:21:44.648Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-02T08:17:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-03T13:05:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-04T01:05:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-04T22:41:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-05T08:17:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 4
-      }
-    },
-    {
-      "external_id": "ALPHA-113",
-      "title": "Configure staging environment",
-      "ticket_type": "task",
-      "created_at": "2025-12-23T13:05:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-12-23T13:51:42.690Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-25T13:05:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-26T17:53:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-27T05:53:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-28T03:29:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-28T13:05:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-114",
-      "title": "Build notification preferences",
-      "ticket_type": "story",
-      "created_at": "2025-12-09T14:06:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-12-09T16:09:09.293Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-11T14:06:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-14T14:06:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-15T14:06:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
-    },
-    {
-      "external_id": "ALPHA-115",
-      "title": "Implement audit log view",
-      "ticket_type": "story",
-      "created_at": "2025-12-10T11:24:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-12-10T14:41:20.582Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-12T11:24:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-16T05:24:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-17T11:24:00.000Z"
+          "transitioned_at": "2025-11-16T15:39:00.000Z"
         }
       ],
       "metadata": {
@@ -3638,183 +3285,99 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-116",
-      "title": "Add database index for search",
-      "ticket_type": "task",
-      "created_at": "2025-12-13T09:11:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-12-13T12:55:39.986Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-18T09:11:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-21T09:11:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-22T09:11:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-117",
-      "title": "Migrate to structured logging",
-      "ticket_type": "task",
-      "created_at": "2025-12-03T11:30:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-12-03T14:40:26.172Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-10T11:30:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-13T11:30:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-14T11:30:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-118",
-      "title": "Redesign settings page layout",
+      "external_id": "ALPHA-104",
+      "title": "Build notification preferences",
       "ticket_type": "story",
-      "created_at": "2025-11-25T14:44:00.000Z",
+      "created_at": "2025-11-14T13:29:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-25T16:52:34.752Z"
+          "transitioned_at": "2025-11-14T16:09:36.398Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-12-01T14:44:00.000Z"
+          "transitioned_at": "2025-11-20T13:29:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-12-04T14:44:00.000Z"
+          "transitioned_at": "2025-11-24T07:29:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-12-05T14:44:00.000Z"
+          "transitioned_at": "2025-11-25T13:29:00.000Z"
         }
       ],
       "metadata": {
-        "story_points": 4
+        "story_points": 1
       }
     },
     {
-      "external_id": "ALPHA-119",
-      "title": "Refactor API client layer",
-      "ticket_type": "task",
-      "created_at": "2025-12-22T15:33:00.000Z",
+      "external_id": "ALPHA-105",
+      "title": "Fix tooltip positioning",
+      "ticket_type": "bug",
+      "created_at": "2025-11-15T09:11:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-12-22T17:37:44.476Z"
+          "transitioned_at": "2025-11-15T12:52:28.739Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-12-25T15:33:00.000Z"
+          "transitioned_at": "2025-11-17T09:11:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-12-28T15:33:00.000Z"
+          "transitioned_at": "2025-11-24T03:11:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-12-29T15:33:00.000Z"
+          "transitioned_at": "2025-11-26T09:11:00.000Z"
         }
       ]
     },
     {
-      "external_id": "ALPHA-120",
-      "title": "Extract shared UI components",
-      "ticket_type": "task",
-      "created_at": "2025-12-03T14:33:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-12-03T15:36:07.355Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-05T14:33:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-08T14:33:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-09T14:33:00.000Z"
-        }
-      ]
-    },
-    {
-      "external_id": "ALPHA-121",
-      "title": "Build public API endpoints",
+      "external_id": "ALPHA-106",
+      "title": "Build onboarding wizard",
       "ticket_type": "story",
-      "created_at": "2025-12-09T12:15:00.000Z",
+      "created_at": "2025-12-01T11:59:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-12-09T13:47:02.005Z"
+          "transitioned_at": "2025-12-01T15:03:04.093Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-12-12T12:15:00.000Z"
+          "transitioned_at": "2025-12-08T11:59:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-12-14T02:39:00.000Z"
+          "transitioned_at": "2025-12-10T02:23:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-12-14T14:39:00.000Z"
+          "transitioned_at": "2025-12-10T14:23:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-12-15T19:27:00.000Z"
+          "transitioned_at": "2025-12-12T22:22:30.854Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-12-16T12:15:00.000Z"
+          "transitioned_at": "2025-12-13T22:22:18.363Z"
         }
       ],
       "metadata": {
@@ -3822,30 +3385,30 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-122",
-      "title": "Add weekly email digest",
+      "external_id": "ALPHA-107",
+      "title": "Add pagination to results list",
       "ticket_type": "story",
-      "created_at": "2025-12-04T12:39:00.000Z",
+      "created_at": "2025-12-19T15:36:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-12-04T14:34:14.238Z"
+          "transitioned_at": "2025-12-19T19:22:08.557Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-12-11T12:39:00.000Z"
+          "transitioned_at": "2025-12-21T15:36:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-12-14T12:39:00.000Z"
+          "transitioned_at": "2025-12-23T21:36:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-12-15T12:39:00.000Z"
+          "transitioned_at": "2025-12-24T15:36:00.000Z"
         }
       ],
       "metadata": {
@@ -3853,30 +3416,478 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-123",
-      "title": "Implement user authentication flow",
+      "external_id": "ALPHA-108",
+      "title": "Add weekly email digest",
       "ticket_type": "story",
-      "created_at": "2025-12-17T14:30:00.000Z",
+      "created_at": "2025-12-04T09:06:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-12-17T16:04:11.143Z"
+          "transitioned_at": "2025-12-04T10:21:06.198Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-12-20T14:30:00.000Z"
+          "transitioned_at": "2025-12-08T09:06:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-12-23T14:30:00.000Z"
+          "transitioned_at": "2025-12-12T03:06:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-12-24T14:30:00.000Z"
+          "transitioned_at": "2025-12-13T09:06:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 4
+      }
+    },
+    {
+      "external_id": "ALPHA-109",
+      "title": "Fix incorrect sort order",
+      "ticket_type": "bug",
+      "created_at": "2025-11-28T08:01:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-11-28T08:44:15.915Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-04T08:01:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-05T22:25:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-06T10:25:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-08T09:20:02.715Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-09T05:26:29.593Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-110",
+      "title": "Implement role-based permissions",
+      "ticket_type": "story",
+      "created_at": "2025-12-21T12:28:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-12-21T13:15:55.729Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-25T12:28:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-28T12:28:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-29T12:28:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 4
+      }
+    },
+    {
+      "external_id": "ALPHA-111",
+      "title": "Redesign settings page layout",
+      "ticket_type": "story",
+      "created_at": "2025-12-16T14:22:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-12-16T16:17:05.763Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-19T14:22:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-21T02:22:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-21T14:22:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 1
+      }
+    },
+    {
+      "external_id": "ALPHA-112",
+      "title": "Implement full-text search",
+      "ticket_type": "story",
+      "created_at": "2025-11-26T16:34:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-11-26T18:41:05.343Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-03T16:34:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-06T16:34:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-07T16:34:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 2
+      }
+    },
+    {
+      "external_id": "ALPHA-113",
+      "title": "Implement data retention policy",
+      "ticket_type": "story",
+      "created_at": "2025-12-21T13:25:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-12-21T16:21:49.679Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-24T13:25:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-27T13:25:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-28T13:25:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 1
+      }
+    },
+    {
+      "external_id": "ALPHA-114",
+      "title": "Resolve import validation error",
+      "ticket_type": "bug",
+      "created_at": "2025-12-19T11:23:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-12-19T13:09:11.090Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-23T11:23:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-26T11:23:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-27T11:23:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-115",
+      "title": "Configure staging environment",
+      "ticket_type": "task",
+      "created_at": "2025-12-01T15:30:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-12-01T18:40:25.557Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-03T15:30:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-05T21:30:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-06T15:30:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-116",
+      "title": "Fix incorrect percentage display",
+      "ticket_type": "bug",
+      "created_at": "2025-11-30T15:25:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-11-30T19:18:24.733Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-05T15:25:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-09T09:25:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-10T15:25:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-117",
+      "title": "Fix date picker timezone offset",
+      "ticket_type": "bug",
+      "created_at": "2025-12-21T13:57:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-12-21T15:03:32.195Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-24T13:57:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-27T13:57:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-28T13:57:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-118",
+      "title": "Fix flaky test in CI pipeline",
+      "ticket_type": "bug",
+      "created_at": "2025-12-22T16:32:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-12-22T18:39:49.238Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-25T16:32:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-27T22:32:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-28T16:32:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-119",
+      "title": "Integrate webhook notifications",
+      "ticket_type": "story",
+      "created_at": "2025-12-01T12:04:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-12-01T15:48:34.935Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-04T12:04:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-07T12:04:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-08T12:04:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 4
+      }
+    },
+    {
+      "external_id": "ALPHA-120",
+      "title": "Fix tooltip positioning",
+      "ticket_type": "bug",
+      "created_at": "2025-12-10T08:17:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-12-10T12:00:37.208Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-12T08:17:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-15T08:17:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-16T08:17:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-121",
+      "title": "Fix flaky test in CI pipeline",
+      "ticket_type": "bug",
+      "created_at": "2025-12-12T09:56:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-12-12T10:35:46.354Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-19T09:56:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-22T09:56:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-23T09:56:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-122",
+      "title": "Add performance benchmarks",
+      "ticket_type": "task",
+      "created_at": "2025-12-21T14:11:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-12-21T15:48:28.573Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-24T14:11:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-26T20:11:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-27T14:11:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-123",
+      "title": "Build public API endpoints",
+      "ticket_type": "story",
+      "created_at": "2025-11-28T09:14:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-11-28T10:38:27.827Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-05T09:14:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-07T15:14:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-08T09:14:00.000Z"
         }
       ],
       "metadata": {
@@ -3887,58 +3898,37 @@ export const DEMO_IMPROVING: DemoFixture = {
       "external_id": "ALPHA-124",
       "title": "Add SSO provider support",
       "ticket_type": "story",
-      "created_at": "2025-12-20T12:13:00.000Z",
+      "created_at": "2025-12-17T12:09:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-12-20T15:33:15.534Z"
+          "transitioned_at": "2025-12-17T14:56:09.326Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-12-22T12:13:00.000Z"
+          "transitioned_at": "2025-12-23T12:09:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-12-25T12:13:00.000Z"
+          "transitioned_at": "2025-12-25T02:33:00.000Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-26T12:13:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 8
-      }
-    },
-    {
-      "external_id": "ALPHA-125",
-      "title": "Build team overview dashboard",
-      "ticket_type": "story",
-      "created_at": "2025-12-23T08:21:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-12-23T09:30:23.136Z"
-        },
-        {
-          "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-12-25T08:21:00.000Z"
+          "transitioned_at": "2025-12-25T14:33:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-12-27T14:21:00.000Z"
+          "transitioned_at": "2025-12-27T13:37:45.895Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-12-28T08:21:00.000Z"
+          "transitioned_at": "2025-12-28T09:48:22.707Z"
         }
       ],
       "metadata": {
@@ -3946,89 +3936,145 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-126",
-      "title": "Add performance benchmarks",
+      "external_id": "ALPHA-125",
+      "title": "Document REST API endpoints",
       "ticket_type": "task",
-      "created_at": "2025-12-21T12:41:00.000Z",
+      "created_at": "2025-12-05T09:50:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-12-21T16:18:13.382Z"
+          "transitioned_at": "2025-12-05T11:23:53.337Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-12-23T12:41:00.000Z"
+          "transitioned_at": "2025-12-08T09:50:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-12-26T12:41:00.000Z"
+          "transitioned_at": "2025-12-11T09:50:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-12-27T12:41:00.000Z"
+          "transitioned_at": "2025-12-12T09:50:00.000Z"
         }
       ]
     },
     {
-      "external_id": "ALPHA-127",
-      "title": "Add real-time collaboration",
+      "external_id": "ALPHA-126",
+      "title": "Add keyboard shortcut support",
       "ticket_type": "story",
-      "created_at": "2025-11-29T16:41:00.000Z",
+      "created_at": "2025-12-15T14:01:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-11-29T19:48:12.911Z"
+          "transitioned_at": "2025-12-15T16:11:28.294Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-12-03T16:41:00.000Z"
+          "transitioned_at": "2025-12-18T14:01:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-12-05T22:41:00.000Z"
+          "transitioned_at": "2025-12-21T14:01:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-12-06T16:41:00.000Z"
+          "transitioned_at": "2025-12-22T14:01:00.000Z"
         }
       ],
       "metadata": {
-        "story_points": 2
+        "story_points": 1
       }
     },
     {
-      "external_id": "ALPHA-128",
-      "title": "Implement audit log view",
-      "ticket_type": "story",
-      "created_at": "2025-12-07T11:07:00.000Z",
+      "external_id": "ALPHA-127",
+      "title": "Migrate to structured logging",
+      "ticket_type": "task",
+      "created_at": "2025-12-18T09:00:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-12-07T13:43:28.678Z"
+          "transitioned_at": "2025-12-18T09:53:44.103Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-12-12T11:07:00.000Z"
+          "transitioned_at": "2025-12-24T09:00:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-12-15T11:07:00.000Z"
+          "transitioned_at": "2025-12-28T03:00:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-12-16T11:07:00.000Z"
+          "transitioned_at": "2025-12-29T09:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-128",
+      "title": "Set up error monitoring alerts",
+      "ticket_type": "task",
+      "created_at": "2025-12-02T08:56:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-12-02T09:58:26.463Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-06T08:56:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-09T08:56:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-10T08:56:00.000Z"
+        }
+      ]
+    },
+    {
+      "external_id": "ALPHA-129",
+      "title": "Add multi-select bulk actions",
+      "ticket_type": "story",
+      "created_at": "2025-11-28T15:20:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-11-28T18:28:59.516Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-01T15:20:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-05T09:20:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-06T15:20:00.000Z"
         }
       ],
       "metadata": {
@@ -4036,166 +4082,132 @@ export const DEMO_IMPROVING: DemoFixture = {
       }
     },
     {
-      "external_id": "ALPHA-129",
-      "title": "Integrate webhook notifications",
-      "ticket_type": "story",
-      "created_at": "2025-12-17T13:46:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-12-17T16:09:13.291Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-22T13:46:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-25T13:46:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-26T13:46:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 1
-      }
-    },
-    {
       "external_id": "ALPHA-130",
-      "title": "Build activity feed component",
-      "ticket_type": "story",
-      "created_at": "2025-12-06T08:53:00.000Z",
+      "title": "Upgrade dependencies to latest",
+      "ticket_type": "task",
+      "created_at": "2025-12-01T15:53:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-12-06T10:05:40.280Z"
+          "transitioned_at": "2025-12-01T18:19:54.149Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-12-13T08:53:00.000Z"
+          "transitioned_at": "2025-12-06T15:53:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-12-15T08:53:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-15T20:53:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-17T08:53:00.000Z"
+          "transitioned_at": "2025-12-10T09:53:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-12-18T08:53:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 8
-      }
-    },
-    {
-      "external_id": "ALPHA-131",
-      "title": "Build CSV export feature",
-      "ticket_type": "story",
-      "created_at": "2025-12-03T16:53:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-12-03T20:27:59.176Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-05T16:53:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-08T16:53:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-09T16:53:00.000Z"
-        }
-      ],
-      "metadata": {
-        "story_points": 2
-      }
-    },
-    {
-      "external_id": "ALPHA-132",
-      "title": "Fix incorrect sort order",
-      "ticket_type": "bug",
-      "created_at": "2025-12-18T16:43:00.000Z",
-      "transitions": [
-        {
-          "from_status": null,
-          "to_status": "Backlog",
-          "transitioned_at": "2025-12-18T20:03:26.459Z"
-        },
-        {
-          "from_status": "Backlog",
-          "to_status": "In Progress",
-          "transitioned_at": "2025-12-21T16:43:00.000Z"
-        },
-        {
-          "from_status": "In Progress",
-          "to_status": "In Review",
-          "transitioned_at": "2025-12-24T16:43:00.000Z"
-        },
-        {
-          "from_status": "In Review",
-          "to_status": "Done",
-          "transitioned_at": "2025-12-25T16:43:00.000Z"
+          "transitioned_at": "2025-12-11T15:53:00.000Z"
         }
       ]
     },
     {
-      "external_id": "ALPHA-133",
-      "title": "Implement role-based permissions",
+      "external_id": "ALPHA-131",
+      "title": "Add real-time collaboration",
       "ticket_type": "story",
-      "created_at": "2025-12-20T08:44:00.000Z",
+      "created_at": "2025-12-14T12:40:00.000Z",
       "transitions": [
         {
           "from_status": null,
           "to_status": "Backlog",
-          "transitioned_at": "2025-12-20T11:02:07.827Z"
+          "transitioned_at": "2025-12-14T15:28:39.724Z"
         },
         {
           "from_status": "Backlog",
           "to_status": "In Progress",
-          "transitioned_at": "2025-12-25T08:44:00.000Z"
+          "transitioned_at": "2025-12-16T12:40:00.000Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-12-28T08:44:00.000Z"
+          "transitioned_at": "2025-12-19T12:40:00.000Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-12-29T08:44:00.000Z"
+          "transitioned_at": "2025-12-20T12:40:00.000Z"
+        }
+      ],
+      "metadata": {
+        "story_points": 4
+      }
+    },
+    {
+      "external_id": "ALPHA-132",
+      "title": "Implement user authentication flow",
+      "ticket_type": "story",
+      "created_at": "2025-12-04T15:07:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-12-04T15:42:54.504Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-09T15:07:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-10T19:55:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-11T07:55:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-13T05:51:26.528Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-14T01:32:46.469Z"
         }
       ],
       "metadata": {
         "story_points": 1
       }
+    },
+    {
+      "external_id": "ALPHA-133",
+      "title": "Fix broken layout on small screens",
+      "ticket_type": "bug",
+      "created_at": "2025-12-08T16:40:00.000Z",
+      "transitions": [
+        {
+          "from_status": null,
+          "to_status": "Backlog",
+          "transitioned_at": "2025-12-08T18:30:33.096Z"
+        },
+        {
+          "from_status": "Backlog",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-12-14T16:40:00.000Z"
+        },
+        {
+          "from_status": "In Progress",
+          "to_status": "In Review",
+          "transitioned_at": "2025-12-16T22:40:00.000Z"
+        },
+        {
+          "from_status": "In Review",
+          "to_status": "Done",
+          "transitioned_at": "2025-12-17T16:40:00.000Z"
+        }
+      ]
     }
   ]
 }

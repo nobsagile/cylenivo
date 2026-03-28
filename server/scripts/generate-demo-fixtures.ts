@@ -170,17 +170,20 @@ function generateTickets(specs: MonthSpec[], projectKey: string, rng: () => numb
       ]
 
       if (hasRework) {
-        // First review at ~40% of cycle
+        // Rework adds 20–50% extra time
+        const reworkPenalty = 1.2 + rng() * 0.3
+        const totalDays = cycleDays * reworkPenalty
+        // First review at ~40% of original cycle
         const rev1 = addMs(inProgressDate, cycleDays * 0.4 * DAY_MS)
         transitions.push({ from_status: 'In Progress', to_status: 'In Review', transitioned_at: rev1.toISOString() })
         // Back to In Progress after half a day
         const back = addMs(rev1, 0.5 * DAY_MS)
         transitions.push({ from_status: 'In Review', to_status: 'In Progress', transitioned_at: back.toISOString() })
-        // Second review at back + 30% more
-        const rev2 = addMs(back, cycleDays * 0.3 * DAY_MS)
+        // Second review after rework
+        const rev2 = addMs(back, (totalDays - cycleDays * 0.4 - 0.5) * 0.7 * DAY_MS)
         transitions.push({ from_status: 'In Progress', to_status: 'In Review', transitioned_at: rev2.toISOString() })
-        // Done at inProgress + 100% of cycle
-        const done = addMs(inProgressDate, cycleDays * DAY_MS)
+        // Done at total (with penalty)
+        const done = addMs(inProgressDate, totalDays * DAY_MS)
         transitions.push({ from_status: 'In Review', to_status: 'Done', transitioned_at: done.toISOString() })
       } else {
         // Simple: In Review at 75%, Done at 100%
