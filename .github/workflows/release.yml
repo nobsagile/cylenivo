@@ -66,6 +66,7 @@ jobs:
           npx @yao-pkg/pkg dist/bundle.cjs \
             --targets ${{ matrix.server-pkg-target }} \
             --output ../src-tauri/binaries/cylenivo-server-${{ matrix.target }} \
+            --config package.json \
             --public \
             --public-packages "*"
 
@@ -76,6 +77,7 @@ jobs:
           npx @yao-pkg/pkg dist/bundle.cjs `
             --targets ${{ matrix.server-pkg-target }} `
             --output ../src-tauri/binaries/cylenivo-server-${{ matrix.target }}.exe `
+            --config package.json `
             --public `
             --public-packages "*"
 
