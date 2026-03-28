@@ -26,13 +26,45 @@ export function ConfigContextBar({ config }: Props) {
     last_last: 'last / last',
   }
 
-  function getStatusColor(idx: number) {
-    const inCycle = idx >= cycleStartIdx && idx <= cycleEndIdx && cycleStartIdx !== -1
-    const inLead = (lead_time_start_status ? idx >= leadStartIdx : true) && idx <= leadEndIdx && leadEndIdx !== -1
+  const inCycleFn = (i: number) => i >= cycleStartIdx && i <= cycleEndIdx && cycleStartIdx !== -1
+  const inLeadFn = (i: number) => (lead_time_start_status ? i >= leadStartIdx : true) && i <= leadEndIdx && leadEndIdx !== -1
 
-    if (inCycle && inLead) return 'bg-indigo-100 border-indigo-300 text-indigo-800'
-    if (inCycle) return 'bg-teal-100 border-teal-300 text-teal-800'
-    if (inLead) return 'bg-violet-100 border-violet-300 text-violet-800'
+  const leadOnly = status_order.filter((_, i) => inLeadFn(i) && !inCycleFn(i))
+  const cycleOnly = status_order.filter((_, i) => inCycleFn(i) && !inLeadFn(i))
+  const overlap = status_order.filter((_, i) => inCycleFn(i) && inLeadFn(i))
+
+  const LEAD_SHADES = [
+    'bg-violet-100 border-violet-200 text-violet-800',
+    'bg-violet-200 border-violet-300 text-violet-800',
+    'bg-violet-300 border-violet-400 text-violet-900',
+    'bg-violet-400 border-violet-500 text-violet-950',
+  ]
+  const CYCLE_SHADES = [
+    'bg-teal-200 border-teal-300 text-teal-800',
+    'bg-teal-300 border-teal-400 text-teal-800',
+    'bg-teal-400 border-teal-500 text-teal-900',
+    'bg-teal-500 border-teal-600 text-teal-950',
+  ]
+  const OVERLAP_SHADES = [
+    'bg-indigo-300 border-indigo-400 text-indigo-900',
+    'bg-indigo-400 border-indigo-500 text-indigo-950',
+    'bg-indigo-500 border-indigo-600 text-white',
+    'bg-indigo-600 border-indigo-700 text-white',
+  ]
+
+  function pickShade(arr: string[], group: string[], status: string) {
+    const pos = group.indexOf(status)
+    if (pos === -1) return arr[0]
+    const idx = group.length <= 1 ? 0 : Math.round((pos / (group.length - 1)) * (arr.length - 1))
+    return arr[Math.max(0, Math.min(idx, arr.length - 1))]
+  }
+
+  function getStatusColor(status: string, i: number) {
+    const ic = inCycleFn(i)
+    const il = inLeadFn(i)
+    if (ic && il) return pickShade(OVERLAP_SHADES, overlap, status)
+    if (ic) return pickShade(CYCLE_SHADES, cycleOnly, status)
+    if (il) return pickShade(LEAD_SHADES, leadOnly, status)
     return 'bg-gray-50 border-gray-200 text-gray-500'
   }
 
@@ -51,7 +83,7 @@ export function ConfigContextBar({ config }: Props) {
         {status_order.map((status, idx) => (
           <div key={status} className="flex items-center gap-1.5 shrink-0">
             {idx > 0 && <span className="text-gray-300 text-xs">›</span>}
-            <div className={`rounded-md border px-2.5 py-1.5 text-xs font-medium ${getStatusColor(idx)}`}>
+            <div className={`rounded-md border px-2.5 py-1.5 text-xs font-medium ${getStatusColor(status, idx)}`}>
               {status}
             </div>
           </div>
