@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { TicketTransition, ConfigContext } from '@/types'
 
 interface Props {
@@ -87,22 +88,29 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
     return 'bg-gray-200'
   }
 
+  const [hovered, setHovered] = useState<number | null>(null)
+
   return (
     <div className="space-y-2">
       {/* Timeline bar */}
       <div className="flex h-6 rounded-md overflow-hidden border border-gray-200">
         {segments.map((seg, i) => {
-          const widthPct = Math.max((seg.durationDays / totalDuration) * 100, 2)
+          const baseFlex = Math.max(seg.durationDays, totalDuration * 0.02)
+          const flexValue = hovered === i
+            ? Math.max(baseFlex * 4, totalDuration * 0.12)
+            : baseFlex
+          const isHovered = hovered === i
           return (
             <div
               key={i}
-              className={`${getSegmentColor(seg.status, seg.isBackward)} relative group`}
-              style={{ width: `${widthPct}%` }}
-              title={`${seg.status}: ${seg.durationDays.toFixed(1)}d`}
+              className={`${getSegmentColor(seg.status, seg.isBackward)} relative`}
+              style={{ flex: flexValue, minWidth: 0, transition: 'flex 0.15s ease' }}
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
             >
-              {widthPct > 10 && (
-                <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium text-gray-700 truncate px-1">
-                  {seg.status}
+              {isHovered && (
+                <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium text-gray-700 whitespace-nowrap px-1 overflow-hidden">
+                  {seg.status}: {seg.durationDays.toFixed(1)}d
                 </span>
               )}
             </div>
@@ -125,7 +133,7 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
       <div className="flex gap-3 text-[10px]">
         <span className="text-gray-400">Created: {new Date(createdAt).toLocaleDateString()}</span>
         {externalLink && (
-          <a href={externalLink} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+          <a href={externalLink} target="_blank" rel="noopener noreferrer" className="text-violet-600 hover:underline">
             Open in Jira ↗
           </a>
         )}
