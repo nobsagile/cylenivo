@@ -27,5 +27,6 @@ src-tauri/binaries/*
 CLAUDE.md
 SPEC.md
 DESIGN.md
+_marketing/
 test-export.json
 *.export.json
