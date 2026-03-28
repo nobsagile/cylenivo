@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Activity, ArrowRight, BarChart2, Clock, TrendingUp } from 'lucide-react'
 import { api } from '@/services/api'
 import { Button } from '@/components/ui/button'
 
 export default function WelcomePage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [checking, setChecking] = useState(true)
 
@@ -34,17 +36,17 @@ export default function WelcomePage() {
         <Activity className="w-7 h-7 text-white" />
       </div>
 
-      <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Welcome to Cylenivo</h1>
+      <h1 className="text-3xl font-bold text-gray-900 tracking-tight">{t('welcome.title')}</h1>
       <p className="text-gray-400 mt-3 max-w-md text-base leading-relaxed">
-        Understand your team's delivery speed. Connect to Jira directly or upload an export file — analyze cycle time, lead time and throughput in minutes.
+        {t('welcome.subtitle')}
       </p>
 
       {/* Features */}
       <div className="grid grid-cols-3 gap-4 mt-10 mb-10 max-w-lg w-full">
         {[
-          { icon: Clock, label: 'Cycle Time', desc: 'How long tickets take from start to done' },
-          { icon: TrendingUp, label: 'Throughput', desc: 'How many tickets ship per week' },
-          { icon: BarChart2, label: 'Forecasting', desc: 'P50/P85/P95 delivery estimates' },
+          { icon: Clock, label: t('welcome.featureCycleTime'), desc: t('welcome.featureCycleTimeDesc') },
+          { icon: TrendingUp, label: t('welcome.featureThroughput'), desc: t('welcome.featureThroughputDesc') },
+          { icon: BarChart2, label: t('welcome.featureForecasting'), desc: t('welcome.featureForecastingDesc') },
         ].map(({ icon: Icon, label, desc }) => (
           <div key={label} className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white border border-gray-200 shadow-sm">
             <div className="p-2 rounded-lg bg-blue-50">
@@ -58,11 +60,11 @@ export default function WelcomePage() {
 
       {/* CTA */}
       <Button size="lg" onClick={() => navigate('/import')} className="gap-2 px-8 h-12 text-base shadow-sm">
-        Get Started
+        {t('welcome.getStarted')}
         <ArrowRight className="w-4 h-4" />
       </Button>
       <p className="text-xs text-gray-400 mt-3">
-        Connect to Jira directly or upload an export — takes about 2 minutes.
+        {t('welcome.cta')}
       </p>
     </div>
   )

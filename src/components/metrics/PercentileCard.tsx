@@ -21,7 +21,7 @@ export function PercentileCard({ data, variant = 'cycle' }: Props) {
   const maxVal = data.p95 ?? data.p85 ?? data.p70 ?? data.p50 ?? 1
   const isLead = variant === 'lead'
   const title = isLead ? `${t('metrics.leadTime')} Forecast` : t('metrics.percentile.title')
-  const metricName = isLead ? 'lead time' : 'cycle time'
+  const metricName = isLead ? t('metrics.leadTime').toLowerCase() : t('metrics.cycleTime').toLowerCase()
 
   return (
     <Card className="shadow-sm">
@@ -37,8 +37,8 @@ export function PercentileCard({ data, variant = 'cycle' }: Props) {
             <PopoverContent className="w-64">
               <div className="text-xs text-gray-600 space-y-1.5">
                 <p className="font-semibold text-gray-800 mb-1">{title}</p>
-                <p>Based on <span className="font-medium">{metricName}</span> of completed tickets. Shows how long future tickets are likely to take.</p>
-                <p>P85 means: 85% of tickets completed within this many days.</p>
+                <p>{t('metrics.percentile.basedOn', { metricName })}</p>
+                <p>{t('metrics.percentile.p85Explain')}</p>
               </div>
             </PopoverContent>
           </Popover>
@@ -82,7 +82,7 @@ export function PercentileCard({ data, variant = 'cycle' }: Props) {
         </div>
         {data.sample_size != null && (
           <p className="text-xs text-gray-400 mt-4">
-            Based on {data.sample_size} completed tickets
+            {t('metrics.percentile.sampleSize', { count: data.sample_size })}
           </p>
         )}
       </CardContent>

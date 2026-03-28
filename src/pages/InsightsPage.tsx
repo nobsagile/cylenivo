@@ -139,15 +139,15 @@ export default function InsightsPage() {
       <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('insights.title')}</h2>
-          <p className="text-sm text-gray-400 mt-0.5">AI-powered analysis of your flow metrics</p>
+          <p className="text-sm text-gray-400 mt-0.5">{t('insights.subtitle')}</p>
         </div>
         <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-gray-200 rounded-xl">
           <div className="p-3 rounded-xl bg-gray-100 mb-3">
             <Bot className="w-6 h-6 text-gray-400" />
           </div>
-          <p className="text-gray-600 font-medium">No AI model configured</p>
+          <p className="text-gray-600 font-medium">{t('insights.noLlm')}</p>
           <p className="text-gray-400 text-sm mt-1 max-w-xs">
-            Configure an LLM in Settings → AI to enable analysis and chat.
+            {t('insights.noLlmHint')}
           </p>
           <Button
             variant="outline"
@@ -155,7 +155,7 @@ export default function InsightsPage() {
             onClick={() => navigate('/settings', { state: { tab: 'ai' } })}
           >
             <Settings className="w-4 h-4" />
-            Go to Settings → AI
+            {t('insights.goToSettings')}
           </Button>
         </div>
       </div>
@@ -166,7 +166,7 @@ export default function InsightsPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('insights.title')}</h2>
-        <p className="text-sm text-gray-400 mt-0.5">AI-powered analysis of your flow metrics</p>
+        <p className="text-sm text-gray-400 mt-0.5">{t('insights.subtitle')}</p>
       </div>
 
       {/* LLM status */}
@@ -190,8 +190,8 @@ export default function InsightsPage() {
             <>
               <WifiOff className="w-4 h-4 shrink-0" />
               <span>
-                <span className="font-semibold">LLM not reachable</span>
-                <span className="ml-1.5 opacity-70 text-xs">Check your configuration in Settings → AI</span>
+                <span className="font-semibold">{t('insights.llmNotReachable')}</span>
+                <span className="ml-1.5 opacity-70 text-xs">{t('insights.checkConfig')}</span>
               </span>
             </>
           )}
@@ -204,12 +204,12 @@ export default function InsightsPage() {
           {analyzing ? (
             <><RefreshCw className="w-4 h-4 animate-spin" />{t('insights.analyzing')}</>
           ) : insight ? (
-            <><RefreshCw className="w-4 h-4" />Re-run Analysis</>
+            <><RefreshCw className="w-4 h-4" />{t('insights.rerunAnalysis')}</>
           ) : (
             <><Sparkles className="w-4 h-4" />{t('insights.runAnalysis')}</>
           )}
         </Button>
-        {analyzing && <p className="text-sm text-gray-400">This may take a minute…</p>}
+        {analyzing && <p className="text-sm text-gray-400">{t('insights.takesAMinute')}</p>}
       </div>
 
       {insight && (
@@ -218,7 +218,7 @@ export default function InsightsPage() {
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-base font-semibold text-gray-800">
                 <Bot className="w-4 h-4 text-blue-500" />
-                Analysis
+                {t('insights.analysis')}
               </CardTitle>
               <div className="text-right">
                 <p className="text-xs text-gray-400">{new Date(insight.generated_at).toLocaleString('de-DE')}</p>
@@ -237,8 +237,8 @@ export default function InsightsPage() {
           <div className="p-3 rounded-xl bg-gray-100 mb-3">
             <Sparkles className="w-6 h-6 text-gray-400" />
           </div>
-          <p className="text-gray-600 font-medium">No analysis yet</p>
-          <p className="text-gray-400 text-sm mt-1">Click "Run Analysis" to generate AI insights</p>
+          <p className="text-gray-600 font-medium">{t('insights.noAnalysis')}</p>
+          <p className="text-gray-400 text-sm mt-1">{t('insights.noAnalysisHint')}</p>
         </div>
       )}
 
@@ -246,8 +246,8 @@ export default function InsightsPage() {
       {available && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold text-gray-800">Chat with AI</h3>
-            <span className="text-xs text-gray-400">Ask questions about your data</span>
+            <h3 className="text-base font-semibold text-gray-800">{t('insights.chatTitle')}</h3>
+            <span className="text-xs text-gray-400">{t('insights.chatSubtitle')}</span>
           </div>
 
           <Card className="shadow-sm">
@@ -255,7 +255,7 @@ export default function InsightsPage() {
             <div className="flex flex-col gap-4 p-4 min-h-[200px] max-h-[500px] overflow-y-auto">
               {chatMessages.length === 0 && !chatLoading && (
                 <div className="flex flex-col items-center justify-center flex-1 py-8 text-center">
-                  <p className="text-sm text-gray-400">Ask anything about your flow metrics</p>
+                  <p className="text-sm text-gray-400">{t('insights.chatEmpty')}</p>
                   <div className="flex flex-wrap gap-2 mt-3 justify-center">
                     {suggestions.map((suggestion) => (
                       <Button
@@ -320,7 +320,7 @@ export default function InsightsPage() {
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask a question… (Enter to send)"
+                placeholder={t('insights.chatPlaceholder')}
                 disabled={chatLoading}
                 className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
               />

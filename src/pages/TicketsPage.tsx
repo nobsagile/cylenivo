@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Search, Info } from 'lucide-react'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { api } from '@/services/api'
 import { useMetrics } from '@/hooks/useMetrics'
 import type { Ticket } from '@/types'
@@ -54,7 +55,7 @@ export default function TicketsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('nav.tickets')}</h2>
-          <p className="text-sm text-gray-400 mt-0.5">{total} tickets</p>
+          <p className="text-sm text-gray-400 mt-0.5">{t('tickets.count', { count: total })}</p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -63,20 +64,37 @@ export default function TicketsPage() {
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search ID or title…"
+              placeholder={t('tickets.searchPlaceholder')}
               className="pl-8 h-9 w-48 text-sm"
             />
           </div>
-          <button
-            onClick={() => { setAnalyzedOnly(!analyzedOnly); setPage(1) }}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
-              analyzedOnly
-                ? 'bg-blue-50 text-blue-700 border-blue-200'
-                : 'bg-white text-gray-500 border-gray-200 hover:text-gray-700'
-            }`}
-          >
-            Analyzed only
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => { setAnalyzedOnly(!analyzedOnly); setPage(1) }}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                analyzedOnly
+                  ? 'bg-blue-50 text-blue-700 border-blue-200'
+                  : 'bg-white text-gray-500 border-gray-200 hover:text-gray-700'
+              }`}
+            >
+              {t('tickets.analyzedOnly')}
+            </button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                  <Info className="w-3.5 h-3.5" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64">
+                <div className="text-xs text-gray-600 space-y-1.5">
+                  <p className="font-semibold text-gray-800 mb-1">{t('tickets.analyzedOnly')}</p>
+                  <p>{t('help.analyzedOnly')}</p>
+                  <p className="mt-2 font-medium text-gray-700">{t('tickets.colorCoding')}</p>
+                  <p>{t('help.ticketColors')}</p>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
           <div className="flex items-center gap-1.5 bg-gray-100 rounded-lg p-1">
             {TYPE_FILTERS.map((type) => (
               <button
@@ -88,7 +106,7 @@ export default function TicketsPage() {
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                {type || 'All'}
+                {type || t('common.all')}
               </button>
             ))}
           </div>
@@ -105,7 +123,7 @@ export default function TicketsPage() {
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-2">
           <p className="text-sm text-gray-400">
-            Page {page} of {totalPages}
+            {t('tickets.page', { page, total: totalPages })}
           </p>
           <div className="flex items-center gap-1">
             <Button

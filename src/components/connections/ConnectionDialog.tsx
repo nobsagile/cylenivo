@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ExternalLink, CheckCircle2, XCircle, Loader2 } from 'lucide-react'
 import { api } from '@/services/api'
 import type { SourceConnection } from '@/types'
@@ -22,6 +23,7 @@ interface Props {
 type TestState = 'idle' | 'loading' | 'ok' | 'error'
 
 export default function ConnectionDialog({ open, connection, onClose, onSaved }: Props) {
+  const { t } = useTranslation()
   const isEdit = Boolean(connection)
   const [name, setName] = useState(connection?.name ?? '')
   const [baseUrl, setBaseUrl] = useState(connection?.base_url ?? '')
@@ -90,20 +92,20 @@ export default function ConnectionDialog({ open, connection, onClose, onSaved }:
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{isEdit ? 'Edit Connection' : 'Add Jira Connection'}</DialogTitle>
+          <DialogTitle>{isEdit ? t('connection.editTitle') : t('connection.addTitle')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('connection.name')}</label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Acme Jira"
+              placeholder={t('connection.namePlaceholder')}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Jira Base URL</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('connection.jiraBaseUrl')}</label>
             <Input
               value={baseUrl}
               onChange={(e) => setBaseUrl(e.target.value)}
@@ -111,34 +113,34 @@ export default function ConnectionDialog({ open, connection, onClose, onSaved }:
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('connection.email')}</label>
             <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              placeholder={t('connection.emailPlaceholder')}
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              API Token
-              {isEdit && <span className="text-gray-400 font-normal ml-1">(leave empty to keep existing)</span>}
+              {t('connection.apiToken')}
+              {isEdit && <span className="text-gray-400 font-normal ml-1">({t('connection.apiTokenKeepHint')})</span>}
             </label>
             <Input
               type="password"
               value={apiToken}
               onChange={(e) => setApiToken(e.target.value)}
-              placeholder={isEdit ? '••••••••' : 'Paste your API token'}
+              placeholder={isEdit ? '••••••••' : t('connection.apiTokenPlaceholder')}
             />
             <p className="mt-1.5 text-xs text-gray-400 flex items-center gap-1">
-              Get your token at{' '}
+              {t('connection.getTokenAt')}{' '}
               <a
                 href="https://id.atlassian.com/manage-profile/security/api-tokens"
                 target="_blank"
                 rel="noreferrer"
                 className="text-blue-500 hover:underline inline-flex items-center gap-0.5"
               >
-                Atlassian API Tokens <ExternalLink className="w-3 h-3" />
+                {t('connection.atlassianTokens')} <ExternalLink className="w-3 h-3" />
               </a>
             </p>
           </div>
@@ -167,11 +169,11 @@ export default function ConnectionDialog({ open, connection, onClose, onSaved }:
             className="gap-1.5 mr-auto"
           >
             {testState === 'loading' && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-            Test Connection
+            {t('connection.testConnection')}
           </Button>
-          <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+          <Button type="button" variant="outline" onClick={onClose}>{t('common.cancel')}</Button>
           <Button type="button" onClick={handleSave} disabled={saving || !canSave}>
-            {saving ? 'Saving…' : 'Save'}
+            {saving ? t('common.saving') : t('common.save')}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { ArrowLeftRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { ArrowLeftRight, Info } from 'lucide-react'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import type { TicketTransition, ConfigContext } from '@/types'
 
 interface Props {
@@ -23,6 +25,7 @@ interface ReworkMovement {
 }
 
 export function TicketTimeline({ transitions, config, createdAt, externalLink }: Props) {
+  const { t } = useTranslation()
   const { status_order, cycle_time_start_status, cycle_time_end_status, lead_time_start_status, lead_time_end_status } = config
 
   const cycleStartIdx = status_order.indexOf(cycle_time_start_status)
@@ -36,7 +39,7 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
   )
 
   if (sorted.length === 0) {
-    return <p className="text-xs text-gray-400">No transitions recorded</p>
+    return <p className="text-xs text-gray-400">{t('timeline.noTransitions')}</p>
   }
 
   // Build segments: each segment = time in a status
@@ -163,6 +166,25 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
   return (
     <div className="space-y-3">
 
+      {/* Help */}
+      <div className="flex items-center gap-1">
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="text-gray-300 hover:text-gray-500 transition-colors">
+              <Info className="w-3.5 h-3.5" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-64">
+            <div className="text-xs text-gray-600 space-y-1.5">
+              <p className="font-semibold text-gray-800 mb-1">Ticket Timeline</p>
+              <p>{t('help.ticketTimeline')}</p>
+              <p>{t('help.boardColors')}</p>
+            </div>
+          </PopoverContent>
+        </Popover>
+        <span className="text-[10px] text-gray-400">{t('timeline.hoverToExplore')}</span>
+      </div>
+
       {/* 1. Timeline bar */}
       <div className="flex h-10 rounded-md overflow-hidden border border-gray-200">
         {segments.map((seg, i) => {
@@ -228,7 +250,7 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
           <div className="flex items-center gap-2 mb-1.5">
             <ArrowLeftRight className="w-3.5 h-3.5 text-rose-500 shrink-0" />
             <span className="text-xs font-semibold text-rose-700">
-              {totalReworkCount} rework movement{totalReworkCount !== 1 ? 's' : ''}
+              {totalReworkCount !== 1 ? t('timeline.reworkMovementsPlural', { count: totalReworkCount }) : t('timeline.reworkMovements', { count: totalReworkCount })}
             </span>
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-0.5">
@@ -246,10 +268,10 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
 
       {/* 4. Footer */}
       <div className="flex gap-3 text-[10px]">
-        <span className="text-gray-400">Created: {new Date(createdAt).toLocaleDateString()}</span>
+        <span className="text-gray-400">{t('common.created')}: {new Date(createdAt).toLocaleDateString()}</span>
         {externalLink && (
           <a href={externalLink} target="_blank" rel="noopener noreferrer" className="text-violet-600 hover:underline">
-            Open in Jira ↗
+            {t('timeline.openInJira')}
           </a>
         )}
       </div>

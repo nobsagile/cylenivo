@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Info } from 'lucide-react'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import type { ConfigContext, StatusDuration, TimeInStatusResponse } from '@/types'
 
 interface Props {
@@ -35,6 +38,7 @@ function MiniHistogram({ values }: { values: number[] }) {
 }
 
 export function BoardVisualization({ config, timeInStatus, ticketData }: Props) {
+  const { t } = useTranslation()
   const { status_order, cycle_time_start_status, cycle_time_end_status, lead_time_start_status, lead_time_end_status } = config
 
   const cycleStartIdx = status_order.indexOf(cycle_time_start_status)
@@ -109,7 +113,23 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4">
-      <h3 className="text-sm font-semibold text-gray-700 mb-3">Time Distribution Across Statuses</h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-semibold text-gray-700">{t('board.title')}</h3>
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="text-gray-300 hover:text-gray-500 transition-colors shrink-0">
+              <Info className="w-4 h-4" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-72">
+            <div className="text-xs text-gray-600 space-y-1.5">
+              <p className="font-semibold text-gray-800 mb-1">Time Distribution</p>
+              <p>{t('help.boardVisualization')}</p>
+              <p>{t('help.boardColors')}</p>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
       <div className="flex gap-1">
         {relevantStatuses.map((status, i) => {
           const mean = meanDays[i]
@@ -140,7 +160,7 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
           )
         })}
       </div>
-      <p className="text-[10px] text-gray-400 mt-2">Column width proportional to average time spent. Histogram shows ticket distribution.</p>
+      <p className="text-[10px] text-gray-400 mt-2">{t('board.footer')}</p>
     </div>
   )
 }

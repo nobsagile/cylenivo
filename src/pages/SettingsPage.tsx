@@ -4,8 +4,9 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import {
   Plus, Pencil, Trash2, ArrowRight, Settings2,
   Database, FileJson, Calendar, Ticket, Link2, CheckCircle2, XCircle, Loader2, ArrowRight as ArrowRightIcon,
-  X, Bot, RefreshCw, ChevronDown,
+  X, Bot, RefreshCw, ChevronDown, Info,
 } from 'lucide-react'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { api } from '@/services/api'
 import type { ProjectConfig, ImportSession, SourceConnection, LlmConfig } from '@/types'
 import { Button } from '@/components/ui/button'
@@ -259,14 +260,14 @@ export default function SettingsPage() {
     <div className="max-w-2xl">
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('settings.title')}</h2>
-        <p className="text-sm text-gray-400 mt-1">Manage your connections, configurations and datasets</p>
+        <p className="text-sm text-gray-400 mt-1">{t('settings.subtitle')}</p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-gray-100 p-1 h-auto mb-6">
           <TabsTrigger value="configs" className="text-sm px-4 py-1.5 gap-1.5">
             <Settings2 className="w-3.5 h-3.5" />
-            Configurations
+            {t('settings.tabConfigs')}
             {configs.length > 0 && (
               <span className="ml-1 text-[11px] bg-gray-200 text-gray-600 rounded-full px-1.5 py-0.5 font-semibold">
                 {configs.length}
@@ -275,7 +276,7 @@ export default function SettingsPage() {
           </TabsTrigger>
           <TabsTrigger value="datasets" className="text-sm px-4 py-1.5 gap-1.5">
             <Database className="w-3.5 h-3.5" />
-            Datasets
+            {t('settings.tabDatasets')}
             {imports.length > 0 && (
               <span className="ml-1 text-[11px] bg-gray-200 text-gray-600 rounded-full px-1.5 py-0.5 font-semibold">
                 {imports.length}
@@ -284,7 +285,7 @@ export default function SettingsPage() {
           </TabsTrigger>
           <TabsTrigger value="connections" className="text-sm px-4 py-1.5 gap-1.5">
             <Link2 className="w-3.5 h-3.5" />
-            Connections
+            {t('settings.tabConnections')}
             {connections.length > 0 && (
               <span className="ml-1 text-[11px] bg-gray-200 text-gray-600 rounded-full px-1.5 py-0.5 font-semibold">
                 {connections.length}
@@ -293,7 +294,7 @@ export default function SettingsPage() {
           </TabsTrigger>
           <TabsTrigger value="ai" className="text-sm px-4 py-1.5 gap-1.5">
             <Bot className="w-3.5 h-3.5" />
-            AI
+            {t('settings.tabAi')}
             {llmConfig && (
               <span className="ml-1 w-2 h-2 rounded-full bg-emerald-500 inline-block" />
             )}
@@ -303,21 +304,20 @@ export default function SettingsPage() {
         {/* Configurations */}
         <TabsContent value="configs">
           <p className="text-xs text-gray-400 mb-5">
-            Measurement rules — define which statuses mark cycle time start and end.
-            One configuration can be reused for multiple datasets of the same team.
+            {t('settings.configsDesc')}
           </p>
           {configs.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-gray-200 rounded-xl">
               <div className="p-3 rounded-xl bg-gray-100 mb-3">
                 <Settings2 className="w-6 h-6 text-gray-400" />
               </div>
-              <p className="text-gray-600 font-medium">No configurations yet</p>
+              <p className="text-gray-600 font-medium">{t('settings.noConfigs')}</p>
               <p className="text-gray-400 text-sm mt-1 max-w-xs">
-                A configuration is created automatically when you import your first dataset.
+                {t('settings.noConfigsHint')}
               </p>
               <Button onClick={() => navigate('/import')} variant="outline" className="mt-4 gap-1.5">
                 <Plus className="w-4 h-4" />
-                Import data
+                {t('settings.importData')}
               </Button>
             </div>
           ) : (
@@ -338,7 +338,7 @@ export default function SettingsPage() {
                       <span className="font-medium text-gray-700">{config.cycle_time_start_status}</span>
                       <ArrowRight className="w-3 h-3 text-gray-400" />
                       <span className="font-medium text-gray-700">{config.cycle_time_end_status}</span>
-                      <span className="text-gray-400 ml-0.5">cycle time</span>
+                      <span className="text-gray-400 ml-0.5">{t('settings.cycleTime')}</span>
                     </div>
                     {config.status_order?.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
@@ -367,7 +367,7 @@ export default function SettingsPage() {
                       className="gap-1.5 h-8"
                     >
                       <Pencil className="w-3.5 h-3.5" />
-                      Edit
+                      {t('common.edit')}
                     </Button>
                     <Button
                       variant="outline"
@@ -387,13 +387,12 @@ export default function SettingsPage() {
         {/* Datasets */}
         <TabsContent value="datasets">
           <p className="text-xs text-gray-400 mb-5">
-            Imported ticket snapshots — each dataset uses one configuration to calculate metrics.
-            Import the same project again over time to track trends.
+            {t('settings.datasetsDesc')}
           </p>
           <div className="flex justify-end mb-4">
             <Button onClick={() => navigate('/import')} variant="outline" className="gap-1.5">
               <Plus className="w-4 h-4" />
-              New Import
+              {t('settings.newImport')}
             </Button>
           </div>
 
@@ -402,11 +401,11 @@ export default function SettingsPage() {
               <div className="p-3 rounded-xl bg-gray-100 mb-3">
                 <Database className="w-6 h-6 text-gray-400" />
               </div>
-              <p className="text-gray-600 font-medium">No datasets imported yet</p>
-              <p className="text-gray-400 text-sm mt-1">Connect to Jira or upload an export to get started</p>
+              <p className="text-gray-600 font-medium">{t('settings.noDatasets')}</p>
+              <p className="text-gray-400 text-sm mt-1">{t('settings.noDatasetsHint')}</p>
               <Button onClick={() => navigate('/import')} variant="outline" className="mt-4 gap-1.5">
                 <Plus className="w-4 h-4" />
-                Import data
+                {t('settings.importData')}
               </Button>
             </div>
           ) : (
@@ -446,7 +445,7 @@ export default function SettingsPage() {
                       onClick={() => navigate(`/projects/${imp.id}`)}
                       className="h-8 text-xs"
                     >
-                      Open
+                      {t('common.open')}
                     </Button>
                     <Button
                       variant="outline"
@@ -466,7 +465,7 @@ export default function SettingsPage() {
         {/* Connections */}
         <TabsContent value="connections">
           <p className="text-xs text-gray-400 mb-4">
-            Stored Jira credentials — saved once, reused for all imports. The API token is never sent to the browser after saving.
+            {t('settings.connectionsDesc')}
           </p>
 
           {/* Post-save banner */}
@@ -474,15 +473,15 @@ export default function SettingsPage() {
             <div className="flex items-center gap-3 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 mb-5">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
               <div className="flex-1 text-sm text-emerald-800">
-                <span className="font-semibold">Connection added!</span>
-                {' '}Now go to Import to fetch your first dataset.
+                <span className="font-semibold">{t('settings.connectionAdded')}</span>
+                {' '}{t('settings.connectionAddedHint')}
               </div>
               <Button
                 size="sm"
                 onClick={() => navigate('/import')}
                 className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white h-8 shrink-0"
               >
-                Import data
+                {t('settings.importData')}
                 <ArrowRightIcon className="w-3.5 h-3.5" />
               </Button>
               <button
@@ -501,7 +500,7 @@ export default function SettingsPage() {
               className="gap-1.5"
             >
               <Plus className="w-4 h-4" />
-              Add Connection
+              {t('settings.addConnection')}
             </Button>
           </div>
 
@@ -510,9 +509,9 @@ export default function SettingsPage() {
               <div className="p-3 rounded-xl bg-gray-100 mb-3">
                 <Link2 className="w-6 h-6 text-gray-400" />
               </div>
-              <p className="text-gray-600 font-medium">No connections yet</p>
+              <p className="text-gray-600 font-medium">{t('settings.noConnections')}</p>
               <p className="text-gray-400 text-sm mt-1 max-w-xs">
-                Add your Jira credentials once — then fetch tickets directly from the Import wizard.
+                {t('settings.noConnectionsHint')}
               </p>
               <Button
                 onClick={() => { setEditConn(null); setDialogOpen(true) }}
@@ -520,7 +519,7 @@ export default function SettingsPage() {
                 className="mt-4 gap-1.5"
               >
                 <Plus className="w-4 h-4" />
-                Add Connection
+                {t('settings.addConnection')}
               </Button>
             </div>
           ) : (
@@ -557,7 +556,7 @@ export default function SettingsPage() {
                       className="h-8 text-xs gap-1"
                     >
                       {testingId === conn.id && <Loader2 className="w-3 h-3 animate-spin" />}
-                      Test
+                      {t('common.test')}
                     </Button>
                     <Button
                       variant="outline"
@@ -585,7 +584,7 @@ export default function SettingsPage() {
         {/* AI */}
         <TabsContent value="ai">
           <p className="text-xs text-gray-400 mb-5">
-            Configure the AI model used for flow analysis and chat. API keys are stored locally and never leave your device.
+            {t('settings.aiDesc')}
           </p>
 
           {llmLoaded && (
@@ -605,14 +604,28 @@ export default function SettingsPage() {
                     onClick={handleLlmDisconnect}
                     className="h-8 text-xs text-red-500 hover:text-red-700 hover:border-red-300 shrink-0"
                   >
-                    Disconnect
+                    {t('common.disconnect')}
                   </Button>
                 </div>
               )}
 
               {/* Provider selector */}
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1.5">Provider</label>
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <label className="text-xs font-semibold text-gray-600">{t('settings.provider')}</label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                        <Info className="w-3 h-3" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64">
+                      <div className="text-xs text-gray-600">
+                        <p>{t('help.llmProvider')}</p>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
                 <div className="flex gap-2">
                   {(['ollama', 'openai', 'openai_compatible'] as const).map((p) => (
                     <button
@@ -633,9 +646,23 @@ export default function SettingsPage() {
               {/* Base URL */}
               {(llmProvider === 'ollama' || llmProvider === 'openai_compatible') && (
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-                    {llmProvider === 'ollama' ? 'Ollama URL' : 'Base URL'}
-                  </label>
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <label className="text-xs font-semibold text-gray-600">
+                      {llmProvider === 'ollama' ? t('settings.ollamaUrl') : t('settings.baseUrl')}
+                    </label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                          <Info className="w-3 h-3" />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64">
+                        <div className="text-xs text-gray-600">
+                          <p>{t('help.llmBaseUrl')}</p>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                   <input
                     type="text"
                     value={llmBaseUrl}
@@ -650,13 +677,13 @@ export default function SettingsPage() {
               {(llmProvider === 'openai' || llmProvider === 'openai_compatible') && (
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-                    API Key {llmConfig?.key_set && <span className="font-normal text-emerald-600">· saved</span>}
+                    {t('settings.apiKey')} {llmConfig?.key_set && <span className="font-normal text-emerald-600">· {t('settings.apiKeySaved')}</span>}
                   </label>
                   <input
                     type="password"
                     value={llmApiKey}
                     onChange={(e) => setLlmApiKey(e.target.value)}
-                    placeholder={llmConfig?.key_set ? '••••••••  (leave empty to keep current)' : 'sk-...'}
+                    placeholder={llmConfig?.key_set ? `••••••••  (${t('settings.apiKeyKeepHint')})` : 'sk-...'}
                     className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -665,7 +692,7 @@ export default function SettingsPage() {
               {/* Model */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-semibold text-gray-600">Model</label>
+                  <label className="text-xs font-semibold text-gray-600">{t('settings.model')}</label>
                   {llmProvider === 'ollama' && (
                     <button
                       onClick={handleDiscoverModels}
@@ -673,8 +700,8 @@ export default function SettingsPage() {
                       className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 disabled:opacity-50"
                     >
                       {llmModelsLoading
-                        ? <><RefreshCw className="w-3 h-3 animate-spin" />Discovering…</>
-                        : <><RefreshCw className="w-3 h-3" />Discover models</>
+                        ? <><RefreshCw className="w-3 h-3 animate-spin" />{t('settings.discovering')}</>
+                        : <><RefreshCw className="w-3 h-3" />{t('settings.discoverModels')}</>
                       }
                     </button>
                   )}
@@ -703,7 +730,21 @@ export default function SettingsPage() {
 
               {/* System prompt */}
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1.5">System Prompt</label>
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <label className="text-xs font-semibold text-gray-600">{t('settings.systemPrompt')}</label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                        <Info className="w-3 h-3" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64">
+                      <div className="text-xs text-gray-600">
+                        <p>{t('help.llmSystemPrompt')}</p>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
                 <textarea
                   value={llmSystemPrompt}
                   onChange={(e) => setLlmSystemPrompt(e.target.value)}
@@ -714,7 +755,7 @@ export default function SettingsPage() {
                   onClick={() => setLlmSystemPrompt(DEFAULT_SYSTEM_PROMPT)}
                   className="mt-1 text-xs text-gray-400 hover:text-gray-600"
                 >
-                  Reset to default
+                  {t('settings.resetToDefault')}
                 </button>
               </div>
 
@@ -725,7 +766,7 @@ export default function SettingsPage() {
                   disabled={llmSaving || !llmModel}
                   className="gap-1.5"
                 >
-                  {llmSaving ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Saving…</> : 'Save'}
+                  {llmSaving ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />{t('common.saving')}</> : t('common.save')}
                 </Button>
                 <Button
                   variant="outline"
@@ -733,16 +774,16 @@ export default function SettingsPage() {
                   disabled={llmTesting || !llmConfig}
                   className="gap-1.5"
                 >
-                  {llmTesting ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Testing…</> : 'Test connection'}
+                  {llmTesting ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />{t('settings.testing')}</> : t('settings.testConnection')}
                 </Button>
                 {llmTestResult === 'ok' && (
                   <span className="flex items-center gap-1 text-sm text-emerald-600">
-                    <CheckCircle2 className="w-4 h-4" />Connected
+                    <CheckCircle2 className="w-4 h-4" />{t('common.connected')}
                   </span>
                 )}
                 {llmTestResult === 'error' && (
                   <span className="flex items-center gap-1 text-sm text-red-500">
-                    <XCircle className="w-4 h-4" />Not reachable
+                    <XCircle className="w-4 h-4" />{t('common.notReachable')}
                   </span>
                 )}
               </div>
@@ -753,9 +794,9 @@ export default function SettingsPage() {
 
       {/* Data Management */}
       <div className="mt-10 pt-8 border-t border-gray-200">
-        <h3 className="text-sm font-semibold text-gray-700 mb-1">Data Management</h3>
+        <h3 className="text-sm font-semibold text-gray-700 mb-1">{t('settings.dataManagement')}</h3>
         <p className="text-xs text-gray-400 mb-4">
-          Permanently delete all project data or restore the built-in demo datasets.
+          {t('settings.dataManagementDesc')}
         </p>
         <div className="flex items-center gap-3">
           <Button
@@ -766,7 +807,7 @@ export default function SettingsPage() {
             className="gap-1.5 text-red-500 hover:text-red-700 hover:border-red-300"
           >
             {resetting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-            Delete everything
+            {t('settings.deleteEverything')}
           </Button>
           {imports.length === 0 && (
             <Button
@@ -777,7 +818,7 @@ export default function SettingsPage() {
               className="gap-1.5"
             >
               {seeding ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
-              Generate demo data
+              {t('settings.generateDemo')}
             </Button>
           )}
         </div>
@@ -807,9 +848,9 @@ export default function SettingsPage() {
       {pendingReset && (
         <ConfirmDialog
           open
-          title="Delete everything?"
-          description="All configurations, datasets, and tickets will be permanently deleted. Connections and AI settings are kept. This cannot be undone."
-          confirmLabel="Delete everything"
+          title={t('settings.deleteEverythingConfirm')}
+          description={t('settings.deleteEverythingDesc')}
+          confirmLabel={t('settings.deleteEverything')}
           onConfirm={handleReset}
           onCancel={() => setPendingReset(false)}
         />

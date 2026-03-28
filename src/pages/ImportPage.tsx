@@ -1,9 +1,11 @@
 import { useState, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
   UploadCloud, CheckCircle2, FileJson, ArrowRight, ArrowLeft,
-  Plus, GripVertical, X, Loader2, Link2, Clock,
+  Plus, GripVertical, X, Loader2, Link2, Clock, Info,
 } from 'lucide-react'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor,
   useSensor, useSensors, type DragEndEvent,
@@ -66,6 +68,7 @@ function extractStatuses(data: Record<string, unknown>): string[] {
 }
 
 export default function ImportPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [step, setStep] = useState<Step>('source')
@@ -116,7 +119,7 @@ export default function ImportPage() {
           raw: f,
         })
       } catch {
-        alert('Invalid JSON file')
+        alert(t('import.invalidJson'))
       }
     }
     reader.readAsText(f)
@@ -140,7 +143,7 @@ export default function ImportPage() {
   async function handleFetchFromJira() {
     if (!selectedConnId || !jiraProject) return
     setFetching(true)
-    setFetchMsg('Connecting to Jira…')
+    setFetchMsg(t('import.connectingToJira'))
     try {
       const options: JiraFetchOptions = {
         project: jiraProject.trim().toUpperCase(),
@@ -149,9 +152,9 @@ export default function ImportPage() {
         resolved_from: resolvedFrom || undefined,
         resolved_to: resolvedTo || undefined,
       }
-      setFetchMsg(`Fetching tickets from ${options.project}…`)
+      setFetchMsg(t('import.fetchingTickets', { project: options.project }))
       const result = await api.connections.fetchStream(selectedConnId, options, (current, total, key) => {
-        setFetchMsg(`Fetching ticket ${current}/${total} (${key})…`)
+        setFetchMsg(t('import.fetchingTicket', { current, total, key }))
       }) as Record<string, unknown>
       const statuses = extractStatuses(result)
       const p: FilePreview = {
@@ -236,8 +239,8 @@ export default function ImportPage() {
       <div className="max-w-lg">
         <StepHeader current={1} total={3} />
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Choose your source</h2>
-          <p className="text-sm text-gray-400 mt-1">How would you like to import ticket data?</p>
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('import.chooseSource')}</h2>
+          <p className="text-sm text-gray-400 mt-1">{t('import.chooseSourceHint')}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -256,8 +259,8 @@ export default function ImportPage() {
               <Link2 className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <p className="font-semibold text-gray-900 text-sm">Jira</p>
-              <p className="text-xs text-gray-400 mt-0.5">Connect live</p>
+              <p className="font-semibold text-gray-900 text-sm">{t('import.jira')}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{t('import.connectLive')}</p>
             </div>
           </button>
 
@@ -270,8 +273,8 @@ export default function ImportPage() {
               <UploadCloud className="w-5 h-5 text-gray-600" />
             </div>
             <div>
-              <p className="font-semibold text-gray-900 text-sm">Upload file</p>
-              <p className="text-xs text-gray-400 mt-0.5">JSON export</p>
+              <p className="font-semibold text-gray-900 text-sm">{t('import.uploadFileOption')}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{t('import.jsonExport')}</p>
             </div>
           </button>
 
@@ -281,8 +284,8 @@ export default function ImportPage() {
               <Clock className="w-5 h-5 text-gray-400" />
             </div>
             <div>
-              <p className="font-semibold text-gray-500 text-sm">Trello</p>
-              <p className="text-xs text-gray-400 mt-0.5">Coming soon</p>
+              <p className="font-semibold text-gray-500 text-sm">{t('import.trello')}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{t('common.comingSoon')}</p>
             </div>
           </div>
 
@@ -292,8 +295,8 @@ export default function ImportPage() {
               <Clock className="w-5 h-5 text-gray-400" />
             </div>
             <div>
-              <p className="font-semibold text-gray-500 text-sm">Linear</p>
-              <p className="text-xs text-gray-400 mt-0.5">Coming soon</p>
+              <p className="font-semibold text-gray-500 text-sm">{t('import.linear')}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{t('common.comingSoon')}</p>
             </div>
           </div>
         </div>
@@ -314,19 +317,19 @@ export default function ImportPage() {
       <div className="max-w-lg">
         <StepHeader current={2} total={3} />
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Fetch from Jira</h2>
-          <p className="text-sm text-gray-400 mt-1">Select a connection and configure what to fetch.</p>
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('import.fetchFromJira')}</h2>
+          <p className="text-sm text-gray-400 mt-1">{t('import.fetchFromJiraHint')}</p>
         </div>
 
         <div className="space-y-4">
           {/* Connection selector */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Connection</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('import.connection')}</label>
             {connections.length === 0 ? (
               <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 flex items-center gap-3">
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-amber-800">No connections yet</p>
-                  <p className="text-xs text-amber-600 mt-0.5">Add a Jira connection in Settings first.</p>
+                  <p className="text-sm font-semibold text-amber-800">{t('import.noConnections')}</p>
+                  <p className="text-xs text-amber-600 mt-0.5">{t('import.noConnectionsHint')}</p>
                 </div>
                 <Button size="sm" variant="outline" onClick={() => setAddConnOpen(true)} className="gap-1.5 shrink-0">
                   <Plus className="w-3.5 h-3.5" />
@@ -337,7 +340,7 @@ export default function ImportPage() {
               <div className="flex gap-2">
                 <Select value={selectedConnId} onValueChange={setSelectedConnId}>
                   <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="— select connection —" />
+                    <SelectValue placeholder={t('import.selectConnection')} />
                   </SelectTrigger>
                   <SelectContent>
                     {connections.map((c) => (
@@ -356,17 +359,45 @@ export default function ImportPage() {
 
           {/* Project key */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Project Key</label>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <label className="text-sm font-medium text-gray-700">{t('import.projectKey')}</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64">
+                  <div className="text-xs text-gray-600">
+                    <p>{t('help.projectKey')}</p>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
             <Input
               value={jiraProject}
               onChange={(e) => setJiraProject(e.target.value.toUpperCase())}
-              placeholder="e.g. TN, PROJ, MYTEAM"
+              placeholder={t('import.projectKeyPlaceholder')}
             />
           </div>
 
           {/* Issue types */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Issue Types</label>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <label className="text-sm font-medium text-gray-700">{t('import.issueTypes')}</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64">
+                  <div className="text-xs text-gray-600">
+                    <p>{t('help.issueTypes')}</p>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
             <div className="flex flex-wrap gap-2">
               {issueTypeOptions.map((t) => (
                 <button
@@ -386,7 +417,19 @@ export default function ImportPage() {
 
           {/* Options */}
           <div className="flex items-center gap-2 text-sm text-gray-700">
-            <span>Max tickets:</span>
+            <span>{t('import.maxTickets')}</span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                  <Info className="w-3.5 h-3.5" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64">
+                <div className="text-xs text-gray-600">
+                  <p>{t('help.maxTickets')}</p>
+                </div>
+              </PopoverContent>
+            </Popover>
             <Input
               type="number"
               value={jiraLimit}
@@ -400,8 +443,8 @@ export default function ImportPage() {
           {/* Date range */}
           <div>
             <p className="text-sm font-medium text-gray-700 mb-1.5">
-              Completed between
-              <span className="text-gray-400 font-normal ml-1">— optional, only imports tickets resolved in this window</span>
+              {t('import.completedBetween')}
+              <span className="text-gray-400 font-normal ml-1">{t('import.completedBetweenHint')}</span>
             </p>
             <div className="flex items-center gap-2">
               <Input
@@ -411,7 +454,7 @@ export default function ImportPage() {
                 className="w-44"
                 placeholder="From"
               />
-              <span className="text-gray-400 text-sm">to</span>
+              <span className="text-gray-400 text-sm">{t('common.to')}</span>
               <Input
                 type="date"
                 value={resolvedTo}
@@ -432,7 +475,7 @@ export default function ImportPage() {
 
         <div className="flex gap-3 mt-6">
           <Button variant="outline" onClick={() => setStep('source')} className="gap-1.5">
-            <ArrowLeft className="w-4 h-4" /> Back
+            <ArrowLeft className="w-4 h-4" /> {t('common.back')}
           </Button>
           <Button
             onClick={handleFetchFromJira}
@@ -440,9 +483,9 @@ export default function ImportPage() {
             className="flex-1 gap-2 h-11"
           >
             {fetching ? (
-              <><Loader2 className="w-4 h-4 animate-spin" /> Fetching…</>
+              <><Loader2 className="w-4 h-4 animate-spin" /> {t('import.importing')}</>
             ) : (
-              <>Fetch from Jira <ArrowRight className="w-4 h-4" /></>
+              <>{t('import.fetchFromJira')} <ArrowRight className="w-4 h-4" /></>
             )}
           </Button>
         </div>
@@ -470,9 +513,9 @@ export default function ImportPage() {
       <div className="max-w-lg">
         <StepHeader current={2} total={3} />
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Upload your export</h2>
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('import.uploadYourExport')}</h2>
           <p className="text-sm text-gray-400 mt-1">
-            Drop a JSON file exported from Jira or another tool.
+            {t('import.uploadYourExportHint')}
           </p>
         </div>
 
@@ -492,13 +535,13 @@ export default function ImportPage() {
               <>
                 <CheckCircle2 className="w-9 h-9 text-emerald-500 mb-3" />
                 <p className="text-sm font-semibold text-emerald-700">{preview.raw?.name}</p>
-                <p className="text-xs text-emerald-600 mt-0.5">Click to change file</p>
+                <p className="text-xs text-emerald-600 mt-0.5">{t('import.clickToChange')}</p>
               </>
             ) : (
               <>
                 <UploadCloud className={`w-9 h-9 mb-3 ${dragging ? 'text-blue-500' : 'text-gray-400'}`} />
-                <p className="text-sm font-semibold text-gray-700">Drop your JSON file here</p>
-                <p className="text-xs text-gray-400 mt-1">or click to browse</p>
+                <p className="text-sm font-semibold text-gray-700">{t('import.dropJsonFile')}</p>
+                <p className="text-xs text-gray-400 mt-1">{t('import.orClickToBrowse')}</p>
               </>
             )}
           </div>
@@ -527,14 +570,14 @@ export default function ImportPage() {
 
         <div className="flex gap-3 mt-6">
           <Button variant="outline" onClick={() => setStep('source')} className="gap-1.5">
-            <ArrowLeft className="w-4 h-4" /> Back
+            <ArrowLeft className="w-4 h-4" /> {t('common.back')}
           </Button>
           <Button
             onClick={() => goToConfigure()}
             disabled={!preview}
             className="flex-1 gap-2 h-11"
           >
-            Next: Configure
+            {t('import.nextConfigure')}
             <ArrowRight className="w-4 h-4" />
           </Button>
         </div>
@@ -547,9 +590,9 @@ export default function ImportPage() {
     <div className="max-w-lg">
       <StepHeader current={3} total={3} />
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Configure metrics</h2>
+        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('import.configureMetrics')}</h2>
         <p className="text-sm text-gray-400 mt-1">
-          Tell the analyzer which statuses mark the start and end of cycle time.
+          {t('import.configureMetricsHint')}
         </p>
       </div>
 
@@ -564,7 +607,7 @@ export default function ImportPage() {
                 configMode === mode ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              {mode === 'existing' ? 'Use existing config' : 'Create new config'}
+              {mode === 'existing' ? t('import.useExistingConfig') : t('import.createNewConfig')}
             </button>
           ))}
         </div>
@@ -574,10 +617,10 @@ export default function ImportPage() {
       {configMode === 'existing' && configs.length > 0 && (
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Configuration</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('import.configuration')}</label>
             <Select value={selectedConfigId} onValueChange={setSelectedConfigId}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="— select —" />
+                <SelectValue placeholder={t('import.select')} />
               </SelectTrigger>
               <SelectContent>
                 {configs.map((c) => (
@@ -593,8 +636,8 @@ export default function ImportPage() {
             if (!cfg) return null
             return (
               <div className="rounded-lg bg-gray-50 border border-gray-200 p-3 text-xs text-gray-500 space-y-1">
-                <p><span className="font-medium text-gray-700">Cycle time:</span> {cfg.cycle_time_start_status} → {cfg.cycle_time_end_status}</p>
-                {cfg.lead_time_start_status && <p><span className="font-medium text-gray-700">Lead time from:</span> {cfg.lead_time_start_status}</p>}
+                <p><span className="font-medium text-gray-700">{t('metrics.cycleTime')}:</span> {cfg.cycle_time_start_status} → {cfg.cycle_time_end_status}</p>
+                {cfg.lead_time_start_status && <p><span className="font-medium text-gray-700">{t('metrics.leadTime')}:</span> {cfg.lead_time_start_status}</p>}
                 <div className="flex flex-wrap gap-1 pt-1">
                   {cfg.status_order.map((s) => (
                     <span key={s} className="px-1.5 py-0.5 rounded bg-white border border-gray-200 text-gray-600">{s}</span>
@@ -610,14 +653,14 @@ export default function ImportPage() {
       {configMode === 'new' && (
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Configuration name</label>
-            <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="e.g. Product Team" required />
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('import.configName')}</label>
+            <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder={t('import.configNamePlaceholder')} required />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              Statuses
-              <span className="text-gray-400 font-normal ml-1">— auto-detected, drag to reorder</span>
+              {t('import.statuses')}
+              <span className="text-gray-400 font-normal ml-1">{t('import.statusesHint')}</span>
             </label>
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
               <SortableContext items={statusOrder} strategy={verticalListSortingStrategy}>
@@ -631,22 +674,36 @@ export default function ImportPage() {
             </DndContext>
             <div className="flex gap-2">
               <Input value={newStatus} onChange={(e) => setNewStatus(e.target.value)}
-                placeholder="Add status…"
+                placeholder={t('import.addStatusPlaceholder')}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addStatus())} />
               <Button type="button" variant="outline" onClick={addStatus} className="shrink-0 gap-1.5">
-                <Plus className="w-3.5 h-3.5" /> Add
+                <Plus className="w-3.5 h-3.5" /> {t('common.add')}
               </Button>
             </div>
           </div>
 
           <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
-            <p className="text-sm font-semibold text-gray-700">Cycle Time</p>
+            <div className="flex items-center gap-1.5">
+              <p className="text-sm font-semibold text-gray-700">{t('metrics.cycleTime')}</p>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64">
+                  <div className="text-xs text-gray-600">
+                    <p>{t('help.cycleTimeConfig')}</p>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">Start Status</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('import.startStatus')}</label>
                 <Select value={cycleStart} onValueChange={setCycleStart}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="— select —" />
+                    <SelectValue placeholder={t('import.select')} />
                   </SelectTrigger>
                   <SelectContent>
                     {statusOrder.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
@@ -654,10 +711,10 @@ export default function ImportPage() {
                 </Select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">End Status</label>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('import.endStatus')}</label>
                 <Select value={cycleEnd} onValueChange={setCycleEnd}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="— select —" />
+                    <SelectValue placeholder={t('import.select')} />
                   </SelectTrigger>
                   <SelectContent>
                     {statusOrder.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
@@ -668,16 +725,30 @@ export default function ImportPage() {
           </div>
 
           <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-            <p className="text-sm font-semibold text-gray-700 mb-3">Lead Time</p>
+            <div className="flex items-center gap-1.5 mb-3">
+              <p className="text-sm font-semibold text-gray-700">{t('metrics.leadTime')}</p>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64">
+                  <div className="text-xs text-gray-600">
+                    <p>{t('help.leadTimeConfig')}</p>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
             <label className="block text-xs font-medium text-gray-500 mb-1.5">
-              Start Status <span className="font-normal text-gray-400">— empty = ticket creation date</span>
+              {t('import.startStatus')} <span className="font-normal text-gray-400">{t('import.leadTimeStartHint')}</span>
             </label>
             <Select value={leadStart || '__created__'} onValueChange={(v) => setLeadStart(v === '__created__' ? '' : v)}>
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__created__">Use ticket creation date</SelectItem>
+                <SelectItem value="__created__">{t('import.useCreationDate')}</SelectItem>
                 {statusOrder.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
               </SelectContent>
             </Select>
@@ -687,7 +758,7 @@ export default function ImportPage() {
 
       <div className="flex gap-3 mt-6">
         <Button variant="outline" onClick={() => setStep(sourceMode === 'jira' ? 'jira' : 'upload')} className="gap-1.5">
-          <ArrowLeft className="w-4 h-4" /> Back
+          <ArrowLeft className="w-4 h-4" /> {t('common.back')}
         </Button>
         <Button
           onClick={handleImport}
@@ -695,9 +766,9 @@ export default function ImportPage() {
           className="flex-1 gap-2 h-11"
         >
           {importing ? (
-            <><Loader2 className="w-4 h-4 animate-spin" /> Importing…</>
+            <><Loader2 className="w-4 h-4 animate-spin" /> {t('import.importing')}</>
           ) : (
-            <><CheckCircle2 className="w-4 h-4" /> Import {preview?.ticket_count} tickets</>
+            <><CheckCircle2 className="w-4 h-4" /> {t('import.importTickets', { count: preview?.ticket_count })}</>
           )}
         </Button>
       </div>
@@ -706,7 +777,8 @@ export default function ImportPage() {
 }
 
 function StepHeader({ current, total }: { current: number; total: number }) {
-  const labels = total === 3 ? ['Choose source', 'Upload / Connect', 'Configure'] : ['Upload file', 'Configure', 'Done']
+  const { t } = useTranslation()
+  const labels = total === 3 ? [t('import.stepSource'), t('import.stepUpload'), t('import.stepConfigure')] : [t('import.stepUploadFile'), t('import.stepConfigure'), t('import.stepDone')]
   return (
     <div className="flex items-center gap-2 mb-8">
       {labels.map((label, i) => {

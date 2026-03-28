@@ -19,7 +19,8 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, X, Plus, ArrowLeft } from 'lucide-react'
+import { GripVertical, X, Plus, ArrowLeft, Info } from 'lucide-react'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { api } from '@/services/api'
 import type { ProjectConfig, ImportSession } from '@/types'
 import { Button } from '@/components/ui/button'
@@ -217,7 +218,7 @@ export default function ConfigFormPage() {
           className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 mb-6 transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          Back to Settings
+          {t('config.backToSettings')}
         </button>
         <div className="text-sm text-gray-400">Loading…</div>
       </div>
@@ -231,7 +232,7 @@ export default function ConfigFormPage() {
         className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 mb-6 transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
-        Back to Settings
+        {t('config.backToSettings')}
       </button>
 
       <div className="mb-6">
@@ -239,7 +240,7 @@ export default function ConfigFormPage() {
           {isEdit ? t('settings.editConfig') : t('settings.newConfig')}
         </h2>
         <p className="text-sm text-gray-400 mt-1">
-          Define how cycle time and lead time are measured
+          {t('config.defineMetrics')}
         </p>
       </div>
 
@@ -248,15 +249,15 @@ export default function ConfigFormPage() {
         <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 mb-6">
           <div className="flex items-center gap-2 mb-2">
             <Wand2 className="w-4 h-4 text-blue-600" />
-            <p className="text-sm font-semibold text-blue-800">Load statuses from import</p>
+            <p className="text-sm font-semibold text-blue-800">{t('config.loadFromImport')}</p>
           </div>
           <p className="text-xs text-blue-600 mb-3">
-            Select an existing dataset to automatically detect all status values.
+            {t('config.loadFromImportHint')}
           </p>
           <div className="flex gap-2">
             <Select onValueChange={loadFromImport} disabled={loadingStatuses}>
               <SelectTrigger className="flex-1 border-blue-200 focus:ring-blue-500">
-                <SelectValue placeholder="— select import —" />
+                <SelectValue placeholder={t('config.selectImport')} />
               </SelectTrigger>
               <SelectContent>
                 {imports.map((imp) => (
@@ -273,7 +274,7 @@ export default function ConfigFormPage() {
           </div>
           {statusOrder.length > 0 && (
             <p className="text-xs text-blue-600 mt-2">
-              ✓ {statusOrder.length} statuses loaded — now select cycle time start and end below.
+              {t('config.statusesLoaded', { count: statusOrder.length })}
             </p>
           )}
         </div>
@@ -282,11 +283,11 @@ export default function ConfigFormPage() {
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('config.name')}</label>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Product Team"
+            placeholder={t('config.namePlaceholder')}
             required
           />
         </div>
@@ -294,8 +295,8 @@ export default function ConfigFormPage() {
         {/* Base URL */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Jira Base URL
-            <span className="text-gray-400 font-normal ml-1">(optional)</span>
+            {t('config.jiraBaseUrl')}
+            <span className="text-gray-400 font-normal ml-1">{t('config.optional')}</span>
           </label>
           <Input
             value={baseUrl}
@@ -306,10 +307,24 @@ export default function ConfigFormPage() {
 
         {/* Status order */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Status Order
-            <span className="text-gray-400 font-normal ml-1">— drag to reorder</span>
-          </label>
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <label className="text-sm font-medium text-gray-700">
+              {t('config.statusOrder')}
+              <span className="text-gray-400 font-normal ml-1">{t('config.dragToReorder')}</span>
+            </label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                  <Info className="w-3.5 h-3.5" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64">
+                <div className="text-xs text-gray-600">
+                  <p>{t('help.statusOrder')}</p>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
 
           {statusOrder.length > 0 && (
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -347,10 +362,24 @@ export default function ConfigFormPage() {
 
         {/* Cycle time */}
         <div className="rounded-xl border border-gray-200 p-4 space-y-3 bg-gray-50">
-          <p className="text-sm font-semibold text-gray-700">Cycle Time</p>
+          <div className="flex items-center gap-1.5">
+            <p className="text-sm font-semibold text-gray-700">{t('metrics.cycleTime')}</p>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                  <Info className="w-3.5 h-3.5" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64">
+                <div className="text-xs text-gray-600">
+                  <p>{t('help.cycleTimeConfig')}</p>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">Start Status</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('config.startStatus')}</label>
               <Select value={cycleStart} onValueChange={setCycleStart} required>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="— select —" />
@@ -361,7 +390,7 @@ export default function ConfigFormPage() {
               </Select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">End Status</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('config.endStatus')}</label>
               <Select value={cycleEnd} onValueChange={setCycleEnd} required>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="— select —" />
@@ -373,15 +402,33 @@ export default function ConfigFormPage() {
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">Measurement Mode</label>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <label className="text-xs font-medium text-gray-500">{t('config.measurementMode')}</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                    <Info className="w-3 h-3" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-72">
+                  <div className="text-xs text-gray-600 space-y-1.5">
+                    <p className="font-semibold text-gray-800 mb-1">{t('config.measurementMode')}</p>
+                    <p>{t('help.configMode')}</p>
+                    <p className="mt-2"><span className="font-medium">First / Last:</span> {t('help.modeFirstLast')}</p>
+                    <p><span className="font-medium">First / First:</span> {t('help.modeFirstFirst')}</p>
+                    <p><span className="font-medium">Last / Last:</span> {t('help.modeLastLast')}</p>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
             <Select value={cycleMode} onValueChange={(v) => setCycleMode(v as typeof cycleMode)}>
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="first_last">First in / Last out — recommended</SelectItem>
-                <SelectItem value="first_first">First in / First out — time to first done</SelectItem>
-                <SelectItem value="last_last">Last in / Last out — last active period only</SelectItem>
+                <SelectItem value="first_last">{t('config.modeFirstLast')}</SelectItem>
+                <SelectItem value="first_first">{t('config.modeFirstFirst')}</SelectItem>
+                <SelectItem value="last_last">{t('config.modeLastLast')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -389,32 +436,46 @@ export default function ConfigFormPage() {
 
         {/* Lead time */}
         <div className="rounded-xl border border-gray-200 p-4 bg-gray-50 space-y-3">
-          <p className="text-sm font-semibold text-gray-700">Lead Time</p>
+          <div className="flex items-center gap-1.5">
+            <p className="text-sm font-semibold text-gray-700">{t('metrics.leadTime')}</p>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                  <Info className="w-3.5 h-3.5" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64">
+                <div className="text-xs text-gray-600">
+                  <p>{t('help.leadTimeConfig')}</p>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1.5">
-                Start Status <span className="text-gray-400 font-normal">— empty = created</span>
+                {t('config.startStatus')} <span className="text-gray-400 font-normal">{t('config.leadTimeStartHint')}</span>
               </label>
               <Select value={leadStart || '__created__'} onValueChange={(v) => setLeadStart(v === '__created__' ? '' : v)}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__created__">Use ticket creation date</SelectItem>
+                  <SelectItem value="__created__">{t('config.useCreationDate')}</SelectItem>
                   {statusOrder.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1.5">
-                End Status <span className="text-gray-400 font-normal">— empty = cycle end</span>
+                {t('config.endStatus')} <span className="text-gray-400 font-normal">{t('config.leadTimeEndHint')}</span>
               </label>
               <Select value={leadEnd || '__cycle_end__'} onValueChange={(v) => setLeadEnd(v === '__cycle_end__' ? '' : v)}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__cycle_end__">Same as cycle time end</SelectItem>
+                  <SelectItem value="__cycle_end__">{t('config.sameAsCycleEnd')}</SelectItem>
                   {statusOrder.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                 </SelectContent>
               </Select>
@@ -430,10 +491,10 @@ export default function ConfigFormPage() {
 
         <div className="flex gap-2 pt-1">
           <Button type="submit" disabled={saving} className="gap-1.5">
-            {saving ? 'Saving…' : 'Save Configuration'}
+            {saving ? t('common.saving') : t('config.saveConfig')}
           </Button>
           <Button type="button" variant="outline" onClick={() => navigate('/settings')}>
-            Cancel
+            {t('common.cancel')}
           </Button>
         </div>
       </form>

@@ -38,7 +38,7 @@ export default function FlowPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('nav.flow')}</h2>
-        <p className="text-sm text-gray-400 mt-0.5">Understand where time is spent in your workflow</p>
+        <p className="text-sm text-gray-400 mt-0.5">{t('flow.subtitle')}</p>
       </div>
 
       {metrics.config_context && (
@@ -67,7 +67,7 @@ export default function FlowPage() {
           </Card>
         </>
       ) : (
-        <div className="text-gray-400 text-sm">Loading…</div>
+        <div className="text-gray-400 text-sm">{t('common.loading')}</div>
       )}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

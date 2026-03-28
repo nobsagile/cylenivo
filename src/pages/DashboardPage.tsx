@@ -69,6 +69,7 @@ interface TicketsAnalyzedCardProps {
 }
 
 function TicketsAnalyzedCard({ completed, total, withoutCycleStart, incomplete }: TicketsAnalyzedCardProps) {
+  const { t } = useTranslation()
   const other = Math.max(0, total - completed - withoutCycleStart - incomplete)
   return (
     <Card className="shadow-sm">
@@ -76,7 +77,7 @@ function TicketsAnalyzedCard({ completed, total, withoutCycleStart, incomplete }
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <p className="text-sm text-gray-500 font-medium">Analyzed</p>
+              <p className="text-sm text-gray-500 font-medium">{t('dashboard.analyzed')}</p>
               <Popover>
                 <PopoverTrigger asChild>
                   <button className="text-gray-300 hover:text-gray-500 transition-colors">
@@ -84,27 +85,27 @@ function TicketsAnalyzedCard({ completed, total, withoutCycleStart, incomplete }
                   </button>
                 </PopoverTrigger>
                 <PopoverContent className="w-64">
-                  <p className="font-semibold text-gray-800 mb-2">{total} tickets imported</p>
+                  <p className="font-semibold text-gray-800 mb-2">{t('dashboard.totalImported', { total })}</p>
                   <div className="space-y-1.5 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">✓ Valid cycle times</span>
+                      <span className="text-gray-600">✓ {t('dashboard.validCycleTimes')}</span>
                       <span className="font-semibold text-gray-900">{completed}</span>
                     </div>
                     {withoutCycleStart > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-gray-400">No cycle start status</span>
+                        <span className="text-gray-400">{t('dashboard.noCycleStart')}</span>
                         <span className="text-gray-500">{withoutCycleStart}</span>
                       </div>
                     )}
                     {incomplete > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Started, never completed</span>
+                        <span className="text-gray-400">{t('dashboard.startedNeverCompleted')}</span>
                         <span className="text-gray-500">{incomplete}</span>
                       </div>
                     )}
                     {other > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Other excluded</span>
+                        <span className="text-gray-400">{t('dashboard.otherExcluded')}</span>
                         <span className="text-gray-500">{other}</span>
                       </div>
                     )}
@@ -150,10 +151,10 @@ export default function DashboardPage() {
           <Upload className="w-8 h-8 text-violet-500" />
         </div>
         <div>
-          <p className="text-gray-900 font-medium">No dataset selected</p>
-          <p className="text-gray-400 text-sm mt-1">Upload a Jira export to start analyzing</p>
+          <p className="text-gray-900 font-medium">{t('dashboard.noDataset')}</p>
+          <p className="text-gray-400 text-sm mt-1">{t('dashboard.noDatasetHint')}</p>
         </div>
-        <Button onClick={() => navigate('/import')}>Upload export</Button>
+        <Button onClick={() => navigate('/import')}>{t('dashboard.uploadExport')}</Button>
       </div>
     )
   }
@@ -179,7 +180,7 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{data.project_key}</h2>
-        <p className="text-sm text-gray-400 mt-0.5">{data.completed_ticket_count} of {data.ticket_count} tickets analyzed</p>
+        <p className="text-sm text-gray-400 mt-0.5">{t('dashboard.ticketsAnalyzed', { completed: data.completed_ticket_count, total: data.ticket_count })}</p>
       </div>
 
       {data.config_context && (
@@ -194,6 +195,12 @@ export default function DashboardPage() {
           icon={Clock}
           iconBg="bg-teal-50"
           iconColor="text-teal-600"
+          info={
+            <div className="text-xs text-gray-600 space-y-1.5">
+              <p className="font-semibold text-gray-800 mb-1">{t('metrics.cycleTime')}</p>
+              <p>{t('help.cycleTime')}</p>
+            </div>
+          }
         />
         <MetricCard
           title={t('metrics.leadTime')}
@@ -202,6 +209,12 @@ export default function DashboardPage() {
           icon={Timer}
           iconBg="bg-violet-50"
           iconColor="text-violet-600"
+          info={
+            <div className="text-xs text-gray-600 space-y-1.5">
+              <p className="font-semibold text-gray-800 mb-1">{t('metrics.leadTime')}</p>
+              <p>{t('help.leadTime')}</p>
+            </div>
+          }
         />
         <MetricCard
           title={t('metrics.throughput')}
@@ -212,9 +225,9 @@ export default function DashboardPage() {
           iconColor="text-emerald-600"
           info={
             <div className="text-xs text-gray-600 space-y-1.5">
-              <p className="font-semibold text-gray-800 mb-1">Throughput</p>
-              <p>Average number of tickets completed per week, based on when tickets reached the <span className="font-medium">cycle time end status</span>.</p>
-              <p className="text-gray-400">Does not depend on lead time configuration.</p>
+              <p className="font-semibold text-gray-800 mb-1">{t('metrics.throughput')}</p>
+              <p>{t('help.throughput')}</p>
+              <p className="text-gray-400">{t('help.throughputNote')}</p>
             </div>
           }
         />
@@ -230,7 +243,22 @@ export default function DashboardPage() {
         <PercentileCard data={data.cycle_time} variant="cycle" />
         <Card className="shadow-sm">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold text-gray-700">Cycle Time Trend</CardTitle>
+            <CardTitle className="text-base font-semibold text-gray-700 flex items-center gap-1.5">
+              {t('dashboard.cycleTimeTrend')}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64">
+                  <div className="text-xs text-gray-600 space-y-1.5">
+                    <p className="font-semibold text-gray-800 mb-1">{t('dashboard.cycleTimeTrend')}</p>
+                    <p>{t('help.cycleTimeTrend')}</p>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <CycleTimeChart
@@ -245,7 +273,22 @@ export default function DashboardPage() {
         <PercentileCard data={data.lead_time} variant="lead" />
         <Card className="shadow-sm">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold text-gray-700">Lead Time Trend</CardTitle>
+            <CardTitle className="text-base font-semibold text-gray-700 flex items-center gap-1.5">
+              {t('dashboard.leadTimeTrend')}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64">
+                  <div className="text-xs text-gray-600 space-y-1.5">
+                    <p className="font-semibold text-gray-800 mb-1">{t('dashboard.leadTimeTrend')}</p>
+                    <p>{t('help.leadTimeTrend')}</p>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <LeadTimeScatterChart

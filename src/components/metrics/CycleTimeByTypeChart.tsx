@@ -9,7 +9,10 @@ import {
   Legend,
 } from 'recharts'
 
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { Info } from 'lucide-react'
 import type { CycleTimeByTypeResponse } from '@/types'
 import { ChartTooltip } from './ChartTooltip'
 
@@ -33,19 +36,35 @@ function TypeTooltip({ active, payload, label }: { active?: boolean; payload?: A
 }
 
 export function CycleTimeByTypeChart({ data }: Props) {
+  const { t } = useTranslation()
   if (data.types.length === 0) return null
 
-  const chartData = data.types.map((t) => ({
-    type: t.type,
-    Median: t.median,
-    P85: t.p85,
-    count: t.count,
+  const chartData = data.types.map((tp) => ({
+    type: tp.type,
+    Median: tp.median,
+    P85: tp.p85,
+    count: tp.count,
   }))
 
   return (
     <Card className="shadow-sm">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold text-gray-700">Cycle Time by Ticket Type</CardTitle>
+        <CardTitle className="text-base font-semibold text-gray-700 flex items-center gap-1.5">
+          {t('cycleTimeByType.title')}
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                <Info className="w-3.5 h-3.5" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64">
+              <div className="text-xs text-gray-600 space-y-1.5">
+                <p className="font-semibold text-gray-800 mb-1">Cycle Time by Type</p>
+                <p>{t('help.cycleTimeByType')}</p>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={200}>
@@ -60,9 +79,9 @@ export function CycleTimeByTypeChart({ data }: Props) {
           </BarChart>
         </ResponsiveContainer>
         <div className="flex gap-4 mt-2">
-          {data.types.map((t) => (
-            <span key={t.type} className="text-[10px] text-gray-400">
-              {t.type}: {t.count} tickets
+          {data.types.map((tp) => (
+            <span key={tp.type} className="text-[10px] text-gray-400">
+              {t('cycleTimeByType.ticketCount', { type: tp.type, count: tp.count })}
             </span>
           ))}
         </div>

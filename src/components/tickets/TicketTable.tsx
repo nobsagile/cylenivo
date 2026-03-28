@@ -108,7 +108,7 @@ export function TicketTable({ tickets, p50, p85, config }: Props) {
             {th('ticket_type', t('tickets.table.type'), 'w-28')}
             {th('cycle_time_days', t('tickets.table.cycleTime'), 'text-right w-28')}
             {th('lead_time_days', t('tickets.table.leadTime'), 'text-right w-28')}
-            {th('current_status', 'Status', 'w-36')}
+            {th('current_status', t('common.status'), 'w-36')}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -177,7 +177,7 @@ export function TicketTable({ tickets, p50, p85, config }: Props) {
                       externalLink={expandedDetail.external_link}
                     />
                   ) : (
-                    <p className="text-xs text-gray-400">Loading transitions…</p>
+                    <p className="text-xs text-gray-400">{t('tickets.loadingTransitions')}</p>
                   )}
                 </TableCell>
               </TableRow>
@@ -187,7 +187,7 @@ export function TicketTable({ tickets, p50, p85, config }: Props) {
           {tickets.length === 0 && (
             <TableRow>
               <TableCell colSpan={6} className="text-center text-gray-400 py-12 text-sm">
-                No tickets found
+                {t('tickets.noTickets')}
               </TableCell>
             </TableRow>
           )}

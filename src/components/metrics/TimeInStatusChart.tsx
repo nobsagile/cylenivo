@@ -99,10 +99,9 @@ export function AvgTimeInStatusChart({ timeInStatusData, summary }: AvgProps) {
     <div>
       <div className="flex items-start justify-between mb-2">
         <div>
-          <h3 className="text-sm font-semibold text-gray-700">{t('metrics.cycleTime')} – Avg Time in Status</h3>
+          <h3 className="text-sm font-semibold text-gray-700">{t('metrics.cycleTime')} – {t('timeInStatus.avgTitle')}</h3>
           <p className="text-xs text-gray-400 mt-0.5">
-            Average per status within the cycle window ({statuses[0]} → {statuses[statuses.length - 1]}).
-            Only analyzed tickets included.
+            {t('timeInStatus.avgSubtitle', { start: statuses[0], end: statuses[statuses.length - 1] })}
           </p>
         </div>
         <Popover>
@@ -112,11 +111,11 @@ export function AvgTimeInStatusChart({ timeInStatusData, summary }: AvgProps) {
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-72">
-            <p className="font-semibold text-gray-800 mb-2">How to read this chart</p>
+            <p className="font-semibold text-gray-800 mb-2">{t('timeInStatus.howToRead')}</p>
             <div className="space-y-2 text-xs text-gray-600">
-              <p>Shows the average time each ticket spent in a status <span className="font-medium">during its cycle</span> — from entry into <span className="font-medium">{statuses[0]}</span> to last entry into <span className="font-medium">{statuses[statuses.length - 1]}</span>.</p>
-              <p>Only statuses within this window are shown. Tickets that did not complete the cycle are excluded.</p>
-              <p>If <span className="font-medium">{statuses[statuses.length - 1]}</span> shows a value &gt; 0, some tickets returned from {statuses[statuses.length - 1]} to an earlier status (rework) before completing.</p>
+              <p>{t('timeInStatus.howToReadDesc', { start: statuses[0], end: statuses[statuses.length - 1] })}</p>
+              <p>{t('timeInStatus.howToReadExclude')}</p>
+              <p>{t('timeInStatus.howToReadRework', { status: statuses[statuses.length - 1] })}</p>
             </div>
           </PopoverContent>
         </Popover>
@@ -144,6 +143,7 @@ interface BreakdownProps {
 }
 
 export function PerTicketBreakdownChart({ timeInStatusData, config }: BreakdownProps) {
+  const { t } = useTranslation()
   const { statuses } = timeInStatusData
   const colors = buildStatusColors(statuses, config)
   const last30 = timeInStatusData.tickets.slice(-30)
@@ -157,8 +157,12 @@ export function PerTicketBreakdownChart({ timeInStatusData, config }: BreakdownP
 
   return (
     <div>
-      <h3 className="text-sm font-semibold text-gray-700 mb-1">Per-Ticket Breakdown (last 30)</h3>
-      <p className="text-xs text-gray-400 mb-3">Time per status for each completed ticket, sorted by completion date.</p>
+      <div className="flex items-start justify-between mb-1">
+        <div>
+          <h3 className="text-sm font-semibold text-gray-700">{t('timeInStatus.perTicketTitle')}</h3>
+          <p className="text-xs text-gray-400 mt-0.5 mb-3">{t('help.perTicketBreakdown')}</p>
+        </div>
+      </div>
       <ResponsiveContainer width="100%" height={320}>
         <BarChart data={stackedData}>
           <CartesianGrid strokeDasharray="3 3" />

@@ -33,43 +33,43 @@ interface Issue {
   severity: 'warn' | 'info'
 }
 
-function buildIssues(report: ImportHealthReport, cycleStart: string, cycleEnd: string): Issue[] {
+function buildIssues(report: ImportHealthReport, cycleStart: string, cycleEnd: string, t: (key: string, opts?: Record<string, unknown>) => string): Issue[] {
   const issues: Issue[] = []
   const oldestYear = report.oldest_transition_date ? new Date(report.oldest_transition_date).getFullYear() : null
   const yearsOld = oldestYear ? new Date().getFullYear() - oldestYear : 0
 
   if (report.tickets_without_cycle_start > 0) {
     issues.push({
-      title: `${report.tickets_without_cycle_start} tickets never entered "${cycleStart}"`,
-      consequence: 'These tickets are fully excluded from cycle time, lead time and throughput. They likely used an older workflow or a different process. No impact on accuracy.',
-      recommendation: 'No action needed unless you want to include these tickets — in that case, check if the cycle start status in your configuration matches the actual workflow.',
+      title: t('sidebar.neverEnteredStatus', { count: report.tickets_without_cycle_start, status: cycleStart }),
+      consequence: t('sidebar.neverEnteredImpact'),
+      recommendation: t('sidebar.neverEnteredAction'),
       severity: 'info',
     })
   }
 
   if (report.tickets_incomplete > 0) {
     issues.push({
-      title: `${report.tickets_incomplete} tickets started but never reached "${cycleEnd}"`,
-      consequence: 'These are in-progress or abandoned tickets. They are excluded from cycle time and lead time, but visible in Time in Status up to their last known transition.',
-      recommendation: 'Normal for any active team. If the number seems high, check whether the cycle end status in your configuration matches where tickets actually finish.',
+      title: t('sidebar.incompleteTickets', { count: report.tickets_incomplete, status: cycleEnd }),
+      consequence: t('sidebar.incompleteImpact'),
+      recommendation: t('sidebar.incompleteAction'),
       severity: 'info',
     })
   }
 
   if (report.unknown_statuses.length > 0) {
     issues.push({
-      title: `${report.unknown_statuses.length} untracked statuses in the data`,
-      consequence: `Time spent in these statuses is invisible in the Time in Status chart: ${report.unknown_statuses.join(', ')}. The chart totals will not add up to the full cycle time.`,
-      recommendation: 'Add the relevant statuses to your configuration\'s status order if you want to see time spent there. Statuses you don\'t care about can be left out.',
+      title: t('sidebar.unknownStatuses', { count: report.unknown_statuses.length }),
+      consequence: t('sidebar.unknownImpact', { statuses: report.unknown_statuses.join(', ') }),
+      recommendation: t('sidebar.unknownAction'),
       severity: 'warn',
     })
   }
 
   if (yearsOld > 2 && oldestYear) {
     issues.push({
-      title: `Data includes transitions back to ${oldestYear}`,
-      consequence: 'Throughput is averaged over the full date range — if old tickets are included, the weekly throughput number will be much lower than your current actual velocity. Cycle time averages may also reflect older team behaviour.',
-      recommendation: 'Re-import with the "Completed between" date filter (e.g. last 12–18 months) to get metrics that reflect how your team works today.',
+      title: t('sidebar.oldData', { year: oldestYear }),
+      consequence: t('sidebar.oldDataImpact'),
+      recommendation: t('sidebar.oldDataAction'),
       severity: 'warn',
     })
   }
@@ -90,29 +90,30 @@ function HealthReportDialog({
   cycleStart: string
   cycleEnd: string
 }) {
-  const issues = buildIssues(report, cycleStart, cycleEnd)
+  const { t } = useTranslation()
+  const issues = buildIssues(report, cycleStart, cycleEnd, t)
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) onClose() }}>
       <DialogContent className="max-w-lg bg-white max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-amber-500" />
-            Data quality report
+            {t('sidebar.dataQuality')}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 mt-2">
           {issues.length === 0 ? (
-            <p className="text-sm text-gray-500">No issues detected. Data looks clean.</p>
+            <p className="text-sm text-gray-500">{t('sidebar.noIssues')}</p>
           ) : issues.map((issue, i) => (
             <div key={i} className={`rounded-lg border p-3.5 ${issue.severity === 'warn' ? 'border-amber-200 bg-amber-50' : 'border-violet-100 bg-violet-50'}`}>
               <p className={`text-sm font-semibold mb-1.5 ${issue.severity === 'warn' ? 'text-amber-800' : 'text-violet-800'}`}>
                 {issue.title}
               </p>
               <p className={`text-xs mb-2 leading-relaxed ${issue.severity === 'warn' ? 'text-amber-700' : 'text-violet-700'}`}>
-                <span className="font-medium">Impact: </span>{issue.consequence}
+                <span className="font-medium">{t('sidebar.impact')} </span>{issue.consequence}
               </p>
               <p className={`text-xs leading-relaxed ${issue.severity === 'warn' ? 'text-amber-600' : 'text-violet-600'}`}>
-                <span className="font-medium">What to do: </span>{issue.recommendation}
+                <span className="font-medium">{t('sidebar.whatToDo')} </span>{issue.recommendation}
               </p>
             </div>
           ))}
@@ -156,7 +157,7 @@ export function Sidebar() {
       {/* Project selector */}
       <div className="px-3 py-3 border-b border-gray-100">
         <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider mb-2 px-1">
-          Project
+          {t('sidebar.project')}
         </p>
         {imports.length === 0 ? (
           <Button
@@ -166,7 +167,7 @@ export function Sidebar() {
             className="w-full gap-1.5 text-xs h-9 text-gray-500"
           >
             <Plus className="w-3.5 h-3.5" />
-            Import first dataset
+            {t('sidebar.importFirst')}
           </Button>
         ) : (
           <Select
@@ -174,7 +175,7 @@ export function Sidebar() {
             onValueChange={(id) => id && navigate(`/projects/${id}`)}
           >
             <SelectTrigger className="w-full text-sm h-9">
-              <SelectValue placeholder="— select project —" />
+              <SelectValue placeholder={t('sidebar.selectProject')} />
             </SelectTrigger>
             <SelectContent>
               {imports.map((imp) => (
@@ -199,6 +200,7 @@ export function Sidebar() {
           currentImport.health_report!,
           currentImport.cycle_time_start_status ?? '',
           currentImport.cycle_time_end_status ?? '',
+          t,
         )
         if (issues.length === 0) return null
         const hasWarn = issues.some(i => i.severity === 'warn')
@@ -214,7 +216,7 @@ export function Sidebar() {
                 }`}
               >
                 <AlertTriangle className={`w-3.5 h-3.5 shrink-0 ${hasWarn ? 'text-amber-500' : 'text-violet-400'}`} />
-                <span>{issues.length} data quality {issues.length === 1 ? 'notice' : 'notices'}</span>
+                <span>{issues.length === 1 ? t('sidebar.qualityNotice', { count: issues.length }) : t('sidebar.qualityNotices', { count: issues.length })}</span>
               </button>
             </div>
             <HealthReportDialog
@@ -246,9 +248,9 @@ export function Sidebar() {
           </div>
         ) : (
           <div className="px-2 py-3">
-            <p className="text-xs font-medium text-gray-500 mb-1">No data yet</p>
+            <p className="text-xs font-medium text-gray-500 mb-1">{t('sidebar.noDataYet')}</p>
             <p className="text-xs text-gray-400 leading-relaxed mb-3">
-              Import your first dataset to start analyzing.
+              {t('sidebar.noDataYetHint')}
             </p>
             <Button
               variant="outline"
@@ -257,7 +259,7 @@ export function Sidebar() {
               className="gap-1.5 text-xs h-8 w-full"
             >
               <Upload className="w-3.5 h-3.5" />
-              Import data
+              {t('nav.import')}
             </Button>
           </div>
         )}

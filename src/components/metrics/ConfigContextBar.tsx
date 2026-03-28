@@ -1,3 +1,6 @@
+import { useTranslation } from 'react-i18next'
+import { Info } from 'lucide-react'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import type { ConfigContext } from '@/types'
 
 interface Props {
@@ -5,6 +8,7 @@ interface Props {
 }
 
 export function ConfigContextBar({ config }: Props) {
+  const { t } = useTranslation()
   const {
     status_order,
     cycle_time_start_status,
@@ -19,12 +23,6 @@ export function ConfigContextBar({ config }: Props) {
   const leadEndStatus = lead_time_end_status ?? cycle_time_end_status
   const leadStartIdx = lead_time_start_status ? status_order.indexOf(lead_time_start_status) : -1
   const leadEndIdx = status_order.indexOf(leadEndStatus)
-
-  const modeLabels: Record<string, string> = {
-    first_last: 'first / last',
-    first_first: 'first / first',
-    last_last: 'last / last',
-  }
 
   const inCycleFn = (i: number) => i >= cycleStartIdx && i <= cycleEndIdx && cycleStartIdx !== -1
   const inLeadFn = (i: number) => (lead_time_start_status ? i >= leadStartIdx : true) && i <= leadEndIdx && leadEndIdx !== -1
@@ -75,7 +73,7 @@ export function ConfigContextBar({ config }: Props) {
         {!lead_time_start_status && (
           <>
             <div className="shrink-0 rounded-md border px-2.5 py-1.5 text-xs font-medium bg-violet-50 border-violet-200 text-violet-600">
-              Created
+              {t('common.created')}
             </div>
             <span className="text-gray-300 text-xs shrink-0">›</span>
           </>
@@ -95,14 +93,29 @@ export function ConfigContextBar({ config }: Props) {
         <div className="flex items-center gap-2">
           <div className="w-3 h-1.5 rounded-full bg-teal-500" />
           <span className="text-[10px] text-gray-500">
-            Cycle Time: {cycle_time_start_status} → {cycle_time_end_status}
+            {t('configBar.cycleTimeLabel', { start: cycle_time_start_status, end: cycle_time_end_status })}
           </span>
-          <span className="text-[10px] text-gray-400">({modeLabels[cycle_time_mode] ?? cycle_time_mode})</span>
+          <span className="text-[10px] text-gray-400">({t(`configBar.mode${cycle_time_mode === 'first_last' ? 'FirstLast' : cycle_time_mode === 'first_first' ? 'FirstFirst' : 'LastLast'}`)})</span>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                <Info className="w-3 h-3" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-72">
+              <div className="text-xs text-gray-600 space-y-1.5">
+                <p className="font-semibold text-gray-800 mb-1">{t('configBar.configuration')}</p>
+                <p>{t('help.configContext')}</p>
+                <p className="font-medium text-gray-700 mt-2">{t('configBar.measurementMode', { mode: t(`configBar.mode${cycle_time_mode === 'first_last' ? 'FirstLast' : cycle_time_mode === 'first_first' ? 'FirstFirst' : 'LastLast'}`) })}</p>
+                <p>{cycle_time_mode === 'first_last' ? t('help.modeFirstLast') : cycle_time_mode === 'first_first' ? t('help.modeFirstFirst') : t('help.modeLastLast')}</p>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-1.5 rounded-full bg-violet-400" />
           <span className="text-[10px] text-gray-500">
-            Lead Time: {lead_time_start_status ?? 'Created'} → {leadEndStatus}
+            {t('configBar.leadTimeLabel', { start: lead_time_start_status ?? t('common.created'), end: leadEndStatus })}
           </span>
         </div>
       </div>
