@@ -7,6 +7,7 @@ import type { TimeInStatusResponse } from '@/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { AvgTimeInStatusChart, PerTicketBreakdownChart } from '@/components/metrics/TimeInStatusChart'
 import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
+import { BoardVisualization } from '@/components/metrics/BoardVisualization'
 
 export default function FlowPage() {
   const { t } = useTranslation()
@@ -30,6 +31,14 @@ export default function FlowPage() {
 
       {metrics.config_context && (
         <ConfigContextBar config={metrics.config_context} />
+      )}
+
+      {metrics.config_context && metrics.time_in_status && (
+        <BoardVisualization
+          config={metrics.config_context}
+          timeInStatus={metrics.time_in_status}
+          ticketData={statusData}
+        />
       )}
 
       {statusData && metrics ? (
