@@ -36,6 +36,9 @@ export default function SettingsPage() {
   const [testResults, setTestResults] = useState<Record<string, 'ok' | 'error'>>({})
   const [activeTab, setActiveTab] = useState((location.state as { tab?: string } | null)?.tab ?? 'configs')
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null)
+  const [pendingReset, setPendingReset] = useState(false)
+  const [resetting, setResetting] = useState(false)
+  const [seeding, setSeeding] = useState(false)
   const [errorMsg, setErrorMsg] = useState<{ title: string; description: string; action?: string } | null>(null)
   const [showConnBanner, setShowConnBanner] = useState(false)
 
@@ -179,6 +182,31 @@ export default function SettingsPage() {
         setErrorMsg({ title: 'Could not delete', description: msg })
       }
     }
+  }
+
+  async function handleReset() {
+    setResetting(true)
+    setPendingReset(false)
+    try {
+      await api.demo.reset()
+      setConfigs([])
+      setImports([])
+    } catch (e) {
+      setErrorMsg({ title: 'Could not reset', description: e instanceof Error ? e.message : 'Error' })
+    }
+    setResetting(false)
+  }
+
+  async function handleSeedDemo() {
+    setSeeding(true)
+    try {
+      const result = await api.demo.seed()
+      const first = result.imports[0]
+      if (first?.import_id) navigate(`/projects/${first.import_id}`)
+    } catch (e) {
+      setErrorMsg({ title: 'Could not generate demo data', description: e instanceof Error ? e.message : 'Error' })
+    }
+    setSeeding(false)
   }
 
   async function handleTestConnection(id: string) {
@@ -723,6 +751,38 @@ export default function SettingsPage() {
         </TabsContent>
       </Tabs>
 
+      {/* Data Management */}
+      <div className="mt-10 pt-8 border-t border-gray-200">
+        <h3 className="text-sm font-semibold text-gray-700 mb-1">Data Management</h3>
+        <p className="text-xs text-gray-400 mb-4">
+          Permanently delete all project data or restore the built-in demo datasets.
+        </p>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={resetting || configs.length === 0}
+            onClick={() => setPendingReset(true)}
+            className="gap-1.5 text-red-500 hover:text-red-700 hover:border-red-300"
+          >
+            {resetting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+            Delete everything
+          </Button>
+          {imports.length === 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={seeding}
+              onClick={handleSeedDemo}
+              className="gap-1.5"
+            >
+              {seeding ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+              Generate demo data
+            </Button>
+          )}
+        </div>
+      </div>
+
       <ConnectionDialog
         open={dialogOpen}
         connection={editConn}
@@ -741,6 +801,17 @@ export default function SettingsPage() {
           confirmLabel={confirmMeta[pendingDelete.type].label}
           onConfirm={executeDelete}
           onCancel={() => setPendingDelete(null)}
+        />
+      )}
+
+      {pendingReset && (
+        <ConfirmDialog
+          open
+          title="Delete everything?"
+          description="All configurations, datasets, and tickets will be permanently deleted. Connections and AI settings are kept. This cannot be undone."
+          confirmLabel="Delete everything"
+          onConfirm={handleReset}
+          onCancel={() => setPendingReset(false)}
         />
       )}
 

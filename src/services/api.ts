@@ -152,6 +152,14 @@ export const api = {
     },
     openaiModels: () => request<{ models: string[] }>('/api/v1/llm-config/openai-models'),
   },
+  demo: {
+    seed: () =>
+      request<{ seeded: boolean; imports: { import_id: string; name: string; project_key: string }[] }>(
+        '/api/v1/demo/seed',
+        { method: 'POST' },
+      ),
+    reset: () => request<null>('/api/v1/demo/reset', { method: 'DELETE' }),
+  },
   llm: {
     status: () => request<LLMStatus>('/api/v1/llm/status'),
     analyze: (importId: string, model?: string) =>
