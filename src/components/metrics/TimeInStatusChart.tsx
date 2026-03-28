@@ -134,3 +134,13 @@ export function PerTicketBreakdownChart({ timeInStatusData }: BreakdownProps) {
     </div>
   )
 }
+
+
+export function TimeInStatusChart({ timeInStatusData, summary }: AvgProps) {
+  return (
+    <>
+      <AvgTimeInStatusChart timeInStatusData={timeInStatusData} summary={summary} />
+      <PerTicketBreakdownChart timeInStatusData={timeInStatusData} />
+    </>
+  )
+}
