@@ -19,15 +19,30 @@ interface MetricCardProps {
   icon: React.ComponentType<{ className?: string }>
   iconBg: string
   iconColor: string
+  info?: React.ReactNode
 }
 
-function MetricCard({ title, value, unit, icon: Icon, iconBg, iconColor }: MetricCardProps) {
+function MetricCard({ title, value, unit, icon: Icon, iconBg, iconColor, info }: MetricCardProps) {
   return (
     <Card className="shadow-sm">
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="text-sm text-gray-500 font-medium truncate">{title}</p>
+            <div className="flex items-center gap-1.5">
+              <p className="text-sm text-gray-500 font-medium truncate">{title}</p>
+              {info && (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="text-gray-300 hover:text-gray-500 transition-colors shrink-0">
+                      <Info className="w-3.5 h-3.5" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-64">
+                    {info}
+                  </PopoverContent>
+                </Popover>
+              )}
+            </div>
             <p className="mt-1.5 text-3xl font-bold text-gray-900 tracking-tight tabular-nums">
               {value ?? '—'}
               {unit && (
@@ -187,6 +202,13 @@ export default function DashboardPage() {
           icon={TrendingUp}
           iconBg="bg-emerald-50"
           iconColor="text-emerald-600"
+          info={
+            <div className="text-xs text-gray-600 space-y-1.5">
+              <p className="font-semibold text-gray-800 mb-1">Throughput</p>
+              <p>Average number of tickets completed per week, based on when tickets reached the <span className="font-medium">cycle time end status</span>.</p>
+              <p className="text-gray-400">Does not depend on lead time configuration.</p>
+            </div>
+          }
         />
         <TicketsAnalyzedCard
           completed={data.completed_ticket_count}

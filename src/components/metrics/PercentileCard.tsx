@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { PercentileStats } from '@/types'
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, Info } from 'lucide-react'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 
 interface Props {
   data: PercentileStats
@@ -21,8 +22,23 @@ export function PercentileCard({ data }: Props) {
   return (
     <Card className="shadow-sm">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold text-gray-700">
+        <CardTitle className="text-base font-semibold text-gray-700 flex items-center gap-1.5">
           {t('metrics.percentile.title')}
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                <Info className="w-3.5 h-3.5" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64">
+              <div className="text-xs text-gray-600 space-y-1.5">
+                <p className="font-semibold text-gray-800 mb-1">Delivery Forecast</p>
+                <p>Based on <span className="font-medium">cycle time</span> of completed tickets. Shows how long future tickets are likely to take.</p>
+                <p>P85 means: 85% of tickets completed within this many days.</p>
+                <p className="text-gray-400">Does not depend on lead time configuration.</p>
+              </div>
+            </PopoverContent>
+          </Popover>
         </CardTitle>
       </CardHeader>
       <CardContent>
