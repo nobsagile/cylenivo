@@ -30,21 +30,32 @@ import {
 
 function SortableStatus({
   id,
-  highlight,
+  isCycleStart,
+  isCycleEnd,
+  isLeadStart,
+  isLeadEnd,
   onRemove,
 }: {
   id: string
-  highlight?: 'start' | 'end' | 'lead'
+  isCycleStart?: boolean
+  isCycleEnd?: boolean
+  isLeadStart?: boolean
+  isLeadEnd?: boolean
   onRemove: () => void
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
   const style = { transform: CSS.Transform.toString(transform), transition }
 
-  const colors = {
-    start: 'border-blue-300 bg-blue-50 text-blue-800',
-    end: 'border-emerald-300 bg-emerald-50 text-emerald-800',
-    lead: 'border-violet-300 bg-violet-50 text-violet-800',
-  }
+  const hasCycle = isCycleStart || isCycleEnd
+  const hasLead = isLeadStart || isLeadEnd
+
+  const rowColor = hasCycle && hasLead
+    ? 'border-indigo-300 bg-indigo-50 text-indigo-900'
+    : hasCycle
+    ? 'border-blue-300 bg-blue-50 text-blue-800'
+    : hasLead
+    ? 'border-violet-300 bg-violet-50 text-violet-800'
+    : 'border-gray-200 bg-white text-gray-700'
 
   return (
     <div
@@ -52,7 +63,7 @@ function SortableStatus({
       style={style}
       className={`flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm transition-shadow ${
         isDragging ? 'shadow-md z-10 relative' : ''
-      } ${highlight ? colors[highlight] : 'border-gray-200 bg-white text-gray-700'}`}
+      } ${rowColor}`}
     >
       <span
         {...attributes}
@@ -62,10 +73,17 @@ function SortableStatus({
         <GripVertical className="w-4 h-4" />
       </span>
       <span className="flex-1 font-medium">{id}</span>
-      {highlight && (
-        <span className="text-[10px] font-semibold uppercase tracking-wide opacity-60">
-          {highlight === 'start' ? 'cycle start' : highlight === 'end' ? 'cycle end' : 'lead start'}
-        </span>
+      {isCycleStart && (
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-blue-600 opacity-70">cycle start</span>
+      )}
+      {isCycleEnd && (
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-blue-600 opacity-70">cycle end</span>
+      )}
+      {isLeadStart && (
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-violet-600 opacity-70">lead start</span>
+      )}
+      {isLeadEnd && (
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-violet-600 opacity-70">lead end</span>
       )}
       <button
         onClick={onRemove}
@@ -91,6 +109,7 @@ export default function ConfigFormPage() {
   const [cycleEnd, setCycleEnd] = useState('')
   const [cycleMode, setCycleMode] = useState<'first_last' | 'first_first' | 'last_last'>('first_last')
   const [leadStart, setLeadStart] = useState('')
+  const [leadEnd, setLeadEnd] = useState('')
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(isEdit)
   const [formError, setFormError] = useState('')
@@ -112,6 +131,7 @@ export default function ConfigFormPage() {
         setCycleEnd(c.cycle_time_end_status)
         setCycleMode(c.cycle_time_mode ?? 'first_last')
         setLeadStart(c.lead_time_start_status ?? '')
+        setLeadEnd(c.lead_time_end_status ?? '')
       }).catch(console.error).finally(() => setLoading(false))
     }
   }, [configId])
@@ -156,12 +176,6 @@ export default function ConfigFormPage() {
     }
   }
 
-  function getHighlight(s: string): 'start' | 'end' | 'lead' | undefined {
-    if (s === cycleStart) return 'start'
-    if (s === cycleEnd) return 'end'
-    if (s === leadStart) return 'lead'
-    return undefined
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -179,6 +193,7 @@ export default function ConfigFormPage() {
       cycle_time_end_status: cycleEnd,
       cycle_time_mode: cycleMode,
       lead_time_start_status: leadStart || undefined,
+      lead_time_end_status: leadEnd || undefined,
     }
     try {
       if (isEdit && configId) {
@@ -304,7 +319,10 @@ export default function ConfigFormPage() {
                     <SortableStatus
                       key={s}
                       id={s}
-                      highlight={getHighlight(s)}
+                      isCycleStart={s === cycleStart}
+                      isCycleEnd={s === cycleEnd}
+                      isLeadStart={!!leadStart && s === leadStart}
+                      isLeadEnd={s === (leadEnd || cycleEnd)}
                       onRemove={() => setStatusOrder((prev) => prev.filter((x) => x !== s))}
                     />
                   ))}
@@ -370,22 +388,37 @@ export default function ConfigFormPage() {
         </div>
 
         {/* Lead time */}
-        <div className="rounded-xl border border-gray-200 p-4 bg-gray-50">
-          <p className="text-sm font-semibold text-gray-700 mb-3">Lead Time</p>
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">
-              Start Status
-              <span className="text-gray-400 font-normal ml-1">— leave empty to use ticket creation date</span>
-            </label>
-            <Select value={leadStart || '__created__'} onValueChange={(v) => setLeadStart(v === '__created__' ? '' : v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__created__">Use ticket creation date</SelectItem>
-                {statusOrder.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-              </SelectContent>
-            </Select>
+        <div className="rounded-xl border border-gray-200 p-4 bg-gray-50 space-y-3">
+          <p className="text-sm font-semibold text-gray-700">Lead Time</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                Start Status <span className="text-gray-400 font-normal">— empty = created</span>
+              </label>
+              <Select value={leadStart || '__created__'} onValueChange={(v) => setLeadStart(v === '__created__' ? '' : v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__created__">Use ticket creation date</SelectItem>
+                  {statusOrder.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                End Status <span className="text-gray-400 font-normal">— empty = cycle end</span>
+              </label>
+              <Select value={leadEnd || '__cycle_end__'} onValueChange={(v) => setLeadEnd(v === '__cycle_end__' ? '' : v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__cycle_end__">Same as cycle time end</SelectItem>
+                  {statusOrder.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 

@@ -42,6 +42,7 @@ configs.post('/', async (c) => {
     cycle_time_end_status: body.cycle_time_end_status,
     cycle_time_mode: body.cycle_time_mode ?? 'first_last',
     lead_time_start_status: body.lead_time_start_status ?? null,
+    lead_time_end_status: body.lead_time_end_status ?? null,
     created_at: now,
   }
   await db.insert(projectConfigs).values(row)
@@ -68,6 +69,7 @@ configs.put('/:id', async (c) => {
   if (body.cycle_time_end_status !== undefined) updates.cycle_time_end_status = body.cycle_time_end_status
   if (body.cycle_time_mode !== undefined) updates.cycle_time_mode = body.cycle_time_mode
   if (body.lead_time_start_status !== undefined) updates.lead_time_start_status = body.lead_time_start_status
+  if (body.lead_time_end_status !== undefined) updates.lead_time_end_status = body.lead_time_end_status
 
   await db.update(projectConfigs).set(updates).where(eq(projectConfigs.id, id))
   const updated = await db.select().from(projectConfigs).where(eq(projectConfigs.id, id))
