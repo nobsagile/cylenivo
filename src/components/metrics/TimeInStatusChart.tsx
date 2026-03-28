@@ -9,7 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import type { TooltipProps } from 'recharts'
+
 import type { TimeInStatusResponse, MetricsSummary, ConfigContext } from '@/types'
 import { ChartTooltip } from './ChartTooltip'
 import { Info } from 'lucide-react'
@@ -53,7 +53,7 @@ function buildStatusColors(statuses: string[], config: ConfigContext | null | un
   }))
 }
 
-function AvgTooltip({ active, payload, label }: TooltipProps<number, string>) {
+function AvgTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value?: number; name?: string; color?: string; fill?: string; dataKey?: string }>; label?: string }) {
   if (!active || !payload?.length) return null
   const color = (payload[0].fill ?? payload[0].color) as string
   return (
@@ -64,7 +64,7 @@ function AvgTooltip({ active, payload, label }: TooltipProps<number, string>) {
   )
 }
 
-function StackedTooltip({ active, payload, label }: TooltipProps<number, string>) {
+function StackedTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value?: number; name?: string; color?: string; fill?: string; dataKey?: string }>; label?: string }) {
   if (!active || !payload?.length) return null
   const entries = payload.filter((p) => (p.value as number) > 0)
   return (
