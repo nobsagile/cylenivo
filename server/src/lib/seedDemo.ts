@@ -3,9 +3,43 @@ import { projectConfigs, importSessions, tickets, ticketTransitions } from '../d
 import { buildHealthReport } from '../analyzers/healthReport.js'
 import { DEMO_IMPROVING, DEMO_DECLINING, type DemoFixture } from './demoData.js'
 
-const STATUS_ORDER = ['Backlog', 'In Progress', 'In Review', 'Done']
-const CYCLE_START = 'In Progress'
-const CYCLE_END = 'Done'
+const ALPHA_STATUS_ORDER = ['Backlog', 'In Progress', 'In Review', 'Done']
+const ALPHA_CYCLE_START = 'In Progress'
+const ALPHA_CYCLE_END = 'Done'
+
+const BETA_STATUS_ORDER = ['Backlog', 'Up Next', 'Preparation', 'Ready For Development', 'Development', 'Customer Feedback', 'Ready for Release', 'Done']
+const BETA_CYCLE_START = 'Preparation'
+const BETA_CYCLE_END = 'Customer Feedback'
+const BETA_CYCLE_MODE = 'last_last'
+const BETA_LEAD_START = 'Up Next'
+const BETA_LEAD_END = 'Done'
+
+interface DemoProjectConfig {
+  statusOrder: string[]
+  cycleStart: string
+  cycleEnd: string
+  cycleMode: string
+  leadStart: string | null
+  leadEnd: string | null
+}
+
+export const ALPHA_CONFIG: DemoProjectConfig = {
+  statusOrder: ALPHA_STATUS_ORDER,
+  cycleStart: ALPHA_CYCLE_START,
+  cycleEnd: ALPHA_CYCLE_END,
+  cycleMode: 'first_last',
+  leadStart: null,
+  leadEnd: null,
+}
+
+export const BETA_CONFIG: DemoProjectConfig = {
+  statusOrder: BETA_STATUS_ORDER,
+  cycleStart: BETA_CYCLE_START,
+  cycleEnd: BETA_CYCLE_END,
+  cycleMode: BETA_CYCLE_MODE,
+  leadStart: BETA_LEAD_START,
+  leadEnd: BETA_LEAD_END,
+}
 
 export const DEMO_CONFIG_NAMES = {
   improving: 'Demo: Improving Team',
@@ -15,6 +49,7 @@ export const DEMO_CONFIG_NAMES = {
 export async function seedDemoProject(
   configName: string,
   fixture: DemoFixture,
+  config: DemoProjectConfig,
 ): Promise<{ config_id: string; import_id: string }> {
   const now = new Date().toISOString()
 
@@ -24,20 +59,20 @@ export async function seedDemoProject(
     name: configName,
     source_type: 'jira',
     base_url: null,
-    status_order: JSON.stringify(STATUS_ORDER),
-    cycle_time_start_status: CYCLE_START,
-    cycle_time_end_status: CYCLE_END,
-    cycle_time_mode: 'first_last',
-    lead_time_start_status: null,
-    lead_time_end_status: null,
+    status_order: JSON.stringify(config.statusOrder),
+    cycle_time_start_status: config.cycleStart,
+    cycle_time_end_status: config.cycleEnd,
+    cycle_time_mode: config.cycleMode,
+    lead_time_start_status: config.leadStart,
+    lead_time_end_status: config.leadEnd,
     created_at: now,
   })
 
   const healthReport = buildHealthReport(
     fixture.tickets as Parameters<typeof buildHealthReport>[0],
-    STATUS_ORDER,
-    CYCLE_START,
-    CYCLE_END,
+    config.statusOrder,
+    config.cycleStart,
+    config.cycleEnd,
   )
 
   const importId = crypto.randomUUID()
@@ -100,7 +135,7 @@ export async function seedDemoIfEmpty(): Promise<void> {
   }
 
   console.log('Seeding demo data...')
-  await seedDemoProject(DEMO_CONFIG_NAMES.improving, DEMO_IMPROVING)
-  await seedDemoProject(DEMO_CONFIG_NAMES.declining, DEMO_DECLINING)
+  await seedDemoProject(DEMO_CONFIG_NAMES.improving, DEMO_IMPROVING, ALPHA_CONFIG)
+  await seedDemoProject(DEMO_CONFIG_NAMES.declining, DEMO_DECLINING, BETA_CONFIG)
   console.log('Demo data seeded (ALPHA + BETA)')
 }
