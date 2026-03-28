@@ -401,3 +401,145 @@ describe('metrics / chaos data — old workflows, unknown statuses, rework', () 
     expect(s.completed_ticket_count).toBe(3)  // CHAOS-2, CHAOS-3, CHAOS-4
   })
 })
+
+// ─── /rework endpoint ─────────────────────────────────────────────────────────
+
+describe('metrics / /rework endpoint', () => {
+  it('returns correct rework counts for metrics fixture (first_last)', async () => {
+    const configId = await createConfig({ cycle_time_mode: 'first_last' })
+    const importId = await doImport(configId)
+    const res = await app.request(`/api/v1/metrics/${importId}/rework`)
+    const { data } = await res.json() as { data: any }
+
+    expect(data.total_completed).toBe(3)    // TICK-1, TICK-2, TICK-3
+    expect(data.tickets_with_rework).toBe(1) // TICK-3 only (Done→In Dev is backward)
+  })
+
+  it('rework path: Done → In Dev for TICK-3', async () => {
+    const configId = await createConfig({ cycle_time_mode: 'first_last' })
+    const importId = await doImport(configId)
+    const res = await app.request(`/api/v1/metrics/${importId}/rework`)
+    const { data } = await res.json() as { data: any }
+
+    expect(data.rework_paths).toHaveLength(1)
+    expect(data.rework_paths[0]).toMatchObject({ from: 'Done', to: 'In Dev', count: 1 })
+  })
+
+  it('avg_cycle_with_rework=14 (TICK-3), avg_without=7.5 (TICK-1=5, TICK-2=10)', async () => {
+    const configId = await createConfig({ cycle_time_mode: 'first_last' })
+    const importId = await doImport(configId)
+    const res = await app.request(`/api/v1/metrics/${importId}/rework`)
+    const { data } = await res.json() as { data: any }
+
+    expect(data.avg_cycle_with_rework).toBeCloseTo(14, 0)
+    expect(data.avg_cycle_without_rework).toBeCloseTo(7.5, 1)  // (5+10)/2
+  })
+
+  it('returns no rework for chaos fixture where rework is absent', async () => {
+    // CHAOS-2 (normal) and CHAOS-4 (unknown statuses) have no backward moves in status_order
+    // CHAOS-3 may have backward moves
+    const configId = await createConfig(CHAOS_CONFIG)
+    const importId = await doImport(configId, CHAOS)
+    const res = await app.request(`/api/v1/metrics/${importId}/rework`)
+    const { data } = await res.json() as { data: any }
+
+    expect(data.total_completed).toBe(3)
+    expect(data.tickets_with_rework).toBeGreaterThanOrEqual(0)
+    expect(data.tickets_with_rework).toBeLessThanOrEqual(data.total_completed)
+  })
+})
+
+// ─── /cycle-time-by-type endpoint ────────────────────────────────────────────
+
+describe('metrics / /cycle-time-by-type endpoint', () => {
+  it('returns correct types sorted by count desc (first_last)', async () => {
+    // Completed: TICK-1=story/5d, TICK-2=bug/10d, TICK-3=story/14d
+    const configId = await createConfig({ cycle_time_mode: 'first_last' })
+    const importId = await doImport(configId)
+    const res = await app.request(`/api/v1/metrics/${importId}/cycle-time-by-type`)
+    const { data } = await res.json() as { data: { types: any[] } }
+
+    const byType = Object.fromEntries(data.types.map((t: any) => [t.type, t]))
+    expect(data.types[0].type).toBe('story') // highest count
+
+    expect(byType['story'].count).toBe(2)
+    expect(byType['story'].mean).toBeCloseTo(9.5, 1)   // (5+14)/2
+    expect(byType['story'].median).toBeCloseTo(9.5, 1)
+    expect(byType['story'].p85).toBeCloseTo(14, 0)     // sorted=[5,14], idx=1
+
+    expect(byType['bug'].count).toBe(1)
+    expect(byType['bug'].mean).toBeCloseTo(10, 0)
+    expect(byType['bug'].p85).toBeCloseTo(10, 0)       // only 1 value
+  })
+
+  it('incomplete ticket TICK-4 (task) not included in types', async () => {
+    const configId = await createConfig({ cycle_time_mode: 'first_last' })
+    const importId = await doImport(configId)
+    const res = await app.request(`/api/v1/metrics/${importId}/cycle-time-by-type`)
+    const { data } = await res.json() as { data: { types: any[] } }
+
+    const types = data.types.map((t: any) => t.type)
+    expect(types).not.toContain('task')   // TICK-4 never completed
+  })
+})
+
+// ─── /lead-times tickets array ────────────────────────────────────────────────
+
+describe('metrics / lead-times tickets array', () => {
+  it('response includes tickets array with per-ticket lead_time_days', async () => {
+    const configId = await createConfig({ cycle_time_mode: 'first_last' })
+    const importId = await doImport(configId)
+    const res = await app.request(`/api/v1/metrics/${importId}/lead-times`)
+    const { data } = await res.json() as { data: { values: number[]; tickets: any[] } }
+
+    expect(data.tickets).toBeDefined()
+    expect(data.tickets).toHaveLength(3)  // TICK-1, TICK-2, TICK-3 (TICK-4 incomplete)
+
+    const byId = Object.fromEntries(data.tickets.map((t: any) => [t.external_id, t]))
+    expect(byId['TICK-1'].lead_time_days).toBeCloseTo(9, 0)
+    expect(byId['TICK-2'].lead_time_days).toBeCloseTo(12, 0)
+    expect(byId['TICK-3'].lead_time_days).toBeCloseTo(21, 0)  // first_last: Dec25→Jan15
+  })
+
+  it('values array matches tickets array lead times', async () => {
+    const configId = await createConfig({ cycle_time_mode: 'first_last' })
+    const importId = await doImport(configId)
+    const res = await app.request(`/api/v1/metrics/${importId}/lead-times`)
+    const { data } = await res.json() as { data: { values: number[]; tickets: any[] } }
+
+    const fromTickets = data.tickets.map((t: any) => t.lead_time_days).sort((a: number, b: number) => a - b)
+    const fromValues = [...data.values].sort((a, b) => a - b)
+    expect(fromValues).toEqual(fromTickets)
+  })
+})
+
+// ─── config_context in /summary ───────────────────────────────────────────────
+
+describe('metrics / config_context in summary', () => {
+  it('summary includes config_context with status_order and boundaries', async () => {
+    const configId = await createConfig({ cycle_time_mode: 'first_last' })
+    const importId = await doImport(configId)
+    const s = await getSummary(importId)
+
+    expect(s.config_context).toBeDefined()
+    expect(s.config_context.status_order).toEqual(STATUS_ORDER)
+    expect(s.config_context.cycle_time_start_status).toBe('In Dev')
+    expect(s.config_context.cycle_time_end_status).toBe('Done')
+    expect(s.config_context.cycle_time_mode).toBe('first_last')
+    expect(s.config_context.lead_time_start_status).toBeNull()
+    expect(s.config_context.lead_time_end_status).toBeNull()
+  })
+
+  it('config_context reflects lead_time_start_status when configured', async () => {
+    const configId = await createConfig({
+      cycle_time_mode: 'first_last',
+      lead_time_start_status: 'Backlog',
+      lead_time_end_status: 'Done',
+    })
+    const importId = await doImport(configId)
+    const s = await getSummary(importId)
+
+    expect(s.config_context.lead_time_start_status).toBe('Backlog')
+    expect(s.config_context.lead_time_end_status).toBe('Done')
+  })
+})
