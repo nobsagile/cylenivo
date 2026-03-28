@@ -68,7 +68,7 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
     const inLead = (lead_time_start_status ? idx >= leadStartIdx : true) && idx <= leadEndIdx
 
     if (inCycle && inLead) return { bg: 'bg-indigo-50', border: 'border-indigo-200', text: 'text-indigo-800', bar: 'text-indigo-400' }
-    if (inCycle) return { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-800', bar: 'text-blue-400' }
+    if (inCycle) return { bg: 'bg-teal-50', border: 'border-teal-200', text: 'text-teal-800', bar: 'text-teal-400' }
     return { bg: 'bg-violet-50', border: 'border-violet-200', text: 'text-violet-800', bar: 'text-violet-400' }
   }
 

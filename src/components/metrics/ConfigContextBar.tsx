@@ -31,7 +31,7 @@ export function ConfigContextBar({ config }: Props) {
     const inLead = (lead_time_start_status ? idx >= leadStartIdx : true) && idx <= leadEndIdx && leadEndIdx !== -1
 
     if (inCycle && inLead) return 'bg-indigo-100 border-indigo-300 text-indigo-800'
-    if (inCycle) return 'bg-blue-100 border-blue-300 text-blue-800'
+    if (inCycle) return 'bg-teal-100 border-teal-300 text-teal-800'
     if (inLead) return 'bg-violet-100 border-violet-300 text-violet-800'
     return 'bg-gray-50 border-gray-200 text-gray-500'
   }
@@ -61,7 +61,7 @@ export function ConfigContextBar({ config }: Props) {
       {/* Span indicators */}
       <div className="mt-2.5 flex flex-col gap-1">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-1.5 rounded-full bg-blue-400" />
+          <div className="w-3 h-1.5 rounded-full bg-teal-500" />
           <span className="text-[10px] text-gray-500">
             Cycle Time: {cycle_time_start_status} → {cycle_time_end_status}
           </span>

@@ -1,7 +1,17 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
-import { LayoutDashboard, Ticket, Workflow, Sparkles, Upload, Settings, Activity, Plus, AlertTriangle } from 'lucide-react'
+import { LayoutDashboard, Ticket, Workflow, Sparkles, Upload, Settings, Plus, AlertTriangle } from 'lucide-react'
+
+function LogoIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" className={className} aria-hidden="true">
+      <rect x="48" y="56" width="144" height="40" rx="20" fill="#7c3aed" />
+      <rect x="48" y="108" width="64" height="40" rx="20" fill="#4f46e5" />
+      <rect x="48" y="160" width="128" height="40" rx="20" fill="#0d9488" />
+    </svg>
+  )
+}
 import { useImports } from '@/hooks/useImports'
 import {
   Select,
@@ -94,14 +104,14 @@ function HealthReportDialog({
           {issues.length === 0 ? (
             <p className="text-sm text-gray-500">No issues detected. Data looks clean.</p>
           ) : issues.map((issue, i) => (
-            <div key={i} className={`rounded-lg border p-3.5 ${issue.severity === 'warn' ? 'border-amber-200 bg-amber-50' : 'border-blue-100 bg-blue-50'}`}>
-              <p className={`text-sm font-semibold mb-1.5 ${issue.severity === 'warn' ? 'text-amber-800' : 'text-blue-800'}`}>
+            <div key={i} className={`rounded-lg border p-3.5 ${issue.severity === 'warn' ? 'border-amber-200 bg-amber-50' : 'border-violet-100 bg-violet-50'}`}>
+              <p className={`text-sm font-semibold mb-1.5 ${issue.severity === 'warn' ? 'text-amber-800' : 'text-violet-800'}`}>
                 {issue.title}
               </p>
-              <p className={`text-xs mb-2 leading-relaxed ${issue.severity === 'warn' ? 'text-amber-700' : 'text-blue-700'}`}>
+              <p className={`text-xs mb-2 leading-relaxed ${issue.severity === 'warn' ? 'text-amber-700' : 'text-violet-700'}`}>
                 <span className="font-medium">Impact: </span>{issue.consequence}
               </p>
-              <p className={`text-xs leading-relaxed ${issue.severity === 'warn' ? 'text-amber-600' : 'text-blue-600'}`}>
+              <p className={`text-xs leading-relaxed ${issue.severity === 'warn' ? 'text-amber-600' : 'text-violet-600'}`}>
                 <span className="font-medium">What to do: </span>{issue.recommendation}
               </p>
             </div>
@@ -131,7 +141,7 @@ export function Sidebar() {
   const navClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors ${
       isActive
-        ? 'bg-blue-50 text-blue-700 font-medium'
+        ? 'bg-violet-50 text-violet-700 font-medium'
         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
     }`
 
@@ -139,9 +149,7 @@ export function Sidebar() {
     <aside className="w-64 shrink-0 border-r border-gray-200 bg-white flex flex-col h-screen sticky top-0">
       {/* Brand */}
       <div className="flex items-center gap-2.5 px-4 py-5 border-b border-gray-100">
-        <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
-          <Activity className="w-4 h-4 text-white" />
-        </div>
+        <LogoIcon className="w-7 h-7 shrink-0" />
         <span className="font-semibold text-gray-900 text-sm tracking-tight">Cylenivo</span>
       </div>
 
@@ -202,10 +210,10 @@ export function Sidebar() {
                 className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-xs transition-colors ${
                   hasWarn
                     ? 'bg-amber-50 text-amber-700 hover:bg-amber-100'
-                    : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                    : 'bg-violet-50 text-violet-700 hover:bg-violet-100'
                 }`}
               >
-                <AlertTriangle className={`w-3.5 h-3.5 shrink-0 ${hasWarn ? 'text-amber-500' : 'text-blue-400'}`} />
+                <AlertTriangle className={`w-3.5 h-3.5 shrink-0 ${hasWarn ? 'text-amber-500' : 'text-violet-400'}`} />
                 <span>{issues.length} data quality {issues.length === 1 ? 'notice' : 'notices'}</span>
               </button>
             </div>

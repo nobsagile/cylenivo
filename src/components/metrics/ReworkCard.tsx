@@ -16,7 +16,7 @@ export function ReworkCard({ data }: Props) {
     <Card className="shadow-sm">
       <CardHeader className="pb-3">
         <CardTitle className="text-base font-semibold text-gray-700 flex items-center gap-2">
-          <ArrowLeftRight className="w-4 h-4 text-amber-500" />
+          <ArrowLeftRight className="w-4 h-4 text-rose-500" />
           Rework Analysis
         </CardTitle>
       </CardHeader>
@@ -28,7 +28,7 @@ export function ReworkCard({ data }: Props) {
             <p className="text-[10px] text-gray-400">{tickets_with_rework} of {total_completed}</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-amber-600 tabular-nums">
+            <p className="text-2xl font-bold text-rose-600 tabular-nums">
               {avg_cycle_with_rework != null ? `${avg_cycle_with_rework}d` : '—'}
             </p>
             <p className="text-xs text-gray-500">avg cycle with rework</p>
@@ -50,7 +50,7 @@ export function ReworkCard({ data }: Props) {
                   <div className="flex items-center gap-1.5">
                     <span className="text-gray-700 font-medium">{path.from}</span>
                     <span className="text-gray-400">→</span>
-                    <span className="text-amber-700 font-medium">{path.to}</span>
+                    <span className="text-rose-700 font-medium">{path.to}</span>
                   </div>
                   <span className="text-gray-500 tabular-nums">{path.count}×</span>
                 </div>

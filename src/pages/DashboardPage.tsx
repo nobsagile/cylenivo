@@ -146,8 +146,8 @@ export default function DashboardPage() {
   if (!importId) {
     return (
       <div className="flex flex-col items-center justify-center h-80 gap-4 text-center">
-        <div className="p-4 rounded-2xl bg-blue-50">
-          <Upload className="w-8 h-8 text-blue-500" />
+        <div className="p-4 rounded-2xl bg-violet-50">
+          <Upload className="w-8 h-8 text-violet-500" />
         </div>
         <div>
           <p className="text-gray-900 font-medium">No dataset selected</p>
@@ -192,8 +192,8 @@ export default function DashboardPage() {
           value={data.cycle_time.median_days != null ? +data.cycle_time.median_days.toFixed(1) : null}
           unit={t('metrics.days')}
           icon={Clock}
-          iconBg="bg-blue-50"
-          iconColor="text-blue-600"
+          iconBg="bg-teal-50"
+          iconColor="text-teal-600"
         />
         <MetricCard
           title={t('metrics.leadTime')}
