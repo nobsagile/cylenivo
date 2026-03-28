@@ -8,6 +8,7 @@ export interface ProjectConfig {
   cycle_time_end_status: string
   cycle_time_mode: 'first_last' | 'first_first' | 'last_last'
   lead_time_start_status: string | null
+  lead_time_end_status: string | null
   created_at: string
 }
 
@@ -163,4 +164,5 @@ export interface CreateConfigRequest {
   cycle_time_end_status: string
   cycle_time_mode?: 'first_last' | 'first_first' | 'last_last'
   lead_time_start_status?: string
+  lead_time_end_status?: string
 }

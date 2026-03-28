@@ -10,6 +10,7 @@ export const projectConfigs = sqliteTable('project_configs', {
   cycle_time_end_status: text('cycle_time_end_status').notNull(),
   cycle_time_mode: text('cycle_time_mode').notNull().default('first_last'),
   lead_time_start_status: text('lead_time_start_status'),
+  lead_time_end_status: text('lead_time_end_status'),
   created_at: text('created_at').notNull(),
 })
 

@@ -15,6 +15,7 @@ export interface ParsedConfig {
   cycle_time_end_status: string
   cycle_time_mode: CycleTimeMode
   lead_time_start_status: string | null
+  lead_time_end_status: string | null
   created_at: string
 }
 
@@ -46,13 +47,13 @@ export function buildEnrichedTicket(
   transitions: Transition[],
   config: ParsedConfig,
 ): EnrichedTicket {
-  const { cycle_time_start_status, cycle_time_end_status, cycle_time_mode, lead_time_start_status } = config
+  const { cycle_time_start_status, cycle_time_end_status, cycle_time_mode, lead_time_start_status, lead_time_end_status } = config
 
   const ct = calculateCycleTime(transitions, cycle_time_start_status, cycle_time_end_status, cycle_time_mode)
   const lt = calculateLeadTime(
     new Date(ticket.created_at),
     transitions,
-    cycle_time_end_status,
+    lead_time_end_status ?? cycle_time_end_status,
     lead_time_start_status,
     cycle_time_mode,
   )
@@ -95,6 +96,7 @@ export async function loadImportContext(importId: string): Promise<ImportContext
     status_order: JSON.parse(raw.status_order) as string[],
     cycle_time_mode: (raw.cycle_time_mode ?? 'first_last') as CycleTimeMode,
     lead_time_start_status: raw.lead_time_start_status ?? null,
+    lead_time_end_status: raw.lead_time_end_status ?? null,
   }
 
   const startIdx = config.status_order.indexOf(config.cycle_time_start_status)

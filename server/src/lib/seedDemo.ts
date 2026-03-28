@@ -29,6 +29,7 @@ export async function seedDemoProject(
     cycle_time_end_status: CYCLE_END,
     cycle_time_mode: 'first_last',
     lead_time_start_status: null,
+    lead_time_end_status: null,
     created_at: now,
   })
 

@@ -21,6 +21,7 @@ const CREATE_TABLES_SQL = `
     cycle_time_end_status TEXT NOT NULL,
     cycle_time_mode TEXT NOT NULL DEFAULT 'first_last',
     lead_time_start_status TEXT,
+    lead_time_end_status TEXT,
     created_at TEXT NOT NULL
   );
 
@@ -119,6 +120,9 @@ export async function migrate() {
       system_prompt TEXT NOT NULL,
       created_at TEXT NOT NULL
     )`)
+  } catch { /* already exists */ }
+  try {
+    sqlite.exec(`ALTER TABLE project_configs ADD COLUMN lead_time_end_status TEXT`)
   } catch { /* already exists */ }
   // Indexes (safe to re-run — IF NOT EXISTS)
   sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_tickets_import_id ON tickets(import_id)`)
