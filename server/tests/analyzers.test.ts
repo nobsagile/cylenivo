@@ -5,6 +5,7 @@ import { calculateCycleTime } from '../src/analyzers/cycleTime.js'
 import { calculateLeadTime } from '../src/analyzers/leadTime.js'
 import { calculatePercentiles, calculateThroughputPerWeek } from '../src/analyzers/percentiles.js'
 import { calculateTimeInStatus } from '../src/analyzers/timeInStatus.js'
+import { detectRework, aggregateRework } from '../src/analyzers/rework.js'
 
 function t(toStatus: string, at: string, fromStatus: string | null = null): Transition {
   return { from_status: fromStatus, to_status: toStatus, transitioned_at: at }
@@ -442,5 +443,96 @@ describe('buildHealthReport', () => {
     expect(report.tickets_without_cycle_start).toBe(0)
     expect(report.tickets_incomplete).toBe(0)
     expect(report.unknown_statuses).toHaveLength(0)
+  })
+})
+
+// ─── rework detection ────────────────────────────────────────────────
+
+describe('detectRework', () => {
+  const statusOrder = ['To Do', 'In Progress', 'In Review', 'Done']
+
+  it('detects backward movement', () => {
+    const transitions = [
+      t('In Progress', '2024-01-01T12:00:00Z', 'To Do'),
+      t('In Review', '2024-01-02T12:00:00Z', 'In Progress'),
+      t('In Progress', '2024-01-03T12:00:00Z', 'In Review'),
+      t('Done', '2024-01-04T12:00:00Z', 'In Progress'),
+    ]
+    const result = detectRework(transitions, statusOrder)
+    expect(result.has_rework).toBe(true)
+    expect(result.backward_moves).toHaveLength(1)
+    expect(result.backward_moves[0]).toEqual({ from_status: 'In Review', to_status: 'In Progress' })
+  })
+
+  it('returns no rework for clean flow', () => {
+    const transitions = [
+      t('In Progress', '2024-01-01T12:00:00Z', 'To Do'),
+      t('In Review', '2024-01-02T12:00:00Z', 'In Progress'),
+      t('Done', '2024-01-03T12:00:00Z', 'In Review'),
+    ]
+    const result = detectRework(transitions, statusOrder)
+    expect(result.has_rework).toBe(false)
+    expect(result.backward_moves).toHaveLength(0)
+  })
+
+  it('detects multiple backward moves', () => {
+    const transitions = [
+      t('In Progress', '2024-01-01T12:00:00Z', 'To Do'),
+      t('In Review', '2024-01-02T12:00:00Z', 'In Progress'),
+      t('In Progress', '2024-01-03T12:00:00Z', 'In Review'),
+      t('In Review', '2024-01-04T12:00:00Z', 'In Progress'),
+      t('In Progress', '2024-01-05T12:00:00Z', 'In Review'),
+      t('Done', '2024-01-06T12:00:00Z', 'In Progress'),
+    ]
+    const result = detectRework(transitions, statusOrder)
+    expect(result.has_rework).toBe(true)
+    expect(result.backward_moves).toHaveLength(2)
+  })
+
+  it('ignores transitions with unknown statuses', () => {
+    const transitions = [
+      t('In Progress', '2024-01-01T12:00:00Z', 'Unknown'),
+      t('Done', '2024-01-02T12:00:00Z', 'In Progress'),
+    ]
+    const result = detectRework(transitions, statusOrder)
+    expect(result.has_rework).toBe(false)
+  })
+})
+
+describe('aggregateRework', () => {
+  const statusOrder = ['To Do', 'In Progress', 'In Review', 'Done']
+
+  it('aggregates rework across tickets', () => {
+    const tickets = [
+      {
+        cycle_time_days: 10,
+        transitions: [
+          t('In Progress', '2024-01-01T12:00:00Z', 'To Do'),
+          t('In Review', '2024-01-02T12:00:00Z', 'In Progress'),
+          t('In Progress', '2024-01-03T12:00:00Z', 'In Review'),
+          t('Done', '2024-01-04T12:00:00Z', 'In Progress'),
+        ],
+      },
+      {
+        cycle_time_days: 5,
+        transitions: [
+          t('In Progress', '2024-01-01T12:00:00Z', 'To Do'),
+          t('Done', '2024-01-02T12:00:00Z', 'In Progress'),
+        ],
+      },
+    ]
+    const result = aggregateRework(tickets, statusOrder)
+    expect(result.tickets_with_rework).toBe(1)
+    expect(result.total_completed).toBe(2)
+    expect(result.rework_paths).toHaveLength(1)
+    expect(result.rework_paths[0]).toEqual({ from: 'In Review', to: 'In Progress', count: 1 })
+    expect(result.avg_cycle_with_rework).toBe(10)
+    expect(result.avg_cycle_without_rework).toBe(5)
+  })
+
+  it('handles no completed tickets', () => {
+    const result = aggregateRework([{ cycle_time_days: null, transitions: [] }], statusOrder)
+    expect(result.total_completed).toBe(0)
+    expect(result.tickets_with_rework).toBe(0)
   })
 })

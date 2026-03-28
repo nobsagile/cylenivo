@@ -119,6 +119,32 @@ export interface TimeInStatusResponse {
   tickets: TimeInStatusTicket[]
 }
 
+export interface ReworkPath {
+  from: string
+  to: string
+  count: number
+}
+
+export interface ReworkResponse {
+  tickets_with_rework: number
+  total_completed: number
+  rework_paths: ReworkPath[]
+  avg_cycle_with_rework: number | null
+  avg_cycle_without_rework: number | null
+}
+
+export interface CycleTimeByTypeEntry {
+  type: string
+  count: number
+  mean: number
+  median: number
+  p85: number
+}
+
+export interface CycleTimeByTypeResponse {
+  types: CycleTimeByTypeEntry[]
+}
+
 export interface LLMStatus {
   available: boolean
   models: string[]

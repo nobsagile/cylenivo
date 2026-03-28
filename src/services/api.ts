@@ -6,6 +6,8 @@ import type {
   CycleTimesResponse,
   LeadTimesResponse,
   TimeInStatusResponse,
+  ReworkResponse,
+  CycleTimeByTypeResponse,
   LLMStatus,
   LLMInsight,
   LlmConfig,
@@ -67,6 +69,10 @@ export const api = {
       request<LeadTimesResponse>(`/api/v1/metrics/${importId}/lead-times`),
     timeInStatus: (importId: string) =>
       request<TimeInStatusResponse>(`/api/v1/metrics/${importId}/time-in-status`),
+    rework: (importId: string) =>
+      request<ReworkResponse>(`/api/v1/metrics/${importId}/rework`),
+    cycleTimeByType: (importId: string) =>
+      request<CycleTimeByTypeResponse>(`/api/v1/metrics/${importId}/cycle-time-by-type`),
   },
   tickets: {
     list: (importId: string, params?: { type?: string; page?: number; limit?: number; completed_only?: boolean }) => {

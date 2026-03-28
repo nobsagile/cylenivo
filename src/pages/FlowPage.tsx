@@ -3,21 +3,27 @@ import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import { api } from '@/services/api'
 import { useMetrics } from '@/hooks/useMetrics'
-import type { TimeInStatusResponse } from '@/types'
+import type { TimeInStatusResponse, ReworkResponse, CycleTimeByTypeResponse } from '@/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { AvgTimeInStatusChart, PerTicketBreakdownChart } from '@/components/metrics/TimeInStatusChart'
 import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 import { BoardVisualization } from '@/components/metrics/BoardVisualization'
+import { ReworkCard } from '@/components/metrics/ReworkCard'
+import { CycleTimeByTypeChart } from '@/components/metrics/CycleTimeByTypeChart'
 
 export default function FlowPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
   const { data: metrics } = useMetrics(importId)
   const [statusData, setStatusData] = useState<TimeInStatusResponse | null>(null)
+  const [reworkData, setReworkData] = useState<ReworkResponse | null>(null)
+  const [typeData, setTypeData] = useState<CycleTimeByTypeResponse | null>(null)
 
   useEffect(() => {
     if (!importId) return
     api.metrics.timeInStatus(importId).then(setStatusData).catch(console.error)
+    api.metrics.rework(importId).then(setReworkData).catch(console.error)
+    api.metrics.cycleTimeByType(importId).then(setTypeData).catch(console.error)
   }, [importId])
 
   if (!metrics) return <div className="text-gray-400 text-sm">Loading…</div>
@@ -57,6 +63,11 @@ export default function FlowPage() {
       ) : (
         <div className="text-gray-400 text-sm">Loading…</div>
       )}
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {typeData && <CycleTimeByTypeChart data={typeData} />}
+        {reworkData && <ReworkCard data={reworkData} />}
+      </div>
     </div>
   )
 }
