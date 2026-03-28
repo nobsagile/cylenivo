@@ -75,12 +75,13 @@ export const api = {
       request<CycleTimeByTypeResponse>(`/api/v1/metrics/${importId}/cycle-time-by-type`),
   },
   tickets: {
-    list: (importId: string, params?: { type?: string; page?: number; limit?: number; completed_only?: boolean }) => {
+    list: (importId: string, params?: { type?: string; page?: number; limit?: number; completed_only?: boolean; search?: string }) => {
       const p = new URLSearchParams({ import_id: importId })
       if (params?.type) p.set('type', params.type)
       if (params?.page) p.set('page', String(params.page))
       if (params?.limit) p.set('limit', String(params.limit))
       if (params?.completed_only) p.set('completed_only', '1')
+      if (params?.search) p.set('search', params.search)
       return request<PaginatedTickets>(`/api/v1/tickets?${p}`)
     },
     get: (id: string) => request<TicketDetail>(`/api/v1/tickets/${id}`),

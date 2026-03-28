@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
 import { api } from '@/services/api'
 import { useMetrics } from '@/hooks/useMetrics'
 import type { Ticket } from '@/types'
 import { TicketTable } from '@/components/tickets/TicketTable'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 const TYPE_FILTERS = ['', 'story', 'task', 'bug']
 
@@ -20,18 +21,31 @@ export default function TicketsPage() {
   const [page, setPage] = useState(1)
   const [typeFilter, setTypeFilter] = useState('')
   const [analyzedOnly, setAnalyzedOnly] = useState(true)
+  const [search, setSearch] = useState('')
+  const [searchDebounced, setSearchDebounced] = useState('')
   const limit = 50
+
+  useEffect(() => {
+    const timer = setTimeout(() => { setSearchDebounced(search); setPage(1) }, 300)
+    return () => clearTimeout(timer)
+  }, [search])
 
   useEffect(() => {
     if (!importId) return
     api.tickets
-      .list(importId, { type: typeFilter || undefined, page, limit, completed_only: analyzedOnly || undefined })
+      .list(importId, {
+        type: typeFilter || undefined,
+        page,
+        limit,
+        completed_only: analyzedOnly || undefined,
+        search: searchDebounced || undefined,
+      })
       .then((res) => {
         setTickets(res.tickets)
         setTotal(res.total)
       })
       .catch(console.error)
-  }, [importId, page, typeFilter, analyzedOnly])
+  }, [importId, page, typeFilter, analyzedOnly, searchDebounced])
 
   const totalPages = Math.ceil(total / limit)
 
@@ -44,6 +58,15 @@ export default function TicketsPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search ID or title…"
+              className="pl-8 h-9 w-48 text-sm"
+            />
+          </div>
           <button
             onClick={() => { setAnalyzedOnly(!analyzedOnly); setPage(1) }}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
@@ -76,6 +99,7 @@ export default function TicketsPage() {
         tickets={tickets}
         p50={metrics?.cycle_time.p50}
         p85={metrics?.cycle_time.p85}
+        config={metrics?.config_context}
       />
 
       {totalPages > 1 && (
