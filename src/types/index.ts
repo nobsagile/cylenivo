@@ -61,6 +61,15 @@ export interface StatusDuration {
   median_days: number
 }
 
+export interface ConfigContext {
+  status_order: string[]
+  cycle_time_start_status: string
+  cycle_time_end_status: string
+  cycle_time_mode: string
+  lead_time_start_status: string | null
+  lead_time_end_status: string | null
+}
+
 export interface MetricsSummary {
   import_id: string
   project_key: string
@@ -71,6 +80,7 @@ export interface MetricsSummary {
   lead_time: PercentileStats
   time_in_status: Record<string, StatusDuration>
   throughput_per_week: number
+  config_context: ConfigContext
 }
 
 export interface CycleTimeTicket {

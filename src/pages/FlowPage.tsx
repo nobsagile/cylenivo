@@ -1,0 +1,53 @@
+import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useParams } from 'react-router-dom'
+import { api } from '@/services/api'
+import { useMetrics } from '@/hooks/useMetrics'
+import type { TimeInStatusResponse } from '@/types'
+import { Card, CardContent } from '@/components/ui/card'
+import { AvgTimeInStatusChart, PerTicketBreakdownChart } from '@/components/metrics/TimeInStatusChart'
+import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
+
+export default function FlowPage() {
+  const { t } = useTranslation()
+  const { importId } = useParams<{ importId: string }>()
+  const { data: metrics } = useMetrics(importId)
+  const [statusData, setStatusData] = useState<TimeInStatusResponse | null>(null)
+
+  useEffect(() => {
+    if (!importId) return
+    api.metrics.timeInStatus(importId).then(setStatusData).catch(console.error)
+  }, [importId])
+
+  if (!metrics) return <div className="text-gray-400 text-sm">Loading…</div>
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('nav.flow')}</h2>
+        <p className="text-sm text-gray-400 mt-0.5">Understand where time is spent in your workflow</p>
+      </div>
+
+      {metrics.config_context && (
+        <ConfigContextBar config={metrics.config_context} />
+      )}
+
+      {statusData && metrics ? (
+        <>
+          <Card className="shadow-sm">
+            <CardContent className="pt-6">
+              <AvgTimeInStatusChart timeInStatusData={statusData} summary={metrics} />
+            </CardContent>
+          </Card>
+          <Card className="shadow-sm">
+            <CardContent className="pt-6">
+              <PerTicketBreakdownChart timeInStatusData={statusData} />
+            </CardContent>
+          </Card>
+        </>
+      ) : (
+        <div className="text-gray-400 text-sm">Loading…</div>
+      )}
+    </div>
+  )
+}
