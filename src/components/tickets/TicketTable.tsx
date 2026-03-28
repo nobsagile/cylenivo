@@ -55,8 +55,8 @@ function sortTickets(tickets: Ticket[], key: SortKey, dir: SortDir): Ticket[] {
 function SortIcon({ col, sortKey, sortDir }: { col: SortKey; sortKey: SortKey; sortDir: SortDir }) {
   if (col !== sortKey) return <ArrowUpDown className="w-3.5 h-3.5 opacity-30 ml-1 inline" />
   return sortDir === 'asc'
-    ? <ArrowUp className="w-3.5 h-3.5 ml-1 inline text-blue-600" />
-    : <ArrowDown className="w-3.5 h-3.5 ml-1 inline text-blue-600" />
+    ? <ArrowUp className="w-3.5 h-3.5 ml-1 inline text-violet-600" />
+    : <ArrowDown className="w-3.5 h-3.5 ml-1 inline text-violet-600" />
 }
 
 export function TicketTable({ tickets, p50, p85, config }: Props) {
@@ -124,7 +124,7 @@ export function TicketTable({ tickets, p50, p85, config }: Props) {
                     href={ticket.external_link}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium group"
+                    className="inline-flex items-center gap-1 text-violet-600 hover:text-violet-800 text-sm font-medium group"
                   >
                     {ticket.external_id}
                     <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />

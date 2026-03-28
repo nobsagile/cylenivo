@@ -62,14 +62,46 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
     }
   }
 
+  const inLeadFn = (idx: number) => (lead_time_start_status ? idx >= leadStartIdx : true) && idx <= leadEndIdx
+  const inCycleFn = (idx: number) => idx >= cycleStartIdx && idx <= cycleEndIdx
+
+  const leadOnlyStatuses = relevantStatuses.filter(s => { const i = status_order.indexOf(s); return inLeadFn(i) && !inCycleFn(i) })
+  const cycleOnlyStatuses = relevantStatuses.filter(s => { const i = status_order.indexOf(s); return inCycleFn(i) && !inLeadFn(i) })
+  const overlapStatuses = relevantStatuses.filter(s => { const i = status_order.indexOf(s); return inCycleFn(i) && inLeadFn(i) })
+
+  // Gradient shades per category (light → dark)
+  const LEAD_SHADES = [
+    { bg: 'bg-violet-100', border: 'border-violet-200', text: 'text-violet-800', bar: 'text-violet-300' },
+    { bg: 'bg-violet-200', border: 'border-violet-300', text: 'text-violet-800', bar: 'text-violet-400' },
+    { bg: 'bg-violet-300', border: 'border-violet-400', text: 'text-violet-900', bar: 'text-violet-500' },
+    { bg: 'bg-violet-400', border: 'border-violet-500', text: 'text-violet-950', bar: 'text-violet-600' },
+  ]
+  const CYCLE_SHADES = [
+    { bg: 'bg-teal-200', border: 'border-teal-300', text: 'text-teal-800', bar: 'text-teal-400' },
+    { bg: 'bg-teal-300', border: 'border-teal-400', text: 'text-teal-800', bar: 'text-teal-500' },
+    { bg: 'bg-teal-400', border: 'border-teal-500', text: 'text-teal-900', bar: 'text-teal-600' },
+    { bg: 'bg-teal-500', border: 'border-teal-600', text: 'text-teal-950', bar: 'text-teal-700' },
+  ]
+  const OVERLAP_SHADES = [
+    { bg: 'bg-indigo-300', border: 'border-indigo-400', text: 'text-indigo-900', bar: 'text-indigo-500' },
+    { bg: 'bg-indigo-400', border: 'border-indigo-500', text: 'text-indigo-950', bar: 'text-indigo-600' },
+    { bg: 'bg-indigo-500', border: 'border-indigo-600', text: 'text-white', bar: 'text-indigo-200' },
+    { bg: 'bg-indigo-600', border: 'border-indigo-700', text: 'text-white', bar: 'text-indigo-200' },
+  ]
+
+  function pickShade<T>(arr: T[], statuses: string[], status: string): T {
+    const pos = statuses.indexOf(status)
+    const idx = statuses.length <= 1 ? 0 : Math.round((pos / (statuses.length - 1)) * (arr.length - 1))
+    return arr[Math.max(0, Math.min(idx, arr.length - 1))]
+  }
+
   function getStatusStyle(status: string) {
     const idx = status_order.indexOf(status)
-    const inCycle = idx >= cycleStartIdx && idx <= cycleEndIdx
-    const inLead = (lead_time_start_status ? idx >= leadStartIdx : true) && idx <= leadEndIdx
-
-    if (inCycle && inLead) return { bg: 'bg-indigo-50', border: 'border-indigo-200', text: 'text-indigo-800', bar: 'text-indigo-400' }
-    if (inCycle) return { bg: 'bg-teal-50', border: 'border-teal-200', text: 'text-teal-800', bar: 'text-teal-400' }
-    return { bg: 'bg-violet-50', border: 'border-violet-200', text: 'text-violet-800', bar: 'text-violet-400' }
+    const inCycle = inCycleFn(idx)
+    const inLead = inLeadFn(idx)
+    if (inCycle && inLead) return pickShade(OVERLAP_SHADES, overlapStatuses, status)
+    if (inCycle) return pickShade(CYCLE_SHADES, cycleOnlyStatuses, status)
+    return pickShade(LEAD_SHADES, leadOnlyStatuses, status)
   }
 
   return (
