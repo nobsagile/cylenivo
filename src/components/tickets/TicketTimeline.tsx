@@ -57,14 +57,33 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
 
   const totalDuration = segments.reduce((sum, s) => sum + s.durationDays, 0) || 1
 
+  const inCycleFn = (i: number) => i >= cycleStartIdx && i <= cycleEndIdx && cycleStartIdx !== -1
+  const inLeadFn = (i: number) => (lead_time_start_status ? i >= leadStartIdx : true) && i <= leadEndIdx && leadEndIdx !== -1
+
+  // Build per-category groups from status_order to determine gradient position
+  const leadOnly = status_order.filter((_, i) => inLeadFn(i) && !inCycleFn(i))
+  const cycleOnly = status_order.filter((_, i) => inCycleFn(i) && !inLeadFn(i))
+  const overlap = status_order.filter((_, i) => inCycleFn(i) && inLeadFn(i))
+
+  const LEAD_SHADES = ['bg-violet-100', 'bg-violet-200', 'bg-violet-300', 'bg-violet-400']
+  const CYCLE_SHADES = ['bg-teal-200', 'bg-teal-300', 'bg-teal-400', 'bg-teal-500']
+  const OVERLAP_SHADES = ['bg-indigo-300', 'bg-indigo-400', 'bg-indigo-500', 'bg-indigo-600']
+
+  function pickShade(arr: string[], group: string[], status: string) {
+    const pos = group.indexOf(status)
+    if (pos === -1) return arr[0]
+    const idx = group.length <= 1 ? 0 : Math.round((pos / (group.length - 1)) * (arr.length - 1))
+    return arr[Math.max(0, Math.min(idx, arr.length - 1))]
+  }
+
   function getSegmentColor(status: string, isBackward: boolean) {
     if (isBackward) return 'bg-rose-400'
     const idx = status_order.indexOf(status)
-    const inCycle = idx >= cycleStartIdx && idx <= cycleEndIdx && cycleStartIdx !== -1
-    const inLead = (lead_time_start_status ? idx >= leadStartIdx : true) && idx <= leadEndIdx && leadEndIdx !== -1
-    if (inCycle && inLead) return 'bg-indigo-300'
-    if (inCycle) return 'bg-teal-400'
-    if (inLead) return 'bg-violet-300'
+    const ic = inCycleFn(idx)
+    const il = inLeadFn(idx)
+    if (ic && il) return pickShade(OVERLAP_SHADES, overlap, status)
+    if (ic) return pickShade(CYCLE_SHADES, cycleOnly, status)
+    if (il) return pickShade(LEAD_SHADES, leadOnly, status)
     return 'bg-gray-200'
   }
 
