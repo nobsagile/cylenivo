@@ -5,13 +5,14 @@ import { Clock, Timer, TrendingUp, Layers, Upload, Info } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
 import { useImports } from '@/hooks/useImports'
 import { api } from '@/services/api'
-import type { CycleTimesResponse } from '@/types'
+import type { CycleTimesResponse, LeadTimesResponse } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { PercentileCard } from '@/components/metrics/PercentileCard'
 import { CycleTimeChart } from '@/components/metrics/CycleTimeChart'
 import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
+import { LeadTimeScatterChart } from '@/components/metrics/LeadTimeScatterChart'
 
 interface MetricCardProps {
   title: string
@@ -131,12 +132,14 @@ export default function DashboardPage() {
   const { data: imports } = useImports()
   const navigate = useNavigate()
   const [cycleTimesData, setCycleTimesData] = useState<CycleTimesResponse | null>(null)
+  const [leadTimesData, setLeadTimesData] = useState<LeadTimesResponse | null>(null)
 
   const currentImport = imports.find(imp => imp.id === importId)
 
   useEffect(() => {
     if (importId) {
       api.metrics.cycleTimes(importId).then(setCycleTimesData).catch(console.error)
+      api.metrics.leadTimes(importId).then(setLeadTimesData).catch(console.error)
     }
   }, [importId])
 
@@ -224,7 +227,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <PercentileCard data={data.cycle_time} />
+        <PercentileCard data={data.cycle_time} variant="cycle" />
         <Card className="shadow-sm">
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-semibold text-gray-700">Cycle Time Trend</CardTitle>
@@ -233,6 +236,21 @@ export default function DashboardPage() {
             <CycleTimeChart
               tickets={cycleTimesData?.tickets ?? []}
               p85={data.cycle_time.p85}
+            />
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <PercentileCard data={data.lead_time} variant="lead" />
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold text-gray-700">Lead Time Trend</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LeadTimeScatterChart
+              tickets={leadTimesData?.tickets ?? []}
+              p85={data.lead_time.p85}
             />
           </CardContent>
         </Card>

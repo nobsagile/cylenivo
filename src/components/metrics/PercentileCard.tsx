@@ -6,6 +6,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 
 interface Props {
   data: PercentileStats
+  variant?: 'cycle' | 'lead'
 }
 
 const PERCENTILES = [
@@ -15,15 +16,18 @@ const PERCENTILES = [
   { key: 'p95' as const, label: 'P95', color: 'bg-red-500', textColor: 'text-red-700', bgLight: 'bg-red-50' },
 ]
 
-export function PercentileCard({ data }: Props) {
+export function PercentileCard({ data, variant = 'cycle' }: Props) {
   const { t } = useTranslation()
   const maxVal = data.p95 ?? data.p85 ?? data.p70 ?? data.p50 ?? 1
+  const isLead = variant === 'lead'
+  const title = isLead ? `${t('metrics.leadTime')} Forecast` : t('metrics.percentile.title')
+  const metricName = isLead ? 'lead time' : 'cycle time'
 
   return (
     <Card className="shadow-sm">
       <CardHeader className="pb-3">
         <CardTitle className="text-base font-semibold text-gray-700 flex items-center gap-1.5">
-          {t('metrics.percentile.title')}
+          {title}
           <Popover>
             <PopoverTrigger asChild>
               <button className="text-gray-300 hover:text-gray-500 transition-colors">
@@ -32,10 +36,9 @@ export function PercentileCard({ data }: Props) {
             </PopoverTrigger>
             <PopoverContent className="w-64">
               <div className="text-xs text-gray-600 space-y-1.5">
-                <p className="font-semibold text-gray-800 mb-1">Delivery Forecast</p>
-                <p>Based on <span className="font-medium">cycle time</span> of completed tickets. Shows how long future tickets are likely to take.</p>
+                <p className="font-semibold text-gray-800 mb-1">{title}</p>
+                <p>Based on <span className="font-medium">{metricName}</span> of completed tickets. Shows how long future tickets are likely to take.</p>
                 <p>P85 means: 85% of tickets completed within this many days.</p>
-                <p className="text-gray-400">Does not depend on lead time configuration.</p>
               </div>
             </PopoverContent>
           </Popover>

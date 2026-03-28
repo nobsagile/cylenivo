@@ -4,6 +4,7 @@ import type {
   TicketDetail,
   MetricsSummary,
   CycleTimesResponse,
+  LeadTimesResponse,
   TimeInStatusResponse,
   LLMStatus,
   LLMInsight,
@@ -63,7 +64,7 @@ export const api = {
     cycleTimes: (importId: string) =>
       request<CycleTimesResponse>(`/api/v1/metrics/${importId}/cycle-times`),
     leadTimes: (importId: string) =>
-      request<{ values: number[] }>(`/api/v1/metrics/${importId}/lead-times`),
+      request<LeadTimesResponse>(`/api/v1/metrics/${importId}/lead-times`),
     timeInStatus: (importId: string) =>
       request<TimeInStatusResponse>(`/api/v1/metrics/${importId}/time-in-status`),
   },

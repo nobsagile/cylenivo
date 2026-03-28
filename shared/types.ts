@@ -107,6 +107,19 @@ export interface CycleTimesResponse {
   tickets: CycleTimeTicket[]
 }
 
+export interface LeadTimeTicket {
+  external_id: string
+  title: string
+  lead_time_days: number
+  completed_at: string
+  external_link: string | null
+}
+
+export interface LeadTimesResponse {
+  values: number[]
+  tickets: LeadTimeTicket[]
+}
+
 export interface TimeInStatusTicket {
   external_id: string
   title: string

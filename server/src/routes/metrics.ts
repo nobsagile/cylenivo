@@ -55,11 +55,19 @@ metrics.get('/:importId/lead-times', async (c) => {
   const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
-  const values = ctx.tickets
-    .filter(t => t.lead_time_days !== null)
-    .map(t => Math.round(t.lead_time_days! * 100) / 100)
+  const tickets = ctx.tickets
+    .filter(t => t.lead_time_days !== null && t.completed_at !== null)
+    .map(t => ({
+      external_id: t.external_id,
+      title: t.title,
+      lead_time_days: Math.round(t.lead_time_days! * 100) / 100,
+      completed_at: t.completed_at!.toISOString(),
+      external_link: t.external_link,
+    }))
 
-  return c.json(ok({ values }))
+  const values = tickets.map(t => t.lead_time_days)
+
+  return c.json(ok({ values, tickets }))
 })
 
 metrics.get('/:importId/time-in-status', async (c) => {
