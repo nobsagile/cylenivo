@@ -56,7 +56,7 @@ export default function FlowPage() {
           </Card>
           <Card className="shadow-sm">
             <CardContent className="pt-6">
-              <PerTicketBreakdownChart timeInStatusData={statusData} />
+              <PerTicketBreakdownChart timeInStatusData={statusData} config={metrics.config_context} />
             </CardContent>
           </Card>
         </>
