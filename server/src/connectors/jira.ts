@@ -43,8 +43,9 @@ async function jiraGet(creds: JiraCredentials, path: string): Promise<any> {
     signal: AbortSignal.timeout(15000),
   })
   if (!res.ok) {
-    const body = await res.text()
-    throw new Error(`Jira API ${res.status}: ${body}`)
+    const body = await res.text().catch(() => '')
+    console.error(`Jira API error ${res.status} on ${path}: ${body}`)
+    throw new Error(`Jira API error: ${res.status} ${res.statusText}`)
   }
   return res.json()
 }

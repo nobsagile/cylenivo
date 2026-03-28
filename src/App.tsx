@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { AppShell } from '@/components/layout/AppShell'
 import DashboardPage from '@/pages/DashboardPage'
 import ImportPage from '@/pages/ImportPage'
@@ -11,6 +12,7 @@ import WelcomePage from '@/pages/WelcomePage'
 
 function App() {
   return (
+    <ErrorBoundary>
     <BrowserRouter>
       <Routes>
         <Route element={<AppShell />}>
@@ -26,6 +28,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </ErrorBoundary>
   )
 }
 

@@ -32,7 +32,7 @@ connections.post('/', async (c) => {
     id,
     name: body.name,
     source_type: body.source_type,
-    base_url: body.base_url.replace(/\/$/, ''),
+    base_url: (body.base_url ?? '').replace(/\/$/, ''),
     email: body.email,
     api_token: body.api_token,
     created_at: now,
@@ -49,7 +49,7 @@ connections.put('/:id', async (c) => {
   const body = await c.req.json()
   const updates: Partial<typeof sourceConnections.$inferInsert> = {}
   if (body.name !== undefined) updates.name = body.name
-  if (body.base_url !== undefined) updates.base_url = body.base_url.replace(/\/$/, '')
+  if (body.base_url !== undefined) updates.base_url = (body.base_url ?? '').replace(/\/$/, '')
   if (body.email !== undefined) updates.email = body.email
   if (body.api_token !== undefined) updates.api_token = body.api_token
 

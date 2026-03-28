@@ -152,21 +152,22 @@ Please provide:
 
   const model = cfg.model
   const now = new Date().toISOString()
-  const existing = await db.select().from(llmInsights).where(eq(llmInsights.import_id, imp.id))
-
-  if (existing.length) {
-    await db.update(llmInsights)
-      .set({ insight_text: insightText, model_used: model, generated_at: now })
-      .where(eq(llmInsights.import_id, imp.id))
-  } else {
-    await db.insert(llmInsights).values({
-      id: crypto.randomUUID(),
-      import_id: imp.id,
-      model_used: model,
-      insight_text: insightText,
-      generated_at: now,
-    })
-  }
+  await db.transaction(async (tx) => {
+    const existing = await tx.select().from(llmInsights).where(eq(llmInsights.import_id, imp.id))
+    if (existing.length) {
+      await tx.update(llmInsights)
+        .set({ insight_text: insightText, model_used: model, generated_at: now })
+        .where(eq(llmInsights.import_id, imp.id))
+    } else {
+      await tx.insert(llmInsights).values({
+        id: crypto.randomUUID(),
+        import_id: imp.id,
+        model_used: model,
+        insight_text: insightText,
+        generated_at: now,
+      })
+    }
+  })
 
   return c.json(ok({ insight_text: insightText, model_used: model, generated_at: now }))
 })

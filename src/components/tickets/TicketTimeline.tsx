@@ -173,7 +173,7 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
           const style = getSegmentStyle(seg.status, seg.isBackward)
           return (
             <div
-              key={i}
+              key={`${seg.status}-${seg.startTime}`}
               className={`${style.bg} relative`}
               style={{ flex: flexValue, minWidth: 0, transition: 'flex 0.15s ease' }}
               onMouseEnter={() => setHoveredBar(i)}
