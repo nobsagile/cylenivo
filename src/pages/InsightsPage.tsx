@@ -4,9 +4,11 @@ import { useParams, useNavigate } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import { Sparkles, Wifi, WifiOff, RefreshCw, Bot, User, Send, Settings } from 'lucide-react'
 import { api } from '@/services/api'
-import type { LLMInsight, LLMStatus } from '@/types'
+import { useMetrics } from '@/hooks/useMetrics'
+import type { LLMInsight, LLMStatus, CycleTimesResponse, ReworkResponse } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 
 interface ChatMessage {
   role: 'user' | 'assistant'
@@ -37,6 +39,7 @@ export default function InsightsPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
   const navigate = useNavigate()
+  const { data: metrics } = useMetrics(importId)
   const [llmStatus, setLlmStatus] = useState<LLMStatus | null>(null)
   const [llmStatusLoaded, setLlmStatusLoaded] = useState(false)
   const [insight, setInsight] = useState<LLMInsight | null>(null)
@@ -44,8 +47,16 @@ export default function InsightsPage() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [chatInput, setChatInput] = useState('')
   const [chatLoading, setChatLoading] = useState(false)
+  const [cycleData, setCycleData] = useState<CycleTimesResponse | null>(null)
+  const [reworkData, setReworkData] = useState<ReworkResponse | null>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (!importId) return
+    api.metrics.cycleTimes(importId).then(setCycleData).catch(() => {})
+    api.metrics.rework(importId).then(setReworkData).catch(() => {})
+  }, [importId])
 
   useEffect(() => {
     api.llm.status()
@@ -109,6 +120,21 @@ export default function InsightsPage() {
   const configured = llmStatus?.configured ?? false
   const available = llmStatus?.available ?? false
 
+  // Build contextual suggestions from actual data
+  const suggestions: string[] = []
+  if (cycleData?.tickets.length) {
+    const slowest = [...cycleData.tickets].sort((a, b) => b.cycle_time_days - a.cycle_time_days)[0]
+    suggestions.push(`Why did ${slowest.external_id} take ${slowest.cycle_time_days} days?`)
+  }
+  if (metrics?.time_in_status) {
+    const topStatus = Object.entries(metrics.time_in_status).sort((a, b) => b[1].mean_days - a[1].mean_days)[0]
+    if (topStatus) suggestions.push(`Is "${topStatus[0]}" a bottleneck?`)
+  }
+  if (reworkData && reworkData.tickets_with_rework > 0) {
+    suggestions.push(`What causes rework in our process?`)
+  }
+  if (suggestions.length < 3) suggestions.push('How can we improve our flow?')
+
   if (llmStatusLoaded && !configured) {
     return (
       <div className="max-w-3xl space-y-6">
@@ -143,6 +169,10 @@ export default function InsightsPage() {
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('insights.title')}</h2>
         <p className="text-sm text-gray-400 mt-0.5">AI-powered analysis of your flow metrics</p>
       </div>
+
+      {metrics?.config_context && (
+        <ConfigContextBar config={metrics.config_context} />
+      )}
 
       {/* LLM status */}
       {llmStatusLoaded && (
@@ -232,11 +262,7 @@ export default function InsightsPage() {
                 <div className="flex flex-col items-center justify-center flex-1 py-8 text-center">
                   <p className="text-sm text-gray-400">Ask anything about your flow metrics</p>
                   <div className="flex flex-wrap gap-2 mt-3 justify-center">
-                    {[
-                      'Which ticket took the longest?',
-                      'What is our P85 cycle time?',
-                      'Where are the biggest bottlenecks?',
-                    ].map((suggestion) => (
+                    {suggestions.map((suggestion) => (
                       <Button
                         key={suggestion}
                         variant="outline"
