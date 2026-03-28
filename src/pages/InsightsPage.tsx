@@ -8,7 +8,6 @@ import { useMetrics } from '@/hooks/useMetrics'
 import type { LLMInsight, LLMStatus, CycleTimesResponse, ReworkResponse } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 
 interface ChatMessage {
   role: 'user' | 'assistant'
@@ -137,7 +136,7 @@ export default function InsightsPage() {
 
   if (llmStatusLoaded && !configured) {
     return (
-      <div className="max-w-3xl space-y-6">
+      <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('insights.title')}</h2>
           <p className="text-sm text-gray-400 mt-0.5">AI-powered analysis of your flow metrics</p>
@@ -164,15 +163,11 @@ export default function InsightsPage() {
   }
 
   return (
-    <div className="max-w-3xl space-y-6">
+    <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('insights.title')}</h2>
         <p className="text-sm text-gray-400 mt-0.5">AI-powered analysis of your flow metrics</p>
       </div>
-
-      {metrics?.config_context && (
-        <ConfigContextBar config={metrics.config_context} />
-      )}
 
       {/* LLM status */}
       {llmStatusLoaded && (
