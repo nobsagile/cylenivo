@@ -25,7 +25,7 @@ function CycleTooltip({ active, payload }: TooltipProps<number, string>) {
     <ChartTooltip>
       <p className="font-semibold text-gray-800 mb-1">{d.name}</p>
       <p className="text-gray-500">{new Date(d.x).toLocaleDateString()}</p>
-      <p className="text-blue-700 font-medium">{d.y.toFixed(1)} days</p>
+      <p className="text-teal-700 font-medium">{d.y.toFixed(1)} days</p>
     </ChartTooltip>
   )
 }
@@ -62,9 +62,9 @@ export function CycleTimeChart({ tickets, p85 }: Props) {
           />
           <YAxis dataKey="y" tick={{ fontSize: 11 }} unit=" d" />
           <Tooltip content={<CycleTooltip />} wrapperStyle={{ zIndex: 100 }} />
-          <Scatter data={data} fill="#3b82f6" />
+          <Scatter data={data} fill="#0d9488" />
           {p85 != null && (
-            <ReferenceLine y={p85} stroke="#ef4444" strokeDasharray="4 4" label={{ value: 'P85', fontSize: 11 }} />
+            <ReferenceLine y={p85} stroke="#e11d48" strokeDasharray="4 4" label={{ value: 'P85', fontSize: 11 }} />
           )}
         </ScatterChart>
       </ResponsiveContainer>

@@ -64,7 +64,7 @@ export function LeadTimeScatterChart({ tickets, p85 }: Props) {
           <Tooltip content={<LeadTooltip />} wrapperStyle={{ zIndex: 100 }} />
           <Scatter data={data} fill="#8b5cf6" />
           {p85 != null && (
-            <ReferenceLine y={p85} stroke="#ef4444" strokeDasharray="4 4" label={{ value: 'P85', fontSize: 11 }} />
+            <ReferenceLine y={p85} stroke="#e11d48" strokeDasharray="4 4" label={{ value: 'P85', fontSize: 11 }} />
           )}
         </ScatterChart>
       </ResponsiveContainer>

@@ -25,13 +25,13 @@ type SortDir = 'asc' | 'desc'
 
 function cycleTimeColor(days: number | null, p50?: number | null, p85?: number | null) {
   if (days == null) return 'text-gray-300'
-  if (p85 != null && days >= p85) return 'text-red-600 font-semibold'
+  if (p85 != null && days >= p85) return 'text-rose-600 font-semibold'
   if (p50 != null && days < p50) return 'text-emerald-600 font-semibold'
   return 'text-amber-600 font-semibold'
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  story: 'bg-blue-50 text-blue-700 border-blue-200',
+  story: 'bg-green-50 text-green-700 border-green-200',
   task: 'bg-gray-50 text-gray-700 border-gray-200',
   bug: 'bg-red-50 text-red-700 border-red-200',
   epic: 'bg-purple-50 text-purple-700 border-purple-200',

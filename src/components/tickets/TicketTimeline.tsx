@@ -58,12 +58,12 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
   const totalDuration = segments.reduce((sum, s) => sum + s.durationDays, 0) || 1
 
   function getSegmentColor(status: string, isBackward: boolean) {
-    if (isBackward) return 'bg-amber-300'
+    if (isBackward) return 'bg-rose-400'
     const idx = status_order.indexOf(status)
     const inCycle = idx >= cycleStartIdx && idx <= cycleEndIdx && cycleStartIdx !== -1
     const inLead = (lead_time_start_status ? idx >= leadStartIdx : true) && idx <= leadEndIdx && leadEndIdx !== -1
     if (inCycle && inLead) return 'bg-indigo-300'
-    if (inCycle) return 'bg-blue-300'
+    if (inCycle) return 'bg-teal-400'
     if (inLead) return 'bg-violet-300'
     return 'bg-gray-200'
   }
@@ -97,7 +97,7 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
           <span key={i} className="text-[10px] text-gray-500">
             <span className={`inline-block w-2 h-2 rounded-sm ${getSegmentColor(seg.status, seg.isBackward)} mr-1`} />
             {seg.status}: {seg.durationDays.toFixed(1)}d
-            {seg.isBackward && <span className="text-amber-600 ml-0.5">(rework)</span>}
+            {seg.isBackward && <span className="text-rose-600 ml-0.5">(rework)</span>}
           </span>
         ))}
       </div>
