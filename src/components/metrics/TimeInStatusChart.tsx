@@ -10,12 +10,48 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import type { TooltipProps } from 'recharts'
-import type { TimeInStatusResponse, MetricsSummary } from '@/types'
+import type { TimeInStatusResponse, MetricsSummary, ConfigContext } from '@/types'
 import { ChartTooltip } from './ChartTooltip'
 import { Info } from 'lucide-react'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 
-export const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#6366f1']
+// Hex gradients matching design system (light → dark)
+const LEAD_COLORS = ['#ede9fe', '#ddd6fe', '#c4b5fd', '#a78bfa']   // violet-100→400
+const CYCLE_COLORS = ['#99f6e4', '#5eead4', '#2dd4bf', '#14b8a6']  // teal-200→500
+const OVERLAP_COLORS = ['#a5b4fc', '#818cf8', '#6366f1', '#4f46e5'] // indigo-300→600
+const FALLBACK_COLORS = ['#94a3b8', '#64748b', '#475569', '#334155'] // slate
+
+function buildStatusColors(statuses: string[], config: ConfigContext | null | undefined): Record<string, string> {
+  if (!config) return Object.fromEntries(statuses.map((s, i) => [s, FALLBACK_COLORS[i % FALLBACK_COLORS.length]]))
+
+  const { status_order, cycle_time_start_status, cycle_time_end_status, lead_time_start_status, lead_time_end_status } = config
+  const cycleStart = status_order.indexOf(cycle_time_start_status)
+  const cycleEnd = status_order.indexOf(cycle_time_end_status)
+  const leadEnd = status_order.indexOf(lead_time_end_status ?? cycle_time_end_status)
+  const leadStart = lead_time_start_status ? status_order.indexOf(lead_time_start_status) : -1
+
+  const inCycle = (s: string) => { const i = status_order.indexOf(s); return i >= cycleStart && i <= cycleEnd }
+  const inLead = (s: string) => { const i = status_order.indexOf(s); return (lead_time_start_status ? i >= leadStart : true) && i <= leadEnd }
+
+  const groups = { lead: [] as string[], cycle: [] as string[], overlap: [] as string[] }
+  for (const s of statuses) {
+    if (inCycle(s) && inLead(s)) groups.overlap.push(s)
+    else if (inCycle(s)) groups.cycle.push(s)
+    else groups.lead.push(s)
+  }
+
+  function pick(arr: string[], group: string[], status: string) {
+    const pos = group.indexOf(status)
+    const idx = group.length <= 1 ? 0 : Math.round((pos / (group.length - 1)) * (arr.length - 1))
+    return arr[Math.max(0, Math.min(idx, arr.length - 1))]
+  }
+
+  return Object.fromEntries(statuses.map(s => {
+    if (inCycle(s) && inLead(s)) return [s, pick(OVERLAP_COLORS, groups.overlap, s)]
+    if (inCycle(s)) return [s, pick(CYCLE_COLORS, groups.cycle, s)]
+    return [s, pick(LEAD_COLORS, groups.lead, s)]
+  }))
+}
 
 function AvgTooltip({ active, payload, label }: TooltipProps<number, string>) {
   if (!active || !payload?.length) return null
@@ -52,6 +88,7 @@ interface AvgProps {
 export function AvgTimeInStatusChart({ timeInStatusData, summary }: AvgProps) {
   const { t } = useTranslation()
   const { statuses } = timeInStatusData
+  const colors = buildStatusColors(statuses, summary.config_context)
 
   const avgData = statuses.map((status) => ({
     status,
@@ -91,8 +128,8 @@ export function AvgTimeInStatusChart({ timeInStatusData, summary }: AvgProps) {
           <YAxis dataKey="status" type="category" tick={{ fontSize: 11 }} width={150} />
           <Tooltip content={<AvgTooltip />} wrapperStyle={{ zIndex: 100 }} />
           <Bar dataKey="days">
-            {avgData.map((_, i) => (
-              <Cell key={i} fill={COLORS[i % COLORS.length]} />
+            {avgData.map((entry) => (
+              <Cell key={entry.status} fill={colors[entry.status]} />
             ))}
           </Bar>
         </BarChart>
@@ -103,10 +140,12 @@ export function AvgTimeInStatusChart({ timeInStatusData, summary }: AvgProps) {
 
 interface BreakdownProps {
   timeInStatusData: TimeInStatusResponse
+  config?: ConfigContext | null
 }
 
-export function PerTicketBreakdownChart({ timeInStatusData }: BreakdownProps) {
+export function PerTicketBreakdownChart({ timeInStatusData, config }: BreakdownProps) {
   const { statuses } = timeInStatusData
+  const colors = buildStatusColors(statuses, config)
   const last30 = timeInStatusData.tickets.slice(-30)
 
   if (!last30.length) return null
@@ -126,8 +165,8 @@ export function PerTicketBreakdownChart({ timeInStatusData }: BreakdownProps) {
           <XAxis dataKey="name" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={60} />
           <YAxis tick={{ fontSize: 11 }} unit=" d" />
           <Tooltip content={<StackedTooltip />} wrapperStyle={{ zIndex: 100 }} />
-          {statuses.map((status, i) => (
-            <Bar key={status} dataKey={status} stackId="a" fill={COLORS[i % COLORS.length]} />
+          {statuses.map((status) => (
+            <Bar key={status} dataKey={status} stackId="a" fill={colors[status]} />
           ))}
         </BarChart>
       </ResponsiveContainer>
@@ -140,7 +179,7 @@ export function TimeInStatusChart({ timeInStatusData, summary }: AvgProps) {
   return (
     <>
       <AvgTimeInStatusChart timeInStatusData={timeInStatusData} summary={summary} />
-      <PerTicketBreakdownChart timeInStatusData={timeInStatusData} />
+      <PerTicketBreakdownChart timeInStatusData={timeInStatusData} config={summary.config_context} />
     </>
   )
 }
