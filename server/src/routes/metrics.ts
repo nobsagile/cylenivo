@@ -23,6 +23,14 @@ metrics.get('/:importId/summary', async (c) => {
     lead_time: buildStatsResponse(agg.leadTimes, agg.leadTimePercentiles),
     time_in_status: agg.timeInStatus,
     throughput_per_week: agg.throughput,
+    config_context: {
+      status_order: ctx.config.status_order,
+      cycle_time_start_status: ctx.config.cycle_time_start_status,
+      cycle_time_end_status: ctx.config.cycle_time_end_status,
+      cycle_time_mode: ctx.config.cycle_time_mode,
+      lead_time_start_status: ctx.config.lead_time_start_status,
+      lead_time_end_status: ctx.config.lead_time_end_status,
+    },
   }))
 })
 

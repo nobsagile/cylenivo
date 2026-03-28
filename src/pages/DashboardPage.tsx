@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { PercentileCard } from '@/components/metrics/PercentileCard'
 import { CycleTimeChart } from '@/components/metrics/CycleTimeChart'
+import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 
 interface MetricCardProps {
   title: string
@@ -177,6 +178,10 @@ export default function DashboardPage() {
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{data.project_key}</h2>
         <p className="text-sm text-gray-400 mt-0.5">{data.completed_ticket_count} of {data.ticket_count} tickets analyzed</p>
       </div>
+
+      {data.config_context && (
+        <ConfigContextBar config={data.config_context} />
+      )}
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <MetricCard

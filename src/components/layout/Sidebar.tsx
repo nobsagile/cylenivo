@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
-import { LayoutDashboard, Ticket, BarChart2, Sparkles, Upload, Settings, Activity, Plus, AlertTriangle } from 'lucide-react'
+import { LayoutDashboard, Ticket, Workflow, Sparkles, Upload, Settings, Activity, Plus, AlertTriangle } from 'lucide-react'
 import { useImports } from '@/hooks/useImports'
 import {
   Select,
@@ -123,8 +123,8 @@ export function Sidebar() {
 
   const navItems = [
     { to: '', end: true, icon: LayoutDashboard, label: t('nav.overview') },
+    { to: '/flow', icon: Workflow, label: t('nav.flow') },
     { to: '/tickets', icon: Ticket, label: t('nav.tickets') },
-    { to: '/analytics', icon: BarChart2, label: t('nav.analytics') },
     { to: '/insights', icon: Sparkles, label: t('nav.insights') },
   ]
 
