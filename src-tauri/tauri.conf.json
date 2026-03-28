@@ -1,8 +1,9 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Cylenivo",
-  "version": "0.1.0",
+  "version": "0.32.0",
   "identifier": "com.cylenivo.app",
+  "description": "Flow metrics for software teams. Analyze cycle time, lead time, and throughput from Jira exports — fully local, no cloud.",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
