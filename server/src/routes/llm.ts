@@ -1,15 +1,11 @@
 import { Hono } from 'hono'
-import { eq, inArray } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { db } from '../db/index.js'
-import { projectConfigs, importSessions, tickets, ticketTransitions, llmInsights, llmConfig } from '../db/schema.js'
+import { llmInsights, llmConfig } from '../db/schema.js'
 import { ok } from '../lib/response.js'
 import { mean, median } from '../lib/stats.js'
-import { calculateCycleTime } from '../analyzers/cycleTime.js'
-import { calculateLeadTime } from '../analyzers/leadTime.js'
-import { calculatePercentiles } from '../analyzers/percentiles.js'
-import { firstTransitionTo, trimTransitionsToCycleWindow, type Transition } from '../analyzers/utils.js'
-import { calculateTimeInStatus } from '../analyzers/timeInStatus.js'
-import { calculateThroughputPerWeek } from '../analyzers/percentiles.js'
+import { loadImportContext } from '../lib/context.js'
+import { computeAggregate } from '../lib/aggregate.js'
 import { DEFAULT_SYSTEM_PROMPT } from './llm-config.js'
 
 const llm = new Hono()
@@ -56,30 +52,6 @@ async function callLLM(
   }
 }
 
-async function getContext(importId: string) {
-  const impRows = await db.select().from(importSessions).where(eq(importSessions.id, importId))
-  if (!impRows.length) return null
-  const imp = impRows[0]
-  const cfgRows = await db.select().from(projectConfigs).where(eq(projectConfigs.id, imp.config_id))
-  if (!cfgRows.length) return null
-  const config = { ...cfgRows[0], status_order: JSON.parse(cfgRows[0].status_order) as string[] }
-
-  const ticketRows = await db.select().from(tickets).where(eq(tickets.import_id, importId))
-  const transMap: Record<string, Transition[]> = {}
-
-  if (ticketRows.length) {
-    const ticketIds = ticketRows.map(t => t.id)
-    const transRows = await db.select().from(ticketTransitions).where(inArray(ticketTransitions.ticket_id, ticketIds))
-    for (const tr of transRows) {
-      if (!transMap[tr.ticket_id]) transMap[tr.ticket_id] = []
-      transMap[tr.ticket_id].push({ from_status: tr.from_status, to_status: tr.to_status, transitioned_at: tr.transitioned_at })
-    }
-  }
-
-  const allTickets = ticketRows.map(t => ({ ...t, transitions: transMap[t.id] ?? [] }))
-  return { imp, config, allTickets }
-}
-
 llm.get('/status', async (c) => {
   const cfg = await getLlmConfig()
   if (!cfg) return c.json(ok({ configured: false, provider: null, model: null, available: false }))
@@ -95,7 +67,6 @@ llm.get('/status', async (c) => {
     return c.json(ok({ configured: true, provider: cfg.provider, model: cfg.model, available: false }))
   }
 
-  // OpenAI / openai_compatible — assume reachable
   return c.json(ok({ configured: true, provider: cfg.provider, model: cfg.model, available: true }))
 })
 
@@ -103,94 +74,63 @@ llm.post('/analyze/:importId', async (c) => {
   const cfg = await getLlmConfig()
   if (!cfg) return c.json({ data: null, error: 'LLM not configured' }, 503)
 
-  const ctx = await getContext(c.req.param('importId'))
+  const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
-  const { imp, config, allTickets } = ctx
 
-  const cycleTimes: number[] = []
-  const leadTimes: number[] = []
-  const completedAtDates: Date[] = []
-  const ctWithTicket: [number, string, string, string][] = [] // [ct, id, title, type]
+  const agg = computeAggregate(ctx)
+  const { imp } = ctx
+  const { cycleTimes, leadTimes, completedAtDates, cycleTimePercentiles, throughput, dateRange, timeInStatus, completedTickets } = agg
+
+  const dateFrom = dateRange.from ? dateRange.from.slice(0, 10) : 'N/A'
+  const dateTo = dateRange.to ? dateRange.to.slice(0, 10) : 'N/A'
+
+  // Cycle time by ticket type
   const ctByType: Record<string, number[]> = {}
-
-  for (const ticket of allTickets) {
-    const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, (config.cycle_time_mode ?? 'first_last') as 'first_last' | 'first_first' | 'last_last')
-    if (ct !== null) {
-      cycleTimes.push(ct)
-      ctWithTicket.push([ct, ticket.external_id, ticket.title, ticket.ticket_type])
-      const endTs = firstTransitionTo(ticket.transitions, config.cycle_time_end_status)
-      if (endTs) completedAtDates.push(endTs)
-      if (!ctByType[ticket.ticket_type]) ctByType[ticket.ticket_type] = []
-      ctByType[ticket.ticket_type].push(ct)
-    }
-    const lt = calculateLeadTime(new Date(ticket.created_at), ticket.transitions, config.cycle_time_end_status, config.lead_time_start_status, (config.cycle_time_mode ?? 'first_last') as 'first_last' | 'first_first' | 'last_last')
-    if (lt !== null) leadTimes.push(lt)
+  for (const ticket of completedTickets) {
+    if (!ctByType[ticket.ticket_type]) ctByType[ticket.ticket_type] = []
+    ctByType[ticket.ticket_type].push(ticket.cycle_time_days!)
   }
-
-  const percentiles = calculatePercentiles(cycleTimes)
-  const slowest = ctWithTicket.sort((a, b) => b[0] - a[0]).slice(0, 5)
-  const dateFrom = completedAtDates.length ? completedAtDates.reduce((a, b) => a < b ? a : b).toISOString().slice(0, 10) : 'N/A'
-  const dateTo = completedAtDates.length ? completedAtDates.reduce((a, b) => a > b ? a : b).toISOString().slice(0, 10) : 'N/A'
-  const throughput = calculateThroughputPerWeek(completedAtDates)
-
-  // Time in status (only completed tickets, cycle window only)
-  const startIdx = config.status_order.indexOf(config.cycle_time_start_status)
-  const endIdx = config.status_order.indexOf(config.cycle_time_end_status)
-  const cycleStatuses = startIdx !== -1 && endIdx !== -1
-    ? config.status_order.slice(startIdx, endIdx + 1)
-    : config.status_order
-  const mode = (config.cycle_time_mode ?? 'first_last') as 'first_last' | 'first_first' | 'last_last'
-
-  const timeInStatusByStatus: Record<string, number[]> = {}
-  for (const s of cycleStatuses) timeInStatusByStatus[s] = []
-  for (const ticket of allTickets) {
-    const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, (config.cycle_time_mode ?? 'first_last') as 'first_last' | 'first_first' | 'last_last')
-    if (ct === null) continue
-    const windowed = trimTransitionsToCycleWindow(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, mode)
-    const durations = calculateTimeInStatus(windowed, cycleStatuses)
-    for (const [status, days] of Object.entries(durations)) {
-      if (days > 0) timeInStatusByStatus[status].push(days)
-    }
-  }
-  const timeInStatusLines = cycleStatuses
-    .map((s) => {
-      const vals = timeInStatusByStatus[s]
-      if (!vals.length) return `  ${s}: no data`
-      const avg = Math.round(mean(vals) * 10) / 10
-      const med = Math.round(median(vals) * 10) / 10
-      return `  ${s}: avg ${avg}d, median ${med}d`
-    })
-    .join('\n')
-
   const typeLines = Object.entries(ctByType)
     .sort((a, b) => b[1].length - a[1].length)
     .map(([type, times]) => {
-      const med = Math.round(median(times) * 10) / 10
       const avg = Math.round(mean(times) * 10) / 10
+      const med = Math.round(median(times) * 10) / 10
       return `  ${type}: ${times.length} tickets, avg ${avg}d, median ${med}d`
     })
     .join('\n')
 
+  // Time in status summary lines
+  const tisLines = Object.entries(timeInStatus)
+    .map(([s, v]) => `  ${s}: avg ${v.mean_days}d, median ${v.median_days}d`)
+    .join('\n')
+
+  // Top 5 slowest
+  const slowest = [...completedTickets]
+    .sort((a, b) => b.cycle_time_days! - a.cycle_time_days!)
+    .slice(0, 5)
+    .map(t => `  ${t.external_id} [${t.ticket_type}]: ${Math.round(t.cycle_time_days! * 10) / 10}d — ${t.title}`)
+    .join('\n')
+
   const userContent = `PROJECT: ${imp.project_key}
-TICKETS ANALYZED: ${allTickets.length} total, ${cycleTimes.length} completed
+TICKETS ANALYZED: ${ctx.tickets.length} total, ${cycleTimes.length} completed
 DATE RANGE: ${dateFrom} to ${dateTo}
 THROUGHPUT: ${throughput} tickets/week
 
-CYCLE TIME (from ${config.cycle_time_start_status} to ${config.cycle_time_end_status}):
+CYCLE TIME (from ${ctx.config.cycle_time_start_status} to ${ctx.config.cycle_time_end_status}):
   Mean: ${cycleTimes.length ? Math.round(mean(cycleTimes) * 10) / 10 : 'N/A'} days | Median: ${cycleTimes.length ? Math.round(median(cycleTimes) * 10) / 10 : 'N/A'} days
-  P50: ${percentiles.p50} days | P70: ${percentiles.p70} days | P85: ${percentiles.p85} days | P95: ${percentiles.p95} days
+  P50: ${cycleTimePercentiles.p50} days | P70: ${cycleTimePercentiles.p70} days | P85: ${cycleTimePercentiles.p85} days | P95: ${cycleTimePercentiles.p95} days
 
-LEAD TIME (from ticket creation to ${config.cycle_time_end_status}):
+LEAD TIME (from ticket creation to ${ctx.config.cycle_time_end_status}):
   Mean: ${leadTimes.length ? Math.round(mean(leadTimes) * 10) / 10 : 'N/A'} days | Median: ${leadTimes.length ? Math.round(median(leadTimes) * 10) / 10 : 'N/A'} days
 
 AVERAGE TIME IN STATUS (completed tickets only):
-${timeInStatusLines}
+${tisLines}
 
 CYCLE TIME BY TICKET TYPE:
 ${typeLines}
 
 TOP 5 SLOWEST TICKETS (by cycle time):
-${slowest.map(([ct, id, title, type]) => `  ${id} [${type}]: ${Math.round(ct * 10) / 10}d — ${title}`).join('\n')}
+${slowest}
 
 Please provide:
 1. Key observations (max 3 bullet points, be specific with numbers)
@@ -235,34 +175,28 @@ llm.post('/chat/:importId', async (c) => {
   const cfg = await getLlmConfig()
   if (!cfg) return c.json({ data: null, error: 'LLM not configured' }, 503)
 
-  const ctx = await getContext(c.req.param('importId'))
+  const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
-  const { imp, config, allTickets } = ctx
 
   const body = await c.req.json() as { messages: { role: string; content: string }[] }
 
-  const cycleTimes: number[] = []
-  const leadTimes: number[] = []
-  const ctWithTicket: [number, string][] = []
+  const agg = computeAggregate(ctx)
+  const { cycleTimes, leadTimes, cycleTimePercentiles, completedTickets } = agg
 
-  for (const ticket of allTickets) {
-    const ct = calculateCycleTime(ticket.transitions, config.cycle_time_start_status, config.cycle_time_end_status, (config.cycle_time_mode ?? 'first_last') as 'first_last' | 'first_first' | 'last_last')
-    if (ct !== null) { cycleTimes.push(ct); ctWithTicket.push([ct, ticket.external_id]) }
-    const lt = calculateLeadTime(new Date(ticket.created_at), ticket.transitions, config.cycle_time_end_status, config.lead_time_start_status, (config.cycle_time_mode ?? 'first_last') as 'first_last' | 'first_first' | 'last_last')
-    if (lt !== null) leadTimes.push(lt)
-  }
+  const slowest = [...completedTickets]
+    .sort((a, b) => b.cycle_time_days! - a.cycle_time_days!)
+    .slice(0, 5)
+    .map(t => `${t.external_id} (${Math.round(t.cycle_time_days! * 10) / 10}d)`)
+    .join(', ')
 
-  const percentiles = calculatePercentiles(cycleTimes)
-  const slowest = ctWithTicket.sort((a, b) => b[0] - a[0]).slice(0, 5)
+  const dataContext = `You have access to the following data for project ${ctx.imp.project_key}:
 
-  const dataContext = `You have access to the following data for project ${imp.project_key}:
-
-TICKETS: ${allTickets.length} total, ${cycleTimes.length} completed
-CYCLE TIME (${config.cycle_time_start_status} → ${config.cycle_time_end_status}):
+TICKETS: ${ctx.tickets.length} total, ${cycleTimes.length} completed
+CYCLE TIME (${ctx.config.cycle_time_start_status} → ${ctx.config.cycle_time_end_status}):
   Median: ${cycleTimes.length ? Math.round(median(cycleTimes) * 10) / 10 : 'N/A'} days
-  P50: ${percentiles.p50} | P70: ${percentiles.p70} | P85: ${percentiles.p85} | P95: ${percentiles.p95} days
+  P50: ${cycleTimePercentiles.p50} | P70: ${cycleTimePercentiles.p70} | P85: ${cycleTimePercentiles.p85} | P95: ${cycleTimePercentiles.p95} days
 LEAD TIME: Median ${leadTimes.length ? Math.round(median(leadTimes) * 10) / 10 : 'N/A'} days
-TOP 5 SLOWEST: ${slowest.map(([ct, id]) => `${id} (${Math.round(ct * 10) / 10}d)`).join(', ')}
+TOP 5 SLOWEST: ${slowest}
 
 Answer questions about this data concisely and specifically. Use numbers from the data above.`
 

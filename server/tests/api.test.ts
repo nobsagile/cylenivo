@@ -3,7 +3,7 @@ import { readFileSync } from 'fs'
 import path from 'path'
 import { app } from '../src/app.js'
 import { migrate, db } from '../src/db/index.js'
-import { projectConfigs, importSessions, tickets, ticketTransitions, llmInsights } from '../src/db/schema.js'
+import { projectConfigs, importSessions, tickets, ticketTransitions, llmInsights, llmConfig } from '../src/db/schema.js'
 
 const FIXTURE = JSON.parse(
   readFileSync(path.join(import.meta.dirname, 'fixtures/sample_jira_export.json'), 'utf-8')
@@ -29,6 +29,7 @@ beforeEach(async () => {
   await db.delete(llmInsights)
   await db.delete(importSessions)
   await db.delete(projectConfigs)
+  await db.delete(llmConfig)
 })
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -301,15 +302,97 @@ describe('tickets', () => {
 // ─── llm ──────────────────────────────────────────────────────────────────────
 
 describe('llm', () => {
-  it('status always returns 200 with available field', async () => {
+  it('status returns configured=false when no config saved', async () => {
     const res = await app.request('/api/v1/llm/status')
     expect(res.status).toBe(200)
-    const { data } = await res.json() as { data: { available: boolean } }
-    expect(typeof data.available).toBe('boolean')
+    const { data } = await res.json() as { data: { configured: boolean; available: boolean } }
+    expect(data.configured).toBe(false)
+    expect(data.available).toBe(false)
   })
 
   it('insights returns 404 when no analysis exists', async () => {
     const res = await app.request('/api/v1/llm/insights/nonexistent-id')
     expect(res.status).toBe(404)
+  })
+})
+
+// ─── llm-config ───────────────────────────────────────────────────────────────
+
+describe('llm-config', () => {
+  it('GET returns null when not configured', async () => {
+    const res = await app.request('/api/v1/llm-config')
+    expect(res.status).toBe(200)
+    const { data } = await res.json() as { data: null }
+    expect(data).toBeNull()
+  })
+
+  it('PUT saves config and GET returns it', async () => {
+    const putRes = await app.request('/api/v1/llm-config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        provider: 'ollama',
+        base_url: 'http://localhost:11434',
+        model: 'qwen3:14b',
+        system_prompt: 'You are a flow expert.',
+      }),
+    })
+    expect(putRes.status).toBe(200)
+    const { data: saved } = await putRes.json() as { data: any }
+    expect(saved.provider).toBe('ollama')
+    expect(saved.model).toBe('qwen3:14b')
+    expect(saved.key_set).toBe(false)
+
+    const getRes = await app.request('/api/v1/llm-config')
+    const { data: loaded } = await getRes.json() as { data: any }
+    expect(loaded.provider).toBe('ollama')
+    expect(loaded.model).toBe('qwen3:14b')
+  })
+
+  it('PUT with api_key: key_set=true, key not returned', async () => {
+    await app.request('/api/v1/llm-config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        provider: 'openai',
+        model: 'gpt-4o',
+        api_key: 'sk-secret',
+        system_prompt: 'Expert.',
+      }),
+    })
+    const res = await app.request('/api/v1/llm-config')
+    const { data } = await res.json() as { data: any }
+    expect(data.key_set).toBe(true)
+    expect(data.api_key).toBeUndefined()
+  })
+
+  it('PUT without api_key preserves existing key', async () => {
+    await app.request('/api/v1/llm-config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider: 'openai', model: 'gpt-4o', api_key: 'sk-secret', system_prompt: 'x' }),
+    })
+    // Update model without sending api_key
+    await app.request('/api/v1/llm-config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider: 'openai', model: 'gpt-4o-mini', system_prompt: 'x' }),
+    })
+    const res = await app.request('/api/v1/llm-config')
+    const { data } = await res.json() as { data: any }
+    expect(data.model).toBe('gpt-4o-mini')
+    expect(data.key_set).toBe(true)  // key preserved
+  })
+
+  it('DELETE removes config', async () => {
+    await app.request('/api/v1/llm-config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider: 'ollama', model: 'qwen3:14b', system_prompt: 'x' }),
+    })
+    await app.request('/api/v1/llm-config', { method: 'DELETE' })
+    const res = await app.request('/api/v1/llm-config')
+    const { data } = await res.json() as { data: null }
+    expect(data).toBeNull()
   })
 })

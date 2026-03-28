@@ -71,6 +71,20 @@ const CREATE_TABLES_SQL = `
     insight_text TEXT NOT NULL,
     generated_at TEXT NOT NULL
   );
+
+  CREATE TABLE IF NOT EXISTS llm_config (
+    id TEXT PRIMARY KEY,
+    provider TEXT NOT NULL,
+    base_url TEXT,
+    api_key TEXT,
+    model TEXT NOT NULL,
+    system_prompt TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_tickets_import_id ON tickets(import_id);
+  CREATE INDEX IF NOT EXISTS idx_transitions_ticket_id ON ticket_transitions(ticket_id);
+  CREATE INDEX IF NOT EXISTS idx_imports_config_id ON import_sessions(config_id);
 `
 
 export async function migrate() {
@@ -106,4 +120,8 @@ export async function migrate() {
       created_at TEXT NOT NULL
     )`)
   } catch { /* already exists */ }
+  // Indexes (safe to re-run — IF NOT EXISTS)
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_tickets_import_id ON tickets(import_id)`)
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_transitions_ticket_id ON ticket_transitions(ticket_id)`)
+  sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_imports_config_id ON import_sessions(config_id)`)
 }
