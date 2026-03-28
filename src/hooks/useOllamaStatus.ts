@@ -11,7 +11,7 @@ export function useOllamaStatus() {
     api.llm
       .status()
       .then(setData)
-      .catch(() => setData({ available: false, models: [], recommended_model: 'qwen3:14b' }))
+      .catch(() => setData({ available: false, configured: false, provider: null, model: null }))
       .finally(() => setLoading(false))
   }, [])
 

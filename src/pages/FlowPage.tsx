@@ -26,7 +26,13 @@ export default function FlowPage() {
     api.metrics.cycleTimeByType(importId).then(setTypeData).catch(console.error)
   }, [importId])
 
-  if (!metrics) return <div className="text-gray-400 text-sm">Loading…</div>
+  if (!metrics) return (
+    <div className="space-y-6">
+      <div className="h-8 w-48 bg-gray-100 rounded animate-pulse" />
+      <div className="h-40 bg-gray-50 rounded-xl animate-pulse" />
+      <div className="h-60 bg-gray-50 rounded-xl animate-pulse" />
+    </div>
+  )
 
   return (
     <div className="space-y-6">

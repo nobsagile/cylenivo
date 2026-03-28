@@ -67,7 +67,11 @@ configs.put('/:id', async (c) => {
   if (Array.isArray(body.status_order) && body.status_order.length > 0) updates.status_order = JSON.stringify(body.status_order)
   if (body.cycle_time_start_status !== undefined) updates.cycle_time_start_status = body.cycle_time_start_status
   if (body.cycle_time_end_status !== undefined) updates.cycle_time_end_status = body.cycle_time_end_status
-  if (body.cycle_time_mode !== undefined) updates.cycle_time_mode = body.cycle_time_mode
+  if (body.cycle_time_mode !== undefined) {
+    const validModes = ['first_last', 'first_first', 'last_last']
+    if (!validModes.includes(body.cycle_time_mode)) return c.json({ data: null, error: `Invalid cycle_time_mode. Must be one of: ${validModes.join(', ')}` }, 422)
+    updates.cycle_time_mode = body.cycle_time_mode
+  }
   if (body.lead_time_start_status !== undefined) updates.lead_time_start_status = body.lead_time_start_status
   if (body.lead_time_end_status !== undefined) updates.lead_time_end_status = body.lead_time_end_status
 

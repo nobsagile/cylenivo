@@ -40,6 +40,14 @@ const mockSummary: MetricsSummary = {
   },
   time_in_status: {},
   throughput_per_week: 2.5,
+  config_context: {
+    status_order: ['Backlog', 'In Progress', 'Done'],
+    cycle_time_start_status: 'In Progress',
+    cycle_time_end_status: 'Done',
+    cycle_time_mode: 'first_last',
+    lead_time_start_status: null,
+    lead_time_end_status: null,
+  },
 }
 
 afterEach(() => vi.clearAllMocks())

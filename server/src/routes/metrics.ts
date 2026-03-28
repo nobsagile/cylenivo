@@ -5,6 +5,7 @@ import { trimTransitionsToCycleWindow } from '../analyzers/utils.js'
 import { loadImportContext } from '../lib/context.js'
 import { computeAggregate, buildStatsResponse } from '../lib/aggregate.js'
 import { aggregateRework } from '../analyzers/rework.js'
+import { mean, median } from '../lib/stats.js'
 
 const metrics = new Hono()
 
@@ -122,13 +123,17 @@ metrics.get('/:importId/cycle-time-by-type', async (c) => {
   const types = [...groups.entries()].map(([type, values]) => {
     const sorted = [...values].sort((a, b) => a - b)
     const count = sorted.length
-    const mean = Math.round((sorted.reduce((a, b) => a + b, 0) / count) * 100) / 100
-    const median = count % 2 === 0
-      ? Math.round(((sorted[count / 2 - 1] + sorted[count / 2]) / 2) * 100) / 100
-      : Math.round(sorted[Math.floor(count / 2)] * 100) / 100
+    const m = mean(sorted)
+    const med = median(sorted)
     const p85idx = Math.ceil(count * 0.85) - 1
-    const p85 = Math.round(sorted[Math.min(p85idx, count - 1)] * 100) / 100
-    return { type, count, mean, median, p85 }
+    const p85 = sorted[Math.min(p85idx, count - 1)]
+    return {
+      type,
+      count,
+      mean: Math.round(m * 100) / 100,
+      median: Math.round(med * 100) / 100,
+      p85: Math.round(p85 * 100) / 100,
+    }
   }).sort((a, b) => b.count - a.count)
 
   return c.json(ok({ types }))
