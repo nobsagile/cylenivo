@@ -4,6 +4,7 @@ import { calculateTimeInStatus } from '../analyzers/timeInStatus.js'
 import { trimTransitionsToCycleWindow } from '../analyzers/utils.js'
 import { loadImportContext } from '../lib/context.js'
 import { computeAggregate, buildStatsResponse } from '../lib/aggregate.js'
+import { aggregateRework } from '../analyzers/rework.js'
 
 const metrics = new Hono()
 
@@ -95,6 +96,42 @@ metrics.get('/:importId/time-in-status', async (c) => {
     }))
 
   return c.json(ok({ statuses: cycleStatuses, tickets: result }))
+})
+
+metrics.get('/:importId/rework', async (c) => {
+  const ctx = await loadImportContext(c.req.param('importId'))
+  if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
+
+  const result = aggregateRework(ctx.tickets, ctx.config.status_order)
+  return c.json(ok(result))
+})
+
+metrics.get('/:importId/cycle-time-by-type', async (c) => {
+  const ctx = await loadImportContext(c.req.param('importId'))
+  if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
+
+  const completed = ctx.tickets.filter(t => t.cycle_time_days !== null)
+  const groups = new Map<string, number[]>()
+
+  for (const t of completed) {
+    const type = t.ticket_type || 'Unknown'
+    if (!groups.has(type)) groups.set(type, [])
+    groups.get(type)!.push(t.cycle_time_days!)
+  }
+
+  const types = [...groups.entries()].map(([type, values]) => {
+    const sorted = [...values].sort((a, b) => a - b)
+    const count = sorted.length
+    const mean = Math.round((sorted.reduce((a, b) => a + b, 0) / count) * 100) / 100
+    const median = count % 2 === 0
+      ? Math.round(((sorted[count / 2 - 1] + sorted[count / 2]) / 2) * 100) / 100
+      : Math.round(sorted[Math.floor(count / 2)] * 100) / 100
+    const p85idx = Math.ceil(count * 0.85) - 1
+    const p85 = Math.round(sorted[Math.min(p85idx, count - 1)] * 100) / 100
+    return { type, count, mean, median, p85 }
+  }).sort((a, b) => b.count - a.count)
+
+  return c.json(ok({ types }))
 })
 
 export default metrics
