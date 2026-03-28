@@ -8,7 +8,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts'
-import type { TooltipProps } from 'recharts'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { CycleTimeByTypeResponse } from '@/types'
 import { ChartTooltip } from './ChartTooltip'
@@ -17,7 +17,7 @@ interface Props {
   data: CycleTimeByTypeResponse
 }
 
-function TypeTooltip({ active, payload, label }: TooltipProps<number, string>) {
+function TypeTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value?: number; name?: string; color?: string; fill?: string; dataKey?: string }>; label?: string }) {
   if (!active || !payload?.length) return null
   return (
     <ChartTooltip>

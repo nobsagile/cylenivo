@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts'
-import type { TooltipProps } from 'recharts'
+
 import type { CycleTimeTicket } from '@/types'
 import { ChartTooltip } from './ChartTooltip'
 
@@ -18,7 +18,7 @@ interface Props {
   p85?: number | null
 }
 
-function CycleTooltip({ active, payload }: TooltipProps<number, string>) {
+function CycleTooltip({ active, payload }: { active?: boolean; payload?: Array<{ value?: number; name?: string; color?: string; fill?: string; dataKey?: string; payload?: Record<string, unknown> }>; label?: string }) {
   if (!active || !payload?.length) return null
   const d = payload[0].payload as { x: number; y: number; name: string }
   return (

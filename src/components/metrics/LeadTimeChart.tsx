@@ -8,7 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import type { TooltipProps } from 'recharts'
+
 import { ChartTooltip } from './ChartTooltip'
 
 interface Props {
@@ -16,7 +16,7 @@ interface Props {
   bucketSize?: number
 }
 
-function LeadTooltip({ active, payload }: TooltipProps<number, string>) {
+function LeadTooltip({ active, payload }: { active?: boolean; payload?: Array<{ value?: number; name?: string; color?: string; fill?: string; dataKey?: string; payload?: Record<string, unknown> }>; label?: string }) {
   if (!active || !payload?.length) return null
   const d = payload[0].payload as { range: string; count: number }
   return (

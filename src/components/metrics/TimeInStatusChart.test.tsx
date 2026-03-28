@@ -89,7 +89,7 @@ describe('TimeInStatusChart / data transformation', () => {
     const stackedData = timeInStatusData.tickets.map(ticket => ({
       name: ticket.external_id,
       ...Object.fromEntries(STATUS_ORDER.map(s => [s, ticket.status_durations[s] ?? 0])),
-    }))
+    } as Record<string, string | number>))
 
     const tick1 = stackedData.find(d => d.name === 'TICK-1')
     expect(tick1?.['In Dev']).toBe(3)
@@ -107,7 +107,7 @@ describe('TimeInStatusChart / data transformation', () => {
     const stackedData = sparse.tickets.map(ticket => ({
       name: ticket.external_id,
       ...Object.fromEntries(STATUS_ORDER.map(s => [s, ticket.status_durations[s] ?? 0])),
-    }))
+    } as Record<string, string | number>))
     expect(stackedData[0]['In Dev']).toBe(0)
     expect(stackedData[0]['Review']).toBe(0)
   })
