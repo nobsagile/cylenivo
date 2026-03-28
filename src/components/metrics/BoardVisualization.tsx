@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { ConfigContext, StatusDuration, TimeInStatusResponse } from '@/types'
 
 interface Props {
@@ -104,6 +105,8 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
     return pickShade(LEAD_SHADES, leadOnlyStatuses, status)
   }
 
+  const [hovered, setHovered] = useState<string | null>(null)
+
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4">
       <h3 className="text-sm font-semibold text-gray-700 mb-3">Time Distribution Across Statuses</h3>
@@ -111,17 +114,21 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
         {relevantStatuses.map((status, i) => {
           const mean = meanDays[i]
           const median = timeInStatus[status]?.median_days ?? 0
-          const widthPct = Math.max((mean / totalMean) * 100, 8)
+          const baseFlex = Math.max(mean, totalMean * 0.04)
+          const flexValue = hovered === status ? Math.max(baseFlex * 3, totalMean * 0.15) : baseFlex
           const style = getStatusStyle(status)
           const values = statusValues[status] ?? []
+          const isHovered = hovered === status
 
           return (
             <div
               key={status}
-              className={`rounded-lg border p-2.5 ${style.bg} ${style.border} ${style.text} overflow-hidden`}
-              style={{ width: `${widthPct}%`, minWidth: '60px' }}
+              className={`rounded-lg border p-2.5 ${style.bg} ${style.border} ${style.text} overflow-hidden cursor-default`}
+              style={{ flex: flexValue, minWidth: 0, transition: 'flex 0.2s ease' }}
+              onMouseEnter={() => setHovered(status)}
+              onMouseLeave={() => setHovered(null)}
             >
-              <p className="text-[10px] font-semibold truncate uppercase tracking-wide opacity-70">{status}</p>
+              <p className={`text-[10px] font-semibold uppercase tracking-wide opacity-70 ${isHovered ? '' : 'truncate'}`}>{status}</p>
               <p className="text-lg font-bold tabular-nums mt-0.5">{mean.toFixed(1)}d</p>
               <p className="text-[10px] opacity-60">med {median.toFixed(1)}d</p>
               {values.length > 0 && (
