@@ -43,7 +43,7 @@ export const BETA_CONFIG: DemoProjectConfig = {
 
 export const DEMO_CONFIG_NAMES = {
   improving: 'Demo: Improving Team',
-  declining: 'Demo: Declining Team',
+  declining: 'Demo: Real-World Team',
 } as const
 
 export async function seedDemoProject(
