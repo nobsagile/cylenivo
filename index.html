@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cylenivo — Flow metrics for software teams</title>
+  <meta name="description" content="Understand how your team actually works. Cycle Time, Lead Time, Throughput and delivery forecasts — local, private, no accounts." />
+  <meta property="og:title" content="Cylenivo — Flow metrics for software teams" />
+  <meta property="og:description" content="Understand how your team actually works. Local, private, no accounts." />
+  <meta property="og:image" content="https://cylenivo.org/assets/screenshot.png" />
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --violet: #7c3aed;
+      --violet-light: #ede9fe;
+      --violet-dark: #6d28d9;
+      --indigo: #4f46e5;
+      --teal: #0d9488;
+      --gray-900: #111827;
+      --gray-700: #374151;
+      --gray-500: #6b7280;
+      --gray-300: #d1d5db;
+      --gray-100: #f3f4f6;
+      --gray-50: #f9fafb;
+      --white: #ffffff;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+      --shadow-lg: 0 4px 24px rgba(0,0,0,.10), 0 16px 48px rgba(0,0,0,.08);
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--gray-900); background: var(--white); line-height: 1.6; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 60px;
+      background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    .nav-brand { display: flex; align-items: center; gap: .625rem; text-decoration: none; }
+    .nav-brand img { width: 28px; height: 28px; }
+    .nav-brand span { font-weight: 700; font-size: .9375rem; color: var(--gray-900); letter-spacing: -.01em; }
+    .nav-right { display: flex; align-items: center; gap: 1rem; }
+    .nav-link { font-size: .875rem; color: var(--gray-500); text-decoration: none; transition: color .15s; }
+    .nav-link:hover { color: var(--gray-900); }
+    .btn { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1.125rem; border-radius: 8px; font-size: .875rem; font-weight: 500; cursor: pointer; text-decoration: none; transition: all .15s; border: none; }
+    .btn-primary { background: var(--violet); color: var(--white); }
+    .btn-primary:hover { background: var(--violet-dark); }
+    .btn-outline { background: transparent; color: var(--gray-700); border: 1px solid var(--gray-300); }
+    .btn-outline:hover { background: var(--gray-50); }
+
+    /* HERO */
+    .hero {
+      max-width: 1100px; margin: 0 auto; padding: 5rem 2rem 3rem;
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .375rem;
+      background: var(--violet-light); color: var(--violet); border-radius: 999px;
+      font-size: .75rem; font-weight: 600; padding: .3rem .875rem; margin-bottom: 1.75rem;
+      letter-spacing: .02em; text-transform: uppercase;
+    }
+    .hero h1 {
+      font-size: clamp(2.25rem, 5vw, 3.5rem); font-weight: 800;
+      letter-spacing: -.03em; line-height: 1.1; max-width: 700px;
+      color: var(--gray-900);
+    }
+    .hero h1 em { font-style: normal; color: var(--violet); }
+    .hero p {
+      margin-top: 1.25rem; font-size: 1.125rem; color: var(--gray-500);
+      max-width: 520px; line-height: 1.65;
+    }
+    .hero-actions { display: flex; align-items: center; gap: .875rem; margin-top: 2.25rem; flex-wrap: wrap; justify-content: center; }
+    .btn-download {
+      display: inline-flex; align-items: center; gap: .625rem;
+      padding: .75rem 1.5rem; border-radius: 10px;
+      background: var(--violet); color: var(--white);
+      font-size: .9375rem; font-weight: 600;
+      cursor: pointer; text-decoration: none; border: none;
+      transition: background .15s, transform .1s, box-shadow .15s;
+      box-shadow: 0 2px 8px rgba(124,58,237,.35);
+    }
+    .btn-download:hover { background: var(--violet-dark); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(124,58,237,.4); }
+    .btn-download svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .download-meta { font-size: .75rem; color: var(--gray-500); margin-top: .5rem; }
+    .other-platforms { display: flex; gap: .75rem; flex-wrap: wrap; justify-content: center; margin-top: .375rem; }
+    .other-platforms a { font-size: .8125rem; color: var(--gray-500); text-decoration: none; padding: .25rem .5rem; border-radius: 6px; transition: background .15s, color .15s; }
+    .other-platforms a:hover { background: var(--gray-100); color: var(--gray-900); }
+
+    /* SCREENSHOT */
+    .screenshot-wrap {
+      max-width: 1000px; margin: 3rem auto 0; padding: 0 2rem;
+    }
+    .screenshot-frame {
+      border-radius: 14px; overflow: hidden;
+      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(0,0,0,.07);
+    }
+    .screenshot-frame img { width: 100%; display: block; }
+
+    /* FEATURES */
+    .section { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem; }
+    .section-label { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--violet); margin-bottom: .75rem; }
+    .section-title { font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 800; letter-spacing: -.02em; color: var(--gray-900); max-width: 520px; }
+    .section-sub { margin-top: .75rem; font-size: 1rem; color: var(--gray-500); max-width: 480px; line-height: 1.65; }
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; margin-top: 3rem; }
+    .feature-card {
+      background: var(--white); border: 1px solid rgba(0,0,0,.07);
+      border-radius: var(--radius); padding: 1.5rem;
+      box-shadow: var(--shadow); transition: box-shadow .2s, transform .2s;
+    }
+    .feature-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+    .feature-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;
+    }
+    .feature-icon svg { width: 20px; height: 20px; }
+    .feature-card h3 { font-size: .9375rem; font-weight: 700; margin-bottom: .375rem; }
+    .feature-card p { font-size: .875rem; color: var(--gray-500); line-height: 1.6; }
+
+    /* HOW IT WORKS */
+    .how-section { background: var(--gray-50); }
+    .how-inner { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem; }
+    .steps { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 2rem; margin-top: 3rem; }
+    .step { display: flex; flex-direction: column; gap: .75rem; }
+    .step-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--violet); color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .875rem; font-weight: 700; flex-shrink: 0;
+    }
+    .step h3 { font-size: .9375rem; font-weight: 700; }
+    .step p { font-size: .875rem; color: var(--gray-500); line-height: 1.6; }
+
+    /* PRIVACY */
+    .privacy-band {
+      background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+      border-top: 1px solid rgba(124,58,237,.1);
+      border-bottom: 1px solid rgba(124,58,237,.1);
+    }
+    .privacy-inner {
+      max-width: 1100px; margin: 0 auto; padding: 3.5rem 2rem;
+      display: flex; align-items: center; gap: 3rem; flex-wrap: wrap;
+    }
+    .privacy-icon { width: 52px; height: 52px; background: var(--violet); border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .privacy-icon svg { width: 26px; height: 26px; color: white; }
+    .privacy-text h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: .375rem; }
+    .privacy-text p { font-size: .9375rem; color: var(--gray-700); line-height: 1.65; max-width: 560px; }
+
+    /* CTA */
+    .cta-section { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem; text-align: center; }
+    .cta-section h2 { font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 800; letter-spacing: -.02em; }
+    .cta-section p { margin-top: .75rem; color: var(--gray-500); font-size: 1rem; }
+    .cta-actions { margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--gray-100);
+      padding: 2rem;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .footer-brand { display: flex; align-items: center; gap: .5rem; text-decoration: none; }
+    .footer-brand img { width: 22px; height: 22px; }
+    .footer-brand span { font-size: .875rem; font-weight: 600; color: var(--gray-700); }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { font-size: .8125rem; color: var(--gray-500); text-decoration: none; }
+    .footer-links a:hover { color: var(--gray-900); }
+    .footer-copy { font-size: .75rem; color: var(--gray-300); }
+
+    @media (max-width: 640px) {
+      nav { padding: 0 1rem; }
+      .hero { padding: 3rem 1rem 2rem; }
+      .section { padding: 3rem 1rem; }
+      .how-inner { padding: 3rem 1rem; }
+      .privacy-inner { padding: 2.5rem 1rem; }
+      .cta-section { padding: 3rem 1rem; }
+      .screenshot-wrap { padding: 0 1rem; }
+      footer { padding: 1.5rem 1rem; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="/">
+    <img src="assets/logo.png" alt="Cylenivo" />
+    <span>Cylenivo</span>
+  </a>
+  <div class="nav-right">
+    <a class="nav-link" href="https://github.com/nobsagile/cylenivo" target="_blank" rel="noopener">GitHub</a>
+    <a class="btn btn-primary" href="#download">Download</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    Free &amp; local — no accounts
+  </div>
+  <h1>Understand how your team<br /><em>actually works</em></h1>
+  <p>Flow metrics for software teams. See cycle time trends, delivery forecasts, and what's slowing you down — all on your own machine.</p>
+
+  <div id="download" style="width:100%">
+    <div class="hero-actions">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.375rem">
+        <a id="btn-main-download" class="btn-download" href="https://github.com/nobsagile/cylenivo/releases/latest" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span id="btn-main-label">Download for macOS</span>
+        </a>
+        <p class="download-meta" id="release-meta">Fetching latest release…</p>
+      </div>
+      <a class="btn btn-outline" href="https://github.com/nobsagile/cylenivo" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+    <div class="other-platforms" id="other-platforms"></div>
+  </div>
+</section>
+
+<!-- SCREENSHOT -->
+<div class="screenshot-wrap">
+  <div class="screenshot-frame">
+    <img src="assets/screenshot.png" alt="Cylenivo dashboard showing cycle time, lead time, throughput and delivery forecast" />
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section">
+  <div class="section-label">What you get</div>
+  <h2 class="section-title">Everything your team needs to understand flow</h2>
+  <p class="section-sub">Built around the metrics that actually matter — not vanity numbers.</p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#f0fdf4">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h3>Cycle Time & Lead Time</h3>
+      <p>See the full distribution with P50, P70, P85, and P95 percentiles. Know what "normal" looks like and spot outliers.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#faf5ff">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <h3>Throughput</h3>
+      <p>Track how many tickets your team completes per week and watch the trend over time.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#eff6ff">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <h3>Delivery Forecast</h3>
+      <p>Monte Carlo simulation answers "When will we be done?" and "How much can we ship in 4 weeks?" with real confidence levels.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#fff7ed">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      </div>
+      <h3>Time in Status</h3>
+      <p>Find where work gets stuck. See average time spent in each status across all your tickets.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#fdf4ff">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#a21caf" stroke-width="2" stroke-linecap="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+      </div>
+      <h3>Rework &amp; Cycle Time by Type</h3>
+      <p>See which ticket types take longest and how often work loops back. Understand where your time actually goes.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#f0fdf4">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+      </div>
+      <h3>AI Insights</h3>
+      <p>Connect your own Ollama or OpenAI-compatible model to get a narrative analysis of your team's flow data.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<div class="how-section">
+  <div class="how-inner">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">From export to insight in three steps</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Export from Jira</h3>
+        <p>Export your project's issue data as CSV — or connect Cylenivo directly to your Jira instance via the API.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Configure your workflow</h3>
+        <p>Tell Cylenivo which statuses mark the start and end of Cycle Time and Lead Time for your team's process.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Understand your flow</h3>
+        <p>Explore the dashboard, spot trends, run forecasts, and have real conversations about how your team works.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY -->
+<div class="privacy-band">
+  <div class="privacy-inner">
+    <div class="privacy-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </div>
+    <div class="privacy-text">
+      <h2>Your data never leaves your machine</h2>
+      <p>Cylenivo is a desktop app. All your ticket data is stored locally in a SQLite database on your computer. No cloud, no accounts, no telemetry. Your team's work is yours.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Ready to see how your team works?</h2>
+  <p>Free to download and use. No account needed.</p>
+  <div class="cta-actions">
+    <a id="btn-cta-download" class="btn-download" href="https://github.com/nobsagile/cylenivo/releases/latest" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span id="btn-cta-label">Download Cylenivo</span>
+    </a>
+    <a class="btn btn-outline" href="https://github.com/nobsagile/cylenivo" target="_blank" rel="noopener">View source on GitHub</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a class="footer-brand" href="/">
+    <img src="assets/logo.png" alt="Cylenivo" />
+    <span>Cylenivo</span>
+  </a>
+  <div class="footer-links">
+    <a href="https://github.com/nobsagile/cylenivo" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/nobsagile/cylenivo/issues" target="_blank" rel="noopener">Issues</a>
+    <a href="https://github.com/nobsagile/cylenivo/blob/master/LICENSE" target="_blank" rel="noopener">License</a>
+  </div>
+  <p class="footer-copy">© 2026 Thomas Esders — MIT + Commons Clause</p>
+</footer>
+
+<script>
+  const REPO = 'nobsagile/cylenivo'
+
+  function detectPlatform() {
+    const ua = navigator.userAgent
+    if (ua.includes('Mac')) return 'mac'
+    if (ua.includes('Win')) return 'win'
+    return 'linux'
+  }
+
+  function platformLabel(platform) {
+    return { mac: 'macOS', win: 'Windows', linux: 'Linux' }[platform] || 'your platform'
+  }
+
+  function matchAsset(assets, platform) {
+    if (platform === 'mac') {
+      // prefer arm64 on Apple Silicon, fallback to x64
+      const arm = assets.find(a => a.name.match(/aarch64.*\.dmg$/i) || a.name.match(/arm64.*\.dmg$/i))
+      const x64 = assets.find(a => a.name.match(/x64.*\.dmg$/i) || a.name.match(/x86_64.*\.dmg$/i))
+      return arm || x64 || assets.find(a => a.name.endsWith('.dmg'))
+    }
+    if (platform === 'win') {
+      return assets.find(a => a.name.match(/\.msi$/i)) || assets.find(a => a.name.match(/setup.*\.exe$/i))
+    }
+    if (platform === 'linux') {
+      return assets.find(a => a.name.match(/\.AppImage$/i)) || assets.find(a => a.name.match(/\.deb$/i))
+    }
+    return null
+  }
+
+  async function initDownload() {
+    const platform = detectPlatform()
+    const mainBtn = document.getElementById('btn-main-download')
+    const mainLabel = document.getElementById('btn-main-label')
+    const ctaBtn = document.getElementById('btn-cta-download')
+    const ctaLabel = document.getElementById('btn-cta-label')
+    const meta = document.getElementById('release-meta')
+    const otherDiv = document.getElementById('other-platforms')
+
+    mainLabel.textContent = `Download for ${platformLabel(platform)}`
+    ctaLabel.textContent = `Download for ${platformLabel(platform)}`
+
+    try {
+      const res = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`)
+      if (!res.ok) throw new Error('no release')
+      const release = await res.json()
+      const version = release.tag_name
+      const assets = release.assets || []
+
+      const primary = matchAsset(assets, platform)
+      if (primary) {
+        mainBtn.href = primary.browser_download_url
+        ctaBtn.href = primary.browser_download_url
+        mainBtn.removeAttribute('target')
+        ctaBtn.removeAttribute('target')
+      }
+
+      meta.textContent = `${version} · Free`
+
+      // Other platforms
+      const platforms = ['mac', 'win', 'linux'].filter(p => p !== platform)
+      const links = platforms.map(p => {
+        const asset = matchAsset(assets, p)
+        if (!asset) return ''
+        return `<a href="${asset.browser_download_url}">${platformLabel(p)}</a>`
+      }).filter(Boolean)
+
+      if (links.length) {
+        otherDiv.innerHTML = '<span style="font-size:.75rem;color:#9ca3af;align-self:center">Also available for</span>' + links.join('')
+      }
+    } catch {
+      meta.textContent = 'See all releases on GitHub'
+      mainBtn.href = `https://github.com/${REPO}/releases/latest`
+      ctaBtn.href = `https://github.com/${REPO}/releases/latest`
+    }
+  }
+
+  initDownload()
+</script>
+</body>
+</html>
