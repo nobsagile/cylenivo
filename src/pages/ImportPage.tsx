@@ -97,6 +97,7 @@ export default function ImportPage() {
   const [newStatus, setNewStatus] = useState('')
   const [cycleStart, setCycleStart] = useState('')
   const [cycleEnd, setCycleEnd] = useState('')
+  const [cycleMode, setCycleMode] = useState<'first_last' | 'first_first' | 'last_last'>('first_last')
   const [leadStart, setLeadStart] = useState('')
   const [importing, setImporting] = useState(false)
 
@@ -212,6 +213,7 @@ export default function ImportPage() {
           status_order: statusOrder,
           cycle_time_start_status: cycleStart,
           cycle_time_end_status: cycleEnd,
+          cycle_time_mode: cycleMode,
           lead_time_start_status: leadStart || undefined,
         })
         configId = newConfig.id
@@ -721,6 +723,37 @@ export default function ImportPage() {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <label className="text-xs font-medium text-gray-500">{t('config.measurementMode')}</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                      <Info className="w-3 h-3" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-72">
+                    <div className="text-xs text-gray-600 space-y-1.5">
+                      <p className="font-semibold text-gray-800 mb-1">{t('config.measurementMode')}</p>
+                      <p>{t('help.configMode')}</p>
+                      <p className="mt-2"><span className="font-medium">First / Last:</span> {t('help.modeFirstLast')}</p>
+                      <p><span className="font-medium">First / First:</span> {t('help.modeFirstFirst')}</p>
+                      <p><span className="font-medium">Last / Last:</span> {t('help.modeLastLast')}</p>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <Select value={cycleMode} onValueChange={(v) => setCycleMode(v as typeof cycleMode)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="first_last">{t('config.modeFirstLast')}</SelectItem>
+                  <SelectItem value="first_first">{t('config.modeFirstFirst')}</SelectItem>
+                  <SelectItem value="last_last">{t('config.modeLastLast')}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

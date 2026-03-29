@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
-import { LayoutDashboard, Ticket, Workflow, Sparkles, Upload, Settings, Plus, AlertTriangle } from 'lucide-react'
+import { LayoutDashboard, Ticket, Workflow, Sparkles, Settings, Plus, AlertTriangle, MoreHorizontal, SlidersHorizontal, Trash2 } from 'lucide-react'
+import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
+import { api } from '@/services/api'
 
 function LogoIcon({ className }: { className?: string }) {
   return (
@@ -13,14 +15,6 @@ function LogoIcon({ className }: { className?: string }) {
   )
 }
 import { useImports } from '@/hooks/useImports'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
@@ -123,14 +117,100 @@ function HealthReportDialog({
   )
 }
 
+function ProjectMenu({ imp, onDeleted }: {
+  imp: { id: string; config_id: string; config_name?: string }
+  onDeleted: () => void
+}) {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+
+  function handleDelete() {
+    setDeleting(true)
+    api.imports.delete(imp.id)
+      .then(() => { setConfirmOpen(false); onDeleted() })
+      .catch(console.error)
+      .finally(() => setDeleting(false))
+  }
+
+  return (
+    <>
+      <DropdownMenuPrimitive.Root>
+        <DropdownMenuPrimitive.Trigger asChild>
+          <button
+            className="shrink-0 p-0.5 rounded text-gray-300 hover:text-gray-600 hover:bg-gray-200 transition-colors"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <MoreHorizontal className="w-3.5 h-3.5" />
+          </button>
+        </DropdownMenuPrimitive.Trigger>
+        <DropdownMenuPrimitive.Portal>
+          <DropdownMenuPrimitive.Content
+            side="right"
+            align="start"
+            sideOffset={6}
+            className="z-[140] min-w-[160px] rounded-lg border border-gray-200 bg-white shadow-lg p-1 text-sm"
+          >
+            <DropdownMenuPrimitive.Item
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-gray-700 cursor-pointer hover:bg-gray-50 outline-none"
+              onSelect={() => navigate(`/settings/configs/${imp.config_id}`)}
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5 text-gray-400" />
+              {t('sidebar.changeConfig')}
+            </DropdownMenuPrimitive.Item>
+            <DropdownMenuPrimitive.Separator className="my-1 h-px bg-gray-100" />
+            <DropdownMenuPrimitive.Item
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-rose-600 cursor-pointer hover:bg-rose-50 outline-none"
+              onSelect={() => setConfirmOpen(true)}
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              {t('sidebar.deleteProject')}
+            </DropdownMenuPrimitive.Item>
+          </DropdownMenuPrimitive.Content>
+        </DropdownMenuPrimitive.Portal>
+      </DropdownMenuPrimitive.Root>
+
+      <Dialog open={confirmOpen} onOpenChange={(o) => { if (!o) setConfirmOpen(false) }}>
+        <DialogContent className="max-w-sm bg-white">
+          <DialogHeader>
+            <DialogTitle>{t('sidebar.deleteConfirmTitle')}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-gray-500 mt-1">
+            {t('sidebar.deleteConfirmDesc', { name: imp.config_name ?? imp.id })}
+          </p>
+          <div className="flex justify-end gap-2 mt-4">
+            <button
+              onClick={() => setConfirmOpen(false)}
+              className="px-3 py-1.5 text-sm rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50"
+            >
+              {t('common.cancel')}
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className="px-3 py-1.5 text-sm rounded-md bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50"
+            >
+              {deleting ? t('common.loading') : t('common.delete')}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  )
+}
+
 export function Sidebar() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId?: string }>()
   const navigate = useNavigate()
-  const { data: imports } = useImports()
+  const { data: imports, reload } = useImports()
   const [healthOpen, setHealthOpen] = useState(false)
 
   const currentImport = imports.find(imp => imp.id === importId)
+  const sortedImports = [...imports].sort((a, b) =>
+    (a.config_name ?? a.project_key).localeCompare(b.config_name ?? b.project_key)
+  )
 
   const navItems = [
     { to: '', end: true, icon: LayoutDashboard, label: t('nav.overview') },
@@ -156,42 +236,50 @@ export function Sidebar() {
 
       {/* Project selector */}
       <div className="px-3 py-3 border-b border-gray-100">
-        <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider mb-2 px-1">
-          {t('sidebar.project')}
-        </p>
-        {imports.length === 0 ? (
-          <Button
-            variant="outline"
-            size="sm"
+        <div className="flex items-center justify-between mb-1.5 px-1">
+          <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider">
+            {t('sidebar.project')}
+          </p>
+          <button
             onClick={() => navigate('/import')}
-            className="w-full gap-1.5 text-xs h-9 text-gray-500"
+            className="text-gray-300 hover:text-gray-500 transition-colors"
+            title={t('nav.import')}
           >
             <Plus className="w-3.5 h-3.5" />
-            {t('sidebar.importFirst')}
-          </Button>
-        ) : (
-          <Select
-            value={importId ?? ''}
-            onValueChange={(id) => id && navigate(`/projects/${id}`)}
-          >
-            <SelectTrigger className="w-full text-sm h-9">
-              <SelectValue placeholder={t('sidebar.selectProject')} />
-            </SelectTrigger>
-            <SelectContent>
-              {imports.map((imp) => (
-                <SelectItem key={imp.id} value={imp.id}>
-                  <span className="font-medium">{imp.project_key}</span>
-                  {imp.config_name && (
-                    <span className="text-gray-400 ml-1">· {imp.config_name}</span>
-                  )}
-                  <span className="text-gray-400 ml-1">
-                    · {new Date(imp.imported_at).toLocaleDateString('de-DE')}
-                  </span>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
+          </button>
+        </div>
+        <div className="space-y-0.5 max-h-48 overflow-y-auto">
+          {sortedImports.map((imp) => (
+            <div
+              key={imp.id}
+              className={`group flex items-center gap-1 rounded-md transition-colors ${
+                imp.id === importId
+                  ? 'bg-violet-50'
+                  : 'hover:bg-gray-50'
+              }`}
+            >
+              <button
+                onClick={() => navigate(`/projects/${imp.id}`)}
+                className={`flex-1 text-left px-2 py-1.5 text-sm truncate min-w-0 ${
+                  imp.id === importId
+                    ? 'text-violet-700 font-medium'
+                    : 'text-gray-600 group-hover:text-gray-900'
+                }`}
+              >
+                {imp.config_name ?? imp.project_key}
+              </button>
+              <div className="shrink-0 pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <ProjectMenu
+                  imp={imp}
+                  onDeleted={() => {
+                    reload()
+                    if (imp.id === importId) navigate('/')
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Health report indicator */}
@@ -232,7 +320,7 @@ export function Sidebar() {
 
       {/* Primary nav */}
       <nav className="flex-1 px-3 py-3">
-        {importId ? (
+        {importId && (
           <div className="space-y-0.5">
             {navItems.map(({ to, end, icon: Icon, label }) => (
               <NavLink
@@ -246,35 +334,16 @@ export function Sidebar() {
               </NavLink>
             ))}
           </div>
-        ) : (
-          <div className="px-2 py-3">
-            <p className="text-xs font-medium text-gray-500 mb-1">{t('sidebar.noDataYet')}</p>
-            <p className="text-xs text-gray-400 leading-relaxed mb-3">
-              {t('sidebar.noDataYetHint')}
-            </p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate('/import')}
-              className="gap-1.5 text-xs h-8 w-full"
-            >
-              <Upload className="w-3.5 h-3.5" />
-              {t('nav.import')}
-            </Button>
-          </div>
         )}
       </nav>
 
       {/* Bottom */}
       <div className="px-3 py-3 border-t border-gray-100 space-y-0.5">
-        <NavLink to="/import" className={navClass}>
-          <Upload className="w-4 h-4 shrink-0" />
-          {t('nav.import')}
-        </NavLink>
         <NavLink to="/settings" className={navClass}>
           <Settings className="w-4 h-4 shrink-0" />
           {t('nav.settings')}
         </NavLink>
+        <p className="text-[10px] text-gray-300 px-3 pt-1 select-none">v{__APP_VERSION__}</p>
       </div>
     </aside>
   )
