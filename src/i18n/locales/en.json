@@ -33,6 +33,19 @@
     "settings": "Settings",
     "import": "Import Data"
   },
+  "onboarding": {
+    "title": "Welcome to Cylenivo",
+    "subtitle": "Understand your team's delivery speed — cycle time, lead time and throughput, all from your Jira data.",
+    "demosReady": "Two demo projects are ready to explore",
+    "improvingTitle": "Demo: Improving Team",
+    "improvingDesc": "Simple 4-status workflow. Metrics improve steadily over time — a clean baseline for getting familiar with the tool.",
+    "complexTitle": "Demo: Complex Team",
+    "complexDesc": "8-status workflow with rework cycles. A realistic scenario showing complexity and variability.",
+    "explore": "Explore",
+    "ownData": "Ready to analyze your own team?",
+    "importCta": "Import my data",
+    "removeTip": "Remove demo projects anytime via Settings → Data Management"
+  },
   "welcome": {
     "title": "Welcome to Cylenivo",
     "subtitle": "Understand your team's delivery speed. Connect to Jira directly or upload an export file — analyze cycle time, lead time and throughput in minutes.",
