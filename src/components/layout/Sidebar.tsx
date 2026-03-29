@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
-import { LayoutDashboard, Ticket, Workflow, Sparkles, Settings, Plus, AlertTriangle, MoreHorizontal, SlidersHorizontal, Trash2, Pencil, TrendingUp } from 'lucide-react'
+import { LayoutDashboard, Ticket, Workflow, Sparkles, Settings, Plus, AlertTriangle, MoreHorizontal, SlidersHorizontal, Trash2, Pencil, TrendingUp, Bug } from 'lucide-react'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import { api } from '@/services/api'
 import { Input } from '@/components/ui/input'
@@ -393,6 +393,15 @@ export function Sidebar() {
           <Settings className="w-4 h-4 shrink-0" />
           {t('nav.settings')}
         </NavLink>
+        <a
+          href={`https://github.com/nobsagile/cylenivo/issues/new?template=bug_report.md&labels=bug&body=**Version%3A** v${appVersion}%0A**OS%3A** ${navigator.platform}%0A%0A**Describe the bug**%0A%0A**Steps to reproduce**%0A1.%0A2.%0A%0A**Expected behavior**%0A%0A**Actual behavior**%0A`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+        >
+          <Bug className="w-4 h-4 shrink-0" />
+          {t('sidebar.reportBug')}
+        </a>
         <p className="text-[10px] text-gray-300 px-3 pt-1 select-none">v{appVersion}</p>
       </div>
     </aside>

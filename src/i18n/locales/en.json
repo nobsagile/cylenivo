@@ -1,5 +1,7 @@
 {
-  "app": { "name": "Cylenivo" },
+  "app": {
+    "name": "Cylenivo"
+  },
   "common": {
     "back": "Back",
     "save": "Save",
@@ -347,7 +349,8 @@
     "unknownAction": "Add the relevant statuses to your configuration's status order if you want to see time spent there. Statuses you don't care about can be left out.",
     "oldData": "Data includes transitions back to {{year}}",
     "oldDataImpact": "Throughput is averaged over the full date range — if old tickets are included, the weekly throughput number will be much lower than your current actual velocity. Cycle time averages may also reflect older team behaviour.",
-    "oldDataAction": "Re-import with the \"Completed between\" date filter (e.g. last 12–18 months) to get metrics that reflect how your team works today."
+    "oldDataAction": "Re-import with the \"Completed between\" date filter (e.g. last 12–18 months) to get metrics that reflect how your team works today.",
+    "reportBug": "Report a bug"
   },
   "flow": {
     "title": "Flow",
