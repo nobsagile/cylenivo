@@ -1,11 +1,11 @@
 ---
 name: Bug report
 about: Something isn't working as expected
-labels: bug
+labels: bug,app
 ---
 
 **Version:**
-**OS:**
+**Platform:** (macOS / Windows / Linux)
 
 **Describe the bug**
 
