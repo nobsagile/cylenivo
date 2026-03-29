@@ -244,7 +244,19 @@
     "deleteEverything": "Delete everything",
     "generateDemo": "Generate demo data",
     "deleteEverythingConfirm": "Delete everything?",
-    "deleteEverythingDesc": "All configurations, datasets, and tickets will be permanently deleted. Connections and AI settings are kept. This cannot be undone."
+    "deleteEverythingDesc": "All configurations, datasets, and tickets will be permanently deleted. Connections and AI settings are kept. This cannot be undone.",
+    "navData": "Data",
+    "navIntegrations": "Integrations",
+    "navGeneral": "General",
+    "tabPlugins": "Plugins",
+    "pluginsDesc": "Extend Cylenivo with additional data source connectors.",
+    "pluginsComingSoon": "Community Plugins",
+    "pluginsComingSoonDesc": "Extend Cylenivo with new data sources — Azure DevOps, Linear, GitHub Projects, and more. Plugins run locally as Node.js subprocesses.",
+    "browsePlugins": "Browse Plugins",
+    "tabLanguage": "Language",
+    "languageDesc": "Choose the display language for the interface.",
+    "language": "Language",
+    "languageComingSoon": "Additional languages are coming soon. The interface is currently English only."
   },
   "config": {
     "backToSettings": "Back to Settings",
