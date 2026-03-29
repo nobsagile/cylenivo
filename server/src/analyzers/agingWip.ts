@@ -22,6 +22,7 @@ export interface AgingWIPTicket {
 export function computeAgingWip(
   tickets: EnrichedTicket[],
   cycleStartStatus: string,
+  cycleStatuses: string[],
   importedAt: Date,
 ): AgingWIPTicket[] {
   const now = importedAt.getTime()
@@ -30,6 +31,8 @@ export function computeAgingWip(
   for (const t of tickets) {
     if (t.completed) continue
     if (!t.current_status) continue
+    // Only tickets currently within the cycle window (excludes OBSOLET, cancelled, etc.)
+    if (!cycleStatuses.includes(t.current_status)) continue
 
     const cycleEntry = firstTransitionTo(t.transitions, cycleStartStatus)
     if (!cycleEntry) continue // never entered the cycle

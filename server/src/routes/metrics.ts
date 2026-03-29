@@ -150,7 +150,7 @@ metrics.get('/:importId/aging-wip', async (c) => {
 
   const agg = computeAggregate(ctx)
   const importedAt = new Date(ctx.imp.imported_at)
-  const tickets = computeAgingWip(ctx.tickets, ctx.config.cycle_time_start_status, importedAt)
+  const tickets = computeAgingWip(ctx.tickets, ctx.config.cycle_time_start_status, ctx.cycleStatuses, importedAt)
 
   return c.json(ok({
     tickets: tickets.map(t => ({
