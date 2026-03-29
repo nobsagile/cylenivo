@@ -167,9 +167,11 @@ metrics.get('/:importId/forecast', async (c) => {
   return c.json(ok({
     mode,
     value,
+    // how_many: "at least X tickets with Y% confidence" → use lower tail (inverted)
+    // when:     "within X weeks Y% of the time"         → use upper tail (normal)
     p50: percentileFromSorted(sorted, 50),
-    p85: percentileFromSorted(sorted, 85),
-    p95: percentileFromSorted(sorted, 95),
+    p85: mode === 'how_many' ? percentileFromSorted(sorted, 15) : percentileFromSorted(sorted, 85),
+    p95: mode === 'how_many' ? percentileFromSorted(sorted, 5)  : percentileFromSorted(sorted, 95),
     histogram: buildHistogram(sorted),
     weeks_of_data: buckets.length,
     weeks_with_completions: buckets.filter(b => b > 0).length,
