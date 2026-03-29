@@ -87,8 +87,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: 'Flow Analyzer ${{ github.ref_name }}'
-          releaseBody: 'See CHANGELOG for details.'
+          releaseName: 'Cylenivo ${{ github.ref_name }}'
+          releaseBody: ''
           releaseDraft: true
           prerelease: false
           args: --target ${{ matrix.target }}
