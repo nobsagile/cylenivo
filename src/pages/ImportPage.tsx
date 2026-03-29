@@ -92,6 +92,7 @@ export default function ImportPage() {
   const [configs, setConfigs] = useState<ProjectConfig[]>([])
   const [configMode, setConfigMode] = useState<'existing' | 'new'>('existing')
   const [selectedConfigId, setSelectedConfigId] = useState('')
+  const [datasetName, setDatasetName] = useState('')
   const [newName, setNewName] = useState('')
   const [statusOrder, setStatusOrder] = useState<string[]>([])
   const [newStatus, setNewStatus] = useState('')
@@ -220,13 +221,13 @@ export default function ImportPage() {
       }
 
       if (preview.raw) {
-        const session = await api.imports.upload(preview.raw, configId)
+        const session = await api.imports.upload(preview.raw, configId, datasetName || undefined)
         navigate(`/projects/${session.id}`)
       } else if (preview.fetched) {
         // Upload fetched JSON as a blob
         const blob = new Blob([JSON.stringify(preview.fetched)], { type: 'application/json' })
         const file = new File([blob], `${preview.project_key}-jira-export.json`, { type: 'application/json' })
-        const session = await api.imports.upload(file, configId)
+        const session = await api.imports.upload(file, configId, datasetName || undefined)
         navigate(`/projects/${session.id}`)
       }
     } catch (e) {
@@ -596,6 +597,19 @@ export default function ImportPage() {
         <p className="text-sm text-gray-400 mt-1">
           {t('import.configureMetricsHint')}
         </p>
+      </div>
+
+      {/* Dataset name */}
+      <div className="mb-5">
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          {t('import.datasetName')}
+          <span className="text-gray-400 font-normal ml-1">{t('import.datasetNameHint')}</span>
+        </label>
+        <Input
+          value={datasetName}
+          onChange={(e) => setDatasetName(e.target.value)}
+          placeholder={preview?.projectKey ?? t('import.datasetNamePlaceholder')}
+        />
       </div>
 
       {/* Config mode toggle */}

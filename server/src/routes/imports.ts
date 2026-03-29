@@ -89,10 +89,22 @@ imports.get('/:id/statuses', async (c) => {
   return c.json(ok(statuses))
 })
 
+imports.patch('/:id', async (c) => {
+  const id = c.req.param('id')
+  const { name } = await c.req.json<{ name: string }>()
+  const rows = await db.select().from(importSessions).where(eq(importSessions.id, id))
+  if (!rows.length) return c.json({ data: null, error: 'Import not found' }, 404)
+  await db.update(importSessions).set({ name: name || null }).where(eq(importSessions.id, id))
+  const cfgRows = await db.select().from(projectConfigs).where(eq(projectConfigs.id, rows[0].config_id))
+  const updated = await db.select().from(importSessions).where(eq(importSessions.id, id))
+  return c.json(ok(serializeSession(updated[0], cfgRows[0] ?? null)))
+})
+
 imports.post('/', async (c) => {
   const body = await c.req.parseBody()
   const file = body['file']
   const configId = body['config_id'] as string
+  const datasetName = (body['name'] as string) || null
 
   if (!file || typeof file === 'string') {
     return c.json({ data: null, error: 'No file provided' }, 400)
@@ -132,6 +144,7 @@ imports.post('/', async (c) => {
   const sessionRow = {
     id: importId,
     config_id: configId,
+    name: datasetName,
     source_type: data.source_type,
     project_key: data.project_key,
     file_name: fileName,

@@ -52,12 +52,15 @@ export const api = {
   imports: {
     list: () => request<ImportSession[]>('/api/v1/imports'),
     get: (id: string) => request<ImportSession>(`/api/v1/imports/${id}`),
-    upload: (file: File, configId: string) => {
+    upload: (file: File, configId: string, name?: string) => {
       const form = new FormData()
       form.append('file', file)
       form.append('config_id', configId)
+      if (name) form.append('name', name)
       return request<ImportSession>('/api/v1/imports', { method: 'POST', body: form })
     },
+    rename: (id: string, name: string) =>
+      request<ImportSession>(`/api/v1/imports/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) }),
     delete: (id: string) =>
       request<null>(`/api/v1/imports/${id}`, { method: 'DELETE' }),
     statuses: (id: string) =>

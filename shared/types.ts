@@ -22,6 +22,7 @@ export interface ImportHealthReport {
 export interface ImportSession {
   id: string
   config_id: string
+  name?: string | null
   source_type: string
   project_key: string
   file_name: string

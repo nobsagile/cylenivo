@@ -30,6 +30,8 @@ export default function SettingsPage() {
   const location = useLocation()
   const [configs, setConfigs] = useState<ProjectConfig[]>([])
   const [imports, setImports] = useState<ImportSession[]>([])
+  const [renamingId, setRenamingId] = useState<string | null>(null)
+  const [renameValue, setRenameValue] = useState('')
   const [connections, setConnections] = useState<SourceConnection[]>([])
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editConn, setEditConn] = useState<SourceConnection | null>(null)
@@ -150,6 +152,13 @@ export default function SettingsPage() {
 
   async function handleDeleteImport(id: string, label: string) {
     setPendingDelete({ type: 'import', id, label })
+  }
+
+  async function handleRenameImport(id: string) {
+    if (!renameValue.trim()) return
+    await api.imports.rename(id, renameValue.trim())
+    setRenamingId(null)
+    api.imports.list().then(setImports).catch(console.error)
   }
 
   async function handleDeleteConnection(id: string, name: string) {
@@ -420,17 +429,39 @@ export default function SettingsPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-gray-900">{imp.project_key}</p>
-                      {imp.config_name && (
-                        <span className="text-[11px] font-medium px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-100">
-                          {imp.config_name}
-                        </span>
+                      {renamingId === imp.id ? (
+                        <input
+                          autoFocus
+                          value={renameValue}
+                          onChange={(e) => setRenameValue(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleRenameImport(imp.id)
+                            if (e.key === 'Escape') setRenamingId(null)
+                          }}
+                          onBlur={() => handleRenameImport(imp.id)}
+                          className="font-semibold text-gray-900 border-b border-violet-400 outline-none bg-transparent w-full max-w-xs"
+                        />
+                      ) : (
+                        <>
+                          <p className="font-semibold text-gray-900">{imp.name ?? imp.project_key}</p>
+                          <button
+                            onClick={() => { setRenamingId(imp.id); setRenameValue(imp.name ?? imp.project_key) }}
+                            className="text-gray-300 hover:text-gray-500 transition-colors"
+                          >
+                            <Pencil className="w-3 h-3" />
+                          </button>
+                          {imp.config_name && (
+                            <span className="text-[11px] font-medium px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-100">
+                              {imp.config_name}
+                            </span>
+                          )}
+                        </>
                       )}
                     </div>
                     <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
                       <span className="flex items-center gap-1">
                         <Ticket className="w-3 h-3" />
-                        {imp.ticket_count} tickets
+                        {imp.ticket_count} tickets · {imp.project_key}
                       </span>
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />

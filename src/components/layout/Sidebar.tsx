@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
-import { LayoutDashboard, Ticket, Workflow, Sparkles, Settings, Plus, AlertTriangle, MoreHorizontal, SlidersHorizontal, Trash2 } from 'lucide-react'
+import { LayoutDashboard, Ticket, Workflow, Sparkles, Settings, Plus, AlertTriangle, MoreHorizontal, SlidersHorizontal, Trash2, Pencil } from 'lucide-react'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import { api } from '@/services/api'
+import { Input } from '@/components/ui/input'
 
 function LogoIcon({ className }: { className?: string }) {
   return (
@@ -117,14 +118,26 @@ function HealthReportDialog({
   )
 }
 
-function ProjectMenu({ imp, onDeleted }: {
-  imp: { id: string; config_id: string; config_name?: string }
+function ProjectMenu({ imp, onRenamed, onDeleted }: {
+  imp: { id: string; config_id: string; name?: string | null; project_key: string; config_name?: string }
+  onRenamed: () => void
   onDeleted: () => void
 }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const [renameOpen, setRenameOpen] = useState(false)
+  const [renameValue, setRenameValue] = useState('')
+  const [renaming, setRenaming] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
+
+  function handleRename() {
+    setRenaming(true)
+    api.imports.rename(imp.id, renameValue)
+      .then(() => { setRenameOpen(false); onRenamed() })
+      .catch(console.error)
+      .finally(() => setRenaming(false))
+  }
 
   function handleDelete() {
     setDeleting(true)
@@ -154,6 +167,13 @@ function ProjectMenu({ imp, onDeleted }: {
           >
             <DropdownMenuPrimitive.Item
               className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-gray-700 cursor-pointer hover:bg-gray-50 outline-none"
+              onSelect={() => { setRenameValue(imp.name ?? imp.project_key); setRenameOpen(true) }}
+            >
+              <Pencil className="w-3.5 h-3.5 text-gray-400" />
+              {t('sidebar.rename')}
+            </DropdownMenuPrimitive.Item>
+            <DropdownMenuPrimitive.Item
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-gray-700 cursor-pointer hover:bg-gray-50 outline-none"
               onSelect={() => navigate(`/settings/configs/${imp.config_id}`)}
             >
               <SlidersHorizontal className="w-3.5 h-3.5 text-gray-400" />
@@ -170,6 +190,29 @@ function ProjectMenu({ imp, onDeleted }: {
           </DropdownMenuPrimitive.Content>
         </DropdownMenuPrimitive.Portal>
       </DropdownMenuPrimitive.Root>
+
+      <Dialog open={renameOpen} onOpenChange={(o) => { if (!o) setRenameOpen(false) }}>
+        <DialogContent className="max-w-sm bg-white">
+          <DialogHeader>
+            <DialogTitle>{t('sidebar.renameTitle')}</DialogTitle>
+          </DialogHeader>
+          <Input
+            value={renameValue}
+            onChange={(e) => setRenameValue(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleRename()}
+            autoFocus
+            className="mt-2"
+          />
+          <div className="flex justify-end gap-2 mt-4">
+            <button onClick={() => setRenameOpen(false)} className="px-3 py-1.5 text-sm rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50">
+              {t('common.cancel')}
+            </button>
+            <button onClick={handleRename} disabled={renaming || !renameValue.trim()} className="px-3 py-1.5 text-sm rounded-md bg-violet-600 text-white hover:bg-violet-700 disabled:opacity-50">
+              {t('common.save')}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={confirmOpen} onOpenChange={(o) => { if (!o) setConfirmOpen(false) }}>
         <DialogContent className="max-w-sm bg-white">
@@ -209,7 +252,7 @@ export function Sidebar() {
 
   const currentImport = imports.find(imp => imp.id === importId)
   const sortedImports = [...imports].sort((a, b) =>
-    (a.config_name ?? a.project_key).localeCompare(b.config_name ?? b.project_key)
+    a.project_key.localeCompare(b.project_key) || a.imported_at.localeCompare(b.imported_at)
   )
 
   const navItems = [
@@ -266,11 +309,12 @@ export function Sidebar() {
                     : 'text-gray-600 group-hover:text-gray-900'
                 }`}
               >
-                {imp.config_name ?? imp.project_key}
+                {imp.name ?? imp.project_key}
               </button>
               <div className="shrink-0 pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <ProjectMenu
                   imp={imp}
+                  onRenamed={reload}
                   onDeleted={() => {
                     reload()
                     if (imp.id === importId) navigate('/')

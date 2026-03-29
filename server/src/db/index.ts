@@ -124,6 +124,9 @@ export async function migrate() {
   try {
     sqlite.exec(`ALTER TABLE project_configs ADD COLUMN lead_time_end_status TEXT`)
   } catch { /* already exists */ }
+  try {
+    sqlite.exec(`ALTER TABLE import_sessions ADD COLUMN name TEXT`)
+  } catch { /* already exists */ }
   // Indexes (safe to re-run — IF NOT EXISTS)
   sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_tickets_import_id ON tickets(import_id)`)
   sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_transitions_ticket_id ON ticket_transitions(ticket_id)`)

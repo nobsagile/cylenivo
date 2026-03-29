@@ -17,6 +17,7 @@ export const projectConfigs = sqliteTable('project_configs', {
 export const importSessions = sqliteTable('import_sessions', {
   id: text('id').primaryKey(),
   config_id: text('config_id').notNull().references(() => projectConfigs.id),
+  name: text('name'),
   source_type: text('source_type').notNull(),
   project_key: text('project_key').notNull(),
   file_name: text('file_name').notNull(),
