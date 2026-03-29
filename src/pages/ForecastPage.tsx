@@ -10,7 +10,6 @@ import { api } from '@/services/api'
 import type { ForecastResponse } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 
 type Mode = 'how_many' | 'when'
 
@@ -68,8 +67,6 @@ export default function ForecastPage() {
 
   return (
     <div className="space-y-6">
-      <ConfigContextBar importId={importId!} />
-
       {/* Header + controls */}
       <div className="flex items-start gap-4 flex-wrap">
         <div className="flex-1 min-w-[200px]">
