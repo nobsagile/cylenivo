@@ -43,6 +43,7 @@ metrics.get('/:importId/cycle-times', async (c) => {
   const result = ctx.tickets
     .filter(t => t.cycle_time_days !== null && t.completed_at !== null)
     .map(t => ({
+      id: t.id,
       external_id: t.external_id,
       title: t.title,
       cycle_time_days: Math.round(t.cycle_time_days! * 100) / 100,
@@ -60,6 +61,7 @@ metrics.get('/:importId/lead-times', async (c) => {
   const tickets = ctx.tickets
     .filter(t => t.lead_time_days !== null && t.completed_at !== null)
     .map(t => ({
+      id: t.id,
       external_id: t.external_id,
       title: t.title,
       lead_time_days: Math.round(t.lead_time_days! * 100) / 100,
@@ -81,6 +83,7 @@ metrics.get('/:importId/time-in-status', async (c) => {
   const result = ctx.tickets
     .filter(t => t.cycle_time_days !== null)
     .map(t => ({
+      id: t.id,
       external_id: t.external_id,
       title: t.title,
       status_durations: Object.fromEntries(

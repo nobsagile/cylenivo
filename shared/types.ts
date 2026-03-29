@@ -96,6 +96,7 @@ export interface MetricsSummary {
 }
 
 export interface CycleTimeTicket {
+  id: string
   external_id: string
   title: string
   cycle_time_days: number
@@ -108,6 +109,7 @@ export interface CycleTimesResponse {
 }
 
 export interface LeadTimeTicket {
+  id: string
   external_id: string
   title: string
   lead_time_days: number
@@ -121,6 +123,7 @@ export interface LeadTimesResponse {
 }
 
 export interface TimeInStatusTicket {
+  id: string
   external_id: string
   title: string
   status_durations: Record<string, number>

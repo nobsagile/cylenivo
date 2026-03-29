@@ -7,6 +7,7 @@ import { api } from '@/services/api'
 import { useMetrics } from '@/hooks/useMetrics'
 import type { Ticket } from '@/types'
 import { TicketTable } from '@/components/tickets/TicketTable'
+import { TicketDetailDrawer } from '@/components/tickets/TicketDetailDrawer'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -24,6 +25,7 @@ export default function TicketsPage() {
   const [analyzedOnly, setAnalyzedOnly] = useState(true)
   const [search, setSearch] = useState('')
   const [searchDebounced, setSearchDebounced] = useState('')
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
   const limit = 50
 
   useEffect(() => {
@@ -118,6 +120,12 @@ export default function TicketsPage() {
         p50={metrics?.cycle_time.p50}
         p85={metrics?.cycle_time.p85}
         config={metrics?.config_context}
+        onTicketClick={setSelectedTicketId}
+      />
+      <TicketDetailDrawer
+        ticketId={selectedTicketId}
+        config={metrics?.config_context ?? null}
+        onClose={() => setSelectedTicketId(null)}
       />
 
       {totalPages > 1 && (

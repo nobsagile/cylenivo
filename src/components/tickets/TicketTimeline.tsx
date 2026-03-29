@@ -53,22 +53,22 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
 
   const segments: Segment[] = []
   for (let i = 0; i < sorted.length; i++) {
-    const t = sorted[i]
-    const startTime = new Date(t.transitioned_at).getTime()
+    const tr = sorted[i]
+    const startTime = new Date(tr.transitioned_at).getTime()
     const endTime = i + 1 < sorted.length
       ? new Date(sorted[i + 1].transitioned_at).getTime()
       : startTime
     const durationDays = (endTime - startTime) / (1000 * 86400)
 
     let isBackward = false
-    if (i > 0 && t.from_status) {
-      const fromIdx = status_order.indexOf(t.from_status)
-      const toIdx = status_order.indexOf(t.to_status)
+    if (i > 0 && tr.from_status) {
+      const fromIdx = status_order.indexOf(tr.from_status)
+      const toIdx = status_order.indexOf(tr.to_status)
       if (fromIdx !== -1 && toIdx !== -1 && toIdx < fromIdx) isBackward = true
     }
 
-    if (durationDays > 0) {
-      segments.push({ status: t.to_status, startTime, endTime, durationDays, isBackward })
+    if (durationDays > 0 || i === sorted.length - 1) {
+      segments.push({ status: tr.to_status, startTime, endTime, durationDays, isBackward })
     }
   }
 
@@ -78,27 +78,20 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
   const inCycleFn = (i: number) => i >= cycleStartIdx && i <= cycleEndIdx && cycleStartIdx !== -1
   const inLeadFn = (i: number) => (lead_time_start_status ? i >= leadStartIdx : true) && i <= leadEndIdx && leadEndIdx !== -1
 
+  const cycleAll = status_order.filter((_, i) => inCycleFn(i))
   const leadOnly = status_order.filter((_, i) => inLeadFn(i) && !inCycleFn(i))
-  const cycleOnly = status_order.filter((_, i) => inCycleFn(i) && !inLeadFn(i))
-  const overlap = status_order.filter((_, i) => inCycleFn(i) && inLeadFn(i))
 
   const LEAD_SHADES = [
-    { bg: 'bg-violet-100', border: 'border-violet-200', text: 'text-violet-900' },
-    { bg: 'bg-violet-200', border: 'border-violet-300', text: 'text-violet-900' },
-    { bg: 'bg-violet-300', border: 'border-violet-400', text: 'text-violet-900' },
-    { bg: 'bg-violet-400', border: 'border-violet-500', text: 'text-white' },
+    { bg: 'bg-violet-100', bar: 'bg-violet-300', border: 'border-l-violet-300' },
+    { bg: 'bg-violet-200', bar: 'bg-violet-400', border: 'border-l-violet-400' },
+    { bg: 'bg-violet-300', bar: 'bg-violet-500', border: 'border-l-violet-500' },
+    { bg: 'bg-violet-400', bar: 'bg-violet-600', border: 'border-l-violet-500' },
   ]
   const CYCLE_SHADES = [
-    { bg: 'bg-teal-200', border: 'border-teal-300', text: 'text-teal-900' },
-    { bg: 'bg-teal-300', border: 'border-teal-400', text: 'text-teal-900' },
-    { bg: 'bg-teal-400', border: 'border-teal-500', text: 'text-teal-950' },
-    { bg: 'bg-teal-500', border: 'border-teal-600', text: 'text-white' },
-  ]
-  const OVERLAP_SHADES = [
-    { bg: 'bg-indigo-300', border: 'border-indigo-400', text: 'text-indigo-950' },
-    { bg: 'bg-indigo-400', border: 'border-indigo-500', text: 'text-white' },
-    { bg: 'bg-indigo-500', border: 'border-indigo-600', text: 'text-white' },
-    { bg: 'bg-indigo-600', border: 'border-indigo-700', text: 'text-white' },
+    { bg: 'bg-teal-200', bar: 'bg-teal-400', border: 'border-l-teal-400' },
+    { bg: 'bg-teal-300', bar: 'bg-teal-500', border: 'border-l-teal-500' },
+    { bg: 'bg-teal-400', bar: 'bg-teal-600', border: 'border-l-teal-500' },
+    { bg: 'bg-teal-500', bar: 'bg-teal-600', border: 'border-l-teal-600' },
   ]
 
   function pickShade<T>(arr: T[], group: string[], status: string): T {
@@ -108,15 +101,26 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
     return arr[Math.max(0, Math.min(idx, arr.length - 1))]
   }
 
-  function getSegmentStyle(status: string, isBackward: boolean) {
-    if (isBackward) return { bg: 'bg-rose-400', border: 'border-rose-500', text: 'text-white' }
+  function getSegmentBg(status: string, isBackward: boolean): string {
+    if (isBackward) return 'bg-rose-400'
     const idx = status_order.indexOf(status)
-    const ic = inCycleFn(idx)
-    const il = inLeadFn(idx)
-    if (ic && il) return pickShade(OVERLAP_SHADES, overlap, status)
-    if (ic) return pickShade(CYCLE_SHADES, cycleOnly, status)
-    if (il) return pickShade(LEAD_SHADES, leadOnly, status)
-    return { bg: 'bg-gray-200', border: 'border-gray-300', text: 'text-gray-700' }
+    if (inCycleFn(idx)) return pickShade(CYCLE_SHADES, cycleAll, status).bg
+    if (inLeadFn(idx)) return pickShade(LEAD_SHADES, leadOnly, status).bg
+    return 'bg-gray-200'
+  }
+
+  function getRowColors(status: string, isBackward: boolean) {
+    if (isBackward) return { bar: 'bg-rose-300', border: 'border-l-rose-400' }
+    const idx = status_order.indexOf(status)
+    if (inCycleFn(idx)) {
+      const s = pickShade(CYCLE_SHADES, cycleAll, status)
+      return { bar: s.bar, border: s.border }
+    }
+    if (inLeadFn(idx)) {
+      const s = pickShade(LEAD_SHADES, leadOnly, status)
+      return { bar: s.bar, border: s.border }
+    }
+    return { bar: 'bg-gray-300', border: 'border-l-gray-300' }
   }
 
   // --- Aggregate segments by status (rework as separate bucket) ---
@@ -132,12 +136,10 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
     }
   }
 
-  // Sort: forward statuses in status_order position, then rework buckets after their forward counterpart
   const aggregates = [...aggregateMap.values()].sort((a, b) => {
     const ai = status_order.indexOf(a.status)
     const bi = status_order.indexOf(b.status)
     if (ai !== bi) return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi)
-    // Same status: forward first, then rework
     return Number(a.isBackward) - Number(b.isBackward)
   })
 
@@ -145,23 +147,21 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
 
   // --- Rework movements from raw transitions ---
   const movementMap = new Map<string, ReworkMovement>()
-  for (const t of sorted) {
-    if (!t.from_status) continue
-    const fromIdx = status_order.indexOf(t.from_status)
-    const toIdx = status_order.indexOf(t.to_status)
+  for (const tr of sorted) {
+    if (!tr.from_status) continue
+    const fromIdx = status_order.indexOf(tr.from_status)
+    const toIdx = status_order.indexOf(tr.to_status)
     if (fromIdx !== -1 && toIdx !== -1 && toIdx < fromIdx) {
-      const key = `${t.from_status}→${t.to_status}`
+      const key = `${tr.from_status}→${tr.to_status}`
       const existing = movementMap.get(key)
       if (existing) existing.count++
-      else movementMap.set(key, { from: t.from_status, to: t.to_status, count: 1 })
+      else movementMap.set(key, { from: tr.from_status, to: tr.to_status, count: 1 })
     }
   }
   const reworkMovements = [...movementMap.values()].sort((a, b) => b.count - a.count)
   const totalReworkCount = reworkMovements.reduce((sum, m) => sum + m.count, 0)
 
-  // --- Hover state ---
   const [hoveredBar, setHoveredBar] = useState<number | null>(null)
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null)
 
   return (
     <div className="space-y-3">
@@ -186,59 +186,50 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
       </div>
 
       {/* 1. Timeline bar */}
-      <div className="flex h-10 rounded-md overflow-hidden border border-gray-200">
-        {segments.map((seg, i) => {
-          const baseFlex = Math.max(seg.durationDays, totalDuration * 0.02)
-          const flexValue = hoveredBar === i
-            ? Math.max(baseFlex * 4, totalDuration * 0.12)
-            : baseFlex
-          const style = getSegmentStyle(seg.status, seg.isBackward)
-          return (
+      <div>
+        <div className="flex h-8 rounded-md overflow-hidden border border-gray-200">
+          {segments.filter(s => s.durationDays > 0).map((seg, i) => (
             <div
               key={`${seg.status}-${seg.startTime}`}
-              className={`${style.bg} relative`}
-              style={{ flex: flexValue, minWidth: 0, transition: 'flex 0.15s ease' }}
+              className={getSegmentBg(seg.status, seg.isBackward)}
+              style={{ flex: seg.durationDays / totalDuration, minWidth: 4 }}
               onMouseEnter={() => setHoveredBar(i)}
               onMouseLeave={() => setHoveredBar(null)}
-            >
-              {hoveredBar === i && (
-                <span className={`absolute inset-0 flex items-center justify-center text-[9px] font-semibold whitespace-nowrap px-1 overflow-hidden ${style.text}`}>
-                  {seg.status}: {seg.durationDays.toFixed(1)}d
-                </span>
-              )}
-            </div>
-          )
-        })}
+            />
+          ))}
+        </div>
+        <div className="h-4 mt-1">
+          {hoveredBar !== null && (
+            <p className="text-[10px] text-gray-500 tabular-nums">
+              {segments[hoveredBar].isBackward ? '↺ ' : ''}{segments[hoveredBar].status}: {segments[hoveredBar].durationDays.toFixed(1)}d
+            </p>
+          )}
+        </div>
       </div>
 
-      {/* 2. Status summary cards */}
-      <div className="flex gap-1">
+      {/* 2. Status table */}
+      <div className="space-y-0.5">
         {aggregates.map((agg) => {
           const key = agg.isBackward ? `__rework__${agg.status}` : agg.status
-          const isHovered = hoveredCard === key
-          const baseFlex = Math.max(agg.totalDays, aggregateTotalDuration * 0.03)
-          const flexValue = isHovered
-            ? Math.max(baseFlex * 3, aggregateTotalDuration * 0.15)
-            : baseFlex
-          const style = agg.isBackward
-            ? { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-900' }
-            : getSegmentStyle(agg.status, false)
+          const pct = (agg.totalDays / aggregateTotalDuration) * 100
+          const { bar, border } = getRowColors(agg.status, agg.isBackward)
 
           return (
-            <div
-              key={key}
-              className={`rounded-lg border p-2 ${style.bg} ${style.border} ${style.text} overflow-hidden cursor-default`}
-              style={{ flex: flexValue, minWidth: 0, transition: 'flex 0.2s ease' }}
-              onMouseEnter={() => setHoveredCard(key)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
-              <p className={`text-[9px] font-semibold uppercase tracking-wide opacity-70 ${isHovered ? '' : 'truncate'}`}>
-                {agg.isBackward ? '↺ ' : ''}{agg.status}
-              </p>
-              <p className="text-base font-bold tabular-nums leading-tight">{agg.totalDays.toFixed(1)}d</p>
+            <div key={key} className={`flex items-center gap-3 py-1 pl-2.5 border-l-2 ${border}`}>
+              <span className="text-xs text-gray-700 flex-1 min-w-0">
+                {agg.isBackward ? <span className="text-rose-500 mr-1">↺</span> : null}{agg.status}
+              </span>
               {agg.visitCount > 1 && (
-                <p className="text-[9px] opacity-60">×{agg.visitCount}</p>
+                <span className="text-[10px] text-gray-400 shrink-0">×{agg.visitCount}</span>
               )}
+              <span className="text-xs font-semibold tabular-nums text-gray-800 w-14 text-right shrink-0">
+                {agg.totalDays > 0 ? `${agg.totalDays.toFixed(1)}d` : '—'}
+              </span>
+              <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden shrink-0">
+                {agg.totalDays > 0 && (
+                  <div className={`h-full rounded-full ${bar}`} style={{ width: `${Math.min(pct, 100)}%` }} />
+                )}
+              </div>
             </div>
           )
         })}

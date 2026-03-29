@@ -27,9 +27,8 @@ export function ConfigContextBar({ config }: Props) {
   const inCycleFn = (i: number) => i >= cycleStartIdx && i <= cycleEndIdx && cycleStartIdx !== -1
   const inLeadFn = (i: number) => (lead_time_start_status ? i >= leadStartIdx : true) && i <= leadEndIdx && leadEndIdx !== -1
 
+  const cycleAll = status_order.filter((_, i) => inCycleFn(i))
   const leadOnly = status_order.filter((_, i) => inLeadFn(i) && !inCycleFn(i))
-  const cycleOnly = status_order.filter((_, i) => inCycleFn(i) && !inLeadFn(i))
-  const overlap = status_order.filter((_, i) => inCycleFn(i) && inLeadFn(i))
 
   const LEAD_SHADES = [
     'bg-violet-100 border-violet-200 text-violet-800',
@@ -43,12 +42,6 @@ export function ConfigContextBar({ config }: Props) {
     'bg-teal-400 border-teal-500 text-teal-900',
     'bg-teal-500 border-teal-600 text-teal-950',
   ]
-  const OVERLAP_SHADES = [
-    'bg-indigo-300 border-indigo-400 text-indigo-900',
-    'bg-indigo-400 border-indigo-500 text-indigo-950',
-    'bg-indigo-500 border-indigo-600 text-white',
-    'bg-indigo-600 border-indigo-700 text-white',
-  ]
 
   function pickShade(arr: string[], group: string[], status: string) {
     const pos = group.indexOf(status)
@@ -58,11 +51,8 @@ export function ConfigContextBar({ config }: Props) {
   }
 
   function getStatusColor(status: string, i: number) {
-    const ic = inCycleFn(i)
-    const il = inLeadFn(i)
-    if (ic && il) return pickShade(OVERLAP_SHADES, overlap, status)
-    if (ic) return pickShade(CYCLE_SHADES, cycleOnly, status)
-    if (il) return pickShade(LEAD_SHADES, leadOnly, status)
+    if (inCycleFn(i)) return pickShade(CYCLE_SHADES, cycleAll, status)
+    if (inLeadFn(i)) return pickShade(LEAD_SHADES, leadOnly, status)
     return 'bg-gray-50 border-gray-200 text-gray-500'
   }
 
@@ -91,7 +81,7 @@ export function ConfigContextBar({ config }: Props) {
       {/* Span indicators */}
       <div className="mt-2.5 flex flex-col gap-1">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-1.5 rounded-full bg-teal-500" />
+          <div className="w-3 h-1.5 rounded-full bg-teal-500 shrink-0" />
           <span className="text-[10px] text-gray-500">
             {t('configBar.cycleTimeLabel', { start: cycle_time_start_status, end: cycle_time_end_status })}
           </span>
@@ -113,7 +103,7 @@ export function ConfigContextBar({ config }: Props) {
           </Popover>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-1.5 rounded-full bg-violet-400" />
+          <div className="w-3 h-1.5 rounded-full bg-violet-400 shrink-0" />
           <span className="text-[10px] text-gray-500">
             {t('configBar.leadTimeLabel', { start: lead_time_start_status ?? t('common.created'), end: leadEndStatus })}
           </span>

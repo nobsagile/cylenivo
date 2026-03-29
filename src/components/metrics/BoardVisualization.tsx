@@ -70,9 +70,8 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
   const inLeadFn = (idx: number) => (lead_time_start_status ? idx >= leadStartIdx : true) && idx <= leadEndIdx
   const inCycleFn = (idx: number) => idx >= cycleStartIdx && idx <= cycleEndIdx
 
+  const cycleAllStatuses = relevantStatuses.filter(s => { const i = status_order.indexOf(s); return inCycleFn(i) })
   const leadOnlyStatuses = relevantStatuses.filter(s => { const i = status_order.indexOf(s); return inLeadFn(i) && !inCycleFn(i) })
-  const cycleOnlyStatuses = relevantStatuses.filter(s => { const i = status_order.indexOf(s); return inCycleFn(i) && !inLeadFn(i) })
-  const overlapStatuses = relevantStatuses.filter(s => { const i = status_order.indexOf(s); return inCycleFn(i) && inLeadFn(i) })
 
   // Gradient shades per category (light → dark)
   const LEAD_SHADES = [
@@ -87,12 +86,6 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
     { bg: 'bg-teal-400', border: 'border-teal-500', text: 'text-teal-900', bar: 'text-teal-600' },
     { bg: 'bg-teal-500', border: 'border-teal-600', text: 'text-teal-950', bar: 'text-teal-700' },
   ]
-  const OVERLAP_SHADES = [
-    { bg: 'bg-indigo-300', border: 'border-indigo-400', text: 'text-indigo-900', bar: 'text-indigo-500' },
-    { bg: 'bg-indigo-400', border: 'border-indigo-500', text: 'text-indigo-950', bar: 'text-indigo-600' },
-    { bg: 'bg-indigo-500', border: 'border-indigo-600', text: 'text-white', bar: 'text-indigo-200' },
-    { bg: 'bg-indigo-600', border: 'border-indigo-700', text: 'text-white', bar: 'text-indigo-200' },
-  ]
 
   function pickShade<T>(arr: T[], statuses: string[], status: string): T {
     const pos = statuses.indexOf(status)
@@ -102,10 +95,7 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
 
   function getStatusStyle(status: string) {
     const idx = status_order.indexOf(status)
-    const inCycle = inCycleFn(idx)
-    const inLead = inLeadFn(idx)
-    if (inCycle && inLead) return pickShade(OVERLAP_SHADES, overlapStatuses, status)
-    if (inCycle) return pickShade(CYCLE_SHADES, cycleOnlyStatuses, status)
+    if (inCycleFn(idx)) return pickShade(CYCLE_SHADES, cycleAllStatuses, status)
     return pickShade(LEAD_SHADES, leadOnlyStatuses, status)
   }
 
@@ -148,9 +138,9 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
               onMouseEnter={() => setHovered(status)}
               onMouseLeave={() => setHovered(null)}
             >
-              <p className={`text-[10px] font-semibold uppercase tracking-wide opacity-70 ${isHovered ? '' : 'truncate'}`}>{status}</p>
-              <p className="text-lg font-bold tabular-nums mt-0.5">{mean.toFixed(1)}d</p>
-              <p className="text-[10px] opacity-60">med {median.toFixed(1)}d</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide opacity-70 truncate">{status}</p>
+              <p className="text-lg font-bold tabular-nums mt-0.5 whitespace-nowrap">{mean.toFixed(1)}d</p>
+              <p className="text-[10px] opacity-60 whitespace-nowrap">med {median.toFixed(1)}d</p>
               {values.length > 0 && (
                 <div className={style.bar}>
                   <MiniHistogram values={values} />

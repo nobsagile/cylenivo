@@ -57,7 +57,7 @@ export function LeadTimeChart({ values, bucketSize = 5 }: Props) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="range" tick={{ fontSize: 11 }} />
           <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-          <Tooltip content={<LeadTooltip />} wrapperStyle={{ zIndex: 100 }} />
+          <Tooltip content={<LeadTooltip />} wrapperStyle={{ zIndex: 100 }} cursor={false} />
           <Bar dataKey="count" fill="#8b5cf6" />
         </BarChart>
       </ResponsiveContainer>

@@ -18,7 +18,6 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 // Hex gradients matching design system (light → dark)
 const LEAD_COLORS = ['#ede9fe', '#ddd6fe', '#c4b5fd', '#a78bfa']   // violet-100→400
 const CYCLE_COLORS = ['#99f6e4', '#5eead4', '#2dd4bf', '#14b8a6']  // teal-200→500
-const OVERLAP_COLORS = ['#a5b4fc', '#818cf8', '#6366f1', '#4f46e5'] // indigo-300→600
 const FALLBACK_COLORS = ['#94a3b8', '#64748b', '#475569', '#334155'] // slate
 
 function buildStatusColors(statuses: string[], config: ConfigContext | null | undefined): Record<string, string> {
@@ -33,12 +32,8 @@ function buildStatusColors(statuses: string[], config: ConfigContext | null | un
   const inCycle = (s: string) => { const i = status_order.indexOf(s); return i >= cycleStart && i <= cycleEnd }
   const inLead = (s: string) => { const i = status_order.indexOf(s); return (lead_time_start_status ? i >= leadStart : true) && i <= leadEnd }
 
-  const groups = { lead: [] as string[], cycle: [] as string[], overlap: [] as string[] }
-  for (const s of statuses) {
-    if (inCycle(s) && inLead(s)) groups.overlap.push(s)
-    else if (inCycle(s)) groups.cycle.push(s)
-    else groups.lead.push(s)
-  }
+  const cycleAll = statuses.filter(s => inCycle(s))
+  const leadOnly = statuses.filter(s => inLead(s) && !inCycle(s))
 
   function pick(arr: string[], group: string[], status: string) {
     const pos = group.indexOf(status)
@@ -47,9 +42,9 @@ function buildStatusColors(statuses: string[], config: ConfigContext | null | un
   }
 
   return Object.fromEntries(statuses.map(s => {
-    if (inCycle(s) && inLead(s)) return [s, pick(OVERLAP_COLORS, groups.overlap, s)]
-    if (inCycle(s)) return [s, pick(CYCLE_COLORS, groups.cycle, s)]
-    return [s, pick(LEAD_COLORS, groups.lead, s)]
+    if (inCycle(s)) return [s, pick(CYCLE_COLORS, cycleAll, s)]
+    if (inLead(s)) return [s, pick(LEAD_COLORS, leadOnly, s)]
+    return [s, FALLBACK_COLORS[0]]
   }))
 }
 
@@ -125,7 +120,7 @@ export function AvgTimeInStatusChart({ timeInStatusData, summary }: AvgProps) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" tick={{ fontSize: 11 }} unit=" d" />
           <YAxis dataKey="status" type="category" tick={{ fontSize: 11 }} width={150} />
-          <Tooltip content={<AvgTooltip />} wrapperStyle={{ zIndex: 100 }} />
+          <Tooltip content={<AvgTooltip />} wrapperStyle={{ zIndex: 100 }} cursor={false} />
           <Bar dataKey="days">
             {avgData.map((entry) => (
               <Cell key={entry.status} fill={colors[entry.status]} />
@@ -140,9 +135,10 @@ export function AvgTimeInStatusChart({ timeInStatusData, summary }: AvgProps) {
 interface BreakdownProps {
   timeInStatusData: TimeInStatusResponse
   config?: ConfigContext | null
+  onTicketClick?: (id: string) => void
 }
 
-export function PerTicketBreakdownChart({ timeInStatusData, config }: BreakdownProps) {
+export function PerTicketBreakdownChart({ timeInStatusData, config, onTicketClick }: BreakdownProps) {
   const { t } = useTranslation()
   const { statuses } = timeInStatusData
   const colors = buildStatusColors(statuses, config)
@@ -150,6 +146,7 @@ export function PerTicketBreakdownChart({ timeInStatusData, config }: BreakdownP
 
   if (!last30.length) return null
 
+  const idByExternalId = Object.fromEntries(last30.map(t => [t.external_id, t.id]))
   const stackedData = last30.map((ticket) => ({
     name: ticket.external_id,
     ...Object.fromEntries(statuses.map((s) => [s, ticket.status_durations[s] ?? 0])),
@@ -164,11 +161,21 @@ export function PerTicketBreakdownChart({ timeInStatusData, config }: BreakdownP
         </div>
       </div>
       <ResponsiveContainer width="100%" height={320}>
-        <BarChart data={stackedData}>
+        <BarChart
+          data={stackedData}
+          onClick={(d) => {
+            const label = d?.activeLabel
+            if (label && onTicketClick) {
+              const id = idByExternalId[label]
+              if (id) onTicketClick(id)
+            }
+          }}
+          style={{ cursor: onTicketClick ? 'pointer' : 'default' }}
+        >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={60} />
           <YAxis tick={{ fontSize: 11 }} unit=" d" />
-          <Tooltip content={<StackedTooltip />} wrapperStyle={{ zIndex: 100 }} />
+          <Tooltip content={<StackedTooltip />} wrapperStyle={{ zIndex: 100 }} cursor={false} />
           {statuses.map((status) => (
             <Bar key={status} dataKey={status} stackId="a" fill={colors[status]} />
           ))}

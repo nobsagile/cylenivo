@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { TicketDetailDrawer } from '@/components/tickets/TicketDetailDrawer'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import { api } from '@/services/api'
@@ -17,6 +18,7 @@ export default function AnalyticsPage() {
   const [cycleData, setCycleData] = useState<CycleTimesResponse | null>(null)
   const [leadTimeValues, setLeadTimeValues] = useState<number[]>([])
   const [statusData, setStatusData] = useState<TimeInStatusResponse | null>(null)
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!importId) return
@@ -59,6 +61,7 @@ export default function AnalyticsPage() {
               <CycleTimeChart
                 tickets={cycleData?.tickets ?? []}
                 p85={metrics.cycle_time.p85}
+                onTicketClick={setSelectedTicketId}
               />
             </CardContent>
           </Card>
@@ -82,7 +85,7 @@ export default function AnalyticsPage() {
               </Card>
               <Card className="shadow-sm">
                 <CardContent className="pt-6">
-                  <PerTicketBreakdownChart timeInStatusData={statusData} />
+                  <PerTicketBreakdownChart timeInStatusData={statusData} onTicketClick={setSelectedTicketId} />
                 </CardContent>
               </Card>
             </>
@@ -91,6 +94,11 @@ export default function AnalyticsPage() {
           )}
         </TabsContent>
       </Tabs>
+      <TicketDetailDrawer
+        ticketId={selectedTicketId}
+        config={metrics.config_context ?? null}
+        onClose={() => setSelectedTicketId(null)}
+      />
     </div>
   )
 }

@@ -13,6 +13,7 @@ import { PercentileCard } from '@/components/metrics/PercentileCard'
 import { CycleTimeChart } from '@/components/metrics/CycleTimeChart'
 import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 import { LeadTimeScatterChart } from '@/components/metrics/LeadTimeScatterChart'
+import { TicketDetailDrawer } from '@/components/tickets/TicketDetailDrawer'
 
 interface MetricCardProps {
   title: string
@@ -134,6 +135,7 @@ export default function DashboardPage() {
   const navigate = useNavigate()
   const [cycleTimesData, setCycleTimesData] = useState<CycleTimesResponse | null>(null)
   const [leadTimesData, setLeadTimesData] = useState<LeadTimesResponse | null>(null)
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
 
   const currentImport = imports.find(imp => imp.id === importId)
 
@@ -264,6 +266,7 @@ export default function DashboardPage() {
             <CycleTimeChart
               tickets={cycleTimesData?.tickets ?? []}
               p85={data.cycle_time.p85}
+              onTicketClick={setSelectedTicketId}
             />
           </CardContent>
         </Card>
@@ -294,10 +297,16 @@ export default function DashboardPage() {
             <LeadTimeScatterChart
               tickets={leadTimesData?.tickets ?? []}
               p85={data.lead_time.p85}
+              onTicketClick={setSelectedTicketId}
             />
           </CardContent>
         </Card>
       </div>
+      <TicketDetailDrawer
+        ticketId={selectedTicketId}
+        config={data.config_context ?? null}
+        onClose={() => setSelectedTicketId(null)}
+      />
     </div>
   )
 }

@@ -72,7 +72,7 @@ export function CycleTimeByTypeChart({ data }: Props) {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="type" tick={{ fontSize: 11 }} />
             <YAxis tick={{ fontSize: 11 }} unit="d" />
-            <Tooltip content={<TypeTooltip />} wrapperStyle={{ zIndex: 100 }} />
+            <Tooltip content={<TypeTooltip />} wrapperStyle={{ zIndex: 100 }} cursor={false} />
             <Legend wrapperStyle={{ fontSize: 11 }} />
             <Bar dataKey="Median" fill="#0d9488" radius={[3, 3, 0, 0]} />
             <Bar dataKey="P85" fill="#f97316" radius={[3, 3, 0, 0]} />

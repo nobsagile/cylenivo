@@ -16,6 +16,7 @@ import { ChartTooltip } from './ChartTooltip'
 interface Props {
   tickets: CycleTimeTicket[]
   p85?: number | null
+  onTicketClick?: (id: string) => void
 }
 
 function CycleTooltip({ active, payload }: { active?: boolean; payload?: Array<{ value?: number; name?: string; color?: string; fill?: string; dataKey?: string; payload?: Record<string, unknown> }>; label?: string }) {
@@ -30,7 +31,7 @@ function CycleTooltip({ active, payload }: { active?: boolean; payload?: Array<{
   )
 }
 
-export function CycleTimeChart({ tickets, p85 }: Props) {
+export function CycleTimeChart({ tickets, p85, onTicketClick }: Props) {
   const { t } = useTranslation()
 
   if (tickets.length === 0) {
@@ -45,6 +46,7 @@ export function CycleTimeChart({ tickets, p85 }: Props) {
     x: new Date(ticket.completed_at).getTime(),
     y: ticket.cycle_time_days,
     name: ticket.external_id,
+    id: ticket.id,
   }))
 
   return (
@@ -62,7 +64,12 @@ export function CycleTimeChart({ tickets, p85 }: Props) {
           />
           <YAxis dataKey="y" tick={{ fontSize: 11 }} unit=" d" />
           <Tooltip content={<CycleTooltip />} wrapperStyle={{ zIndex: 100 }} />
-          <Scatter data={data} fill="#0d9488" />
+          <Scatter
+            data={data}
+            fill="#0d9488"
+            onClick={(d) => onTicketClick?.(d.id as string)}
+            style={{ cursor: onTicketClick ? 'pointer' : 'default' }}
+          />
           {p85 != null && (
             <ReferenceLine y={p85} stroke="#e11d48" strokeDasharray="4 4" label={{ value: 'P85', fontSize: 11 }} />
           )}
