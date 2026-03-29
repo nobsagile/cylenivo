@@ -8,6 +8,7 @@ import type {
   TimeInStatusResponse,
   ReworkResponse,
   CycleTimeByTypeResponse,
+  ForecastResponse,
   LLMStatus,
   LLMInsight,
   LlmConfig,
@@ -79,6 +80,8 @@ export const api = {
       request<ReworkResponse>(`/api/v1/metrics/${importId}/rework`),
     cycleTimeByType: (importId: string) =>
       request<CycleTimeByTypeResponse>(`/api/v1/metrics/${importId}/cycle-time-by-type`),
+    forecast: (importId: string, mode: 'how_many' | 'when', value: number) =>
+      request<ForecastResponse>(`/api/v1/metrics/${importId}/forecast?mode=${mode}&value=${value}`),
   },
   tickets: {
     list: (importId: string, params?: { type?: string; page?: number; limit?: number; completed_only?: boolean; search?: string }) => {

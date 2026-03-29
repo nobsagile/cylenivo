@@ -182,6 +182,18 @@ export interface JiraFetchOptions {
   resolved_to?: string
 }
 
+export interface ForecastResponse {
+  mode: 'how_many' | 'when'
+  value: number
+  p50: number
+  p85: number
+  p95: number
+  histogram: { bucket: number; count: number }[]
+  weeks_of_data: number
+  weeks_with_completions: number
+  total_completed: number
+}
+
 export interface CreateConfigRequest {
   name: string
   source_type: string

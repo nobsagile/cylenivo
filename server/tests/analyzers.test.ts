@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { computeWeeklyBuckets, simulateHowMany, simulateWhen, percentileFromSorted, buildHistogram } from '../src/analyzers/monteCarlo.js'
 import { firstTransitionTo, lastTransitionTo, trimTransitionsToCycleWindow, type Transition } from '../src/analyzers/utils.js'
 import { buildHealthReport } from '../src/analyzers/healthReport.js'
 import { calculateCycleTime } from '../src/analyzers/cycleTime.js'
@@ -6,6 +7,86 @@ import { calculateLeadTime } from '../src/analyzers/leadTime.js'
 import { calculatePercentiles, calculateThroughputPerWeek } from '../src/analyzers/percentiles.js'
 import { calculateTimeInStatus } from '../src/analyzers/timeInStatus.js'
 import { detectRework, aggregateRework } from '../src/analyzers/rework.js'
+
+// ── Monte Carlo ───────────────────────────────────────────────────────────────
+describe('computeWeeklyBuckets', () => {
+  it('returns empty for no dates', () => {
+    expect(computeWeeklyBuckets([])).toEqual([])
+  })
+
+  it('counts completions per week', () => {
+    // Three tickets in the same week (Mon 2024-01-08), one the next (2024-01-15)
+    const dates = [
+      new Date('2024-01-08T12:00:00Z'),
+      new Date('2024-01-10T12:00:00Z'),
+      new Date('2024-01-11T12:00:00Z'),
+      new Date('2024-01-15T12:00:00Z'),
+    ]
+    const buckets = computeWeeklyBuckets(dates)
+    expect(buckets).toEqual([3, 1])
+  })
+
+  it('includes empty weeks between first and last', () => {
+    const dates = [
+      new Date('2024-01-08T12:00:00Z'), // week 1
+      new Date('2024-01-22T12:00:00Z'), // week 3 (week 2 is empty)
+    ]
+    const buckets = computeWeeklyBuckets(dates)
+    expect(buckets).toEqual([1, 0, 1])
+  })
+
+  it('single ticket returns single-element array', () => {
+    const buckets = computeWeeklyBuckets([new Date('2024-01-08T12:00:00Z')])
+    expect(buckets).toEqual([1])
+  })
+})
+
+describe('simulateHowMany', () => {
+  it('returns sorted array of length iterations', () => {
+    const results = simulateHowMany([3, 5, 4], 4, 100)
+    expect(results).toHaveLength(100)
+    expect(results[0]).toBeLessThanOrEqual(results[99])
+  })
+
+  it('produces results in expected range for fixed buckets', () => {
+    // buckets [5] always = 5 per week, so 2 weeks always = 10
+    const results = simulateHowMany([5], 2, 100)
+    expect(results.every(r => r === 10)).toBe(true)
+  })
+})
+
+describe('simulateWhen', () => {
+  it('returns sorted array of length iterations', () => {
+    const results = simulateWhen([3, 5, 4], 10, 100)
+    expect(results).toHaveLength(100)
+    expect(results[0]).toBeLessThanOrEqual(results[99])
+  })
+
+  it('terminates within 52 weeks for degenerate input', () => {
+    // buckets [0] means no progress — should be capped at 52
+    const results = simulateWhen([0], 5, 10)
+    expect(results.every(r => r === 52)).toBe(true)
+  })
+})
+
+describe('percentileFromSorted', () => {
+  it('returns correct value at p50', () => {
+    const sorted = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    expect(percentileFromSorted(sorted, 50)).toBe(6) // index 5
+  })
+})
+
+describe('buildHistogram', () => {
+  it('groups equal values into counts', () => {
+    const sorted = [1, 1, 2, 3, 3, 3]
+    const hist = buildHistogram(sorted)
+    expect(hist).toEqual([
+      { bucket: 1, count: 2 },
+      { bucket: 2, count: 1 },
+      { bucket: 3, count: 3 },
+    ])
+  })
+})
 
 function t(toStatus: string, at: string, fromStatus: string | null = null): Transition {
   return { from_status: fromStatus, to_status: toStatus, transitioned_at: at }

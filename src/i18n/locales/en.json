@@ -29,9 +29,28 @@
     "tickets": "Tickets",
     "analytics": "Analytics",
     "flow": "Flow",
+    "forecast": "Forecast",
     "insights": "AI Insights",
     "settings": "Settings",
     "import": "Import Data"
+  },
+  "forecast": {
+    "title": "Forecast",
+    "subtitle": "Probabilistic delivery estimates based on your historical throughput.",
+    "howMany": "How many?",
+    "when": "When?",
+    "weeks": "weeks",
+    "tickets": "tickets",
+    "simulate": "Simulate",
+    "simulating": "Simulating…",
+    "distribution": "Simulation distribution (10,000 runs)",
+    "simulations": "simulations",
+    "ticketsInN": "tickets in {{n}} weeks",
+    "weeksForN": "weeks for {{n}} tickets",
+    "lowDataWarning": "Only {{count}} completed tickets in history — results may be unreliable. More data improves accuracy.",
+    "basis": "Based on {{weeks}} weeks of history · {{weeksWithData}} weeks with completions · {{completed}} tickets total",
+    "empty": "Configure and run a simulation",
+    "emptyHint": "Choose between How many? (capacity in N weeks) or When? (weeks needed for N tickets), enter a number and hit Simulate."
   },
   "onboarding": {
     "title": "Welcome to Cylenivo",

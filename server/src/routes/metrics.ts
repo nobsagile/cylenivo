@@ -5,6 +5,7 @@ import { trimTransitionsToCycleWindow } from '../analyzers/utils.js'
 import { loadImportContext } from '../lib/context.js'
 import { computeAggregate, buildStatsResponse } from '../lib/aggregate.js'
 import { aggregateRework } from '../analyzers/rework.js'
+import { computeWeeklyBuckets, simulateHowMany, simulateWhen, percentileFromSorted, buildHistogram } from '../analyzers/monteCarlo.js'
 import { mean, median } from '../lib/stats.js'
 
 const metrics = new Hono()
@@ -140,6 +141,40 @@ metrics.get('/:importId/cycle-time-by-type', async (c) => {
   }).sort((a, b) => b.count - a.count)
 
   return c.json(ok({ types }))
+})
+
+metrics.get('/:importId/forecast', async (c) => {
+  const ctx = await loadImportContext(c.req.param('importId'))
+  if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
+
+  const mode = c.req.query('mode') as 'how_many' | 'when'
+  const value = parseInt(c.req.query('value') ?? '0', 10)
+  if ((mode !== 'how_many' && mode !== 'when') || !value || value < 1) {
+    return c.json({ data: null, error: 'Invalid mode or value' }, 400)
+  }
+
+  const agg = computeAggregate(ctx)
+  const buckets = computeWeeklyBuckets(agg.completedAtDates)
+
+  if (buckets.length === 0) {
+    return c.json({ data: null, error: 'No completed tickets to simulate from' }, 422)
+  }
+
+  const sorted = mode === 'how_many'
+    ? simulateHowMany(buckets, value)
+    : simulateWhen(buckets, value)
+
+  return c.json(ok({
+    mode,
+    value,
+    p50: percentileFromSorted(sorted, 50),
+    p85: percentileFromSorted(sorted, 85),
+    p95: percentileFromSorted(sorted, 95),
+    histogram: buildHistogram(sorted),
+    weeks_of_data: buckets.length,
+    weeks_with_completions: buckets.filter(b => b > 0).length,
+    total_completed: agg.completedAtDates.length,
+  }))
 })
 
 export default metrics
