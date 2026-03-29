@@ -6,7 +6,6 @@ import { loadImportContext } from '../lib/context.js'
 import { computeAggregate, buildStatsResponse } from '../lib/aggregate.js'
 import { aggregateRework } from '../analyzers/rework.js'
 import { computeWeeklyBuckets, simulateHowMany, simulateWhen, percentileFromSorted, buildHistogram } from '../analyzers/monteCarlo.js'
-import { computeAgingWip } from '../analyzers/agingWip.js'
 import { mean, median } from '../lib/stats.js'
 
 const metrics = new Hono()
@@ -142,25 +141,6 @@ metrics.get('/:importId/cycle-time-by-type', async (c) => {
   }).sort((a, b) => b.count - a.count)
 
   return c.json(ok({ types }))
-})
-
-metrics.get('/:importId/aging-wip', async (c) => {
-  const ctx = await loadImportContext(c.req.param('importId'))
-  if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
-
-  const agg = computeAggregate(ctx)
-  const importedAt = new Date(ctx.imp.imported_at)
-  const tickets = computeAgingWip(ctx.tickets, ctx.config.cycle_time_start_status, ctx.cycleStatuses, importedAt)
-
-  return c.json(ok({
-    tickets: tickets.map(t => ({
-      ...t,
-      days_in_current_status: Math.round(t.days_in_current_status * 100) / 100,
-      wip_age_days: Math.round(t.wip_age_days * 100) / 100,
-    })),
-    p85_cycle_time: agg.cycleTimePercentiles.p85,
-    p95_cycle_time: agg.cycleTimePercentiles.p95,
-  }))
 })
 
 metrics.get('/:importId/forecast', async (c) => {

@@ -5,7 +5,7 @@ import { Clock, Timer, TrendingUp, Layers, Upload, Info } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
 import { useImports } from '@/hooks/useImports'
 import { api } from '@/services/api'
-import type { CycleTimesResponse, LeadTimesResponse, AgingWIPResponse } from '@/types'
+import type { CycleTimesResponse, LeadTimesResponse } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
@@ -13,7 +13,6 @@ import { PercentileCard } from '@/components/metrics/PercentileCard'
 import { CycleTimeChart } from '@/components/metrics/CycleTimeChart'
 import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 import { LeadTimeScatterChart } from '@/components/metrics/LeadTimeScatterChart'
-import { AgingWIPTable } from '@/components/metrics/AgingWIPTable'
 import { TicketDetailDrawer } from '@/components/tickets/TicketDetailDrawer'
 
 interface MetricCardProps {
@@ -136,7 +135,6 @@ export default function DashboardPage() {
   const navigate = useNavigate()
   const [cycleTimesData, setCycleTimesData] = useState<CycleTimesResponse | null>(null)
   const [leadTimesData, setLeadTimesData] = useState<LeadTimesResponse | null>(null)
-  const [wipData, setWipData] = useState<AgingWIPResponse | null>(null)
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
 
   const currentImport = imports.find(imp => imp.id === importId)
@@ -145,7 +143,6 @@ export default function DashboardPage() {
     if (importId) {
       api.metrics.cycleTimes(importId).then(setCycleTimesData).catch(console.error)
       api.metrics.leadTimes(importId).then(setLeadTimesData).catch(console.error)
-      api.metrics.agingWip(importId).then(setWipData).catch(console.error)
     }
   }, [importId])
 
@@ -305,10 +302,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-      {wipData && wipData.tickets.length > 0 && (
-        <AgingWIPTable data={wipData} onTicketClick={setSelectedTicketId} />
-      )}
-
       <TicketDetailDrawer
         ticketId={selectedTicketId}
         config={data.config_context ?? null}

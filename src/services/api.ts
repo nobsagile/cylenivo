@@ -9,7 +9,6 @@ import type {
   ReworkResponse,
   CycleTimeByTypeResponse,
   ForecastResponse,
-  AgingWIPResponse,
   LLMStatus,
   LLMInsight,
   LlmConfig,
@@ -83,8 +82,6 @@ export const api = {
       request<CycleTimeByTypeResponse>(`/api/v1/metrics/${importId}/cycle-time-by-type`),
     forecast: (importId: string, mode: 'how_many' | 'when', value: number) =>
       request<ForecastResponse>(`/api/v1/metrics/${importId}/forecast?mode=${mode}&value=${value}`),
-    agingWip: (importId: string) =>
-      request<AgingWIPResponse>(`/api/v1/metrics/${importId}/aging-wip`),
   },
   tickets: {
     list: (importId: string, params?: { type?: string; page?: number; limit?: number; completed_only?: boolean; search?: string }) => {
