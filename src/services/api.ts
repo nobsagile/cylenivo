@@ -59,8 +59,8 @@ export const api = {
       if (name) form.append('name', name)
       return request<ImportSession>('/api/v1/imports', { method: 'POST', body: form })
     },
-    rename: (id: string, name: string) =>
-      request<ImportSession>(`/api/v1/imports/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) }),
+    update: (id: string, body: { name?: string; config_id?: string }) =>
+      request<ImportSession>(`/api/v1/imports/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }),
     delete: (id: string) =>
       request<null>(`/api/v1/imports/${id}`, { method: 'DELETE' }),
     statuses: (id: string) =>

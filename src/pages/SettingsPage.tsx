@@ -160,8 +160,6 @@ export default function SettingsPage() {
   const [section, setSection] = useState<Section>(() => resolveInitialSection(location.state))
   const [configs, setConfigs] = useState<ProjectConfig[]>([])
   const [imports, setImports] = useState<ImportSession[]>([])
-  const [renamingId, setRenamingId] = useState<string | null>(null)
-  const [renameValue, setRenameValue] = useState('')
   const [connections, setConnections] = useState<SourceConnection[]>([])
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editConn, setEditConn] = useState<SourceConnection | null>(null)
@@ -276,13 +274,6 @@ export default function SettingsPage() {
 
   async function handleDeleteImport(id: string, label: string) {
     setPendingDelete({ type: 'import', id, label })
-  }
-
-  async function handleRenameImport(id: string) {
-    if (!renameValue.trim()) return
-    await api.imports.rename(id, renameValue.trim())
-    setRenamingId(null)
-    api.imports.list().then(setImports).catch(console.error)
   }
 
   async function handleDeleteConnection(id: string, name: string) {
@@ -484,6 +475,9 @@ export default function SettingsPage() {
                 icon={FileJson}
                 actions={
                   <>
+                    <IconBtn onClick={() => navigate(`/settings/datasets/${imp.id}`)} title={t('common.edit')}>
+                      <Pencil className="w-3.5 h-3.5" />
+                    </IconBtn>
                     <IconBtn onClick={() => navigate(`/projects/${imp.id}`)} title={t('common.open')}>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </IconBtn>
@@ -494,33 +488,11 @@ export default function SettingsPage() {
                 }
               >
                 <div className="flex items-center gap-2 flex-wrap">
-                  {renamingId === imp.id ? (
-                    <input
-                      autoFocus
-                      value={renameValue}
-                      onChange={(e) => setRenameValue(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleRenameImport(imp.id)
-                        if (e.key === 'Escape') setRenamingId(null)
-                      }}
-                      onBlur={() => handleRenameImport(imp.id)}
-                      className="font-semibold text-gray-900 border-b border-violet-400 outline-none bg-transparent"
-                    />
-                  ) : (
-                    <>
-                      <p className="font-semibold text-gray-900">{imp.name ?? imp.project_key}</p>
-                      <button
-                        onClick={() => { setRenamingId(imp.id); setRenameValue(imp.name ?? imp.project_key) }}
-                        className="text-gray-300 hover:text-gray-500 transition-colors"
-                      >
-                        <Pencil className="w-3 h-3" />
-                      </button>
-                      {imp.config_name && (
-                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-violet-50 text-violet-600 border border-violet-100">
-                          {imp.config_name}
-                        </span>
-                      )}
-                    </>
+                  <p className="font-semibold text-gray-900">{imp.name ?? imp.project_key}</p>
+                  {imp.config_name && (
+                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-violet-50 text-violet-600 border border-violet-100">
+                      {imp.config_name}
+                    </span>
                   )}
                 </div>
                 <div className="flex items-center gap-3 mt-1 text-xs text-gray-400 flex-wrap">

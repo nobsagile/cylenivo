@@ -258,6 +258,15 @@
     "language": "Language",
     "languageComingSoon": "Additional languages are coming soon. The interface is currently English only."
   },
+  "dataset": {
+    "backToSettings": "Back to Settings",
+    "editTitle": "Edit Dataset",
+    "editDesc": "Change the display name or reassign the measurement configuration.",
+    "name": "Name",
+    "nameHint": "Human-readable label shown in the sidebar and settings list.",
+    "config": "Configuration",
+    "configHint": "Changing the configuration will recalculate all metrics for this dataset."
+  },
   "config": {
     "backToSettings": "Back to Settings",
     "defineMetrics": "Define how cycle time and lead time are measured",

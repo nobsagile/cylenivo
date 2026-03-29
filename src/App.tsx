@@ -8,6 +8,7 @@ import FlowPage from '@/pages/FlowPage'
 import InsightsPage from '@/pages/InsightsPage'
 import SettingsPage from '@/pages/SettingsPage'
 import ConfigFormPage from '@/pages/ConfigFormPage'
+import DatasetEditPage from '@/pages/DatasetEditPage'
 import WelcomePage from '@/pages/WelcomePage'
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/settings/configs/new" element={<ConfigFormPage />} />
           <Route path="/settings/configs/:configId" element={<ConfigFormPage />} />
+          <Route path="/settings/datasets/:datasetId" element={<DatasetEditPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

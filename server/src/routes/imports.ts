@@ -91,12 +91,17 @@ imports.get('/:id/statuses', async (c) => {
 
 imports.patch('/:id', async (c) => {
   const id = c.req.param('id')
-  const { name } = await c.req.json<{ name: string }>()
+  const body = await c.req.json<{ name?: string; config_id?: string }>()
   const rows = await db.select().from(importSessions).where(eq(importSessions.id, id))
   if (!rows.length) return c.json({ data: null, error: 'Import not found' }, 404)
-  await db.update(importSessions).set({ name: name || null }).where(eq(importSessions.id, id))
-  const cfgRows = await db.select().from(projectConfigs).where(eq(projectConfigs.id, rows[0].config_id))
+  const patch: Record<string, unknown> = {}
+  if ('name' in body) patch.name = body.name || null
+  if ('config_id' in body && body.config_id) patch.config_id = body.config_id
+  if (Object.keys(patch).length) {
+    await db.update(importSessions).set(patch).where(eq(importSessions.id, id))
+  }
   const updated = await db.select().from(importSessions).where(eq(importSessions.id, id))
+  const cfgRows = await db.select().from(projectConfigs).where(eq(projectConfigs.id, updated[0].config_id))
   return c.json(ok(serializeSession(updated[0], cfgRows[0] ?? null)))
 })
 

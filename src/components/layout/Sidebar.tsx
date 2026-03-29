@@ -133,7 +133,7 @@ function ProjectMenu({ imp, onRenamed, onDeleted }: {
 
   function handleRename() {
     setRenaming(true)
-    api.imports.rename(imp.id, renameValue)
+    api.imports.update(imp.id, { name: renameValue })
       .then(() => { setRenameOpen(false); onRenamed() })
       .catch(console.error)
       .finally(() => setRenaming(false))
