@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { X, ExternalLink, ChevronUp, ChevronDown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -29,6 +29,9 @@ export function TicketDetailDrawer({ ticketId, config, onClose, onPrev, onNext, 
   const { t } = useTranslation()
   const [detail, setDetail] = useState<TicketDetail | null>(null)
   const [loading, setLoading] = useState(false)
+  const [slideDir, setSlideDir] = useState<'up' | 'down' | null>(null)
+  const [animKey, setAnimKey] = useState(0)
+  const prevTicketId = useRef<string | null>(null)
 
   useEffect(() => {
     if (!ticketId) { setDetail(null); return }
@@ -38,13 +41,21 @@ export function TicketDetailDrawer({ ticketId, config, onClose, onPrev, onNext, 
       .then(setDetail)
       .catch(console.error)
       .finally(() => setLoading(false))
+    prevTicketId.current = ticketId
   }, [ticketId])
+
+  function navigate(dir: 'up' | 'down', fn?: () => void) {
+    if (!fn) return
+    setSlideDir(dir)
+    setAnimKey(k => k + 1)
+    fn()
+  }
 
   useEffect(() => {
     if (!ticketId || (!onPrev && !onNext)) return
     function handleKey(e: KeyboardEvent) {
-      if (e.key === 'ArrowUp' && hasPrev) { e.preventDefault(); onPrev?.() }
-      if (e.key === 'ArrowDown' && hasNext) { e.preventDefault(); onNext?.() }
+      if (e.key === 'ArrowUp' && hasPrev) { e.preventDefault(); navigate('up', onPrev) }
+      if (e.key === 'ArrowDown' && hasNext) { e.preventDefault(); navigate('down', onNext) }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
@@ -107,7 +118,7 @@ export function TicketDetailDrawer({ ticketId, config, onClose, onPrev, onNext, 
               {onPrev && onNext && (
                 <div className="flex flex-col">
                   <button
-                    onClick={onPrev}
+                    onClick={() => navigate('up', onPrev)}
                     disabled={!hasPrev}
                     className="text-gray-400 hover:text-gray-600 disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
                     title="Previous (↑)"
@@ -115,7 +126,7 @@ export function TicketDetailDrawer({ ticketId, config, onClose, onPrev, onNext, 
                     <ChevronUp className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={onNext}
+                    onClick={() => navigate('down', onNext)}
                     disabled={!hasNext}
                     className="text-gray-400 hover:text-gray-600 disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
                     title="Next (↓)"
@@ -134,25 +145,46 @@ export function TicketDetailDrawer({ ticketId, config, onClose, onPrev, onNext, 
           </div>
 
           {/* Body */}
-          <div className="flex-1 overflow-y-auto px-5 py-4">
-            {loading && (
-              <div className="space-y-3">
-                <div className="h-8 bg-gray-100 rounded animate-pulse" />
-                <div className="h-24 bg-gray-50 rounded animate-pulse" />
-              </div>
-            )}
-            {detail && config && (
-              <TicketTimeline
-                transitions={detail.transitions}
-                config={config}
-                createdAt={detail.created_at}
-                externalLink={detail.external_link}
-              />
-            )}
-            {detail && !config && (
-              <p className="text-xs text-gray-400">{t('timeline.noTransitions')}</p>
-            )}
+          <div className="flex-1 overflow-hidden relative">
+            <div
+              key={animKey}
+              className="absolute inset-0 overflow-y-auto px-5 py-4"
+              style={{
+                animation: slideDir
+                  ? `slideIn${slideDir === 'up' ? 'Up' : 'Down'} 200ms ease-out both`
+                  : undefined,
+              }}
+              onAnimationEnd={() => setSlideDir(null)}
+            >
+              {loading && (
+                <div className="space-y-3">
+                  <div className="h-8 bg-gray-100 rounded animate-pulse" />
+                  <div className="h-24 bg-gray-50 rounded animate-pulse" />
+                </div>
+              )}
+              {detail && config && (
+                <TicketTimeline
+                  transitions={detail.transitions}
+                  config={config}
+                  createdAt={detail.created_at}
+                  externalLink={detail.external_link}
+                />
+              )}
+              {detail && !config && (
+                <p className="text-xs text-gray-400">{t('timeline.noTransitions')}</p>
+              )}
+            </div>
           </div>
+          <style>{`
+            @keyframes slideInUp {
+              from { opacity: 0; transform: translateY(16px); }
+              to   { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes slideInDown {
+              from { opacity: 0; transform: translateY(-16px); }
+              to   { opacity: 1; transform: translateY(0); }
+            }
+          `}</style>
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
