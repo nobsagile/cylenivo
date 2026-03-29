@@ -17,10 +17,13 @@ interface Props {
   p85?: number | null
   config?: ConfigContext | null
   onTicketClick?: (id: string) => void
+  sortKey?: SortKey
+  sortDir?: SortDir
+  onSortChange?: (key: SortKey, dir: SortDir) => void
 }
 
-type SortKey = 'external_id' | 'title' | 'ticket_type' | 'cycle_time_days' | 'lead_time_days' | 'current_status'
-type SortDir = 'asc' | 'desc'
+export type SortKey = 'external_id' | 'title' | 'ticket_type' | 'cycle_time_days' | 'lead_time_days' | 'current_status'
+export type SortDir = 'asc' | 'desc'
 
 function cycleTimeColor(days: number | null, p50?: number | null, p85?: number | null) {
   if (days == null) return 'text-gray-300'
@@ -38,7 +41,7 @@ const TYPE_COLORS: Record<string, string> = {
   'qa finding': 'bg-orange-50 text-orange-700 border-orange-200',
 }
 
-function sortTickets(tickets: Ticket[], key: SortKey, dir: SortDir): Ticket[] {
+export function sortTickets(tickets: Ticket[], key: SortKey, dir: SortDir): Ticket[] {
   return [...tickets].sort((a, b) => {
     const av = a[key]
     const bv = b[key]
@@ -58,17 +61,20 @@ function SortIcon({ col, sortKey, sortDir }: { col: SortKey; sortKey: SortKey; s
     : <ArrowDown className="w-3.5 h-3.5 ml-1 inline text-violet-600" />
 }
 
-export function TicketTable({ tickets, p50, p85, config, onTicketClick }: Props) {
+export function TicketTable({ tickets, p50, p85, config, onTicketClick, sortKey: sortKeyProp, sortDir: sortDirProp, onSortChange }: Props) {
   const { t } = useTranslation()
-  const [sortKey, setSortKey] = useState<SortKey>('external_id')
-  const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const [sortKeyLocal, setSortKeyLocal] = useState<SortKey>('external_id')
+  const [sortDirLocal, setSortDirLocal] = useState<SortDir>('asc')
+  const sortKey = sortKeyProp ?? sortKeyLocal
+  const sortDir = sortDirProp ?? sortDirLocal
 
   function handleSort(key: SortKey) {
-    if (key === sortKey) {
-      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    const newDir: SortDir = key === sortKey ? (sortDir === 'asc' ? 'desc' : 'asc') : 'asc'
+    if (onSortChange) {
+      onSortChange(key, newDir)
     } else {
-      setSortKey(key)
-      setSortDir('asc')
+      setSortKeyLocal(key)
+      setSortDirLocal(newDir)
     }
   }
 

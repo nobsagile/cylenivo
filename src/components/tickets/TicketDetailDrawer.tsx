@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { X, ExternalLink } from 'lucide-react'
+import { X, ExternalLink, ChevronUp, ChevronDown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '@/services/api'
 import type { TicketDetail, ConfigContext } from '@/types'
@@ -19,9 +19,13 @@ interface Props {
   ticketId: string | null
   config: ConfigContext | null
   onClose: () => void
+  onPrev?: () => void
+  onNext?: () => void
+  hasPrev?: boolean
+  hasNext?: boolean
 }
 
-export function TicketDetailDrawer({ ticketId, config, onClose }: Props) {
+export function TicketDetailDrawer({ ticketId, config, onClose, onPrev, onNext, hasPrev, hasNext }: Props) {
   const { t } = useTranslation()
   const [detail, setDetail] = useState<TicketDetail | null>(null)
   const [loading, setLoading] = useState(false)
@@ -36,12 +40,22 @@ export function TicketDetailDrawer({ ticketId, config, onClose }: Props) {
       .finally(() => setLoading(false))
   }, [ticketId])
 
+  useEffect(() => {
+    if (!ticketId || (!onPrev && !onNext)) return
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'ArrowUp' && hasPrev) { e.preventDefault(); onPrev?.() }
+      if (e.key === 'ArrowDown' && hasNext) { e.preventDefault(); onNext?.() }
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [ticketId, onPrev, onNext, hasPrev, hasNext])
+
   return (
     <DialogPrimitive.Root open={ticketId !== null} onOpenChange={(open) => { if (!open) onClose() }}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/30 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-[110] bg-black/30 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <DialogPrimitive.Content
-          className="fixed right-0 top-0 z-50 h-full w-[520px] max-w-[95vw] bg-white shadow-xl flex flex-col data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right duration-200"
+          className="fixed right-0 top-0 z-[120] h-full w-[520px] max-w-[95vw] bg-white shadow-xl flex flex-col data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right duration-200"
           aria-describedby={undefined}
         >
           {/* Header */}
@@ -89,12 +103,34 @@ export function TicketDetailDrawer({ ticketId, config, onClose }: Props) {
                 </DialogPrimitive.Title>
               )}
             </div>
-            <DialogPrimitive.Close
-              className="shrink-0 text-gray-400 hover:text-gray-600 transition-colors mt-0.5"
-              onClick={onClose}
-            >
-              <X className="w-4 h-4" />
-            </DialogPrimitive.Close>
+            <div className="flex items-center gap-1 shrink-0">
+              {onPrev && onNext && (
+                <div className="flex flex-col">
+                  <button
+                    onClick={onPrev}
+                    disabled={!hasPrev}
+                    className="text-gray-400 hover:text-gray-600 disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
+                    title="Previous (↑)"
+                  >
+                    <ChevronUp className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={onNext}
+                    disabled={!hasNext}
+                    className="text-gray-400 hover:text-gray-600 disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
+                    title="Next (↓)"
+                  >
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+              <DialogPrimitive.Close
+                className="text-gray-400 hover:text-gray-600 transition-colors ml-1"
+                onClick={onClose}
+              >
+                <X className="w-4 h-4" />
+              </DialogPrimitive.Close>
+            </div>
           </div>
 
           {/* Body */}

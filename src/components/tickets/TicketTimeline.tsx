@@ -161,6 +161,10 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
   const reworkMovements = [...movementMap.values()].sort((a, b) => b.count - a.count)
   const totalReworkCount = reworkMovements.reduce((sum, m) => sum + m.count, 0)
 
+  const completedAt = cycle_time_end_status
+    ? [...sorted].reverse().find(t => t.to_status === cycle_time_end_status)?.transitioned_at ?? null
+    : null
+
   const [hoveredBar, setHoveredBar] = useState<number | null>(null)
 
   return (
@@ -260,6 +264,9 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
       {/* 4. Footer */}
       <div className="flex gap-3 text-[10px]">
         <span className="text-gray-400">{t('common.created')}: {new Date(createdAt).toLocaleDateString()}</span>
+        {completedAt && (
+          <span className="text-gray-400">{t('common.resolved')}: {new Date(completedAt).toLocaleDateString()}</span>
+        )}
         {externalLink && (
           <a href={externalLink} target="_blank" rel="noopener noreferrer" className="text-violet-600 hover:underline">
             {t('timeline.openInJira')}

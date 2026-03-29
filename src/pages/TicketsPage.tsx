@@ -6,7 +6,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { api } from '@/services/api'
 import { useMetrics } from '@/hooks/useMetrics'
 import type { Ticket } from '@/types'
-import { TicketTable } from '@/components/tickets/TicketTable'
+import { TicketTable, sortTickets, type SortKey, type SortDir } from '@/components/tickets/TicketTable'
 import { TicketDetailDrawer } from '@/components/tickets/TicketDetailDrawer'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,6 +26,8 @@ export default function TicketsPage() {
   const [search, setSearch] = useState('')
   const [searchDebounced, setSearchDebounced] = useState('')
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
+  const [sortKey, setSortKey] = useState<SortKey>('external_id')
+  const [sortDir, setSortDir] = useState<SortDir>('asc')
   const limit = 50
 
   useEffect(() => {
@@ -115,18 +117,33 @@ export default function TicketsPage() {
         </div>
       </div>
 
-      <TicketTable
-        tickets={tickets}
-        p50={metrics?.cycle_time.p50}
-        p85={metrics?.cycle_time.p85}
-        config={metrics?.config_context}
-        onTicketClick={setSelectedTicketId}
-      />
-      <TicketDetailDrawer
-        ticketId={selectedTicketId}
-        config={metrics?.config_context ?? null}
-        onClose={() => setSelectedTicketId(null)}
-      />
+      {(() => {
+        const sorted = sortTickets(tickets, sortKey, sortDir)
+        const idx = sorted.findIndex(t => t.id === selectedTicketId)
+        return (
+          <>
+            <TicketTable
+              tickets={tickets}
+              p50={metrics?.cycle_time.p50}
+              p85={metrics?.cycle_time.p85}
+              config={metrics?.config_context}
+              onTicketClick={setSelectedTicketId}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSortChange={(k, d) => { setSortKey(k); setSortDir(d) }}
+            />
+            <TicketDetailDrawer
+              ticketId={selectedTicketId}
+              config={metrics?.config_context ?? null}
+              onClose={() => setSelectedTicketId(null)}
+              onPrev={() => idx > 0 && setSelectedTicketId(sorted[idx - 1].id)}
+              onNext={() => idx < sorted.length - 1 && setSelectedTicketId(sorted[idx + 1].id)}
+              hasPrev={idx > 0}
+              hasNext={idx < sorted.length - 1}
+            />
+          </>
+        )
+      })()}
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-2">
