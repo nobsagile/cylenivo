@@ -75,34 +75,29 @@ export default function ForecastPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header + controls */}
-      <div className="flex items-start gap-4 flex-wrap">
-        <div className="flex-1 min-w-[200px]">
-          <div className="flex items-center gap-2 mb-1">
-            <TrendingUp className="w-4 h-4 text-teal-600" />
-            <h1 className="text-lg font-semibold text-gray-900">{t('forecast.title')}</h1>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('forecast.title')}</h2>
+          <p className="text-sm text-gray-400 mt-0.5">{t('forecast.subtitle')}</p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Mode segmented control — same pattern as TicketsPage type filter */}
+          <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+            {(['how_many', 'when'] as Mode[]).map((m) => (
+              <button
+                key={m}
+                onClick={() => { setMode(m); setResult(null) }}
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  mode === m ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                {m === 'how_many' ? t('forecast.howMany') : t('forecast.when')}
+              </button>
+            ))}
           </div>
-          <p className="text-xs text-gray-400">{t('forecast.subtitle')}</p>
-        </div>
 
-        {/* Mode toggle */}
-        <div className="flex rounded-lg border border-gray-200 overflow-hidden shrink-0">
-          <button
-            onClick={() => { setMode('how_many'); setResult(null) }}
-            className={`px-3 py-1.5 text-sm font-medium transition-colors ${mode === 'how_many' ? 'bg-teal-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
-          >
-            {t('forecast.howMany')}
-          </button>
-          <button
-            onClick={() => { setMode('when'); setResult(null) }}
-            className={`px-3 py-1.5 text-sm font-medium transition-colors border-l border-gray-200 ${mode === 'when' ? 'bg-teal-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
-          >
-            {t('forecast.when')}
-          </button>
-        </div>
-
-        {/* Input + run */}
-        <div className="flex items-center gap-2 shrink-0">
           <Input
             type="number"
             min={1}
@@ -113,7 +108,7 @@ export default function ForecastPage() {
             className="w-20 text-center"
           />
           <span className="text-sm text-gray-500">{inputLabel}</span>
-          <Button onClick={simulate} disabled={loading} className="bg-teal-600 hover:bg-teal-700 text-white">
+          <Button onClick={simulate} disabled={loading}>
             {loading ? t('forecast.simulating') : t('forecast.simulate')}
           </Button>
         </div>
