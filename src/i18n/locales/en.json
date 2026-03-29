@@ -451,5 +451,9 @@
     "llmBaseUrl": "The URL where the AI service is running. For Ollama, this is usually http://localhost:11434.",
     "llmSystemPrompt": "Instructions that shape how the AI analyzes your data. The default prompt is optimized for flow metrics — only change this if you know what you're doing.",
     "perTicketBreakdown": "Time per status for each of the last 30 completed tickets, sorted by completion date. Shows how individual tickets flowed through your process."
+  },
+  "about": {
+    "tagline": "Flow metrics for software teams — local, private, no accounts.",
+    "license": "MIT + Commons Clause — free to use, forks may not be sold."
   }
 }
