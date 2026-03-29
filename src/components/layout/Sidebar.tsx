@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { LayoutDashboard, Ticket, Workflow, Sparkles, Settings, Plus, AlertTriangle, MoreHorizontal, SlidersHorizontal, Trash2, Pencil } from 'lucide-react'
@@ -249,6 +249,11 @@ export function Sidebar() {
   const navigate = useNavigate()
   const { data: imports, reload } = useImports()
   const [healthOpen, setHealthOpen] = useState(false)
+  const [appVersion, setAppVersion] = useState<string>(__APP_VERSION__)
+
+  useEffect(() => {
+    import('@tauri-apps/api/app').then(({ getVersion }) => getVersion().then(setAppVersion)).catch(() => {})
+  }, [])
 
   const currentImport = imports.find(imp => imp.id === importId)
   const sortedImports = [...imports].sort((a, b) =>
@@ -387,7 +392,7 @@ export function Sidebar() {
           <Settings className="w-4 h-4 shrink-0" />
           {t('nav.settings')}
         </NavLink>
-        <p className="text-[10px] text-gray-300 px-3 pt-1 select-none">v{__APP_VERSION__}</p>
+        <p className="text-[10px] text-gray-300 px-3 pt-1 select-none">v{appVersion}</p>
       </div>
     </aside>
   )
