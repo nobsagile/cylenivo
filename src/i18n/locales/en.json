@@ -84,6 +84,19 @@
     "getStarted": "Get Started",
     "cta": "Connect to Jira directly or upload an export — takes about 2 minutes."
   },
+  "wip": {
+    "title": "Aging WIP",
+    "subtitle": "{{count}} tickets in progress",
+    "p85ref": "p85 cycle time: {{days}}d",
+    "colTicket": "Ticket",
+    "colStatus": "Status",
+    "colInStatus": "In status",
+    "colAge": "WIP age",
+    "colRisk": "Risk",
+    "riskNormal": "On track",
+    "riskWarning": "At risk",
+    "riskCritical": "Critical"
+  },
   "dashboard": {
     "noDataset": "No dataset selected",
     "noDatasetHint": "Upload a Jira export to start analyzing",

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { computeWeeklyBuckets, simulateHowMany, simulateWhen, percentileFromSorted, buildHistogram } from '../src/analyzers/monteCarlo.js'
+import { computeAgingWip } from '../src/analyzers/agingWip.js'
 import { firstTransitionTo, lastTransitionTo, trimTransitionsToCycleWindow, type Transition } from '../src/analyzers/utils.js'
 import { buildHealthReport } from '../src/analyzers/healthReport.js'
 import { calculateCycleTime } from '../src/analyzers/cycleTime.js'
@@ -7,6 +8,70 @@ import { calculateLeadTime } from '../src/analyzers/leadTime.js'
 import { calculatePercentiles, calculateThroughputPerWeek } from '../src/analyzers/percentiles.js'
 import { calculateTimeInStatus } from '../src/analyzers/timeInStatus.js'
 import { detectRework, aggregateRework } from '../src/analyzers/rework.js'
+
+// ── Aging WIP ─────────────────────────────────────────────────────────────────
+describe('computeAgingWip', () => {
+  const importedAt = new Date('2024-02-01T00:00:00Z')
+
+  function makeTicket(overrides: object) {
+    return {
+      id: '1', external_id: 'T-1', title: 'Test', ticket_type: 'story',
+      created_at: '2024-01-01T00:00:00Z', external_link: null,
+      cycle_time_days: null, lead_time_days: null,
+      completed_at: null, completed: false, current_status: 'In Progress',
+      ...overrides,
+    }
+  }
+
+  it('excludes completed tickets', () => {
+    const ticket = makeTicket({
+      completed: true,
+      transitions: [t('In Progress', '2024-01-15T00:00:00Z')],
+    })
+    expect(computeAgingWip([ticket as never], 'In Progress', importedAt)).toHaveLength(0)
+  })
+
+  it('excludes tickets that never entered cycle start', () => {
+    const ticket = makeTicket({
+      current_status: 'To Do',
+      transitions: [t('To Do', '2024-01-15T00:00:00Z')],
+    })
+    expect(computeAgingWip([ticket as never], 'In Progress', importedAt)).toHaveLength(0)
+  })
+
+  it('computes wip_age_days from cycle start entry to importedAt', () => {
+    const ticket = makeTicket({
+      transitions: [
+        t('In Progress', '2024-01-18T00:00:00Z'), // 14 days before importedAt
+      ],
+    })
+    const result = computeAgingWip([ticket as never], 'In Progress', importedAt)
+    expect(result).toHaveLength(1)
+    expect(result[0].wip_age_days).toBe(14)
+    expect(result[0].days_in_current_status).toBe(14)
+  })
+
+  it('computes days_in_current_status from last transition to current_status', () => {
+    const ticket = makeTicket({
+      current_status: 'In Review',
+      transitions: [
+        t('In Progress', '2024-01-01T00:00:00Z'),
+        t('In Review', '2024-01-25T00:00:00Z'), // 7 days before importedAt
+      ],
+    })
+    const result = computeAgingWip([ticket as never], 'In Progress', importedAt)
+    expect(result[0].wip_age_days).toBe(31) // Jan 1 → Feb 1
+    expect(result[0].days_in_current_status).toBe(7) // Jan 25 → Feb 1
+  })
+
+  it('sorts by wip_age_days descending', () => {
+    const old = makeTicket({ id: '1', transitions: [t('In Progress', '2024-01-01T00:00:00Z')] })
+    const young = makeTicket({ id: '2', transitions: [t('In Progress', '2024-01-25T00:00:00Z')] })
+    const result = computeAgingWip([young, old] as never[], 'In Progress', importedAt)
+    expect(result[0].id).toBe('1')
+    expect(result[1].id).toBe('2')
+  })
+})
 
 // ── Monte Carlo ───────────────────────────────────────────────────────────────
 describe('computeWeeklyBuckets', () => {

@@ -182,6 +182,23 @@ export interface JiraFetchOptions {
   resolved_to?: string
 }
 
+export interface AgingWIPTicket {
+  id: string
+  external_id: string
+  title: string
+  ticket_type: string
+  current_status: string
+  days_in_current_status: number
+  wip_age_days: number
+  external_link: string | null
+}
+
+export interface AgingWIPResponse {
+  tickets: AgingWIPTicket[]
+  p85_cycle_time: number | null
+  p95_cycle_time: number | null
+}
+
 export interface ForecastResponse {
   mode: 'how_many' | 'when'
   value: number
