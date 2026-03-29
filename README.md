@@ -23,6 +23,12 @@ Cylenivo calculates metrics from **status transition timestamps**, not ticket fi
 
 Download the latest release for macOS or Windows from the [Releases](https://github.com/nobsagile/cylenivo/releases) page.
 
+> **Note:** Cylenivo is not code-signed. macOS and Windows will show a security warning on first launch — this is expected.
+>
+> **macOS:** Right-click the `.dmg` → Open, then right-click the app → Open. Or go to System Settings → Privacy & Security → "Open Anyway" after the first blocked attempt.
+>
+> **Windows:** Click "More info" → "Run anyway" when SmartScreen appears.
+
 To analyze your Jira data:
 1. Export issues from Jira (CSV export with transitions, or connect via Jira API)
 2. Create a configuration matching your workflow statuses
