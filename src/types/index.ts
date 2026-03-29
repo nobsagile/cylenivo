@@ -23,6 +23,7 @@ export type {
   SourceConnection,
   JiraFetchOptions,
   CreateConfigRequest,
+  ForecastResponse,
 } from '../../shared/types'
 
 // Frontend-only types

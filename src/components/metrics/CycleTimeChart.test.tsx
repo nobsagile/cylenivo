@@ -7,6 +7,7 @@ import type { CycleTimeTicket } from '@/types'
 
 const tickets: CycleTimeTicket[] = [
   {
+    id: 'ticket-1',
     external_id: 'ROAD-1',
     title: 'Ticket 1',
     cycle_time_days: 6.0,

@@ -61,7 +61,7 @@ function SortIcon({ col, sortKey, sortDir }: { col: SortKey; sortKey: SortKey; s
     : <ArrowDown className="w-3.5 h-3.5 ml-1 inline text-violet-600" />
 }
 
-export function TicketTable({ tickets, p50, p85, config, onTicketClick, sortKey: sortKeyProp, sortDir: sortDirProp, onSortChange }: Props) {
+export function TicketTable({ tickets, p50, p85, config: _config, onTicketClick, sortKey: sortKeyProp, sortDir: sortDirProp, onSortChange }: Props) {
   const { t } = useTranslation()
   const [sortKeyLocal, setSortKeyLocal] = useState<SortKey>('external_id')
   const [sortDirLocal, setSortDirLocal] = useState<SortDir>('asc')

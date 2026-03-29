@@ -160,8 +160,8 @@ export default function ForecastPage() {
                 />
                 <YAxis hide />
                 <Tooltip
-                  formatter={(v: number) => [v, t('forecast.simulations')]}
-                  labelFormatter={(l: number) => `${l} ${unitLabel}`}
+                  formatter={(v) => [v as number, t('forecast.simulations')]}
+                  labelFormatter={(l) => `${l} ${unitLabel}`}
                   contentStyle={{ fontSize: 12, borderRadius: 8 }}
                 />
                 {mode === 'how_many' ? <>
@@ -174,7 +174,7 @@ export default function ForecastPage() {
                   <ReferenceLine x={result.p95} stroke="#f43f5e" strokeDasharray="3 3" label={{ value: '95%', fill: '#f43f5e', fontSize: 10 }} />
                 </>}
                 <Bar dataKey="count" radius={[3, 3, 0, 0]}>
-                  {result.histogram.map(({ bucket }) => (
+                  {result.histogram.map(({ bucket }: { bucket: number; count: number }) => (
                     <Cell key={bucket} fill={barColor(bucket)} />
                   ))}
                 </Bar>

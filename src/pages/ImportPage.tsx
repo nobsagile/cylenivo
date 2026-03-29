@@ -608,7 +608,7 @@ export default function ImportPage() {
         <Input
           value={datasetName}
           onChange={(e) => setDatasetName(e.target.value)}
-          placeholder={preview?.projectKey ?? t('import.datasetNamePlaceholder')}
+          placeholder={preview?.project_key ?? t('import.datasetNamePlaceholder')}
         />
       </div>
 

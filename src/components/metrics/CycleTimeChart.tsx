@@ -67,7 +67,7 @@ export function CycleTimeChart({ tickets, p85, onTicketClick }: Props) {
           <Scatter
             data={data}
             fill="#0d9488"
-            onClick={(d) => onTicketClick?.(d.id as string)}
+            onClick={(d: unknown) => onTicketClick?.((d as { id?: string }).id as string)}
             style={{ cursor: onTicketClick ? 'pointer' : 'default' }}
           />
           {p85 != null && (

@@ -12,16 +12,19 @@ const timeInStatusData: TimeInStatusResponse = {
   statuses: STATUS_ORDER,
   tickets: [
     {
+      id: 'tick-1',
       external_id: 'TICK-1',
       title: 'Simple ticket',
       status_durations: { 'In Dev': 3, 'Review': 2, 'Done': 0 },
     },
     {
+      id: 'tick-2',
       external_id: 'TICK-2',
       title: 'Fast ticket',
       status_durations: { 'In Dev': 10, 'Review': 0, 'Done': 0 },
     },
     {
+      id: 'tick-3',
       external_id: 'TICK-3',
       title: 'Rework ticket',
       status_durations: { 'In Dev': 12, 'Review': 0, 'Done': 0 },
@@ -102,7 +105,7 @@ describe('TimeInStatusChart / data transformation', () => {
   it('stackedData falls back to 0 for missing status durations', () => {
     const sparse: TimeInStatusResponse = {
       statuses: STATUS_ORDER,
-      tickets: [{ external_id: 'X', title: 'X', status_durations: {} }],
+      tickets: [{ id: 'x', external_id: 'X', title: 'X', status_durations: {} }],
     }
     const stackedData = sparse.tickets.map(ticket => ({
       name: ticket.external_id,

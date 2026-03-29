@@ -128,7 +128,6 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
           const flexValue = hovered === status ? Math.max(baseFlex * 3, totalMean * 0.15) : baseFlex
           const style = getStatusStyle(status)
           const values = statusValues[status] ?? []
-          const isHovered = hovered === status
 
           return (
             <div
