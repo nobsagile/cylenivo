@@ -34,8 +34,19 @@ function formatMonth(dateOnly: string): string {
 export function DateRangeSlider({ dataFrom, dataTo, fromDate, toDate, onFromChange, onToChange, onClear }: Props) {
   const { t } = useTranslation()
 
-  const baseFrom = dataFrom ? toDateOnly(dataFrom) : null
-  const baseTo = dataTo ? toDateOnly(dataTo) : null
+  // Stable bounds: only captured when no filter is active.
+  // When a filter is applied, dataFrom/dataTo reflect the filtered range —
+  // we must NOT update bounds then or all positions recalculate and thumbs snap.
+  const [stableBounds, setStableBounds] = useState<{ from: string; to: string } | null>(null)
+
+  useEffect(() => {
+    if (!fromDate && !toDate && dataFrom && dataTo) {
+      setStableBounds({ from: toDateOnly(dataFrom), to: toDateOnly(dataTo) })
+    }
+  }, [dataFrom, dataTo, fromDate, toDate])
+
+  const baseFrom = stableBounds?.from ?? (dataFrom ? toDateOnly(dataFrom) : null)
+  const baseTo = stableBounds?.to ?? (dataTo ? toDateOnly(dataTo) : null)
 
   const totalDays = useMemo(() => {
     if (!baseFrom || !baseTo) return 0
@@ -52,10 +63,9 @@ export function DateRangeSlider({ dataFrom, dataTo, fromDate, toDate, onFromChan
     return Math.max(0, Math.min(totalDays, Math.round((dateOnlyToMs(toDate) - dateOnlyToMs(baseFrom)) / 86400000)))
   }, [toDate, baseFrom, totalDays])
 
-  // Local state drives the slider — only synced to context on commit (mouse up)
-  const [localValue, setLocalValue] = useState<[number, number]>([0, totalDays])
+  // Local state drives the slider — synced from context only when context changes externally
+  const [localValue, setLocalValue] = useState<[number, number]>([0, 0])
 
-  // Sync local state when context changes externally (clear, project switch)
   useEffect(() => {
     setLocalValue([contextStart, contextEnd])
   }, [contextStart, contextEnd])
@@ -90,7 +100,6 @@ export function DateRangeSlider({ dataFrom, dataTo, fromDate, toDate, onFromChan
   }
 
   const isFiltered = !!(fromDate || toDate)
-  // Display follows local value for instant feedback while dragging
   const displayFrom = localValue[0] === 0 ? baseFrom : dayToDate(localValue[0])
   const displayTo = localValue[1] === totalDays ? baseTo : dayToDate(localValue[1])
 
