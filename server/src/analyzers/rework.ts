@@ -1,3 +1,4 @@
+import { sortTransitions } from './utils.js'
 import type { Transition } from './utils.js'
 
 export interface ReworkMove {
@@ -15,9 +16,7 @@ export interface ReworkResult {
  * A backward move = to_status has a lower index in status_order than from_status.
  */
 export function detectRework(transitions: Transition[], statusOrder: string[]): ReworkResult {
-  const sorted = [...transitions].sort(
-    (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime()
-  )
+  const sorted = sortTransitions(transitions)
 
   const backward_moves: ReworkMove[] = []
 

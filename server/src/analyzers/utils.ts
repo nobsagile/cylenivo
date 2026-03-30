@@ -4,10 +4,17 @@ export interface Transition {
   transitioned_at: string // ISO string
 }
 
+/** Stable sort: primary by timestamp, secondary by to_status for determinism at equal timestamps. */
+export function sortTransitions(transitions: Transition[]): Transition[] {
+  return [...transitions].sort((a, b) => {
+    const tDiff = new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime()
+    if (tDiff !== 0) return tDiff
+    return a.to_status.localeCompare(b.to_status)
+  })
+}
+
 export function firstTransitionTo(transitions: Transition[], status: string): Date | null {
-  const sorted = [...transitions].sort(
-    (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime()
-  )
+  const sorted = sortTransitions(transitions)
   for (const t of sorted) {
     if (t.to_status === status) return new Date(t.transitioned_at)
   }
@@ -15,11 +22,9 @@ export function firstTransitionTo(transitions: Transition[], status: string): Da
 }
 
 export function lastTransitionTo(transitions: Transition[], status: string): Date | null {
-  const sorted = [...transitions].sort(
-    (a, b) => new Date(b.transitioned_at).getTime() - new Date(a.transitioned_at).getTime()
-  )
-  for (const t of sorted) {
-    if (t.to_status === status) return new Date(t.transitioned_at)
+  const sorted = sortTransitions(transitions)
+  for (let i = sorted.length - 1; i >= 0; i--) {
+    if (sorted[i].to_status === status) return new Date(sorted[i].transitioned_at)
   }
   return null
 }
@@ -38,9 +43,7 @@ export function trimTransitionsToCycleWindow(
   cycleEnd: string,
   mode: 'first_last' | 'first_first' | 'last_last' = 'first_last',
 ): Transition[] {
-  const sorted = [...transitions].sort(
-    (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime()
-  )
+  const sorted = sortTransitions(transitions)
   const startEntries = sorted.filter(t => t.to_status === cycleStart)
   if (!startEntries.length) return []
 

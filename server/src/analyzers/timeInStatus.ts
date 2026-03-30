@@ -1,3 +1,4 @@
+import { sortTransitions } from './utils.js'
 import type { Transition } from './utils.js'
 
 export function calculateTimeInStatus(
@@ -7,9 +8,7 @@ export function calculateTimeInStatus(
   const result: Record<string, number> = {}
   for (const s of referenceStatuses) result[s] = 0
 
-  const sorted = [...transitions].sort(
-    (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime()
-  )
+  const sorted = sortTransitions(transitions)
 
   for (let i = 0; i < sorted.length; i++) {
     const status = sorted[i].to_status

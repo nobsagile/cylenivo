@@ -3,7 +3,7 @@ import { db } from '../db/index.js'
 import { projectConfigs, importSessions, tickets, ticketTransitions } from '../db/schema.js'
 import { calculateCycleTime, type CycleTimeMode } from '../analyzers/cycleTime.js'
 import { calculateLeadTime } from '../analyzers/leadTime.js'
-import { firstTransitionTo, lastTransitionTo, type Transition } from '../analyzers/utils.js'
+import { firstTransitionTo, lastTransitionTo, sortTransitions, type Transition } from '../analyzers/utils.js'
 
 export interface ParsedConfig {
   id: string
@@ -62,9 +62,7 @@ export function buildEnrichedTicket(
     ? firstTransitionTo(transitions, cycle_time_end_status)
     : lastTransitionTo(transitions, cycle_time_end_status)
 
-  const sorted = [...transitions].sort(
-    (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime(),
-  )
+  const sorted = sortTransitions(transitions)
 
   return {
     id: ticket.id,
@@ -101,7 +99,7 @@ export async function loadImportContext(importId: string): Promise<ImportContext
 
   const startIdx = config.status_order.indexOf(config.cycle_time_start_status)
   const endIdx = config.status_order.indexOf(config.cycle_time_end_status)
-  const cycleStatuses = startIdx !== -1 && endIdx !== -1
+  const cycleStatuses = startIdx !== -1 && endIdx !== -1 && startIdx <= endIdx
     ? config.status_order.slice(startIdx, endIdx + 1)
     : config.status_order
 
