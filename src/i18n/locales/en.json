@@ -28,10 +28,10 @@
     "notReachable": "Not reachable"
   },
   "nav": {
-    "overview": "Overview",
+    "overview": "Metrics",
     "tickets": "Tickets",
     "analytics": "Analytics",
-    "flow": "Flow",
+    "flow": "Analysis",
     "forecast": "Forecast",
     "insights": "AI Insights",
     "settings": "Settings",
@@ -358,7 +358,7 @@
     "reportBug": "Report a bug"
   },
   "flow": {
-    "title": "Flow",
+    "title": "Analysis",
     "subtitle": "Understand where time is spent in your workflow"
   },
   "rework": {
