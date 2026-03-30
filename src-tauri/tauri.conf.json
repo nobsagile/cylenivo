@@ -1,12 +1,12 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Cylenivo",
-  "version": "0.44.6",
+  "version": "0.44.7",
   "identifier": "com.cylenivo.app",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
-    "beforeDevCommand": "npm run dev",
+    "beforeDevCommand": "npx concurrently \"npm run dev\" \"npm run server:dev\"",
     "beforeBuildCommand": "npm run build"
   },
   "app": {

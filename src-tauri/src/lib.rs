@@ -22,17 +22,20 @@ pub fn run() {
             std::fs::create_dir_all(&app_data_dir)?;
             let db_path = app_data_dir.join("cylenivo.db");
 
-            // Spawn the Hono server sidecar
-            let (_rx, child) = app
-                .shell()
-                .sidecar("cylenivo-server")
-                .expect("flow-analyzer-server sidecar not configured")
-                .env("DB_PATH", db_path.to_string_lossy().as_ref())
-                .env("SERVER_PORT", "8765")
-                .spawn()
-                .expect("failed to spawn server sidecar");
+            // Spawn the Hono server sidecar (production only — dev uses tsx via beforeDevCommand)
+            #[cfg(not(debug_assertions))]
+            {
+                let (_rx, child) = app
+                    .shell()
+                    .sidecar("cylenivo-server")
+                    .expect("flow-analyzer-server sidecar not configured")
+                    .env("DB_PATH", db_path.to_string_lossy().as_ref())
+                    .env("SERVER_PORT", "8765")
+                    .spawn()
+                    .expect("failed to spawn server sidecar");
 
-            app.manage(ServerChild(Mutex::new(Some(child))));
+                app.manage(ServerChild(Mutex::new(Some(child))));
+            }
 
             Ok(())
         })

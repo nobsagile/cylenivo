@@ -1,10 +1,11 @@
 {
   "name": "cylenivo",
   "private": true,
-  "version": "0.44.6",
+  "version": "0.44.7",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "server:dev": "cd server && DB_PATH=./dev.db SERVER_PORT=8765 npm run dev",
     "tauri": "tauri",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
@@ -49,6 +50,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "autoprefixer": "^10.4.27",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
