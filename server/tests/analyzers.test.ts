@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { computeWeeklyBuckets, simulateHowMany, simulateWhen, percentileFromSorted, buildHistogram } from '../src/analyzers/monteCarlo.js'
-import { firstTransitionTo, lastTransitionTo, trimTransitionsToCycleWindow, type Transition } from '../src/analyzers/utils.js'
+import { firstTransitionTo, lastTransitionTo, sortTransitions, trimTransitionsToCycleWindow, type Transition } from '../src/analyzers/utils.js'
 import { buildHealthReport } from '../src/analyzers/healthReport.js'
 import { calculateCycleTime } from '../src/analyzers/cycleTime.js'
 import { calculateLeadTime } from '../src/analyzers/leadTime.js'
@@ -615,5 +615,120 @@ describe('aggregateRework', () => {
     const result = aggregateRework([{ cycle_time_days: null, transitions: [] }], statusOrder)
     expect(result.total_completed).toBe(0)
     expect(result.tickets_with_rework).toBe(0)
+  })
+})
+
+// ─── edge cases: special chars in status names ────────────────────────────────
+
+describe('detectRework: status names with special characters', () => {
+  it('detects rework when status names contain parentheses', () => {
+    const order = ['Backlog', 'In Progress', 'In Review (blocked)', 'Done']
+    const transitions = [
+      t('In Progress', '2024-01-01T12:00:00Z', 'Backlog'),
+      t('In Review (blocked)', '2024-01-02T12:00:00Z', 'In Progress'),
+      t('In Progress', '2024-01-03T12:00:00Z', 'In Review (blocked)'),
+      t('Done', '2024-01-05T12:00:00Z', 'In Progress'),
+    ]
+    const result = detectRework(transitions, order)
+    expect(result.has_rework).toBe(true)
+    expect(result.backward_moves[0]).toEqual({ from_status: 'In Review (blocked)', to_status: 'In Progress' })
+  })
+
+  it('correctly round-trips status names with special chars through aggregateRework path key', () => {
+    const order = ['To Do', 'In Progress', 'In Review (blocked)', 'Done']
+    const ticket = {
+      cycle_time_days: 5,
+      transitions: [
+        t('In Progress', '2024-01-01T12:00:00Z', 'To Do'),
+        t('In Review (blocked)', '2024-01-02T12:00:00Z', 'In Progress'),
+        t('In Progress', '2024-01-03T12:00:00Z', 'In Review (blocked)'),
+        t('Done', '2024-01-04T12:00:00Z', 'In Progress'),
+      ],
+    }
+    const result = aggregateRework([ticket], order)
+    expect(result.rework_paths).toHaveLength(1)
+    expect(result.rework_paths[0].from).toBe('In Review (blocked)')
+    expect(result.rework_paths[0].to).toBe('In Progress')
+  })
+
+  it('handles status names with arrows and symbols', () => {
+    const order = ['Backlog', 'Dev -> Review', 'Done']
+    const transitions = [
+      t('Dev -> Review', '2024-01-01T12:00:00Z', 'Backlog'),
+      t('Backlog', '2024-01-02T12:00:00Z', 'Dev -> Review'),
+      t('Done', '2024-01-03T12:00:00Z', 'Backlog'),
+    ]
+    const result = detectRework(transitions, order)
+    expect(result.has_rework).toBe(true)
+    expect(result.backward_moves[0].from_status).toBe('Dev -> Review')
+  })
+})
+
+// ─── edge cases: equal timestamps ────────────────────────────────────────────
+
+describe('sortTransitions: equal timestamps are deterministic', () => {
+  it('sorts by to_status as secondary key when timestamps are equal', () => {
+    const sameTs = '2024-01-01T12:00:00Z'
+    const transitions = [
+      t('In Review', sameTs, 'In Progress'),
+      t('In Progress', sameTs, 'Backlog'),
+    ]
+    const sorted = sortTransitions(transitions)
+    expect(sorted[0].to_status).toBe('In Progress')
+    expect(sorted[1].to_status).toBe('In Review')
+  })
+
+  it('produces identical sort order when called twice (determinism)', () => {
+    const sameTs = '2024-06-15T08:00:00Z'
+    const transitions = [
+      t('Done', sameTs, 'In Review'),
+      t('In Review', sameTs, 'In Progress'),
+      t('In Progress', sameTs, 'Backlog'),
+    ]
+    const r1 = sortTransitions(transitions)
+    const r2 = sortTransitions(transitions)
+    expect(r1.map(x => x.to_status)).toEqual(r2.map(x => x.to_status))
+  })
+
+  it('calculateCycleTime returns null (not NaN) when start and end share a timestamp', () => {
+    // endTs <= startTs → null by design (not a crash or NaN)
+    const ts = '2024-01-10T09:00:00Z'
+    const transitions = [
+      t('In Progress', ts, 'Backlog'),
+      t('Done', ts, 'In Progress'),
+    ]
+    const result = calculateCycleTime(transitions, 'In Progress', 'Done', 'first_last')
+    expect(result).toBeNull()
+  })
+})
+
+// ─── edge cases: Monte Carlo with minimal throughput ─────────────────────────
+
+describe('Monte Carlo: degenerate throughput inputs', () => {
+  it('simulateWhen with all-zero buckets caps at 52 weeks', () => {
+    const results = simulateWhen([0, 0, 0], 10, 50)
+    expect(results.every(r => r === 52)).toBe(true)
+  })
+
+  it('simulateWhen with single non-zero bucket runs without crash', () => {
+    const results = simulateWhen([0, 0, 1], 5, 100)
+    expect(results).toHaveLength(100)
+    expect(results.every(r => Number.isFinite(r))).toBe(true)
+    expect(results.every(r => r <= 52)).toBe(true)
+  })
+
+  it('simulateHowMany with all-zero buckets returns all zeros', () => {
+    const results = simulateHowMany([0, 0, 0], 4, 50)
+    expect(results.every(r => r === 0)).toBe(true)
+  })
+
+  it('simulateHowMany with sparse throughput [0,0,1] returns non-negative integers', () => {
+    const results = simulateHowMany([0, 0, 1], 4, 200)
+    expect(results.every(r => r >= 0 && Number.isInteger(r))).toBe(true)
+  })
+
+  it('computeWeeklyBuckets with single date returns [1]', () => {
+    const buckets = computeWeeklyBuckets([new Date('2024-06-01T00:00:00Z')])
+    expect(buckets).toEqual([1])
   })
 })
