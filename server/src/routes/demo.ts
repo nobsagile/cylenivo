@@ -3,14 +3,15 @@ import { inArray, sql } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { projectConfigs, importSessions, tickets, ticketTransitions, llmInsights } from '../db/schema.js'
 import { ok } from '../lib/response.js'
-import { seedDemoProject, DEMO_CONFIG_NAMES, ALPHA_CONFIG, BETA_CONFIG } from '../lib/seedDemo.js'
-import { DEMO_IMPROVING, DEMO_DECLINING } from '../lib/demoData.js'
+import { seedDemoProject, DEMO_CONFIG_NAMES, ALPHA_CONFIG, BETA_CONFIG, GAMMA_CONFIG } from '../lib/seedDemo.js'
+import { DEMO_IMPROVING, DEMO_DECLINING, DEMO_REALWORLD } from '../lib/demoData.js'
 
 const demo = new Hono()
 
 const DEMO_PROJECTS = [
   { key: 'ALPHA', name: DEMO_CONFIG_NAMES.improving, fixture: DEMO_IMPROVING, config: ALPHA_CONFIG },
   { key: 'BETA',  name: DEMO_CONFIG_NAMES.declining, fixture: DEMO_DECLINING, config: BETA_CONFIG },
+  { key: 'GAMMA', name: DEMO_CONFIG_NAMES.realworld, fixture: DEMO_REALWORLD, config: GAMMA_CONFIG },
 ]
 
 /**

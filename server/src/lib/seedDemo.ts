@@ -1,7 +1,7 @@
 import { db } from '../db/index.js'
 import { projectConfigs, importSessions, tickets, ticketTransitions } from '../db/schema.js'
 import { buildHealthReport } from '../analyzers/healthReport.js'
-import { DEMO_IMPROVING, DEMO_DECLINING, type DemoFixture } from './demoData.js'
+import { DEMO_IMPROVING, DEMO_DECLINING, DEMO_REALWORLD, type DemoFixture } from './demoData.js'
 
 const ALPHA_STATUS_ORDER = ['Backlog', 'In Progress', 'In Review', 'Done']
 const ALPHA_CYCLE_START = 'In Progress'
@@ -41,9 +41,23 @@ export const BETA_CONFIG: DemoProjectConfig = {
   leadEnd: BETA_LEAD_END,
 }
 
+const GAMMA_STATUS_ORDER = ['Backlog', 'In Progress', 'In Review', 'Done']
+const GAMMA_CYCLE_START = 'In Progress'
+const GAMMA_CYCLE_END = 'Done'
+
+export const GAMMA_CONFIG: DemoProjectConfig = {
+  statusOrder: GAMMA_STATUS_ORDER,
+  cycleStart: GAMMA_CYCLE_START,
+  cycleEnd: GAMMA_CYCLE_END,
+  cycleMode: 'first_last',
+  leadStart: null,
+  leadEnd: null,
+}
+
 export const DEMO_CONFIG_NAMES = {
   improving: 'Demo: Improving Team',
   declining: 'Demo: Complex Team',
+  realworld: 'Demo: Real World Team',
 } as const
 
 export async function seedDemoProject(
@@ -137,5 +151,6 @@ export async function seedDemoIfEmpty(): Promise<void> {
   console.log('Seeding demo data...')
   await seedDemoProject(DEMO_CONFIG_NAMES.improving, DEMO_IMPROVING, ALPHA_CONFIG)
   await seedDemoProject(DEMO_CONFIG_NAMES.declining, DEMO_DECLINING, BETA_CONFIG)
-  console.log('Demo data seeded (ALPHA + BETA)')
+  await seedDemoProject(DEMO_CONFIG_NAMES.realworld, DEMO_REALWORLD, GAMMA_CONFIG)
+  console.log('Demo data seeded (ALPHA + BETA + GAMMA)')
 }

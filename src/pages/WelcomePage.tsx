@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, TrendingUp, TrendingDown } from 'lucide-react'
+import { ArrowRight, TrendingUp, TrendingDown, Shuffle } from 'lucide-react'
 import { api } from '@/services/api'
 import { Button } from '@/components/ui/button'
 import type { ImportSession } from '@/types'
@@ -65,6 +65,7 @@ export default function WelcomePage() {
 
   const improving = demoImports.find(i => i.config_name?.includes('Improving'))
   const complex = demoImports.find(i => i.config_name?.includes('Complex'))
+  const realworld = demoImports.find(i => i.config_name?.includes('Real World'))
 
   return (
     <div className="min-h-[90vh] flex flex-col items-center justify-center px-6 py-12">
@@ -80,12 +81,12 @@ export default function WelcomePage() {
       </div>
 
       {/* Demo section */}
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-3xl">
         <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider text-center mb-4">
           {t('onboarding.demosReady')}
         </p>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           {/* Improving Team */}
           <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm p-5 gap-3">
             <div className="flex items-center gap-2">
@@ -126,6 +127,29 @@ export default function WelcomePage() {
               className="w-full gap-1.5 mt-1"
               onClick={() => complex && goToDemo(complex.id)}
               disabled={!complex}
+            >
+              {t('onboarding.explore')}
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Button>
+          </div>
+
+          {/* Real World Team */}
+          <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm p-5 gap-3">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-amber-50">
+                <Shuffle className="w-4 h-4 text-amber-600" />
+              </div>
+              <span className="text-sm font-semibold text-gray-800">{t('onboarding.realworldTitle')}</span>
+            </div>
+            <p className="text-xs text-gray-500 leading-relaxed flex-1">
+              {t('onboarding.realworldDesc')}
+            </p>
+            <Button
+              size="sm"
+              variant="outline"
+              className="w-full gap-1.5 mt-1"
+              onClick={() => realworld && goToDemo(realworld.id)}
+              disabled={!realworld}
             >
               {t('onboarding.explore')}
               <ArrowRight className="w-3.5 h-3.5" />

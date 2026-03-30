@@ -211,6 +211,159 @@ function generateTickets(specs: MonthSpec[], projectKey: string, rng: () => numb
   return tickets
 }
 
+// --- GAMMA: Real World Team ---
+// Simulates a team that rebuilt their board twice during 2025.
+// Q1 (Jan–Mar): simple 4-status workflow
+// Q2–Q3 (Apr–Sep): complex 6-status workflow (board expansion)
+// Q4 (Oct–Dec): simplified 5-status workflow (board cleanup)
+//
+// Config uses the core 4-status view: Backlog → In Progress → In Review → Done
+// Q2–Q3 extras (Up Next, Ready for QA) and Q4 extra (Ready for Dev!) appear in
+// transitions but are outside the config's status_order → tests "unknown status" handling.
+//
+// Edge cases:
+//   ~5%  zombie tickets: cycle time 90–180 days
+//   ~10% quick tickets: cycle time < 12 hours
+//   ~5%  no-transition tickets: stuck in Backlog (incomplete)
+//   ~20% rework tickets: backward moves
+//   ~3%  equal-timestamp: two consecutive transitions at same ms
+
+const GAMMA_Q1_FLOW = ['Backlog', 'In Progress', 'In Review', 'Done']
+const GAMMA_Q2Q3_FLOW = ['Backlog', 'Up Next', 'In Progress', 'Ready for QA', 'In Review', 'Done']
+const GAMMA_Q4_FLOW = ['Backlog', 'In Progress', 'Ready for Dev!', 'In Review', 'Done']
+
+function getGammaFlow(month: number): string[] {
+  if (month <= 3) return GAMMA_Q1_FLOW
+  if (month <= 9) return GAMMA_Q2Q3_FLOW
+  return GAMMA_Q4_FLOW
+}
+
+function buildGammaPath(flow: string[], rng: () => number): string[] {
+  const path = [...flow]
+  if (path.includes('Up Next') && rng() < 0.35) path.splice(path.indexOf('Up Next'), 1)
+  if (path.includes('Ready for QA') && rng() < 0.30) path.splice(path.indexOf('Ready for QA'), 1)
+  return path
+}
+
+function buildGammaMainTransitions(
+  path: string[],
+  backlogAt: Date,
+  cycleDays: number,
+): Transition[] {
+  const totalMs = cycleDays * DAY_MS
+  const result: Transition[] = []
+  // path[0] = Backlog (already covered by firstTransition with from_status: null)
+  // path[1..] = the rest of the workflow
+  for (let i = 0; i < path.length - 1; i++) {
+    let ts: number
+    if (i === 0) {
+      // Backlog → first work status: ~1h after backlog entry (fixed offset)
+      ts = backlogAt.getTime() + 3_600_000
+    } else if (i === path.length - 2) {
+      // → Done: at full cycle
+      ts = backlogAt.getTime() + totalMs
+    } else {
+      // Proportional between first work and done
+      const progress = (i - 1) / (path.length - 3 || 1)
+      ts = backlogAt.getTime() + 3_600_000 + Math.floor(progress * (totalMs - 3_600_000))
+    }
+    result.push({ from_status: path[i], to_status: path[i + 1], transitioned_at: new Date(ts).toISOString() })
+  }
+  return result
+}
+
+function generateGammaTickets(rng: () => number): any[] {
+  const allTickets: any[] = []
+  let counter = 1
+  const usedTitles = new Map<TicketType, Set<string>>()
+
+  for (let month = 1; month <= 12; month++) {
+    const ticketCount = 33 + Math.floor(rng() * 8)   // 33–40/month → ~440–480 total
+    const flow = getGammaFlow(month)
+    const isComplexEra = flow.includes('Up Next')
+
+    for (let i = 0; i < ticketCount; i++) {
+      const externalId = `GAMMA-${counter++}`
+      const type = randomType(rng)
+      const title = pickTitle(rng, type, usedTitles)
+
+      // Mutually exclusive edge case categories
+      const edgeRoll = rng()
+      const isZombie      = edgeRoll < 0.05
+      const isQuick       = edgeRoll >= 0.05 && edgeRoll < 0.15
+      const isNoTransition= edgeRoll >= 0.15 && edgeRoll < 0.20
+      const hasRework     = !isZombie && !isQuick && !isNoTransition && rng() < 0.20
+      const addEqualTs    = !isZombie && !isQuick && !isNoTransition && rng() < 0.03
+
+      // Spread creation across month
+      const dayOfMonth = 1 + Math.floor(rng() * 25)
+      const hour = 8 + Math.floor(rng() * 9)
+      const createdAt = new Date(Date.UTC(2025, month - 1, dayOfMonth, hour, Math.floor(rng() * 60)))
+      const backlogAt = addMs(createdAt, Math.floor((1 + rng() * 3) * 3_600_000))
+
+      const firstTransition: Transition = { from_status: null, to_status: flow[0], transitioned_at: backlogAt.toISOString() }
+
+      if (isNoTransition) {
+        allTickets.push({ external_id: externalId, title, ticket_type: type, created_at: createdAt.toISOString(), transitions: [firstTransition] })
+        continue
+      }
+
+      let cycleDays: number
+      if (isZombie) {
+        cycleDays = 90 + Math.floor(rng() * 91)         // 90–180 days
+      } else if (isQuick) {
+        cycleDays = 0.08 + rng() * 0.38                 // ~2–11 hours
+      } else {
+        // Normal: mean ~8d, std ~4d, min 1d
+        cycleDays = Math.max(1, Math.round(8 + (rng() + rng() + rng() - 1.5) * 4))
+      }
+
+      const path = buildGammaPath(flow, rng)
+      let mainTransitions = buildGammaMainTransitions(path, backlogAt, cycleDays)
+
+      // Equal-timestamp: force transition[1] same ms as transition[0]
+      if (addEqualTs && mainTransitions.length >= 2) {
+        mainTransitions[1] = { ...mainTransitions[1], transitioned_at: mainTransitions[0].transitioned_at }
+      }
+
+      let allTrans: Transition[] = [firstTransition, ...mainTransitions]
+
+      // Rework: insert a backward move before Done
+      if (hasRework && allTrans.length >= 3) {
+        const doneT = allTrans[allTrans.length - 1]      // → Done
+        const prevT = allTrans[allTrans.length - 2]      // → [prev before Done]
+        const reworkAt = addMs(new Date(prevT.transitioned_at), Math.floor((0.5 + rng()) * DAY_MS))
+        const resumeAt = addMs(reworkAt, Math.floor((0.5 + rng() * 2) * DAY_MS))
+        const newDoneAt = addMs(resumeAt, Math.floor(rng() * DAY_MS))
+        allTrans.pop()  // remove old Done
+        allTrans.push(
+          { from_status: prevT.to_status, to_status: prevT.from_status!, transitioned_at: reworkAt.toISOString() },
+          { from_status: prevT.from_status!, to_status: prevT.to_status, transitioned_at: resumeAt.toISOString() },
+          { from_status: doneT.from_status, to_status: 'Done', transitioned_at: newDoneAt.toISOString() },
+        )
+      }
+
+      // Q2–Q3: ~8% of tickets also pass through 'In Review (blocked)' — a detour before In Review
+      if (isComplexEra && rng() < 0.08) {
+        const reviewIdx = allTrans.findIndex(t => t.to_status === 'In Review')
+        if (reviewIdx > 0) {
+          const reviewMs = new Date(allTrans[reviewIdx].transitioned_at).getTime()
+          const blockedAt = new Date(reviewMs - Math.floor(0.4 * DAY_MS))
+          const unblockedAt = new Date(reviewMs - Math.floor(0.1 * DAY_MS))
+          allTrans.splice(reviewIdx, 0,
+            { from_status: allTrans[reviewIdx - 1].to_status, to_status: 'In Review (blocked)', transitioned_at: blockedAt.toISOString() },
+            { from_status: 'In Review (blocked)', to_status: allTrans[reviewIdx - 1].to_status, transitioned_at: unblockedAt.toISOString() },
+          )
+        }
+      }
+
+      allTickets.push({ external_id: externalId, title, ticket_type: type, created_at: createdAt.toISOString(), transitions: allTrans })
+    }
+  }
+
+  return allTickets
+}
+
 // --- Scenario definitions ---
 
 // Improving team: cycle time 20d→4d, throughput 15→28/month over Jul–Dec 2025
@@ -235,6 +388,7 @@ const decliningSpecs: MonthSpec[] = [
 
 const rng1 = createRng(42)
 const rng2 = createRng(137)
+const rng3 = createRng(999)
 const now = new Date().toISOString()
 
 const improving = {
@@ -251,9 +405,17 @@ const declining = {
   tickets: generateTickets(decliningSpecs, 'BETA', rng2),
 }
 
+const realworld = {
+  source_type: 'jira',
+  project_key: 'GAMMA',
+  exported_at: now,
+  tickets: generateGammaTickets(rng3),
+}
+
 const fixturesDir = join(__dirname, '../tests/fixtures')
 writeFileSync(join(fixturesDir, 'demo-improving.json'), JSON.stringify(improving, null, 2))
 writeFileSync(join(fixturesDir, 'demo-declining.json'), JSON.stringify(declining, null, 2))
+writeFileSync(join(fixturesDir, 'demo-realworld.json'), JSON.stringify(realworld, null, 2))
 
 // Also write a TypeScript module so esbuild can bundle the data into the server binary.
 // This file is auto-generated — edit generate-demo-fixtures.ts instead.
@@ -284,9 +446,12 @@ export interface DemoFixture {
 export const DEMO_IMPROVING: DemoFixture = ${JSON.stringify(improving, null, 2)}
 
 export const DEMO_DECLINING: DemoFixture = ${JSON.stringify(declining, null, 2)}
+
+export const DEMO_REALWORLD: DemoFixture = ${JSON.stringify(realworld, null, 2)}
 `
 writeFileSync(join(__dirname, '../src/lib/demoData.ts'), tsContent)
 
 console.log(`✓ demo-improving.json: ${improving.tickets.length} tickets (Jul–Dec 2025, improving)`)
 console.log(`✓ demo-declining.json: ${declining.tickets.length} tickets (Jul–Dec 2025, declining)`)
+console.log(`✓ demo-realworld.json: ${realworld.tickets.length} tickets (Jan–Dec 2025, real-world)`)
 console.log(`✓ src/lib/demoData.ts: TypeScript module for server binary`)
