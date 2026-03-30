@@ -24,6 +24,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
 import ConnectionDialog from '@/components/connections/ConnectionDialog'
+import { DatePicker } from '@/components/ui/date-picker'
 
 type Step = 'source' | 'upload' | 'jira' | 'configure'
 type SourceMode = 'upload' | 'jira' | null
@@ -455,20 +456,16 @@ export default function ImportPage() {
               <span className="text-gray-400 font-normal ml-1">{t('import.completedBetweenHint')}</span>
             </p>
             <div className="flex items-center gap-2">
-              <Input
-                type="date"
+              <DatePicker
                 value={resolvedFrom}
-                onChange={(e) => setResolvedFrom(e.target.value)}
-                className="w-44"
-                placeholder="From"
+                onChange={setResolvedFrom}
+                placeholder={t('common.from')}
               />
               <span className="text-gray-400 text-sm">{t('common.to')}</span>
-              <Input
-                type="date"
+              <DatePicker
                 value={resolvedTo}
-                onChange={(e) => setResolvedTo(e.target.value)}
-                className="w-44"
-                placeholder="To"
+                onChange={setResolvedTo}
+                placeholder={t('common.to')}
               />
             </div>
           </div>
