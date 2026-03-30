@@ -2,7 +2,7 @@ use std::sync::Mutex;
 use tauri::Manager;
 use tauri_plugin_shell::{process::CommandChild, ShellExt};
 
-struct ServerChild(Mutex<CommandChild>);
+struct ServerChild(Mutex<Option<CommandChild>>);
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -32,14 +32,16 @@ pub fn run() {
                 .spawn()
                 .expect("failed to spawn server sidecar");
 
-            app.manage(ServerChild(Mutex::new(child)));
+            app.manage(ServerChild(Mutex::new(Some(child))));
 
             Ok(())
         })
         .on_window_event(|window, event| {
             if let tauri::WindowEvent::Destroyed = event {
                 if let Some(state) = window.app_handle().try_state::<ServerChild>() {
-                    let _ = state.0.lock().unwrap().kill();
+                    if let Some(child) = state.0.lock().unwrap().take() {
+                        let _ = child.kill();
+                    }
                 }
             }
         })
