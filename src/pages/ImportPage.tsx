@@ -100,6 +100,7 @@ export default function ImportPage() {
   const [cycleEnd, setCycleEnd] = useState('')
   const [cycleMode, setCycleMode] = useState<'first_last' | 'first_first' | 'last_last'>('first_last')
   const [leadStart, setLeadStart] = useState('')
+  const [leadEnd, setLeadEnd] = useState('')
   const [importing, setImporting] = useState(false)
 
   const sensors = useSensors(
@@ -216,6 +217,7 @@ export default function ImportPage() {
           cycle_time_end_status: cycleEnd,
           cycle_time_mode: cycleMode,
           lead_time_start_status: leadStart || undefined,
+          lead_time_end_status: leadEnd || undefined,
         })
         configId = newConfig.id
       }
@@ -796,6 +798,18 @@ export default function ImportPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__created__">{t('import.useCreationDate')}</SelectItem>
+                {statusOrder.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <label className="block text-xs font-medium text-gray-500 mb-1.5 mt-3">
+              {t('import.endStatus')} <span className="font-normal text-gray-400">{t('import.leadTimeEndHint')}</span>
+            </label>
+            <Select value={leadEnd || '__cycle_end__'} onValueChange={(v) => setLeadEnd(v === '__cycle_end__' ? '' : v)}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__cycle_end__">{t('import.sameAsCycleEnd')}</SelectItem>
                 {statusOrder.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
               </SelectContent>
             </Select>
