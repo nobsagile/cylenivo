@@ -1,5 +1,8 @@
+use std::sync::Mutex;
 use tauri::Manager;
-use tauri_plugin_shell::ShellExt;
+use tauri_plugin_shell::{process::CommandChild, ShellExt};
+
+struct ServerChild(Mutex<CommandChild>);
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -20,7 +23,7 @@ pub fn run() {
             let db_path = app_data_dir.join("cylenivo.db");
 
             // Spawn the Hono server sidecar
-            let (_rx, _child) = app
+            let (_rx, child) = app
                 .shell()
                 .sidecar("cylenivo-server")
                 .expect("flow-analyzer-server sidecar not configured")
@@ -29,7 +32,16 @@ pub fn run() {
                 .spawn()
                 .expect("failed to spawn server sidecar");
 
+            app.manage(ServerChild(Mutex::new(child)));
+
             Ok(())
+        })
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::Destroyed = event {
+                if let Some(state) = window.app_handle().try_state::<ServerChild>() {
+                    let _ = state.0.lock().unwrap().kill();
+                }
+            }
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
