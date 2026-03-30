@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { open as tauriOpen } from '@tauri-apps/plugin-shell'
 
 function openUrl(url: string) {
-  if (window.__TAURI__) tauriOpen(url)
+  if (window.__TAURI_INTERNALS__) tauriOpen(url)
   else window.open(url, '_blank', 'noopener,noreferrer')
 }
 import { useTranslation } from 'react-i18next'
