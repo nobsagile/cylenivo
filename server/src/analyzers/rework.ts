@@ -71,7 +71,7 @@ export function aggregateRework(
       cycleSum_rework += ticket.cycle_time_days!
       count_rework++
       for (const move of result.backward_moves) {
-        const key = `${move.from_status}→${move.to_status}`
+        const key = `${move.from_status}\x00${move.to_status}`
         pathCounts.set(key, (pathCounts.get(key) ?? 0) + 1)
       }
     } else {
@@ -82,8 +82,8 @@ export function aggregateRework(
 
   const rework_paths: ReworkPath[] = [...pathCounts.entries()]
     .map(([key, count]) => {
-      const [from, to] = key.split('→')
-      return { from, to, count }
+      const sep = key.indexOf('\x00')
+      return { from: key.slice(0, sep), to: key.slice(sep + 1), count }
     })
     .sort((a, b) => b.count - a.count)
 
