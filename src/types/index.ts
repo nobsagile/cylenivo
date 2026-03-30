@@ -24,6 +24,9 @@ export type {
   JiraFetchOptions,
   CreateConfigRequest,
   ForecastResponse,
+  WeeklyThroughputPoint,
+  ThroughputResponse,
+  CfdResponse,
 } from '../../shared/types'
 
 // Frontend-only types

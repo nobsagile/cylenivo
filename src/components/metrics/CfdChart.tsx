@@ -22,7 +22,7 @@ export function CfdChart({ data }: CfdChartProps) {
   let chartData = data.data
   if (chartData.length > 300) {
     const step = Math.ceil(chartData.length / 300)
-    chartData = chartData.filter((_, i) => i % step === 0 || i === chartData.length - 1)
+    chartData = chartData.filter((_: unknown, i: number) => i % step === 0 || i === chartData.length - 1)
   }
 
   return (
@@ -42,7 +42,7 @@ export function CfdChart({ data }: CfdChartProps) {
             if (!active || !payload?.length) return null
             return (
               <ChartTooltip>
-                <p className="text-gray-500 mb-1.5">{label ? format(parseISO(label), 'MMM d, yyyy') : ''}</p>
+                <p className="text-gray-500 mb-1.5">{label ? format(parseISO(String(label)), 'MMM d, yyyy') : ''}</p>
                 {payload.map((entry) => (
                   <div key={entry.name} className="flex items-center justify-between gap-4">
                     <span className="flex items-center gap-1.5">
@@ -56,7 +56,7 @@ export function CfdChart({ data }: CfdChartProps) {
             )
           }}
         />
-        {data.statuses.map((status, i) => (
+        {data.statuses.map((status: string, i: number) => (
           <Area
             key={status}
             type="monotone"

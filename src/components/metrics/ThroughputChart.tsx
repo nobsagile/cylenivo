@@ -33,7 +33,7 @@ export function ThroughputChart({ data, average }: ThroughputChartProps) {
             if (!active || !payload?.length) return null
             return (
               <ChartTooltip>
-                <p className="font-semibold text-gray-800 mb-1">{label ? format(parseISO(label), 'MMM d, yyyy') : ''}</p>
+                <p className="font-semibold text-gray-800 mb-1">{label ? format(parseISO(String(label)), 'MMM d, yyyy') : ''}</p>
                 <p className="font-medium text-emerald-600">{payload[0].value} tickets</p>
               </ChartTooltip>
             )
