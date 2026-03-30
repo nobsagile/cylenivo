@@ -13,85 +13,91 @@ interface Props {
   onClear: () => void
 }
 
-function toIso(d: Date): string {
+// Parse any ISO string to a UTC midnight date string (YYYY-MM-DD)
+function toDateOnly(iso: string): string {
+  return iso.slice(0, 10)
+}
+
+// Convert YYYY-MM-DD to milliseconds since epoch (UTC midnight)
+function dateOnlyToMs(s: string): number {
+  const [y, m, d] = s.split('-').map(Number)
+  return Date.UTC(y, m - 1, d)
+}
+
+function msToDateOnly(ms: number): string {
+  const d = new Date(ms)
   return d.toISOString().slice(0, 10)
 }
 
-function formatLabel(iso: string): string {
-  const d = new Date(iso + 'T00:00:00')
-  return d.toLocaleDateString(undefined, { month: 'short', year: 'numeric' })
+function formatLabel(dateOnly: string): string {
+  const [y, m] = dateOnly.split('-').map(Number)
+  return new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })
 }
 
 export function DateRangeSlider({ dataFrom, dataTo, fromDate, toDate, onFromChange, onToChange, onClear }: Props) {
   const { t } = useTranslation()
 
-  const { minDay, maxDay, totalDays } = useMemo(() => {
-    if (!dataFrom || !dataTo) return { minDay: 0, maxDay: 0, totalDays: 0 }
-    const min = new Date(dataFrom).getTime()
-    const max = new Date(dataTo).getTime()
-    const totalDays = Math.round((max - min) / 86400000)
-    return { minDay: 0, maxDay: totalDays, totalDays }
-  }, [dataFrom, dataTo])
+  const baseFrom = dataFrom ? toDateOnly(dataFrom) : null
+  const baseTo = dataTo ? toDateOnly(dataTo) : null
+
+  const totalDays = useMemo(() => {
+    if (!baseFrom || !baseTo) return 0
+    return Math.round((dateOnlyToMs(baseTo) - dateOnlyToMs(baseFrom)) / 86400000)
+  }, [baseFrom, baseTo])
 
   const selectedStart = useMemo(() => {
-    if (!fromDate || !dataFrom) return minDay
-    const base = new Date(dataFrom).getTime()
-    const sel = new Date(fromDate).getTime()
-    return Math.max(minDay, Math.min(maxDay, Math.round((sel - base) / 86400000)))
-  }, [fromDate, dataFrom, minDay, maxDay])
+    if (!fromDate || !baseFrom) return 0
+    return Math.max(0, Math.min(totalDays, Math.round((dateOnlyToMs(fromDate) - dateOnlyToMs(baseFrom)) / 86400000)))
+  }, [fromDate, baseFrom, totalDays])
 
   const selectedEnd = useMemo(() => {
-    if (!toDate || !dataFrom) return maxDay
-    const base = new Date(dataFrom).getTime()
-    const sel = new Date(toDate).getTime()
-    return Math.max(minDay, Math.min(maxDay, Math.round((sel - base) / 86400000)))
-  }, [toDate, dataFrom, minDay, maxDay])
+    if (!toDate || !baseFrom) return totalDays
+    return Math.max(0, Math.min(totalDays, Math.round((dateOnlyToMs(toDate) - dateOnlyToMs(baseFrom)) / 86400000)))
+  }, [toDate, baseFrom, totalDays])
 
-  if (!dataFrom || !dataTo || totalDays === 0) return null
-
-  function dayToIso(day: number): string {
-    const base = new Date(dataFrom!).getTime()
-    return toIso(new Date(base + day * 86400000))
-  }
-
-  // Tick marks: one per month
   const ticks = useMemo(() => {
+    if (!baseFrom || !baseTo || totalDays === 0) return []
     const result: { day: number; label: string }[] = []
-    const base = new Date(dataFrom!)
-    let cur = new Date(base.getFullYear(), base.getMonth(), 1)
-    const end = new Date(dataTo!)
-    while (cur <= end) {
-      const day = Math.round((cur.getTime() - base.getTime()) / 86400000)
+    const [y0, m0] = baseFrom.split('-').map(Number)
+    const endMs = dateOnlyToMs(baseTo)
+    let y = y0, m = m0
+    while (true) {
+      const ms = Date.UTC(y, m - 1, 1)
+      if (ms > endMs) break
+      const day = Math.round((ms - dateOnlyToMs(baseFrom)) / 86400000)
       if (day >= 0 && day <= totalDays) {
-        result.push({ day, label: cur.toLocaleDateString(undefined, { month: 'short', year: '2-digit' }) })
+        result.push({ day, label: new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: 'short', year: '2-digit' }) })
       }
-      cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1)
+      m++
+      if (m > 12) { m = 1; y++ }
     }
     return result
-  }, [dataFrom, dataTo, totalDays])
+  }, [baseFrom, baseTo, totalDays])
 
-  const isFiltered = !!(fromDate || toDate)
-  const displayFrom = fromDate || dataFrom!
-  const displayTo = toDate || dataTo!
+  if (!baseFrom || !baseTo || totalDays === 0) return null
+
+  function dayToDateOnly(day: number): string {
+    return msToDateOnly(dateOnlyToMs(baseFrom!) + day * 86400000)
+  }
 
   function handleChange([start, end]: number[]) {
-    const newFrom = dayToIso(start)
-    const newTo = dayToIso(end)
-    onFromChange(newFrom === dataFrom ? '' : newFrom)
-    onToChange(newTo === dataTo ? '' : newTo)
+    const newFrom = dayToDateOnly(start)
+    const newTo = dayToDateOnly(end)
+    onFromChange(start === 0 ? '' : newFrom)
+    onToChange(end === totalDays ? '' : newTo)
   }
+
+  const isFiltered = !!(fromDate || toDate)
+  const displayFrom = fromDate || baseFrom
+  const displayTo = toDate || baseTo
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-700">
-            {formatLabel(displayFrom)}
-          </span>
+          <span className="text-sm font-medium text-gray-700">{formatLabel(displayFrom)}</span>
           <span className="text-gray-300">→</span>
-          <span className="text-sm font-medium text-gray-700">
-            {formatLabel(displayTo)}
-          </span>
+          <span className="text-sm font-medium text-gray-700">{formatLabel(displayTo)}</span>
           {isFiltered && (
             <button
               onClick={onClear}
@@ -109,18 +115,16 @@ export function DateRangeSlider({ dataFrom, dataTo, fromDate, toDate, onFromChan
 
       <div className="relative px-1">
         <Slider
-          min={minDay}
-          max={maxDay}
+          min={0}
+          max={totalDays}
           step={1}
           value={[selectedStart, selectedEnd]}
           onValueChange={handleChange}
           className="w-full"
         />
-
-        {/* Tick marks */}
         <div className="relative mt-2 h-5">
           {ticks.map(({ day, label }) => {
-            const pct = totalDays === 0 ? 0 : (day / totalDays) * 100
+            const pct = (day / totalDays) * 100
             return (
               <span
                 key={day}

@@ -4,7 +4,6 @@ import { DateFilterProvider } from '@/contexts/DateFilterContext'
 
 export function AppShell() {
   const { importId } = useParams<{ importId: string }>()
-
   return (
     <DateFilterProvider importId={importId}>
       <div className="flex min-h-screen bg-gray-50">
