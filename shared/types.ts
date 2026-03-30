@@ -92,7 +92,7 @@ export interface MetricsSummary {
   cycle_time: PercentileStats
   lead_time: PercentileStats
   time_in_status: Record<string, StatusDuration>
-  throughput_per_week: number
+  throughput_per_week: number | null
   config_context: ConfigContext
 }
 

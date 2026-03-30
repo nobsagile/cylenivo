@@ -41,11 +41,13 @@ export function calculatePercentiles(values: number[]): PercentileResult {
   }
 }
 
-export function calculateThroughputPerWeek(completedAtDates: Date[]): number {
-  if (completedAtDates.length < 2) return completedAtDates.length
+export function calculateThroughputPerWeek(completedAtDates: Date[]): number | null {
+  if (completedAtDates.length < 2) return completedAtDates.length === 1 ? null : 0
   const times = completedAtDates.map(d => d.getTime())
   const minDate = Math.min(...times)
   const maxDate = Math.max(...times)
-  const weeks = Math.max((maxDate - minDate) / (1000 * 86400 * 7), 1)
+  const spanDays = (maxDate - minDate) / (1000 * 86400)
+  if (spanDays < 7) return null  // span too short for a meaningful per-week rate
+  const weeks = spanDays / 7
   return Math.round((completedAtDates.length / weeks) * 10) / 10
 }

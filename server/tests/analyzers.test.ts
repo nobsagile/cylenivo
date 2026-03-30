@@ -196,8 +196,8 @@ describe('calculateThroughputPerWeek', () => {
     expect(result).toBeGreaterThan(0)
   })
 
-  it('returns 1 for single date', () => {
-    expect(calculateThroughputPerWeek([new Date()])).toBe(1)
+  it('returns null for single date (no span to calculate rate)', () => {
+    expect(calculateThroughputPerWeek([new Date()])).toBeNull()
   })
 
   it('returns 0 for empty input', () => {

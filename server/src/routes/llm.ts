@@ -114,7 +114,7 @@ llm.post('/analyze/:importId', async (c) => {
   const userContent = `PROJECT: ${imp.project_key}
 TICKETS ANALYZED: ${ctx.tickets.length} total, ${cycleTimes.length} completed
 DATE RANGE: ${dateFrom} to ${dateTo}
-THROUGHPUT: ${throughput} tickets/week
+THROUGHPUT: ${throughput != null ? `${throughput} tickets/week` : 'n/a (date range < 7 days)'}
 
 CYCLE TIME (from ${ctx.config.cycle_time_start_status} to ${ctx.config.cycle_time_end_status}):
   Mean: ${cycleTimes.length ? Math.round(mean(cycleTimes) * 10) / 10 : 'N/A'} days | Median: ${cycleTimes.length ? Math.round(median(cycleTimes) * 10) / 10 : 'N/A'} days

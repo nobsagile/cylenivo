@@ -12,7 +12,7 @@ export interface MetricsAggregate {
   completedAtDates: Date[]
   cycleTimePercentiles: PercentileResult
   leadTimePercentiles: PercentileResult
-  throughput: number
+  throughput: number | null
   dateRange: { from: string | null; to: string | null }
   timeInStatus: Record<string, { mean_days: number; median_days: number }>
   completedTickets: EnrichedTicket[]
