@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Slider } from '@/components/ui/slider'
 import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -13,23 +13,20 @@ interface Props {
   onClear: () => void
 }
 
-// Parse any ISO string to a UTC midnight date string (YYYY-MM-DD)
 function toDateOnly(iso: string): string {
   return iso.slice(0, 10)
 }
 
-// Convert YYYY-MM-DD to milliseconds since epoch (UTC midnight)
 function dateOnlyToMs(s: string): number {
   const [y, m, d] = s.split('-').map(Number)
   return Date.UTC(y, m - 1, d)
 }
 
 function msToDateOnly(ms: number): string {
-  const d = new Date(ms)
-  return d.toISOString().slice(0, 10)
+  return new Date(ms).toISOString().slice(0, 10)
 }
 
-function formatLabel(dateOnly: string): string {
+function formatMonth(dateOnly: string): string {
   const [y, m] = dateOnly.split('-').map(Number)
   return new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })
 }
@@ -45,15 +42,23 @@ export function DateRangeSlider({ dataFrom, dataTo, fromDate, toDate, onFromChan
     return Math.round((dateOnlyToMs(baseTo) - dateOnlyToMs(baseFrom)) / 86400000)
   }, [baseFrom, baseTo])
 
-  const selectedStart = useMemo(() => {
-    if (!fromDate || !baseFrom) return 0
+  const contextStart = useMemo(() => {
+    if (!fromDate || !baseFrom || totalDays === 0) return 0
     return Math.max(0, Math.min(totalDays, Math.round((dateOnlyToMs(fromDate) - dateOnlyToMs(baseFrom)) / 86400000)))
   }, [fromDate, baseFrom, totalDays])
 
-  const selectedEnd = useMemo(() => {
-    if (!toDate || !baseFrom) return totalDays
+  const contextEnd = useMemo(() => {
+    if (!toDate || !baseFrom || totalDays === 0) return totalDays
     return Math.max(0, Math.min(totalDays, Math.round((dateOnlyToMs(toDate) - dateOnlyToMs(baseFrom)) / 86400000)))
   }, [toDate, baseFrom, totalDays])
+
+  // Local state drives the slider — only synced to context on commit (mouse up)
+  const [localValue, setLocalValue] = useState<[number, number]>([0, totalDays])
+
+  // Sync local state when context changes externally (clear, project switch)
+  useEffect(() => {
+    setLocalValue([contextStart, contextEnd])
+  }, [contextStart, contextEnd])
 
   const ticks = useMemo(() => {
     if (!baseFrom || !baseTo || totalDays === 0) return []
@@ -61,43 +66,41 @@ export function DateRangeSlider({ dataFrom, dataTo, fromDate, toDate, onFromChan
     const [y0, m0] = baseFrom.split('-').map(Number)
     const endMs = dateOnlyToMs(baseTo)
     let y = y0, m = m0
-    while (true) {
+    for (let i = 0; i < 200; i++) {
       const ms = Date.UTC(y, m - 1, 1)
       if (ms > endMs) break
       const day = Math.round((ms - dateOnlyToMs(baseFrom)) / 86400000)
       if (day >= 0 && day <= totalDays) {
         result.push({ day, label: new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: 'short', year: '2-digit' }) })
       }
-      m++
-      if (m > 12) { m = 1; y++ }
+      m++; if (m > 12) { m = 1; y++ }
     }
     return result
   }, [baseFrom, baseTo, totalDays])
 
   if (!baseFrom || !baseTo || totalDays === 0) return null
 
-  function dayToDateOnly(day: number): string {
+  function dayToDate(day: number): string {
     return msToDateOnly(dateOnlyToMs(baseFrom!) + day * 86400000)
   }
 
-  function handleChange([start, end]: number[]) {
-    const newFrom = dayToDateOnly(start)
-    const newTo = dayToDateOnly(end)
-    onFromChange(start === 0 ? '' : newFrom)
-    onToChange(end === totalDays ? '' : newTo)
+  function handleCommit([start, end]: number[]) {
+    onFromChange(start === 0 ? '' : dayToDate(start))
+    onToChange(end === totalDays ? '' : dayToDate(end))
   }
 
   const isFiltered = !!(fromDate || toDate)
-  const displayFrom = fromDate || baseFrom
-  const displayTo = toDate || baseTo
+  // Display follows local value for instant feedback while dragging
+  const displayFrom = localValue[0] === 0 ? baseFrom : dayToDate(localValue[0])
+  const displayTo = localValue[1] === totalDays ? baseTo : dayToDate(localValue[1])
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-700">{formatLabel(displayFrom)}</span>
+          <span className="text-sm font-medium text-gray-700">{formatMonth(displayFrom)}</span>
           <span className="text-gray-300">→</span>
-          <span className="text-sm font-medium text-gray-700">{formatLabel(displayTo)}</span>
+          <span className="text-sm font-medium text-gray-700">{formatMonth(displayTo)}</span>
           {isFiltered && (
             <button
               onClick={onClear}
@@ -118,23 +121,21 @@ export function DateRangeSlider({ dataFrom, dataTo, fromDate, toDate, onFromChan
           min={0}
           max={totalDays}
           step={1}
-          value={[selectedStart, selectedEnd]}
-          onValueChange={handleChange}
+          value={localValue}
+          onValueChange={(v) => setLocalValue(v as [number, number])}
+          onValueCommit={handleCommit}
           className="w-full"
         />
         <div className="relative mt-2 h-5">
-          {ticks.map(({ day, label }) => {
-            const pct = (day / totalDays) * 100
-            return (
-              <span
-                key={day}
-                className="absolute text-[10px] text-gray-400 -translate-x-1/2 whitespace-nowrap"
-                style={{ left: `${pct}%` }}
-              >
-                {label}
-              </span>
-            )
-          })}
+          {ticks.map(({ day, label }) => (
+            <span
+              key={day}
+              className="absolute text-[10px] text-gray-400 -translate-x-1/2 whitespace-nowrap"
+              style={{ left: `${(day / totalDays) * 100}%` }}
+            >
+              {label}
+            </span>
+          ))}
         </div>
       </div>
     </div>
