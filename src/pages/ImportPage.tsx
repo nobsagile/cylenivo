@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import { notifyImportsChanged } from '@/hooks/useImports'
 import {
   UploadCloud, CheckCircle2, FileJson, ArrowRight, ArrowLeft,
   Plus, GripVertical, X, Loader2, Link2, Clock, Info,
@@ -224,12 +225,14 @@ export default function ImportPage() {
 
       if (preview.raw) {
         const session = await api.imports.upload(preview.raw, configId, datasetName || undefined)
+        notifyImportsChanged()
         navigate(`/projects/${session.id}`)
       } else if (preview.fetched) {
         // Upload fetched JSON as a blob
         const blob = new Blob([JSON.stringify(preview.fetched)], { type: 'application/json' })
         const file = new File([blob], `${preview.project_key}-jira-export.json`, { type: 'application/json' })
         const session = await api.imports.upload(file, configId, datasetName || undefined)
+        notifyImportsChanged()
         navigate(`/projects/${session.id}`)
       }
     } catch (e) {

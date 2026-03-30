@@ -18,7 +18,7 @@ const PERCENTILES = [
 
 export function PercentileCard({ data, variant = 'cycle' }: Props) {
   const { t } = useTranslation()
-  const maxVal = data.p95 ?? data.p85 ?? data.p70 ?? data.p50 ?? 1
+  const maxVal = (data.p95 ?? data.p85 ?? data.p70 ?? data.p50 ?? 1) || 1
   const isLead = variant === 'lead'
   const title = isLead ? `${t('metrics.leadTime')} Forecast` : t('metrics.percentile.title')
   const metricName = isLead ? t('metrics.leadTime').toLowerCase() : t('metrics.cycleTime').toLowerCase()

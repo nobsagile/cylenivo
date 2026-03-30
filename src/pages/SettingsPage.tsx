@@ -12,6 +12,7 @@ import type { ProjectConfig, ImportSession, SourceConnection, LlmConfig } from '
 import { Button } from '@/components/ui/button'
 import ConnectionDialog from '@/components/connections/ConnectionDialog'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import { notifyImportsChanged } from '@/hooks/useImports'
 
 type Section = 'configs' | 'datasets' | 'connections' | 'plugins' | 'ai' | 'language' | 'data-management'
 
@@ -316,6 +317,7 @@ export default function SettingsPage() {
       await api.demo.reset()
       setConfigs([])
       setImports([])
+      notifyImportsChanged()
     } catch (e) {
       setErrorMsg({ title: 'Could not reset', description: e instanceof Error ? e.message : 'Error' })
     }
@@ -326,6 +328,7 @@ export default function SettingsPage() {
     setSeeding(true)
     try {
       const result = await api.demo.seed()
+      notifyImportsChanged()
       const first = result.imports[0]
       if (first?.import_id) navigate(`/projects/${first.import_id}`)
     } catch (e) {

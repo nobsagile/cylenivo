@@ -82,10 +82,9 @@ export function computeAggregate(ctx: ImportContext): MetricsAggregate {
 /** Build the cycle_time / lead_time response shape for /summary.
  *  Shows mean/median even with small samples; p50-p95 are null below threshold. */
 export function buildStatsResponse(times: number[], percentiles: PercentileResult) {
-  const sorted = [...times].sort((a, b) => a - b)
   return {
     mean_days: times.length ? Math.round(mean(times) * 100) / 100 : null,
-    median_days: times.length ? sorted[Math.floor(sorted.length * 50 / 100)] : null,
+    median_days: times.length ? Math.round(median(times) * 100) / 100 : null,
     p50: percentiles.p50,
     p70: percentiles.p70,
     p85: percentiles.p85,

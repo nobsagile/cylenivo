@@ -35,6 +35,9 @@ function validateImportFile(raw: unknown): ImportFile {
   if (!data.source_type || !data.project_key || !Array.isArray(data.tickets)) {
     throw new Error('Invalid import file: missing source_type, project_key, or tickets')
   }
+  if (data.tickets.length === 0) {
+    throw new Error('Import file contains no tickets')
+  }
   if (data.source_type !== 'jira') {
     throw new Error(`Unsupported source_type: ${data.source_type}`)
   }
