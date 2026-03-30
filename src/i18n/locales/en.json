@@ -113,7 +113,7 @@
     "days": "days",
     "perWeek": "per week",
     "percentile": {
-      "title": "Delivery Forecast",
+      "title": "Cycle Time Forecast",
       "p50": "50% of tickets done within",
       "p70": "70%",
       "p85": "85%",

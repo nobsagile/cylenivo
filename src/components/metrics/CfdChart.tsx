@@ -1,6 +1,7 @@
 import { format, parseISO } from 'date-fns'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import type { CfdResponse } from '@/types'
+import { ChartTooltip } from './ChartTooltip'
 
 const COLORS = [
   '#e0e7ff', '#a5b4fc', '#818cf8', '#6366f1',
@@ -37,9 +38,23 @@ export function CfdChart({ data }: CfdChartProps) {
         />
         <YAxis hide />
         <Tooltip
-          formatter={(v: number, name: string) => [v, name]}
-          labelFormatter={(d: string) => format(parseISO(d), 'MMM d, yyyy')}
-          contentStyle={{ fontSize: 12, borderRadius: 8 }}
+          content={({ active, payload, label }) => {
+            if (!active || !payload?.length) return null
+            return (
+              <ChartTooltip>
+                <p className="text-gray-500 mb-1.5">{label ? format(parseISO(label), 'MMM d, yyyy') : ''}</p>
+                {payload.map((entry) => (
+                  <div key={entry.name} className="flex items-center justify-between gap-4">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: entry.color }} />
+                      <span className="text-gray-600">{entry.name}</span>
+                    </span>
+                    <span className="font-semibold text-gray-900">{entry.value}</span>
+                  </div>
+                ))}
+              </ChartTooltip>
+            )
+          }}
         />
         {data.statuses.map((status, i) => (
           <Area

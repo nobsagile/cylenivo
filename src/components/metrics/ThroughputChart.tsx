@@ -1,6 +1,7 @@
 import { format, parseISO } from 'date-fns'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
 import type { WeeklyThroughputPoint } from '@/types'
+import { ChartTooltip } from './ChartTooltip'
 
 interface ThroughputChartProps {
   data: WeeklyThroughputPoint[]
@@ -27,9 +28,16 @@ export function ThroughputChart({ data, average }: ThroughputChartProps) {
         />
         <YAxis hide />
         <Tooltip
-          formatter={(v: number) => [v, 'tickets']}
-          labelFormatter={(w: string) => format(parseISO(w), 'MMM d, yyyy')}
-          contentStyle={{ fontSize: 12, borderRadius: 8 }}
+          cursor={false}
+          content={({ active, payload, label }) => {
+            if (!active || !payload?.length) return null
+            return (
+              <ChartTooltip>
+                <p className="font-semibold text-gray-800 mb-1">{label ? format(parseISO(label), 'MMM d, yyyy') : ''}</p>
+                <p className="font-medium text-emerald-600">{payload[0].value} tickets</p>
+              </ChartTooltip>
+            )
+          }}
         />
         {roundedAvg !== null && (
           <ReferenceLine
