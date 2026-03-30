@@ -88,45 +88,42 @@ const CREATE_TABLES_SQL = `
   CREATE INDEX IF NOT EXISTS idx_imports_config_id ON import_sessions(config_id);
 `
 
+function addColumn(stmt: string) {
+  try {
+    sqlite.exec(stmt)
+  } catch (e) {
+    if (e instanceof Error && e.message.includes('duplicate column name')) return
+    throw e
+  }
+}
+
 export async function migrate() {
   for (const stmt of CREATE_TABLES_SQL.split(';').map(s => s.trim()).filter(Boolean)) {
     sqlite.exec(stmt)
   }
   // Add columns introduced after initial schema (safe to re-run)
-  try {
-    sqlite.exec(`ALTER TABLE project_configs ADD COLUMN cycle_time_mode TEXT NOT NULL DEFAULT 'first_last'`)
-  } catch { /* column already exists */ }
-  try {
-    sqlite.exec(`CREATE TABLE IF NOT EXISTS source_connections (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      source_type TEXT NOT NULL,
-      base_url TEXT NOT NULL,
-      email TEXT NOT NULL,
-      api_token TEXT NOT NULL,
-      created_at TEXT NOT NULL
-    )`)
-  } catch { /* already exists */ }
-  try {
-    sqlite.exec(`ALTER TABLE import_sessions ADD COLUMN health_report TEXT`)
-  } catch { /* already exists */ }
-  try {
-    sqlite.exec(`CREATE TABLE IF NOT EXISTS llm_config (
-      id TEXT PRIMARY KEY,
-      provider TEXT NOT NULL,
-      base_url TEXT,
-      api_key TEXT,
-      model TEXT NOT NULL,
-      system_prompt TEXT NOT NULL,
-      created_at TEXT NOT NULL
-    )`)
-  } catch { /* already exists */ }
-  try {
-    sqlite.exec(`ALTER TABLE project_configs ADD COLUMN lead_time_end_status TEXT`)
-  } catch { /* already exists */ }
-  try {
-    sqlite.exec(`ALTER TABLE import_sessions ADD COLUMN name TEXT`)
-  } catch { /* already exists */ }
+  addColumn(`ALTER TABLE project_configs ADD COLUMN cycle_time_mode TEXT NOT NULL DEFAULT 'first_last'`)
+  sqlite.exec(`CREATE TABLE IF NOT EXISTS source_connections (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    source_type TEXT NOT NULL,
+    base_url TEXT NOT NULL,
+    email TEXT NOT NULL,
+    api_token TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  )`)
+  addColumn(`ALTER TABLE import_sessions ADD COLUMN health_report TEXT`)
+  sqlite.exec(`CREATE TABLE IF NOT EXISTS llm_config (
+    id TEXT PRIMARY KEY,
+    provider TEXT NOT NULL,
+    base_url TEXT,
+    api_key TEXT,
+    model TEXT NOT NULL,
+    system_prompt TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  )`)
+  addColumn(`ALTER TABLE project_configs ADD COLUMN lead_time_end_status TEXT`)
+  addColumn(`ALTER TABLE import_sessions ADD COLUMN name TEXT`)
   // Indexes (safe to re-run — IF NOT EXISTS)
   sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_tickets_import_id ON tickets(import_id)`)
   sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_transitions_ticket_id ON ticket_transitions(ticket_id)`)
