@@ -22,9 +22,9 @@ function msToDateOnly(ms: number): string {
   return new Date(ms).toISOString().slice(0, 10)
 }
 
-function formatMonth(dateOnly: string): string {
-  const [y, m] = dateOnly.split('-').map(Number)
-  return new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })
+function formatDate(dateOnly: string): string {
+  const [y, m, d] = dateOnly.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 export function DateRangeSlider({ dataFrom, dataTo }: Props) {
@@ -103,9 +103,9 @@ export function DateRangeSlider({ dataFrom, dataTo }: Props) {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-700">{formatMonth(displayFrom)}</span>
+          <span className="text-sm font-medium text-gray-700">{formatDate(displayFrom)}</span>
           <span className="text-gray-300">→</span>
-          <span className="text-sm font-medium text-gray-700">{formatMonth(displayTo)}</span>
+          <span className="text-sm font-medium text-gray-700">{formatDate(displayTo)}</span>
           {isFiltered && (
             <button
               onClick={clearDates}
