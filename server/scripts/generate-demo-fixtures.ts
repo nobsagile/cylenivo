@@ -212,25 +212,32 @@ function generateTickets(specs: MonthSpec[], projectKey: string, rng: () => numb
 }
 
 // --- GAMMA: Real World Team ---
-// Simulates a team that rebuilt their board twice during 2025.
-// Q1 (Jan–Mar): simple 4-status workflow
-// Q2–Q3 (Apr–Sep): complex 6-status workflow (board expansion)
-// Q4 (Oct–Dec): simplified 5-status workflow (board cleanup)
+// Simulates a team that expanded their process mid-year, then simplified again:
 //
-// Config uses the core 4-status view: Backlog → In Progress → In Review → Done
-// Q2–Q3 extras (Up Next, Ready for QA) and Q4 extra (Ready for Dev!) appear in
-// transitions but are outside the config's status_order → tests "unknown status" handling.
+// Q1 (Jan–Mar): simple — Backlog → In Progress → In Review → Done
+// Q2–Q3 (Apr–Sep): expanded — team adds refinement + QA stages:
+//   Backlog → Ready for Dev → In Progress → In Review → QA → Done
+//   ("Ready for Dev" = ticket is refined and estimated, ready to be picked up)
+//   ("QA" = quality testing after code review, before release)
+//   Some tickets skip "Ready for Dev" (hot-fixes) or "QA" (small/trivial changes)
+// Q4 (Oct–Dec): simplified again — team drops the extra stages:
+//   Backlog → In Progress → In Review → Done
+//
+// Config status_order covers all eras:
+//   ['Backlog', 'Ready for Dev', 'In Progress', 'In Review', 'QA', 'Done']
+// "Ready for Dev" falls before cycleStart (In Progress) → outside cycle window
+// Q1/Q4 tickets never enter "Ready for Dev" or "QA" → 0 time in those for those eras
 //
 // Edge cases:
 //   ~5%  zombie tickets: cycle time 90–180 days
 //   ~10% quick tickets: cycle time < 12 hours
 //   ~5%  no-transition tickets: stuck in Backlog (incomplete)
-//   ~20% rework tickets: backward moves
+//   ~20% rework tickets: backward moves (always detectable via status_order)
 //   ~3%  equal-timestamp: two consecutive transitions at same ms
 
-const GAMMA_Q1_FLOW = ['Backlog', 'In Progress', 'In Review', 'Done']
-const GAMMA_Q2Q3_FLOW = ['Backlog', 'Up Next', 'In Progress', 'Ready for QA', 'In Review', 'Done']
-const GAMMA_Q4_FLOW = ['Backlog', 'In Progress', 'Ready for Dev!', 'In Review', 'Done']
+const GAMMA_Q1_FLOW  = ['Backlog', 'In Progress', 'In Review', 'Done']
+const GAMMA_Q2Q3_FLOW = ['Backlog', 'Ready for Dev', 'In Progress', 'In Review', 'QA', 'Done']
+const GAMMA_Q4_FLOW  = ['Backlog', 'In Progress', 'In Review', 'Done']
 
 function getGammaFlow(month: number): string[] {
   if (month <= 3) return GAMMA_Q1_FLOW
@@ -240,8 +247,10 @@ function getGammaFlow(month: number): string[] {
 
 function buildGammaPath(flow: string[], rng: () => number): string[] {
   const path = [...flow]
-  if (path.includes('Up Next') && rng() < 0.35) path.splice(path.indexOf('Up Next'), 1)
-  if (path.includes('Ready for QA') && rng() < 0.30) path.splice(path.indexOf('Ready for QA'), 1)
+  // Some Q2-Q3 tickets skip "Ready for Dev" (hot-fix going straight to development)
+  if (path.includes('Ready for Dev') && rng() < 0.30) path.splice(path.indexOf('Ready for Dev'), 1)
+  // Some Q2-Q3 tickets skip "QA" (trivial change with low risk)
+  if (path.includes('QA') && rng() < 0.25) path.splice(path.indexOf('QA'), 1)
   return path
 }
 
@@ -252,19 +261,20 @@ function buildGammaMainTransitions(
 ): Transition[] {
   const totalMs = cycleDays * DAY_MS
   const result: Transition[] = []
-  // path[0] = Backlog (already covered by firstTransition with from_status: null)
-  // path[1..] = the rest of the workflow
+  // path[0] = Backlog (covered by firstTransition with from_status: null)
+  // transitions: path[i] → path[i+1] for i in 0..path.length-2
   for (let i = 0; i < path.length - 1; i++) {
     let ts: number
     if (i === 0) {
-      // Backlog → first work status: ~1h after backlog entry (fixed offset)
+      // Backlog → first work status: ~1h after backlog entry
       ts = backlogAt.getTime() + 3_600_000
     } else if (i === path.length - 2) {
-      // → Done: at full cycle
+      // Last transition → Done: at full cycle
       ts = backlogAt.getTime() + totalMs
     } else {
-      // Proportional between first work and done
-      const progress = (i - 1) / (path.length - 3 || 1)
+      // Intermediate steps: evenly distributed between first-work (1h) and Done (totalMs)
+      // progress = i/(path.length-2) gives 0…1 uniformly across all intermediate steps
+      const progress = i / (path.length - 2)
       ts = backlogAt.getTime() + 3_600_000 + Math.floor(progress * (totalMs - 3_600_000))
     }
     result.push({ from_status: path[i], to_status: path[i + 1], transitioned_at: new Date(ts).toISOString() })
@@ -280,7 +290,7 @@ function generateGammaTickets(rng: () => number): any[] {
   for (let month = 1; month <= 12; month++) {
     const ticketCount = 33 + Math.floor(rng() * 8)   // 33–40/month → ~440–480 total
     const flow = getGammaFlow(month)
-    const isComplexEra = flow.includes('Up Next')
+    const isComplexEra = flow.includes('Ready for Dev')
 
     for (let i = 0; i < ticketCount; i++) {
       const externalId = `GAMMA-${counter++}`

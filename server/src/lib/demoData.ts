@@ -25,7 +25,7 @@ export interface DemoFixture {
 export const DEMO_IMPROVING: DemoFixture = {
   "source_type": "jira",
   "project_key": "ALPHA",
-  "exported_at": "2026-03-30T10:51:21.757Z",
+  "exported_at": "2026-03-30T10:59:24.301Z",
   "tickets": [
     {
       "external_id": "ALPHA-1",
@@ -4215,7 +4215,7 @@ export const DEMO_IMPROVING: DemoFixture = {
 export const DEMO_DECLINING: DemoFixture = {
   "source_type": "jira",
   "project_key": "BETA",
-  "exported_at": "2026-03-30T10:51:21.757Z",
+  "exported_at": "2026-03-30T10:59:24.301Z",
   "tickets": [
     {
       "external_id": "BETA-1",
@@ -8369,7 +8369,7 @@ export const DEMO_DECLINING: DemoFixture = {
 export const DEMO_REALWORLD: DemoFixture = {
   "source_type": "jira",
   "project_key": "GAMMA",
-  "exported_at": "2026-03-30T10:51:21.757Z",
+  "exported_at": "2026-03-30T10:59:24.301Z",
   "tickets": [
     {
       "external_id": "GAMMA-1",
@@ -8390,7 +8390,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-02T16:21:02.439Z"
+          "transitioned_at": "2025-01-05T03:51:02.439Z"
         },
         {
           "from_status": "In Review",
@@ -8418,7 +8418,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-10T14:20:57.567Z"
+          "transitioned_at": "2025-01-10T18:36:11.692Z"
         },
         {
           "from_status": "In Review",
@@ -8446,7 +8446,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-18T13:10:27.715Z"
+          "transitioned_at": "2025-01-22T00:40:27.715Z"
         },
         {
           "from_status": "In Review",
@@ -8474,7 +8474,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-17T15:43:27.757Z"
+          "transitioned_at": "2025-01-17T16:55:06.651Z"
         },
         {
           "from_status": "In Review",
@@ -8502,22 +8502,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-02T20:13:09.846Z"
+          "transitioned_at": "2025-01-07T19:43:09.846Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-01-08T20:22:24.500Z"
+          "transitioned_at": "2025-01-13T19:52:24.500Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-09T22:10:21.304Z"
+          "transitioned_at": "2025-01-14T21:40:21.304Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-01-14T20:54:01.956Z"
+          "transitioned_at": "2025-01-15T21:40:21.304Z"
         }
       ]
     },
@@ -8540,7 +8540,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-14T16:22:25.350Z"
+          "transitioned_at": "2025-01-17T15:52:25.350Z"
         },
         {
           "from_status": "In Review",
@@ -8624,22 +8624,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-16T14:38:35.980Z"
+          "transitioned_at": "2025-01-20T14:08:35.980Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-01-21T12:54:22.620Z"
+          "transitioned_at": "2025-01-25T12:24:22.620Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-23T12:02:01.831Z"
+          "transitioned_at": "2025-01-27T11:32:01.831Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-01-26T13:12:16.223Z"
+          "transitioned_at": "2025-01-28T11:32:01.831Z"
         }
       ]
     },
@@ -8662,7 +8662,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-13T12:06:13.202Z"
+          "transitioned_at": "2025-01-13T14:53:55.770Z"
         },
         {
           "from_status": "In Review",
@@ -8703,7 +8703,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-17T12:26:59.648Z"
+          "transitioned_at": "2025-01-21T11:56:59.648Z"
         },
         {
           "from_status": "In Review",
@@ -8772,7 +8772,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-24T13:22:20.415Z"
+          "transitioned_at": "2025-01-27T12:52:20.415Z"
         },
         {
           "from_status": "In Review",
@@ -8800,7 +8800,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-15T15:44:57.253Z"
+          "transitioned_at": "2025-01-20T03:14:57.253Z"
         },
         {
           "from_status": "In Review",
@@ -8828,22 +8828,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-05T13:41:01.709Z"
+          "transitioned_at": "2025-01-09T13:11:01.709Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-01-10T20:45:24.938Z"
+          "transitioned_at": "2025-01-14T20:15:24.938Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-11T20:49:01.929Z"
+          "transitioned_at": "2025-01-15T20:19:01.929Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-01-15T14:56:56.726Z"
+          "transitioned_at": "2025-01-16T20:19:01.929Z"
         }
       ]
     },
@@ -8866,17 +8866,17 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-16T18:05:03.198Z"
+          "transitioned_at": "2025-01-20T17:35:03.198Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-01-19T15:13:28.052Z"
+          "transitioned_at": "2025-01-23T14:43:28.052Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-20T12:37:33.789Z"
+          "transitioned_at": "2025-01-24T12:07:33.789Z"
         },
         {
           "from_status": "In Review",
@@ -8904,7 +8904,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-25T11:12:26.027Z"
+          "transitioned_at": "2025-01-30T10:42:26.027Z"
         },
         {
           "from_status": "In Review",
@@ -8932,7 +8932,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-14T16:35:46.059Z"
+          "transitioned_at": "2025-01-19T04:05:46.059Z"
         },
         {
           "from_status": "In Review",
@@ -8973,7 +8973,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-16T11:03:06.123Z"
+          "transitioned_at": "2025-01-19T22:33:06.123Z"
         },
         {
           "from_status": "In Review",
@@ -9001,7 +9001,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-15T16:39:06.580Z"
+          "transitioned_at": "2025-01-20T16:09:06.580Z"
         },
         {
           "from_status": "In Review",
@@ -9029,22 +9029,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-11T16:49:01.566Z"
+          "transitioned_at": "2025-01-16T04:19:01.566Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-01-17T11:51:07.092Z"
+          "transitioned_at": "2025-01-21T23:21:07.092Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-18T07:51:54.034Z"
+          "transitioned_at": "2025-01-22T19:21:54.034Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-01-22T17:24:47.615Z"
+          "transitioned_at": "2025-01-23T19:21:54.034Z"
         }
       ]
     },
@@ -9067,7 +9067,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-17T16:09:09.985Z"
+          "transitioned_at": "2025-01-21T15:39:09.985Z"
         },
         {
           "from_status": "In Review",
@@ -9095,7 +9095,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-24T19:51:25.888Z"
+          "transitioned_at": "2025-01-27T07:21:25.888Z"
         },
         {
           "from_status": "In Review",
@@ -9123,7 +9123,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-16T17:00:06.866Z"
+          "transitioned_at": "2025-01-16T18:22:51.351Z"
         },
         {
           "from_status": "In Review",
@@ -9151,7 +9151,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-16T18:56:48.065Z"
+          "transitioned_at": "2025-01-19T18:26:48.065Z"
         },
         {
           "from_status": "In Review",
@@ -9179,7 +9179,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-11T19:12:02.760Z"
+          "transitioned_at": "2025-01-15T18:42:02.760Z"
         },
         {
           "from_status": "In Review",
@@ -9207,7 +9207,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-24T14:46:08.618Z"
+          "transitioned_at": "2025-01-27T14:16:08.618Z"
         },
         {
           "from_status": "In Review",
@@ -9235,7 +9235,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-08T15:53:54.712Z"
+          "transitioned_at": "2025-01-12T03:23:54.712Z"
         },
         {
           "from_status": "In Review",
@@ -9263,22 +9263,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-20T17:29:50.555Z"
+          "transitioned_at": "2025-01-23T16:59:50.555Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-01-22T19:39:13.790Z"
+          "transitioned_at": "2025-01-25T19:09:13.790Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-24T08:13:40.429Z"
+          "transitioned_at": "2025-01-27T07:43:40.429Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-01-27T23:50:57.911Z"
+          "transitioned_at": "2025-01-28T07:43:40.429Z"
         }
       ]
     },
@@ -9301,7 +9301,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-11T19:31:59.617Z"
+          "transitioned_at": "2025-01-14T07:01:59.617Z"
         },
         {
           "from_status": "In Review",
@@ -9329,7 +9329,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-14T17:20:58.395Z"
+          "transitioned_at": "2025-01-18T04:50:58.395Z"
         },
         {
           "from_status": "In Review",
@@ -9357,22 +9357,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-19T15:52:30.319Z"
+          "transitioned_at": "2025-01-24T15:22:30.319Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-01-26T15:09:59.138Z"
+          "transitioned_at": "2025-01-31T14:39:59.138Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-27T20:52:50.226Z"
+          "transitioned_at": "2025-02-01T20:22:50.226Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-01-30T04:44:24.768Z"
+          "transitioned_at": "2025-02-02T20:22:50.226Z"
         }
       ]
     },
@@ -9395,7 +9395,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-24T17:50:23.474Z"
+          "transitioned_at": "2025-01-26T17:20:23.474Z"
         },
         {
           "from_status": "In Review",
@@ -9423,7 +9423,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-23T13:45:49.480Z"
+          "transitioned_at": "2025-01-27T13:15:49.480Z"
         },
         {
           "from_status": "In Review",
@@ -9489,7 +9489,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-19T16:29:58.989Z"
+          "transitioned_at": "2025-01-24T15:59:58.989Z"
         },
         {
           "from_status": "In Review",
@@ -9517,7 +9517,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-01-22T13:55:57.620Z"
+          "transitioned_at": "2025-01-26T01:25:57.620Z"
         },
         {
           "from_status": "In Review",
@@ -9545,7 +9545,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-25T17:50:53.909Z"
+          "transitioned_at": "2025-02-25T18:46:33.309Z"
         },
         {
           "from_status": "In Review",
@@ -9573,7 +9573,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-07T18:32:37.263Z"
+          "transitioned_at": "2025-02-12T06:02:37.263Z"
         },
         {
           "from_status": "In Review",
@@ -9601,22 +9601,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-20T14:35:41.114Z"
+          "transitioned_at": "2025-02-24T14:05:41.114Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-02-23T05:44:58.452Z"
+          "transitioned_at": "2025-02-27T05:14:58.452Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-24T10:45:04.232Z"
+          "transitioned_at": "2025-02-28T10:15:04.232Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-03-01T08:00:47.423Z"
+          "transitioned_at": "2025-03-01T10:15:04.232Z"
         }
       ]
     },
@@ -9639,7 +9639,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-12T19:26:44.334Z"
+          "transitioned_at": "2025-02-12T21:15:43.008Z"
         },
         {
           "from_status": "In Review",
@@ -9667,22 +9667,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-14T18:22:29.557Z"
+          "transitioned_at": "2025-02-18T17:52:29.557Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-02-19T10:23:11.130Z"
+          "transitioned_at": "2025-02-23T09:53:11.130Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-20T11:18:18.143Z"
+          "transitioned_at": "2025-02-24T10:48:18.143Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-02-24T04:36:49.608Z"
+          "transitioned_at": "2025-02-25T10:48:18.143Z"
         }
       ]
     },
@@ -9705,7 +9705,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-13T15:12:23.938Z"
+          "transitioned_at": "2025-02-17T02:42:23.938Z"
         },
         {
           "from_status": "In Review",
@@ -9746,7 +9746,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-16T18:55:40.866Z"
+          "transitioned_at": "2025-02-21T06:25:40.866Z"
         },
         {
           "from_status": "In Review",
@@ -9774,7 +9774,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-03T11:07:04.694Z"
+          "transitioned_at": "2025-02-06T22:37:04.694Z"
         },
         {
           "from_status": "In Review",
@@ -9802,7 +9802,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-13T10:48:46.393Z"
+          "transitioned_at": "2025-05-10T10:18:46.393Z"
         },
         {
           "from_status": "In Review",
@@ -9830,7 +9830,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-04T18:32:57.292Z"
+          "transitioned_at": "2025-02-08T18:02:57.292Z"
         },
         {
           "from_status": "In Review",
@@ -9858,7 +9858,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-07T15:22:03.593Z"
+          "transitioned_at": "2025-02-13T02:52:03.593Z"
         },
         {
           "from_status": "In Review",
@@ -9886,7 +9886,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-22T20:16:26.707Z"
+          "transitioned_at": "2025-02-24T07:46:26.707Z"
         },
         {
           "from_status": "In Review",
@@ -9914,7 +9914,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-15T17:06:28.460Z"
+          "transitioned_at": "2025-02-21T04:36:28.460Z"
         },
         {
           "from_status": "In Review",
@@ -9942,7 +9942,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-04T17:44:35.649Z"
+          "transitioned_at": "2025-02-04T22:08:40.424Z"
         },
         {
           "from_status": "In Review",
@@ -9970,7 +9970,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-22T12:52:18.877Z"
+          "transitioned_at": "2025-02-27T12:22:18.877Z"
         },
         {
           "from_status": "In Review",
@@ -9998,22 +9998,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-18T21:31:03.438Z"
+          "transitioned_at": "2025-02-21T21:01:03.438Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-02-21T13:04:53.293Z"
+          "transitioned_at": "2025-02-24T12:34:53.293Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-22T13:39:12.518Z"
+          "transitioned_at": "2025-02-25T13:09:12.518Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-02-25T09:37:04.399Z"
+          "transitioned_at": "2025-02-26T13:09:12.518Z"
         }
       ]
     },
@@ -10036,7 +10036,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-18T16:52:58.037Z"
+          "transitioned_at": "2025-02-22T04:22:58.037Z"
         },
         {
           "from_status": "In Review",
@@ -10064,7 +10064,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-21T14:30:17.389Z"
+          "transitioned_at": "2025-02-21T18:32:21.583Z"
         },
         {
           "from_status": "In Review",
@@ -10092,7 +10092,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-08T17:36:59.861Z"
+          "transitioned_at": "2025-04-23T05:06:59.861Z"
         },
         {
           "from_status": "In Review",
@@ -10120,7 +10120,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-03T20:20:52.830Z"
+          "transitioned_at": "2025-02-08T19:50:52.830Z"
         },
         {
           "from_status": "In Review",
@@ -10148,22 +10148,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-15T19:07:46.671Z"
+          "transitioned_at": "2025-02-20T18:37:46.671Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-02-21T12:43:33.243Z"
+          "transitioned_at": "2025-02-26T12:13:33.243Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-22T04:37:16.150Z"
+          "transitioned_at": "2025-02-27T04:07:16.150Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-02-26T15:32:53.908Z"
+          "transitioned_at": "2025-02-28T04:07:16.150Z"
         }
       ]
     },
@@ -10186,22 +10186,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-21T16:26:28.668Z"
+          "transitioned_at": "2025-02-27T03:56:28.668Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-02-27T23:32:38.567Z"
+          "transitioned_at": "2025-03-05T11:02:38.567Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-01T16:42:45.499Z"
+          "transitioned_at": "2025-03-07T04:12:45.499Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-03-05T07:23:09.840Z"
+          "transitioned_at": "2025-03-08T04:12:45.499Z"
         }
       ]
     },
@@ -10224,7 +10224,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-03T15:20:39.776Z"
+          "transitioned_at": "2025-02-07T02:50:39.776Z"
         },
         {
           "from_status": "In Review",
@@ -10252,7 +10252,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-01T16:11:37.850Z"
+          "transitioned_at": "2025-02-05T15:41:37.850Z"
         },
         {
           "from_status": "In Review",
@@ -10280,7 +10280,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-06T11:14:13.550Z"
+          "transitioned_at": "2025-02-10T10:44:13.550Z"
         },
         {
           "from_status": "In Review",
@@ -10308,7 +10308,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-25T17:14:09.660Z"
+          "transitioned_at": "2025-02-28T04:44:09.660Z"
         },
         {
           "from_status": "In Review",
@@ -10336,7 +10336,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-24T12:51:03.607Z"
+          "transitioned_at": "2025-03-02T00:21:03.607Z"
         },
         {
           "from_status": "In Review",
@@ -10392,7 +10392,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-24T13:07:53.170Z"
+          "transitioned_at": "2025-03-01T00:37:53.170Z"
         },
         {
           "from_status": "In Review",
@@ -10420,7 +10420,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-11T11:39:51.720Z"
+          "transitioned_at": "2025-03-31T11:09:51.720Z"
         },
         {
           "from_status": "In Review",
@@ -10448,7 +10448,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-03T18:40:19.563Z"
+          "transitioned_at": "2025-02-08T06:10:19.563Z"
         },
         {
           "from_status": "In Review",
@@ -10476,7 +10476,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-05T15:46:29.099Z"
+          "transitioned_at": "2025-02-10T03:16:29.099Z"
         },
         {
           "from_status": "In Review",
@@ -10504,22 +10504,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-02T13:36:23.496Z"
+          "transitioned_at": "2025-02-06T13:06:23.496Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-02-07T22:23:54.240Z"
+          "transitioned_at": "2025-02-11T21:53:54.240Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-09T15:39:14.978Z"
+          "transitioned_at": "2025-02-13T15:09:14.978Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-02-11T22:02:04.049Z"
+          "transitioned_at": "2025-02-14T15:09:14.978Z"
         }
       ]
     },
@@ -10542,7 +10542,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-18T19:01:50.308Z"
+          "transitioned_at": "2025-02-21T18:31:50.308Z"
         },
         {
           "from_status": "In Review",
@@ -10570,7 +10570,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-15T11:06:10.163Z"
+          "transitioned_at": "2025-02-18T22:36:10.163Z"
         },
         {
           "from_status": "In Review",
@@ -10598,7 +10598,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-14T20:05:58.249Z"
+          "transitioned_at": "2025-02-18T07:35:58.249Z"
         },
         {
           "from_status": "In Review",
@@ -10626,7 +10626,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-11T17:01:54.933Z"
+          "transitioned_at": "2025-02-15T04:31:54.933Z"
         },
         {
           "from_status": "In Review",
@@ -10654,22 +10654,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-01T20:06:49.218Z"
+          "transitioned_at": "2025-02-05T07:36:49.218Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-02-06T01:26:37.461Z"
+          "transitioned_at": "2025-02-09T12:56:37.461Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-02-06T18:00:10.117Z"
+          "transitioned_at": "2025-02-10T05:30:10.117Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-02-10T09:25:25.493Z"
+          "transitioned_at": "2025-02-11T05:30:10.117Z"
         }
       ]
     },
@@ -10692,7 +10692,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-17T14:25:23.425Z"
+          "transitioned_at": "2025-03-21T01:55:23.425Z"
         },
         {
           "from_status": "In Review",
@@ -10720,22 +10720,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-03T15:52:55.435Z"
+          "transitioned_at": "2025-03-06T15:22:55.435Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-03-06T05:42:08.059Z"
+          "transitioned_at": "2025-03-09T05:12:08.059Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-07T10:54:30.369Z"
+          "transitioned_at": "2025-03-10T10:24:30.369Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-03-10T14:23:16.189Z"
+          "transitioned_at": "2025-03-11T10:24:30.369Z"
         }
       ]
     },
@@ -10758,7 +10758,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-15T13:51:50.151Z"
+          "transitioned_at": "2025-03-18T13:21:50.151Z"
         },
         {
           "from_status": "In Review",
@@ -10786,7 +10786,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-08T17:07:06.755Z"
+          "transitioned_at": "2025-03-12T16:37:06.755Z"
         },
         {
           "from_status": "In Review",
@@ -10814,7 +10814,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-01T16:27:42.912Z"
+          "transitioned_at": "2025-03-03T15:57:42.912Z"
         },
         {
           "from_status": "In Review",
@@ -10842,7 +10842,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-08T18:59:48.709Z"
+          "transitioned_at": "2025-03-13T06:29:48.709Z"
         },
         {
           "from_status": "In Review",
@@ -10870,7 +10870,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-15T13:19:36.014Z"
+          "transitioned_at": "2025-03-19T00:49:36.014Z"
         },
         {
           "from_status": "In Review",
@@ -10898,7 +10898,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-01T13:16:27.175Z"
+          "transitioned_at": "2025-03-06T12:46:27.175Z"
         },
         {
           "from_status": "In Review",
@@ -10926,7 +10926,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-18T16:35:01.647Z"
+          "transitioned_at": "2025-03-24T16:05:01.647Z"
         },
         {
           "from_status": "In Review",
@@ -10954,7 +10954,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-23T13:11:37.945Z"
+          "transitioned_at": "2025-03-27T00:41:37.945Z"
         },
         {
           "from_status": "In Review",
@@ -10982,7 +10982,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-17T18:11:11.032Z"
+          "transitioned_at": "2025-03-22T05:41:11.032Z"
         },
         {
           "from_status": "In Review",
@@ -11010,7 +11010,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-13T14:26:12.919Z"
+          "transitioned_at": "2025-03-18T01:56:12.919Z"
         },
         {
           "from_status": "In Review",
@@ -11051,7 +11051,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-02T19:28:25.087Z"
+          "transitioned_at": "2025-03-07T06:58:25.087Z"
         },
         {
           "from_status": "In Review",
@@ -11079,22 +11079,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-04T20:15:31.947Z"
+          "transitioned_at": "2025-03-10T19:45:31.947Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-03-11T10:05:40.453Z"
+          "transitioned_at": "2025-03-17T09:35:40.453Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-12T22:14:12.528Z"
+          "transitioned_at": "2025-03-18T21:44:12.528Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-03-18T20:50:25.419Z"
+          "transitioned_at": "2025-03-19T21:44:12.528Z"
         }
       ]
     },
@@ -11117,22 +11117,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-16T16:08:44.995Z"
+          "transitioned_at": "2025-03-21T03:38:44.995Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-03-20T11:47:40.422Z"
+          "transitioned_at": "2025-03-24T23:17:40.422Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-22T03:55:27.765Z"
+          "transitioned_at": "2025-03-26T15:25:27.765Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-03-26T15:13:47.613Z"
+          "transitioned_at": "2025-03-27T15:25:27.765Z"
         }
       ]
     },
@@ -11155,7 +11155,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-12T21:05:19.355Z"
+          "transitioned_at": "2025-03-14T20:35:19.355Z"
         },
         {
           "from_status": "In Review",
@@ -11183,7 +11183,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-14T12:08:59.534Z"
+          "transitioned_at": "2025-03-18T11:38:59.534Z"
         },
         {
           "from_status": "In Review",
@@ -11211,7 +11211,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-07T14:33:38.763Z"
+          "transitioned_at": "2025-03-12T14:03:38.763Z"
         },
         {
           "from_status": "In Review",
@@ -11239,17 +11239,17 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-10T15:13:26.686Z"
+          "transitioned_at": "2025-03-14T14:43:26.686Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-03-13T03:38:58.482Z"
+          "transitioned_at": "2025-03-17T03:08:58.482Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-14T02:43:57.435Z"
+          "transitioned_at": "2025-03-18T02:13:57.435Z"
         },
         {
           "from_status": "In Review",
@@ -11277,7 +11277,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-15T17:14:44.575Z"
+          "transitioned_at": "2025-03-18T04:44:44.575Z"
         },
         {
           "from_status": "In Review",
@@ -11305,7 +11305,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-07T12:22:16.859Z"
+          "transitioned_at": "2025-03-11T11:52:16.859Z"
         },
         {
           "from_status": "In Review",
@@ -11333,22 +11333,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-18T17:07:55.054Z"
+          "transitioned_at": "2025-03-22T16:37:55.054Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-03-23T06:15:21.089Z"
+          "transitioned_at": "2025-03-27T05:45:21.089Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-24T22:53:18.202Z"
+          "transitioned_at": "2025-03-28T22:23:18.202Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-03-27T22:54:35.043Z"
+          "transitioned_at": "2025-03-29T22:23:18.202Z"
         }
       ]
     },
@@ -11371,7 +11371,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-01T14:41:37.225Z"
+          "transitioned_at": "2025-03-04T02:11:37.225Z"
         },
         {
           "from_status": "In Review",
@@ -11399,7 +11399,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-13T11:33:37.781Z"
+          "transitioned_at": "2025-03-18T11:03:37.781Z"
         },
         {
           "from_status": "In Review",
@@ -11427,17 +11427,17 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-08T18:43:57.025Z"
+          "transitioned_at": "2025-03-13T18:13:57.025Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-03-11T22:36:30.887Z"
+          "transitioned_at": "2025-03-16T22:06:30.887Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-12T14:37:29.536Z"
+          "transitioned_at": "2025-03-17T14:07:29.536Z"
         },
         {
           "from_status": "In Review",
@@ -11465,7 +11465,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-02T20:59:46.359Z"
+          "transitioned_at": "2025-04-27T20:29:46.359Z"
         },
         {
           "from_status": "In Review",
@@ -11493,7 +11493,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-05T17:23:53.347Z"
+          "transitioned_at": "2025-03-09T04:53:53.347Z"
         },
         {
           "from_status": "In Review",
@@ -11521,7 +11521,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-23T17:12:32.717Z"
+          "transitioned_at": "2025-03-27T04:42:32.717Z"
         },
         {
           "from_status": "In Review",
@@ -11549,7 +11549,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-04T16:09:34.315Z"
+          "transitioned_at": "2025-03-08T15:39:34.315Z"
         },
         {
           "from_status": "In Review",
@@ -11577,7 +11577,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-16T10:52:12.754Z"
+          "transitioned_at": "2025-03-20T10:22:12.754Z"
         },
         {
           "from_status": "In Review",
@@ -11605,7 +11605,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-19T11:49:18.282Z"
+          "transitioned_at": "2025-03-22T23:19:18.282Z"
         },
         {
           "from_status": "In Review",
@@ -11633,17 +11633,17 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-19T17:32:42.384Z"
+          "transitioned_at": "2025-03-23T17:02:42.384Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-03-23T04:03:53.657Z"
+          "transitioned_at": "2025-03-27T03:33:53.657Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-23T19:24:36.586Z"
+          "transitioned_at": "2025-03-27T18:54:36.586Z"
         },
         {
           "from_status": "In Review",
@@ -11671,7 +11671,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-05T14:25:21.091Z"
+          "transitioned_at": "2025-03-09T13:55:21.091Z"
         },
         {
           "from_status": "In Review",
@@ -11699,7 +11699,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-03-22T14:04:40.433Z"
+          "transitioned_at": "2025-03-26T13:34:40.433Z"
         },
         {
           "from_status": "In Review",
@@ -11721,26 +11721,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-08T15:41:27.222Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-08T15:41:27.222Z"
+          "transitioned_at": "2025-04-10T15:26:27.222Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-11T07:21:27.222Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-13T23:01:27.222Z"
+          "transitioned_at": "2025-04-12T15:11:27.222Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-14T14:56:27.222Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-16T14:41:27.222Z"
         }
@@ -11764,16 +11764,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-08T16:05:44.510Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-08T18:36:03.941Z"
+          "transitioned_at": "2025-04-08T17:45:57.464Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-08T19:26:10.418Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-08T21:06:23.373Z"
         }
@@ -11797,16 +11797,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-20T18:25:37.886Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-24T05:55:37.886Z"
+          "transitioned_at": "2025-04-23T02:05:37.886Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-25T09:45:37.886Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-27T17:25:37.886Z"
         }
@@ -11825,26 +11825,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-22T16:38:10.760Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-22T16:38:10.760Z"
+          "transitioned_at": "2025-04-24T22:23:10.760Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-25T16:18:10.760Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-28T15:58:10.760Z"
+          "transitioned_at": "2025-04-27T04:08:10.760Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-29T09:53:10.760Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-01T15:38:10.760Z"
         }
@@ -11863,33 +11863,33 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-15T20:09:54.444Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-15T20:09:54.444Z"
+          "transitioned_at": "2025-04-18T19:49:54.444Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-20T07:39:54.444Z"
+          "transitioned_at": "2025-04-21T19:29:54.444Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-26T01:20:06.904Z"
+          "transitioned_at": "2025-04-27T13:10:06.904Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-27T10:03:52.952Z"
+          "transitioned_at": "2025-04-28T21:53:52.952Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-04-28T10:03:52.952Z"
+          "transitioned_at": "2025-04-29T21:53:52.952Z"
         }
       ]
     },
@@ -11906,26 +11906,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-08T16:06:25.522Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-08T16:06:25.522Z"
+          "transitioned_at": "2025-04-10T21:51:25.522Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-11T15:46:25.522Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-14T15:26:25.522Z"
+          "transitioned_at": "2025-04-13T03:36:25.522Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-15T09:21:25.522Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-17T15:06:25.522Z"
         }
@@ -11949,16 +11949,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-14T20:04:37.862Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-19T19:34:37.862Z"
+          "transitioned_at": "2025-04-18T03:44:37.862Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-21T11:24:37.862Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-24T19:04:37.862Z"
         }
@@ -11977,26 +11977,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-22T16:16:06.682Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-22T16:16:06.682Z"
+          "transitioned_at": "2025-04-22T18:01:54.004Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-22T18:37:09.779Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-22T20:58:12.876Z"
+          "transitioned_at": "2025-04-22T19:47:41.327Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-22T21:33:28.650Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-22T23:19:15.973Z"
         }
@@ -12015,36 +12015,36 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-23T14:54:38.655Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-23T14:54:38.655Z"
+          "transitioned_at": "2025-04-25T14:39:38.655Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-26T06:34:38.655Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review (blocked)",
-          "transitioned_at": "2025-04-28T12:38:38.655Z"
+          "transitioned_at": "2025-04-27T04:48:38.655Z"
         },
         {
           "from_status": "In Review (blocked)",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-28T19:50:38.655Z"
+          "to_status": "In Progress",
+          "transitioned_at": "2025-04-27T12:00:38.655Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-28T22:14:38.655Z"
+          "transitioned_at": "2025-04-27T14:24:38.655Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-29T14:09:38.655Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-01T13:54:38.655Z"
         }
@@ -12063,33 +12063,33 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-12T19:39:39.951Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-12T19:39:39.951Z"
+          "transitioned_at": "2025-04-16T03:19:39.951Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-17T19:09:39.951Z"
+          "transitioned_at": "2025-04-19T10:59:39.951Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-24T13:08:22.510Z"
+          "transitioned_at": "2025-04-26T04:58:22.510Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-26T02:52:44.199Z"
+          "transitioned_at": "2025-04-27T18:42:44.199Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-04-27T02:52:44.199Z"
+          "transitioned_at": "2025-04-28T18:42:44.199Z"
         }
       ]
     },
@@ -12119,26 +12119,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-11T13:13:01.065Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-11T13:13:01.065Z"
+          "transitioned_at": "2025-04-11T13:31:58.359Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-11T13:38:17.457Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-11T14:03:33.849Z"
+          "transitioned_at": "2025-04-11T13:50:55.653Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-11T14:09:52.947Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-11T14:28:50.241Z"
         }
@@ -12157,26 +12157,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-07T14:39:21.373Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-07T14:39:21.373Z"
+          "transitioned_at": "2025-04-10T08:24:21.373Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-11T06:19:21.373Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-14T21:59:21.373Z"
+          "transitioned_at": "2025-04-13T02:09:21.373Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-15T19:54:21.373Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-18T13:39:21.373Z"
         }
@@ -12195,26 +12195,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-18T13:38:38.053Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-18T13:38:38.053Z"
+          "transitioned_at": "2025-04-18T14:03:23.885Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-18T14:11:39.163Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-18T14:44:40.273Z"
+          "transitioned_at": "2025-04-18T14:28:09.718Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-18T14:52:55.551Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-18T15:17:41.383Z"
         }
@@ -12233,26 +12233,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-24T15:12:12.253Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-24T15:12:12.253Z"
+          "transitioned_at": "2025-04-26T14:57:12.253Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-27T06:52:12.253Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-29T22:32:12.253Z"
+          "transitioned_at": "2025-04-28T14:42:12.253Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-30T14:27:12.253Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-02T14:12:12.253Z"
         }
@@ -12276,16 +12276,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-11T18:13:22.355Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-15T05:43:22.355Z"
+          "transitioned_at": "2025-04-14T01:53:22.355Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-16T09:33:22.355Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-18T17:13:22.355Z"
         }
@@ -12310,7 +12310,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-08T16:22:00.987Z"
+          "transitioned_at": "2025-04-12T03:52:00.987Z"
         },
         {
           "from_status": "In Review",
@@ -12332,21 +12332,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "In Progress",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-08T14:10:47.571Z"
+        },
+        {
+          "from_status": "Ready for Dev",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-04-08T14:41:15.937Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-08T14:10:47.571Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
           "transitioned_at": "2025-04-08T15:11:44.303Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-08T15:42:12.670Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-08T16:12:41.036Z"
         }
@@ -12365,26 +12370,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-21T14:43:45.137Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-21T14:43:45.137Z"
+          "transitioned_at": "2025-04-23T08:28:45.137Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-23T22:23:45.137Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-26T06:03:45.137Z"
+          "transitioned_at": "2025-04-25T02:13:45.137Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-26T19:58:45.137Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-28T13:43:45.137Z"
         }
@@ -12408,16 +12413,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-11T19:20:57.569Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-26T18:50:57.569Z"
+          "transitioned_at": "2025-06-01T11:00:57.569Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-22T02:40:57.569Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-10T18:20:57.569Z"
         }
@@ -12436,26 +12441,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-22T14:15:37.952Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-22T14:15:37.952Z"
+          "transitioned_at": "2025-04-24T02:00:37.952Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-24T13:55:37.952Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-26T13:35:37.952Z"
+          "transitioned_at": "2025-04-25T13:45:37.952Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-27T01:30:37.952Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-28T13:15:37.952Z"
         }
@@ -12474,26 +12479,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-04T12:59:25.162Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-04T12:59:25.162Z"
+          "transitioned_at": "2025-04-04T15:08:17.837Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-04T15:51:15.395Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-04T18:43:05.629Z"
+          "transitioned_at": "2025-04-04T17:17:10.512Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-04T19:26:03.187Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-04T21:34:55.863Z"
         }
@@ -12512,33 +12517,33 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-22T11:02:47.209Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-22T11:02:47.209Z"
+          "transitioned_at": "2025-04-25T10:42:47.209Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-26T22:32:47.209Z"
+          "transitioned_at": "2025-04-28T10:22:47.209Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-01T07:10:58.022Z"
+          "transitioned_at": "2025-05-02T19:00:58.022Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-02T00:12:25.436Z"
+          "transitioned_at": "2025-05-03T12:02:25.436Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-05-03T00:12:25.436Z"
+          "transitioned_at": "2025-05-04T12:02:25.436Z"
         }
       ]
     },
@@ -12555,18 +12560,18 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-02T12:34:49.794Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-02T12:34:49.794Z"
+          "transitioned_at": "2025-04-05T12:14:49.794Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-07T00:04:49.794Z"
+          "transitioned_at": "2025-04-08T11:54:49.794Z"
         },
         {
           "from_status": "In Review",
@@ -12588,38 +12593,38 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-21T14:29:17.644Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-21T14:29:17.644Z"
+          "transitioned_at": "2025-04-23T14:14:17.644Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-24T06:09:17.644Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-26T21:49:17.644Z"
+          "transitioned_at": "2025-04-25T13:59:17.644Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-30T06:51:59.199Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-04-27T13:44:17.644Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-02T06:37:36.755Z"
+          "transitioned_at": "2025-04-30T22:46:59.199Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-02T22:32:36.755Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-05-03T06:37:36.755Z"
+          "transitioned_at": "2025-05-03T22:32:36.755Z"
         }
       ]
     },
@@ -12642,7 +12647,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-09T17:58:56.189Z"
+          "transitioned_at": "2025-04-14T05:28:56.189Z"
         },
         {
           "from_status": "In Review",
@@ -12669,16 +12674,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-02T13:24:54.556Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-09T00:54:54.556Z"
+          "transitioned_at": "2025-04-06T21:04:54.556Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-11T04:44:54.556Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-15T12:24:54.556Z"
         }
@@ -12697,33 +12702,33 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-18T15:05:02.430Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-18T15:05:02.430Z"
+          "transitioned_at": "2025-04-21T22:45:02.430Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-23T14:35:02.430Z"
+          "transitioned_at": "2025-04-25T06:25:02.430Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-29T07:12:13.199Z"
+          "transitioned_at": "2025-04-30T23:02:13.199Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-29T20:39:46.090Z"
+          "transitioned_at": "2025-05-01T12:29:46.090Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-04-30T20:39:46.090Z"
+          "transitioned_at": "2025-05-02T12:29:46.090Z"
         }
       ]
     },
@@ -12745,26 +12750,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-10T19:11:13.271Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review (blocked)",
-          "transitioned_at": "2025-04-16T09:05:13.271Z"
+          "transitioned_at": "2025-04-14T09:15:13.271Z"
         },
         {
           "from_status": "In Review (blocked)",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-16T16:17:13.271Z"
+          "to_status": "In Progress",
+          "transitioned_at": "2025-04-14T16:27:13.271Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-16T18:41:13.271Z"
+          "transitioned_at": "2025-04-14T18:51:13.271Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-18T18:31:13.271Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-22T18:11:13.271Z"
         }
@@ -12783,13 +12788,13 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-07T14:38:31.505Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-07T14:38:31.505Z"
+          "transitioned_at": "2025-04-09T08:23:31.505Z"
         },
         {
           "from_status": "In Progress",
@@ -12798,6 +12803,11 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-12T19:53:31.505Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-14T13:38:31.505Z"
         }
@@ -12816,36 +12826,36 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-03T11:58:17.483Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-03T11:58:17.483Z"
+          "transitioned_at": "2025-04-05T17:43:17.483Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-06T11:38:17.483Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review (blocked)",
-          "transitioned_at": "2025-04-09T01:42:17.483Z"
+          "transitioned_at": "2025-04-07T13:52:17.483Z"
         },
         {
           "from_status": "In Review (blocked)",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-09T08:54:17.483Z"
+          "to_status": "In Progress",
+          "transitioned_at": "2025-04-07T21:04:17.483Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-09T11:18:17.483Z"
+          "transitioned_at": "2025-04-07T23:28:17.483Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-10T05:13:17.483Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-12T10:58:17.483Z"
         }
@@ -12864,26 +12874,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-13T14:48:49.098Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-13T14:48:49.098Z"
+          "transitioned_at": "2025-04-16T02:33:49.098Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-16T22:28:49.098Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-20T06:08:49.098Z"
+          "transitioned_at": "2025-04-18T14:18:49.098Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-21T02:03:49.098Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-23T13:48:49.098Z"
         }
@@ -12902,26 +12912,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-20T14:41:28.112Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-20T14:41:28.112Z"
+          "transitioned_at": "2025-04-22T02:26:28.112Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-22T14:21:28.112Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-24T14:01:28.112Z"
+          "transitioned_at": "2025-04-23T14:11:28.112Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-25T01:56:28.112Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-26T13:41:28.112Z"
         }
@@ -12940,26 +12950,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-16T16:00:28.023Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-16T16:00:28.023Z"
+          "transitioned_at": "2025-04-16T17:46:33.645Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-16T18:21:55.519Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-16T20:43:23.015Z"
+          "transitioned_at": "2025-04-16T19:32:39.267Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-16T21:18:44.889Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-16T23:04:50.512Z"
         }
@@ -12978,21 +12988,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "In Progress",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-05T10:48:31.262Z"
+        },
+        {
+          "from_status": "Ready for Dev",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-04-06T22:33:31.262Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-05T10:48:31.262Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
           "transitioned_at": "2025-04-08T10:18:31.262Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-09T22:03:31.262Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-11T09:48:31.262Z"
         }
@@ -13011,33 +13026,33 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-10T12:37:17.200Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-10T12:37:17.200Z"
+          "transitioned_at": "2025-04-13T12:17:17.200Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-15T00:07:17.200Z"
+          "transitioned_at": "2025-04-16T11:57:17.200Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-21T00:29:14.508Z"
+          "transitioned_at": "2025-04-22T12:19:14.508Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-21T17:46:11.521Z"
+          "transitioned_at": "2025-04-23T05:36:11.521Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-04-22T17:46:11.521Z"
+          "transitioned_at": "2025-04-24T05:36:11.521Z"
         }
       ]
     },
@@ -13054,26 +13069,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-04-23T13:01:10.348Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-04-23T13:01:10.348Z"
+          "transitioned_at": "2025-04-24T12:46:10.348Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-04-24T20:41:10.348Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-04-26T04:21:10.348Z"
+          "transitioned_at": "2025-04-25T12:31:10.348Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-04-26T12:16:10.348Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-04-27T12:01:10.348Z"
         }
@@ -13092,26 +13107,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-18T18:43:33.443Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-18T18:43:33.443Z"
+          "transitioned_at": "2025-05-20T18:28:33.443Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-21T10:23:33.443Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-24T02:03:33.443Z"
+          "transitioned_at": "2025-05-22T18:13:33.443Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-24T17:58:33.443Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-26T17:43:33.443Z"
         }
@@ -13130,26 +13145,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-25T18:32:46.198Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-25T18:32:46.198Z"
+          "transitioned_at": "2025-05-27T18:17:46.198Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-28T10:12:46.198Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-31T01:52:46.198Z"
+          "transitioned_at": "2025-05-29T18:02:46.198Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-31T17:47:46.198Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-02T17:32:46.198Z"
         }
@@ -13168,38 +13183,38 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-01T17:06:55.324Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-01T17:06:55.324Z"
+          "transitioned_at": "2025-05-03T10:51:55.324Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-04T00:46:55.324Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-06T08:26:55.324Z"
+          "transitioned_at": "2025-05-05T04:36:55.324Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-10T09:33:45.381Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-05-06T22:21:55.324Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-11T00:55:43.064Z"
+          "transitioned_at": "2025-05-10T23:28:45.381Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-11T14:50:43.064Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-05-12T00:55:43.064Z"
+          "transitioned_at": "2025-05-12T14:50:43.064Z"
         }
       ]
     },
@@ -13222,7 +13237,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-21T13:40:37.257Z"
+          "transitioned_at": "2025-05-21T15:06:09.063Z"
         },
         {
           "from_status": "In Review",
@@ -13244,26 +13259,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-11T16:24:02.169Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-11T16:24:02.169Z"
+          "transitioned_at": "2025-06-17T04:09:02.169Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-29T08:04:02.169Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-16T23:44:02.169Z"
+          "transitioned_at": "2025-07-23T15:54:02.169Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-29T03:39:02.169Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-10-04T15:24:02.169Z"
         }
@@ -13282,26 +13297,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-13T15:39:20.512Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-13T15:39:20.512Z"
+          "transitioned_at": "2025-05-13T17:45:12.426Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-13T18:27:09.730Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-13T21:14:58.949Z"
+          "transitioned_at": "2025-05-13T19:51:04.340Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-13T21:56:56.254Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-14T00:02:48.168Z"
         }
@@ -13320,26 +13335,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-18T17:34:09.999Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
           "transitioned_at": "2025-05-18T17:34:09.999Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-20T17:14:09.999Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-22T16:54:09.999Z"
+          "transitioned_at": "2025-05-21T17:04:09.999Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-23T04:49:09.999Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-24T16:34:09.999Z"
         }
@@ -13358,38 +13373,38 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-10T13:04:06.685Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-10T13:04:06.685Z"
+          "transitioned_at": "2025-05-12T12:49:06.685Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-13T04:44:06.685Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-15T20:24:06.685Z"
+          "transitioned_at": "2025-05-14T12:34:06.685Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-19T00:26:27.733Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-05-16T12:19:06.685Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-20T07:50:58.948Z"
+          "transitioned_at": "2025-05-19T16:21:27.733Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-20T23:45:58.948Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-05-21T07:50:58.948Z"
+          "transitioned_at": "2025-05-21T23:45:58.948Z"
         }
       ]
     },
@@ -13411,16 +13426,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
+          "to_status": "In Review",
           "transitioned_at": "2025-05-11T13:30:25.619Z"
         },
         {
-          "from_status": "Ready for QA",
-          "to_status": "In Review",
-          "transitioned_at": "2025-05-15T13:00:25.619Z"
+          "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-16T20:50:25.619Z"
         },
         {
-          "from_status": "In Review",
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-19T12:30:25.619Z"
         }
@@ -13439,13 +13454,13 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-15T17:38:44.922Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-15T17:38:44.922Z"
+          "transitioned_at": "2025-05-17T23:23:44.922Z"
         },
         {
           "from_status": "In Progress",
@@ -13454,6 +13469,11 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-22T10:53:44.922Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-24T16:38:44.922Z"
         }
@@ -13472,21 +13492,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "In Progress",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-04T13:10:33.238Z"
+        },
+        {
+          "from_status": "Ready for Dev",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-05-05T12:55:33.238Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-04T13:10:33.238Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
           "transitioned_at": "2025-05-06T12:40:33.238Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-07T12:25:33.238Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-08T12:10:33.238Z"
         }
@@ -13505,18 +13530,18 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-03T18:25:25.002Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-03T18:25:25.002Z"
+          "transitioned_at": "2025-05-06T02:05:25.002Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-07T05:55:25.002Z"
+          "transitioned_at": "2025-05-08T09:45:25.002Z"
         },
         {
           "from_status": "In Review",
@@ -13538,43 +13563,43 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-04T16:05:27.019Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-04T16:05:27.019Z"
+          "transitioned_at": "2025-05-07T07:45:27.019Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review (blocked)",
-          "transitioned_at": "2025-05-08T05:59:27.019Z"
+          "transitioned_at": "2025-05-09T13:49:27.019Z"
         },
         {
           "from_status": "In Review (blocked)",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-08T13:11:27.019Z"
+          "transitioned_at": "2025-05-09T21:01:27.019Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-08T15:35:27.019Z"
+          "transitioned_at": "2025-05-09T23:25:27.019Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-11T22:08:25.264Z"
+          "transitioned_at": "2025-05-13T05:58:25.264Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-13T10:36:36.886Z"
+          "transitioned_at": "2025-05-14T18:26:36.886Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-05-14T16:58:46.104Z"
+          "transitioned_at": "2025-05-15T18:26:36.886Z"
         }
       ]
     },
@@ -13591,18 +13616,18 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-10T14:52:17.521Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-10T14:52:17.521Z"
+          "transitioned_at": "2025-05-10T17:28:29.918Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-10T18:46:36.116Z"
+          "transitioned_at": "2025-05-10T20:04:42.315Z"
         },
         {
           "from_status": "In Review",
@@ -13624,26 +13649,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-13T16:58:19.083Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
           "transitioned_at": "2025-05-13T16:58:19.083Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-16T08:38:19.083Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-19T00:18:19.083Z"
+          "transitioned_at": "2025-05-17T16:28:19.083Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-19T16:13:19.083Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-21T15:58:19.083Z"
         }
@@ -13662,26 +13687,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-20T15:19:41.802Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-20T15:19:41.802Z"
+          "transitioned_at": "2025-06-28T09:04:41.802Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-11T06:59:41.802Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-31T22:39:41.802Z"
+          "transitioned_at": "2025-08-06T02:49:41.802Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-13T20:34:41.802Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-10-22T14:19:41.802Z"
         }
@@ -13700,26 +13725,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-13T11:52:35.324Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-13T11:52:35.324Z"
+          "transitioned_at": "2025-05-15T23:37:35.324Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-16T19:32:35.324Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-20T03:12:35.324Z"
+          "transitioned_at": "2025-05-18T11:22:35.324Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-20T23:07:35.324Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-23T10:52:35.324Z"
         }
@@ -13743,28 +13768,28 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-21T17:19:59.930Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-26T04:49:59.930Z"
+          "transitioned_at": "2025-05-24T16:59:59.930Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-29T22:49:07.574Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-05-27T16:39:59.930Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-31T18:11:03.017Z"
+          "transitioned_at": "2025-05-31T10:39:07.574Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-02T06:01:03.017Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-06-01T18:11:03.017Z"
+          "transitioned_at": "2025-06-03T06:01:03.017Z"
         }
       ]
     },
@@ -13786,28 +13811,28 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-19T13:39:23.150Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-22T13:09:23.150Z"
+          "transitioned_at": "2025-05-21T13:19:23.150Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-25T19:44:26.651Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-05-23T12:59:23.150Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-26T16:21:28.441Z"
+          "transitioned_at": "2025-05-26T19:34:26.651Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-27T16:11:28.441Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-05-27T16:21:28.441Z"
+          "transitioned_at": "2025-05-28T16:11:28.441Z"
         }
       ]
     },
@@ -13824,26 +13849,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-10T16:22:25.476Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-10T16:22:25.476Z"
+          "transitioned_at": "2025-05-12T10:07:25.476Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-13T00:02:25.476Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-15T07:42:25.476Z"
+          "transitioned_at": "2025-05-14T03:52:25.476Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-15T21:37:25.476Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-17T15:22:25.476Z"
         }
@@ -13862,26 +13887,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-04T13:49:49.570Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-04T13:49:49.570Z"
+          "transitioned_at": "2025-05-06T19:34:49.570Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-07T13:29:49.570Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-10T13:09:49.570Z"
+          "transitioned_at": "2025-05-09T01:19:49.570Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-11T07:04:49.570Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-13T12:49:49.570Z"
         }
@@ -13906,22 +13931,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-06T20:27:29.638Z"
+          "transitioned_at": "2025-05-10T19:57:29.638Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-11T05:48:34.478Z"
+          "transitioned_at": "2025-05-15T05:18:34.478Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-12T11:43:31.854Z"
+          "transitioned_at": "2025-05-16T11:13:31.854Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-05-15T19:12:05.536Z"
+          "transitioned_at": "2025-05-17T11:13:31.854Z"
         }
       ]
     },
@@ -13943,16 +13968,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-13T18:20:32.014Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-18T05:50:32.014Z"
+          "transitioned_at": "2025-05-16T18:00:32.014Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-19T17:40:32.014Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-22T17:20:32.014Z"
         }
@@ -13971,26 +13996,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-17T15:34:39.014Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-17T15:34:39.014Z"
+          "transitioned_at": "2025-05-19T15:19:39.014Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-20T07:14:39.014Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-22T22:54:39.014Z"
+          "transitioned_at": "2025-05-21T15:04:39.014Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-23T14:49:39.014Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-25T14:34:39.014Z"
         }
@@ -14015,7 +14040,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-02T13:34:05.543Z"
+          "transitioned_at": "2025-05-06T01:04:05.543Z"
         },
         {
           "from_status": "In Review",
@@ -14037,38 +14062,38 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-10T15:59:42.899Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-10T15:59:42.899Z"
+          "transitioned_at": "2025-05-12T15:44:42.899Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-13T07:39:42.899Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-15T23:19:42.899Z"
+          "transitioned_at": "2025-05-14T15:29:42.899Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-19T20:54:40.654Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-05-16T15:14:42.899Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-20T13:52:53.982Z"
+          "transitioned_at": "2025-05-20T12:49:40.654Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-21T05:47:53.982Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-05-21T13:52:53.982Z"
+          "transitioned_at": "2025-05-22T05:47:53.982Z"
         }
       ]
     },
@@ -14085,26 +14110,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-12T14:33:20.147Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-12T14:33:20.147Z"
+          "transitioned_at": "2025-05-14T02:18:20.147Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-14T14:13:20.147Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-16T13:53:20.147Z"
+          "transitioned_at": "2025-05-15T14:03:20.147Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-17T01:48:20.147Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-18T13:33:20.147Z"
         }
@@ -14128,16 +14153,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-13T18:29:43.996Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-13T23:26:44.600Z"
+          "transitioned_at": "2025-05-13T21:47:44.398Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-14T01:05:44.801Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-14T04:23:45.204Z"
         }
@@ -14156,26 +14181,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-18T19:42:50.381Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
           "transitioned_at": "2025-05-18T19:42:50.381Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-21T03:22:50.381Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-23T11:02:50.381Z"
+          "transitioned_at": "2025-05-22T07:12:50.381Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-24T00:57:50.381Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-25T18:42:50.381Z"
         }
@@ -14194,33 +14219,33 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-21T11:43:34.005Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-21T11:43:34.005Z"
+          "transitioned_at": "2025-05-24T19:23:34.005Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-26T11:13:34.005Z"
+          "transitioned_at": "2025-05-28T03:03:34.005Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-31T16:35:21.742Z"
+          "transitioned_at": "2025-06-02T08:25:21.742Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-02T09:24:44.730Z"
+          "transitioned_at": "2025-06-04T01:14:44.730Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-06-03T09:24:44.730Z"
+          "transitioned_at": "2025-06-05T01:14:44.730Z"
         }
       ]
     },
@@ -14237,26 +14262,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-20T18:41:28.096Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-20T18:41:28.096Z"
+          "transitioned_at": "2025-05-23T06:26:28.096Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-24T02:21:28.096Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-27T10:01:28.096Z"
+          "transitioned_at": "2025-05-25T18:11:28.096Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-28T05:56:28.096Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-30T17:41:28.096Z"
         }
@@ -14275,18 +14300,18 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-14T14:48:55.900Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-14T14:48:55.900Z"
+          "transitioned_at": "2025-05-14T17:40:45.834Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-14T19:06:40.801Z"
+          "transitioned_at": "2025-05-14T20:32:35.768Z"
         },
         {
           "from_status": "In Review",
@@ -14327,7 +14352,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-21T19:23:15.479Z"
+          "transitioned_at": "2025-05-21T20:34:52.945Z"
         },
         {
           "from_status": "In Review",
@@ -14349,26 +14374,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-13T19:31:51.952Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
           "transitioned_at": "2025-05-13T19:31:51.952Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-16T11:11:51.952Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-19T02:51:51.952Z"
+          "transitioned_at": "2025-05-17T19:01:51.952Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-19T18:46:51.952Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-21T18:31:51.952Z"
         }
@@ -14387,26 +14412,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-05-10T12:25:35.906Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-05-10T12:25:35.906Z"
+          "transitioned_at": "2025-05-13T18:10:35.906Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-05-14T20:05:35.906Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-05-19T03:45:35.906Z"
+          "transitioned_at": "2025-05-16T23:55:35.906Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-05-20T05:40:35.906Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-05-23T11:25:35.906Z"
         }
@@ -14425,26 +14450,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-01T16:59:02.793Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-01T16:59:02.793Z"
+          "transitioned_at": "2025-06-03T04:44:02.793Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-03T16:39:02.793Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-05T16:19:02.793Z"
+          "transitioned_at": "2025-06-04T16:29:02.793Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-06T04:14:02.793Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-07T15:59:02.793Z"
         }
@@ -14469,17 +14494,17 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-03T12:43:58.513Z"
+          "transitioned_at": "2025-06-06T12:13:58.513Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-05T16:00:16.535Z"
+          "transitioned_at": "2025-06-08T15:30:16.535Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-06T04:32:02.492Z"
+          "transitioned_at": "2025-06-09T04:02:02.492Z"
         },
         {
           "from_status": "In Review",
@@ -14501,18 +14526,18 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-05T20:17:52.645Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-05T20:17:52.645Z"
+          "transitioned_at": "2025-06-08T03:57:52.645Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-09T07:47:52.645Z"
+          "transitioned_at": "2025-06-10T11:37:52.645Z"
         },
         {
           "from_status": "In Review",
@@ -14534,26 +14559,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-10T15:01:16.331Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-10T15:01:16.331Z"
+          "transitioned_at": "2025-06-11T08:46:16.331Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-11T14:41:16.331Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-12T14:21:16.331Z"
+          "transitioned_at": "2025-06-12T02:31:16.331Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-12T20:16:16.331Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-13T14:01:16.331Z"
         }
@@ -14585,26 +14610,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-14T17:12:44.405Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-14T17:12:44.405Z"
+          "transitioned_at": "2025-06-17T04:57:44.405Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-18T00:52:44.405Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-21T08:32:44.405Z"
+          "transitioned_at": "2025-06-19T16:42:44.405Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-22T04:27:44.405Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-24T16:12:44.405Z"
         }
@@ -14628,28 +14653,28 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-16T19:16:12.620Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-19T18:46:12.620Z"
+          "transitioned_at": "2025-06-18T18:56:12.620Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-22T22:09:29.261Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-06-20T18:36:12.620Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-24T05:56:51.946Z"
+          "transitioned_at": "2025-06-23T21:59:29.261Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-25T05:46:51.946Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-06-25T05:56:51.946Z"
+          "transitioned_at": "2025-06-26T05:46:51.946Z"
         }
       ]
     },
@@ -14692,26 +14717,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-07T19:09:14.354Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-07T19:09:14.354Z"
+          "transitioned_at": "2025-06-07T20:52:20.140Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-07T21:26:42.069Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-07T23:44:09.784Z"
+          "transitioned_at": "2025-06-07T22:35:25.926Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-08T00:18:31.713Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-08T02:01:37.499Z"
         }
@@ -14730,28 +14755,28 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-18T15:24:58.643Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-18T15:24:58.643Z"
+          "transitioned_at": "2025-06-21T15:04:58.643Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review (blocked)",
-          "transitioned_at": "2025-06-22T17:18:58.643Z"
+          "transitioned_at": "2025-06-24T05:08:58.643Z"
         },
         {
           "from_status": "In Review (blocked)",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-23T00:30:58.643Z"
+          "transitioned_at": "2025-06-24T12:20:58.643Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-23T02:54:58.643Z"
+          "transitioned_at": "2025-06-24T14:44:58.643Z"
         },
         {
           "from_status": "In Review",
@@ -14773,36 +14798,36 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-05T19:43:12.459Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-05T19:43:12.459Z"
+          "transitioned_at": "2025-06-07T07:28:12.459Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-07T19:23:12.459Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review (blocked)",
-          "transitioned_at": "2025-06-09T09:27:12.459Z"
+          "transitioned_at": "2025-06-08T09:37:12.459Z"
         },
         {
           "from_status": "In Review (blocked)",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-09T16:39:12.459Z"
+          "to_status": "In Progress",
+          "transitioned_at": "2025-06-08T16:49:12.459Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-09T19:03:12.459Z"
+          "transitioned_at": "2025-06-08T19:13:12.459Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-10T06:58:12.459Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-11T18:43:12.459Z"
         }
@@ -14834,26 +14859,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-13T16:01:33.856Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-13T16:01:33.856Z"
+          "transitioned_at": "2025-06-14T21:46:33.856Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-15T07:41:33.856Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-16T23:21:33.856Z"
+          "transitioned_at": "2025-06-16T03:31:33.856Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-17T09:16:33.856Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-18T15:01:33.856Z"
         }
@@ -14872,26 +14897,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-24T17:48:31.598Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-24T17:48:31.598Z"
+          "transitioned_at": "2025-06-26T17:33:31.598Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-27T09:28:31.598Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-30T01:08:31.598Z"
+          "transitioned_at": "2025-06-28T17:18:31.598Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-30T17:03:31.598Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-02T16:48:31.598Z"
         }
@@ -14916,22 +14941,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-11T19:59:45.408Z"
+          "transitioned_at": "2025-06-16T07:29:45.408Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-18T01:20:21.992Z"
+          "transitioned_at": "2025-06-22T12:50:21.992Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-19T03:13:52.206Z"
+          "transitioned_at": "2025-06-23T14:43:52.206Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-06-22T22:53:46.228Z"
+          "transitioned_at": "2025-06-24T14:43:52.206Z"
         }
       ]
     },
@@ -14953,16 +14978,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-13T19:17:16.690Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-19T18:47:16.690Z"
+          "transitioned_at": "2025-06-17T18:57:16.690Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-21T18:37:16.690Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-25T18:17:16.690Z"
         }
@@ -14981,28 +15006,33 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "In Progress",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-01T19:51:18.817Z"
+        },
+        {
+          "from_status": "Ready for Dev",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-06-03T19:31:18.817Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-01T19:51:18.817Z"
+          "transitioned_at": "2025-06-05T19:11:18.817Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-03T22:30:14.380Z"
+          "transitioned_at": "2025-06-07T21:50:14.380Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-04T23:52:37.348Z"
+          "transitioned_at": "2025-06-08T23:12:37.348Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-06-08T18:49:20.845Z"
+          "transitioned_at": "2025-06-09T23:12:37.348Z"
         }
       ]
     },
@@ -15019,26 +15049,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-09T17:20:18.792Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-09T17:20:18.792Z"
+          "transitioned_at": "2025-06-11T05:05:18.792Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-11T17:00:18.792Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-13T16:40:18.792Z"
+          "transitioned_at": "2025-06-12T16:50:18.792Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-14T04:35:18.792Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-15T16:20:18.792Z"
         }
@@ -15057,33 +15087,38 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "In Progress",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-21T11:53:54.687Z"
+        },
+        {
+          "from_status": "Ready for Dev",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-06-24T11:38:54.687Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-21T11:53:54.687Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
           "transitioned_at": "2025-06-27T11:23:54.687Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-05T09:54:43.710Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-06-30T11:08:54.687Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-07T03:25:35.854Z"
+          "transitioned_at": "2025-07-08T09:39:43.710Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-10T03:10:35.854Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-07-08T03:25:35.854Z"
+          "transitioned_at": "2025-07-11T03:10:35.854Z"
         }
       ]
     },
@@ -15100,26 +15135,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-04T17:59:34.890Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-04T17:59:34.890Z"
+          "transitioned_at": "2025-06-06T17:44:34.890Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-07T09:39:34.890Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-10T01:19:34.890Z"
+          "transitioned_at": "2025-06-08T17:29:34.890Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-10T17:14:34.890Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-12T16:59:34.890Z"
         }
@@ -15143,16 +15178,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-13T15:27:07.841Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-17T14:57:07.841Z"
+          "transitioned_at": "2025-06-16T07:07:07.841Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-18T22:47:07.841Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-21T14:27:07.841Z"
         }
@@ -15171,26 +15206,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-12T13:52:48.314Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-12T13:52:48.314Z"
+          "transitioned_at": "2025-06-14T13:37:48.314Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-15T05:32:48.314Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-17T21:12:48.314Z"
+          "transitioned_at": "2025-06-16T13:22:48.314Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-18T13:07:48.314Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-20T12:52:48.314Z"
         }
@@ -15209,26 +15244,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-18T15:09:57.126Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-18T15:09:57.126Z"
+          "transitioned_at": "2025-06-21T08:54:57.126Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-22T06:49:57.126Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-25T22:29:57.126Z"
+          "transitioned_at": "2025-06-24T02:39:57.126Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-26T20:24:57.126Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-29T14:09:57.126Z"
         }
@@ -15253,7 +15288,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-24T17:43:35.848Z"
+          "transitioned_at": "2025-06-28T05:13:35.848Z"
         },
         {
           "from_status": "In Review",
@@ -15280,16 +15315,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-12T16:39:56.788Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-16T04:09:56.788Z"
+          "transitioned_at": "2025-06-15T00:19:56.788Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-17T07:59:56.788Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-19T15:39:56.788Z"
         }
@@ -15308,26 +15343,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-25T15:05:45.524Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-25T15:05:45.524Z"
+          "transitioned_at": "2025-06-27T14:50:45.524Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-28T06:45:45.524Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-30T22:25:45.524Z"
+          "transitioned_at": "2025-06-29T14:35:45.524Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-01T14:20:45.524Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-03T14:05:45.524Z"
         }
@@ -15351,26 +15386,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-02T11:38:53.624Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review (blocked)",
-          "transitioned_at": "2025-06-07T13:32:53.624Z"
+          "transitioned_at": "2025-06-05T17:42:53.624Z"
         },
         {
           "from_status": "In Review (blocked)",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-07T20:44:53.624Z"
+          "to_status": "In Progress",
+          "transitioned_at": "2025-06-06T00:54:53.624Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-07T23:08:53.624Z"
+          "transitioned_at": "2025-06-06T03:18:53.624Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-09T18:58:53.624Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-13T10:38:53.624Z"
         }
@@ -15389,26 +15424,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-10T16:41:58.914Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-10T16:41:58.914Z"
+          "transitioned_at": "2025-06-13T16:26:58.914Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-14T16:21:58.914Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-18T16:01:58.914Z"
+          "transitioned_at": "2025-06-16T16:11:58.914Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-19T15:56:58.914Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-22T15:41:58.914Z"
         }
@@ -15427,26 +15462,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-02T16:50:44.604Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-02T16:50:44.604Z"
+          "transitioned_at": "2025-06-05T10:35:44.604Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-06T08:30:44.604Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-10T00:10:44.604Z"
+          "transitioned_at": "2025-06-08T04:20:44.604Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-10T22:05:44.604Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-13T15:50:44.604Z"
         }
@@ -15465,26 +15500,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-05T19:46:16.320Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-05T19:46:16.320Z"
+          "transitioned_at": "2025-06-07T13:31:16.320Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-08T03:26:16.320Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-10T11:06:16.320Z"
+          "transitioned_at": "2025-06-09T07:16:16.320Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-11T01:01:16.320Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-12T18:46:16.320Z"
         }
@@ -15508,16 +15543,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-19T14:39:00.608Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-23T14:09:00.608Z"
+          "transitioned_at": "2025-06-22T06:19:00.608Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-24T21:59:00.608Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-06-27T13:39:00.608Z"
         }
@@ -15536,48 +15571,48 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-06-03T16:31:24.318Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-06-03T16:31:24.318Z"
+          "transitioned_at": "2025-06-06T04:16:24.318Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-07T00:11:24.318Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review (blocked)",
-          "transitioned_at": "2025-06-09T22:15:24.318Z"
+          "transitioned_at": "2025-06-08T06:25:24.318Z"
         },
         {
           "from_status": "In Review (blocked)",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-10T05:27:24.318Z"
+          "to_status": "In Progress",
+          "transitioned_at": "2025-06-08T13:37:24.318Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-10T07:51:24.318Z"
+          "transitioned_at": "2025-06-08T16:01:24.318Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-06-13T12:24:30.746Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-06-11T03:46:24.318Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-06-14T11:43:51.181Z"
+          "transitioned_at": "2025-06-14T08:19:30.746Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-06-15T07:38:51.181Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-06-15T11:43:51.181Z"
+          "transitioned_at": "2025-06-16T07:38:51.181Z"
         }
       ]
     },
@@ -15600,7 +15635,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-13T12:17:39.646Z"
+          "transitioned_at": "2025-07-16T23:47:39.646Z"
         },
         {
           "from_status": "In Review",
@@ -15627,16 +15662,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-14T15:41:03.500Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-19T03:11:03.500Z"
+          "transitioned_at": "2025-07-17T15:21:03.500Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-20T15:01:03.500Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-23T14:41:03.500Z"
         }
@@ -15655,26 +15690,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-05T17:45:19.906Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-05T17:45:19.906Z"
+          "transitioned_at": "2025-07-07T17:30:19.906Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-08T09:25:19.906Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-11T01:05:19.906Z"
+          "transitioned_at": "2025-07-09T17:15:19.906Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-11T17:00:19.906Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-13T16:45:19.906Z"
         }
@@ -15693,18 +15728,18 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-07T19:41:56.766Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-07T19:41:56.766Z"
+          "transitioned_at": "2025-07-07T21:31:42.444Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-07T22:26:35.283Z"
+          "transitioned_at": "2025-07-07T23:21:28.122Z"
         },
         {
           "from_status": "In Review",
@@ -15726,26 +15761,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-06T16:33:28.140Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-06T16:33:28.140Z"
+          "transitioned_at": "2025-07-08T22:18:28.140Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-09T16:13:28.140Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-12T15:53:28.140Z"
+          "transitioned_at": "2025-07-11T04:03:28.140Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-13T09:48:28.140Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-15T15:33:28.140Z"
         }
@@ -15769,16 +15804,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-08T15:02:21.732Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-12T14:32:21.732Z"
+          "transitioned_at": "2025-07-11T06:42:21.732Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-13T22:22:21.732Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-16T14:02:21.732Z"
         }
@@ -15797,26 +15832,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-08T13:44:18.576Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-08T13:44:18.576Z"
+          "transitioned_at": "2025-07-09T19:29:18.576Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-10T05:24:18.576Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-11T21:04:18.576Z"
+          "transitioned_at": "2025-07-11T01:14:18.576Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-12T06:59:18.576Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-13T12:44:18.576Z"
         }
@@ -15835,18 +15870,18 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-22T14:53:04.756Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-22T14:53:04.756Z"
+          "transitioned_at": "2025-07-24T06:33:04.756Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-25T02:23:04.756Z"
+          "transitioned_at": "2025-07-25T22:13:04.756Z"
         },
         {
           "from_status": "In Review",
@@ -15868,18 +15903,18 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-13T16:04:49.109Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-13T16:04:49.109Z"
+          "transitioned_at": "2025-07-16T15:44:49.109Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-18T03:34:49.109Z"
+          "transitioned_at": "2025-07-19T15:24:49.109Z"
         },
         {
           "from_status": "In Review",
@@ -15919,16 +15954,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-18T11:09:16.550Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-21T10:39:16.550Z"
+          "transitioned_at": "2025-07-20T10:49:16.550Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-22T10:29:16.550Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-24T10:09:16.550Z"
         }
@@ -15952,16 +15987,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-02T11:44:23.731Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-06T23:14:23.731Z"
+          "transitioned_at": "2025-07-05T11:24:23.731Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-08T11:04:23.731Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-11T10:44:23.731Z"
         }
@@ -15980,38 +16015,38 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-22T14:29:22.825Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-22T14:29:22.825Z"
+          "transitioned_at": "2025-07-23T20:14:22.825Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-24T06:09:22.825Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-25T21:49:22.825Z"
+          "transitioned_at": "2025-07-25T01:59:22.825Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-27T19:08:37.355Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-07-26T07:44:22.825Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-29T01:16:59.222Z"
+          "transitioned_at": "2025-07-28T05:03:37.355Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-29T11:11:59.222Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-07-30T01:16:59.222Z"
+          "transitioned_at": "2025-07-30T11:11:59.222Z"
         }
       ]
     },
@@ -16028,33 +16063,33 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-21T14:57:43.740Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-21T14:57:43.740Z"
+          "transitioned_at": "2025-07-24T06:37:43.740Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-25T14:27:43.740Z"
+          "transitioned_at": "2025-07-26T22:17:43.740Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-29T22:25:24.269Z"
+          "transitioned_at": "2025-07-31T06:15:24.269Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-30T22:07:58.355Z"
+          "transitioned_at": "2025-08-01T05:57:58.355Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-07-31T22:07:58.355Z"
+          "transitioned_at": "2025-08-02T05:57:58.355Z"
         }
       ]
     },
@@ -16076,16 +16111,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-25T16:24:36.887Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-27T15:54:36.887Z"
+          "transitioned_at": "2025-07-27T00:04:36.887Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-28T07:44:36.887Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-29T15:24:36.887Z"
         }
@@ -16110,7 +16145,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-22T14:38:07.680Z"
+          "transitioned_at": "2025-07-22T16:49:25.654Z"
         },
         {
           "from_status": "In Review",
@@ -16138,7 +16173,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-21T21:29:11.048Z"
+          "transitioned_at": "2025-07-25T08:59:11.048Z"
         },
         {
           "from_status": "In Review",
@@ -16160,26 +16195,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-15T17:44:16.358Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-15T17:44:16.358Z"
+          "transitioned_at": "2025-07-17T23:29:16.358Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-18T17:24:16.358Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-21T17:04:16.358Z"
+          "transitioned_at": "2025-07-20T05:14:16.358Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-22T10:59:16.358Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-24T16:44:16.358Z"
         }
@@ -16198,33 +16233,33 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-22T16:05:21.574Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-22T16:05:21.574Z"
+          "transitioned_at": "2025-07-25T15:45:21.574Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-27T03:35:21.574Z"
+          "transitioned_at": "2025-07-28T15:25:21.574Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-30T16:51:17.134Z"
+          "transitioned_at": "2025-08-01T04:41:17.134Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-31T13:45:33.876Z"
+          "transitioned_at": "2025-08-02T01:35:33.876Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-08-01T20:47:21.780Z"
+          "transitioned_at": "2025-08-03T01:35:33.876Z"
         }
       ]
     },
@@ -16247,7 +16282,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-23T16:04:08.974Z"
+          "transitioned_at": "2025-07-28T03:34:08.974Z"
         },
         {
           "from_status": "In Review",
@@ -16269,26 +16304,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-05T14:37:20.672Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-05T14:37:20.672Z"
+          "transitioned_at": "2025-07-08T02:22:20.672Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-08T22:17:20.672Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-12T05:57:20.672Z"
+          "transitioned_at": "2025-07-10T14:07:20.672Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-13T01:52:20.672Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-15T13:37:20.672Z"
         }
@@ -16307,13 +16342,13 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-03T10:38:27.013Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-03T10:38:27.013Z"
+          "transitioned_at": "2025-07-05T10:23:27.013Z"
         },
         {
           "from_status": "In Progress",
@@ -16322,6 +16357,11 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-09T09:53:27.013Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-11T09:38:27.013Z"
         }
@@ -16345,28 +16385,28 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-15T19:28:21.619Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-17T18:58:21.619Z"
+          "transitioned_at": "2025-07-17T03:08:21.619Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-20T12:20:42.879Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-07-18T10:48:21.619Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-22T03:16:45.761Z"
+          "transitioned_at": "2025-07-21T04:10:42.879Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-22T19:06:45.761Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-07-23T03:16:45.761Z"
+          "transitioned_at": "2025-07-23T19:06:45.761Z"
         }
       ]
     },
@@ -16383,26 +16423,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-21T17:54:34.950Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-21T17:54:34.950Z"
+          "transitioned_at": "2025-07-23T17:39:34.950Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-24T09:34:34.950Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-27T01:14:34.950Z"
+          "transitioned_at": "2025-07-25T17:24:34.950Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-27T17:09:34.950Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-29T16:54:34.950Z"
         }
@@ -16421,43 +16461,43 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-05T12:55:21.260Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-05T12:55:21.260Z"
+          "transitioned_at": "2025-07-08T12:35:21.260Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review (blocked)",
-          "transitioned_at": "2025-07-09T14:49:21.260Z"
+          "transitioned_at": "2025-07-11T02:39:21.260Z"
         },
         {
           "from_status": "In Review (blocked)",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-09T22:01:21.260Z"
+          "transitioned_at": "2025-07-11T09:51:21.260Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-10T00:25:21.260Z"
+          "transitioned_at": "2025-07-11T12:15:21.260Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-13T12:44:44.543Z"
+          "transitioned_at": "2025-07-15T00:34:44.543Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-15T12:38:41.274Z"
+          "transitioned_at": "2025-07-17T00:28:41.274Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-07-16T12:38:41.274Z"
+          "transitioned_at": "2025-07-18T00:28:41.274Z"
         }
       ]
     },
@@ -16474,26 +16514,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-07T19:09:29.501Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-07T19:09:29.501Z"
+          "transitioned_at": "2025-07-07T20:18:46.498Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-07T20:41:52.164Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-07T22:14:14.828Z"
+          "transitioned_at": "2025-07-07T21:28:03.496Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-07T22:37:20.494Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-07T23:46:37.492Z"
         }
@@ -16517,16 +16557,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-12T19:28:09.416Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-15T06:58:09.416Z"
+          "transitioned_at": "2025-07-14T11:08:09.416Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-16T02:48:09.416Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-17T18:28:09.416Z"
         }
@@ -16545,26 +16585,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-17T16:47:18.464Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-17T16:47:18.464Z"
+          "transitioned_at": "2025-07-18T22:32:18.464Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-19T08:27:18.464Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-21T00:07:18.464Z"
+          "transitioned_at": "2025-07-20T04:17:18.464Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-21T10:02:18.464Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-22T15:47:18.464Z"
         }
@@ -16583,26 +16623,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-04T18:50:07.992Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-04T18:50:07.992Z"
+          "transitioned_at": "2025-07-06T12:35:07.992Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-07T02:30:07.992Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-09T10:10:07.992Z"
+          "transitioned_at": "2025-07-08T06:20:07.992Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-10T00:05:07.992Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-11T17:50:07.992Z"
         }
@@ -16621,26 +16661,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-09T19:10:45.990Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-09T19:10:45.990Z"
+          "transitioned_at": "2025-07-09T20:38:10.244Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-09T21:07:18.329Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-09T23:03:50.668Z"
+          "transitioned_at": "2025-07-09T22:05:34.498Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-09T23:32:58.752Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-10T01:00:23.007Z"
         }
@@ -16659,13 +16699,13 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-04T15:53:31.568Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-04T15:53:31.568Z"
+          "transitioned_at": "2025-07-07T09:38:31.568Z"
         },
         {
           "from_status": "In Progress",
@@ -16674,6 +16714,11 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-12T21:08:31.568Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-15T14:53:31.568Z"
         }
@@ -16692,36 +16737,36 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-06T21:17:19.715Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-06T21:17:19.715Z"
+          "transitioned_at": "2025-07-06T23:25:00.761Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-07T00:07:34.444Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review (blocked)",
-          "transitioned_at": "2025-07-06T17:21:49.173Z"
+          "transitioned_at": "2025-07-06T15:56:41.808Z"
         },
         {
           "from_status": "In Review (blocked)",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-07T00:33:49.173Z"
+          "to_status": "In Progress",
+          "transitioned_at": "2025-07-06T23:08:41.808Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-07T02:57:49.173Z"
+          "transitioned_at": "2025-07-07T01:32:41.808Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-07T03:40:22.855Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-07T05:48:03.902Z"
         }
@@ -16745,16 +16790,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-22T19:25:03.217Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-26T18:55:03.217Z"
+          "transitioned_at": "2025-07-25T11:05:03.217Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-28T02:45:03.217Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-07-30T18:25:03.217Z"
         }
@@ -16773,38 +16818,38 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-07-08T20:30:35.754Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-07-08T20:30:35.754Z"
+          "transitioned_at": "2025-07-10T14:15:35.754Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-11T04:10:35.754Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-13T11:50:35.754Z"
+          "transitioned_at": "2025-07-12T08:00:35.754Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-07-17T02:58:40.548Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-07-14T01:45:35.754Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-07-18T14:18:30.863Z"
+          "transitioned_at": "2025-07-17T16:53:40.548Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-07-19T04:13:30.863Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-07-19T14:18:30.863Z"
+          "transitioned_at": "2025-07-20T04:13:30.863Z"
         }
       ]
     },
@@ -16821,26 +16866,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-14T14:56:45.181Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-14T14:56:45.181Z"
+          "transitioned_at": "2025-08-16T02:41:45.181Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-16T14:36:45.181Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-18T14:16:45.181Z"
+          "transitioned_at": "2025-08-17T14:26:45.181Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-19T02:11:45.181Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-20T13:56:45.181Z"
         }
@@ -16859,26 +16904,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-16T16:52:25.411Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-16T16:52:25.411Z"
+          "transitioned_at": "2025-09-17T10:37:25.411Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-28T00:32:25.411Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-11-09T08:12:25.411Z"
+          "transitioned_at": "2025-10-19T04:22:25.411Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-11-19T22:07:25.411Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-12-21T15:52:25.411Z"
         }
@@ -16910,18 +16955,18 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-06T20:33:25.387Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-06T20:33:25.387Z"
+          "transitioned_at": "2025-09-18T20:13:25.387Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-10-10T08:03:25.387Z"
+          "transitioned_at": "2025-10-31T19:53:25.387Z"
         },
         {
           "from_status": "In Review",
@@ -16943,26 +16988,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-06T19:34:38.963Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-06T19:34:38.963Z"
+          "transitioned_at": "2025-08-08T19:19:38.963Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-09T11:14:38.963Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-12T02:54:38.963Z"
+          "transitioned_at": "2025-08-10T19:04:38.963Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-12T18:49:38.963Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-14T18:34:38.963Z"
         }
@@ -16981,26 +17026,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-17T19:51:17.555Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-17T19:51:17.555Z"
+          "transitioned_at": "2025-08-19T07:36:17.555Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-19T19:31:17.555Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-21T19:11:17.555Z"
+          "transitioned_at": "2025-08-20T19:21:17.555Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-22T07:06:17.555Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-23T18:51:17.555Z"
         }
@@ -17024,16 +17069,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-09T17:28:30.150Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-14T04:58:30.150Z"
+          "transitioned_at": "2025-08-12T17:08:30.150Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-15T16:48:30.150Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-18T16:28:30.150Z"
         }
@@ -17052,26 +17097,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-02T13:42:19.591Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-02T13:42:19.591Z"
+          "transitioned_at": "2025-08-02T15:32:07.895Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-02T16:08:43.996Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-02T18:35:08.402Z"
+          "transitioned_at": "2025-08-02T17:21:56.199Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-02T19:11:44.503Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-02T21:01:32.807Z"
         }
@@ -17090,13 +17135,13 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-14T13:26:38.028Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-14T13:26:38.028Z"
+          "transitioned_at": "2025-08-15T13:11:38.028Z"
         },
         {
           "from_status": "In Progress",
@@ -17105,6 +17150,11 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-17T12:41:38.028Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-18T12:26:38.028Z"
         }
@@ -17123,26 +17173,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-03T12:58:35.707Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-03T12:58:35.707Z"
+          "transitioned_at": "2025-08-05T00:43:35.707Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-05T12:38:35.707Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-07T12:18:35.707Z"
+          "transitioned_at": "2025-08-06T12:28:35.707Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-08T00:13:35.707Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-09T11:58:35.707Z"
         }
@@ -17167,22 +17217,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-10T17:44:11.961Z"
+          "transitioned_at": "2025-08-15T05:14:11.961Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-17T00:03:43.419Z"
+          "transitioned_at": "2025-08-21T11:33:43.419Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-18T03:54:43.904Z"
+          "transitioned_at": "2025-08-22T15:24:43.904Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-08-21T11:27:52.780Z"
+          "transitioned_at": "2025-08-23T15:24:43.904Z"
         }
       ]
     },
@@ -17199,18 +17249,18 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-04T14:34:45.402Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-04T14:34:45.402Z"
+          "transitioned_at": "2025-08-04T17:16:45.875Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-04T18:37:46.111Z"
+          "transitioned_at": "2025-08-04T19:58:46.348Z"
         },
         {
           "from_status": "In Review",
@@ -17237,16 +17287,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-03T15:44:57.066Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-09T03:14:57.066Z"
+          "transitioned_at": "2025-08-07T07:24:57.066Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-10T23:04:57.066Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-14T14:44:57.066Z"
         }
@@ -17270,16 +17320,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-23T13:01:28.058Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-27T00:31:28.058Z"
+          "transitioned_at": "2025-08-25T20:41:28.058Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-28T04:21:28.058Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-30T12:01:28.058Z"
         }
@@ -17298,36 +17348,36 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-06T19:11:32.499Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
           "transitioned_at": "2025-08-06T19:11:32.499Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-11T02:51:32.499Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review (blocked)",
-          "transitioned_at": "2025-08-15T00:55:32.499Z"
+          "transitioned_at": "2025-08-12T21:05:32.499Z"
         },
         {
           "from_status": "In Review (blocked)",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-15T08:07:32.499Z"
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-13T04:17:32.499Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-15T10:31:32.499Z"
+          "transitioned_at": "2025-08-13T06:41:32.499Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-16T12:26:32.499Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-19T18:11:32.499Z"
         }
@@ -17346,21 +17396,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "In Progress",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-16T19:26:01.099Z"
+        },
+        {
+          "from_status": "Ready for Dev",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-18T13:11:01.099Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-16T19:26:01.099Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
           "transitioned_at": "2025-08-20T06:56:01.099Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-22T00:41:01.099Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-23T18:26:01.099Z"
         }
@@ -17385,7 +17440,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-08T13:29:45.662Z"
+          "transitioned_at": "2025-08-12T00:59:45.662Z"
         },
         {
           "from_status": "In Review",
@@ -17407,33 +17462,38 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "In Progress",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-05T14:26:10.937Z"
+        },
+        {
+          "from_status": "Ready for Dev",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-08T02:11:10.937Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-05T14:26:10.937Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
           "transitioned_at": "2025-08-10T13:56:10.937Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-16T01:36:16.162Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-08-13T01:41:10.937Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-16T19:07:03.615Z"
+          "transitioned_at": "2025-08-18T13:21:16.162Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-19T06:52:03.615Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-08-17T19:07:03.615Z"
+          "transitioned_at": "2025-08-20T06:52:03.615Z"
         }
       ]
     },
@@ -17468,38 +17528,38 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-12T14:16:59.487Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review (blocked)",
-          "transitioned_at": "2025-08-17T04:10:59.487Z"
+          "transitioned_at": "2025-08-15T12:20:59.487Z"
         },
         {
           "from_status": "In Review (blocked)",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-17T11:22:59.487Z"
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-15T19:32:59.487Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-17T13:46:59.487Z"
+          "transitioned_at": "2025-08-15T21:56:59.487Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-23T18:23:46.802Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-08-19T05:36:59.487Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-24T20:13:33.255Z"
+          "transitioned_at": "2025-08-25T10:13:46.802Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-26T12:03:33.255Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-08-25T20:13:33.255Z"
+          "transitioned_at": "2025-08-27T12:03:33.255Z"
         }
       ]
     },
@@ -17516,18 +17576,18 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-24T18:00:10.301Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-24T18:00:10.301Z"
+          "transitioned_at": "2025-08-27T17:40:10.301Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-29T05:30:10.301Z"
+          "transitioned_at": "2025-08-30T17:20:10.301Z"
         },
         {
           "from_status": "In Review",
@@ -17549,26 +17609,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-14T13:34:45.382Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
           "transitioned_at": "2025-08-14T13:34:45.382Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-16T21:14:45.382Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-19T04:54:45.382Z"
+          "transitioned_at": "2025-08-18T01:04:45.382Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-19T18:49:45.382Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-21T12:34:45.382Z"
         }
@@ -17592,16 +17652,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-08T18:06:32.439Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-12T17:36:32.439Z"
+          "transitioned_at": "2025-08-11T09:46:32.439Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-14T01:26:32.439Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-16T17:06:32.439Z"
         }
@@ -17620,18 +17680,18 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-09T16:28:02.643Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-09T16:28:02.643Z"
+          "transitioned_at": "2025-08-11T00:08:02.643Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-11T15:58:02.643Z"
+          "transitioned_at": "2025-08-12T07:48:02.643Z"
         },
         {
           "from_status": "In Review",
@@ -17653,26 +17713,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-07T13:25:54.386Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-07T13:25:54.386Z"
+          "transitioned_at": "2025-08-09T01:10:54.386Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-09T13:05:54.386Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-11T12:45:54.386Z"
+          "transitioned_at": "2025-08-10T12:55:54.386Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-12T00:40:54.386Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-13T12:25:54.386Z"
         }
@@ -17697,7 +17757,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-17T20:11:23.635Z"
+          "transitioned_at": "2025-08-21T07:41:23.635Z"
         },
         {
           "from_status": "In Review",
@@ -17719,26 +17779,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-23T15:58:54.179Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-23T15:58:54.179Z"
+          "transitioned_at": "2025-08-25T03:43:54.179Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-25T15:38:54.179Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-27T15:18:54.179Z"
+          "transitioned_at": "2025-08-26T15:28:54.179Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-28T03:13:54.179Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-29T14:58:54.179Z"
         }
@@ -17762,38 +17822,38 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-20T12:30:29.761Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review (blocked)",
-          "transitioned_at": "2025-08-26T02:24:29.761Z"
+          "transitioned_at": "2025-08-24T02:34:29.761Z"
         },
         {
           "from_status": "In Review (blocked)",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-26T09:36:29.761Z"
+          "to_status": "In Progress",
+          "transitioned_at": "2025-08-24T09:46:29.761Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-26T12:00:29.761Z"
+          "transitioned_at": "2025-08-24T12:10:29.761Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-01T13:33:54.890Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-08-28T11:50:29.761Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-02T06:04:01.570Z"
+          "transitioned_at": "2025-09-03T13:23:54.890Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-04T05:54:01.570Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-09-03T06:04:01.570Z"
+          "transitioned_at": "2025-09-05T05:54:01.570Z"
         }
       ]
     },
@@ -17810,26 +17870,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-18T16:09:44.105Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-18T16:09:44.105Z"
+          "transitioned_at": "2025-08-21T15:54:44.105Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-22T15:49:44.105Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-26T15:29:44.105Z"
+          "transitioned_at": "2025-08-24T15:39:44.105Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-27T15:24:44.105Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-30T15:09:44.105Z"
         }
@@ -17848,26 +17908,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-11T18:18:13.473Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-11T18:18:13.473Z"
+          "transitioned_at": "2025-08-13T00:03:13.473Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-13T09:58:13.473Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-15T01:38:13.473Z"
+          "transitioned_at": "2025-08-14T05:48:13.473Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-15T11:33:13.473Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-16T17:18:13.473Z"
         }
@@ -17886,26 +17946,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-08-25T14:43:11.361Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-08-25T14:43:11.361Z"
+          "transitioned_at": "2025-08-27T20:28:11.361Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-28T14:23:11.361Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-31T14:03:11.361Z"
+          "transitioned_at": "2025-08-30T02:13:11.361Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-01T07:58:11.361Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-03T13:43:11.361Z"
         }
@@ -17929,16 +17989,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-08-22T11:41:34.874Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-22T12:15:07.513Z"
+          "transitioned_at": "2025-08-22T12:03:56.633Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-08-22T12:26:18.393Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-08-22T12:48:40.153Z"
         }
@@ -17963,7 +18023,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-05T20:18:14.199Z"
+          "transitioned_at": "2025-08-06T00:54:35.890Z"
         },
         {
           "from_status": "In Review",
@@ -17991,7 +18051,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-08-05T11:11:11.670Z"
+          "transitioned_at": "2025-08-08T10:41:11.670Z"
         },
         {
           "from_status": "In Review",
@@ -18018,16 +18078,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-03T13:01:05.828Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-03T16:40:02.429Z"
+          "transitioned_at": "2025-09-03T15:27:03.562Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-03T17:53:01.296Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-03T20:18:59.030Z"
         }
@@ -18046,26 +18106,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-07T13:37:21.938Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-07T13:37:21.938Z"
+          "transitioned_at": "2025-10-11T13:22:21.938Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-10-22T21:17:21.938Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-12-07T04:57:21.938Z"
+          "transitioned_at": "2025-11-14T13:07:21.938Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-12-18T12:52:21.938Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2026-01-21T12:37:21.938Z"
         }
@@ -18116,7 +18176,7 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-20T20:20:45.635Z"
+          "transitioned_at": "2025-09-23T19:50:45.635Z"
         },
         {
           "from_status": "In Review",
@@ -18143,16 +18203,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-09T12:33:15.457Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-13T00:03:15.457Z"
+          "transitioned_at": "2025-09-11T20:13:15.457Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-14T03:53:15.457Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-16T11:33:15.457Z"
         }
@@ -18176,28 +18236,28 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-07T12:24:30.521Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-12T11:54:30.521Z"
+          "transitioned_at": "2025-09-10T20:04:30.521Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-19T05:15:48.951Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-09-14T03:44:30.521Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-19T21:33:36.805Z"
+          "transitioned_at": "2025-09-20T21:05:48.951Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-21T13:23:36.805Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-09-20T21:33:36.805Z"
+          "transitioned_at": "2025-09-22T13:23:36.805Z"
         }
       ]
     },
@@ -18219,16 +18279,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-08T15:13:45.128Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-13T02:43:45.128Z"
+          "transitioned_at": "2025-09-11T14:53:45.128Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-14T14:33:45.128Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-17T14:13:45.128Z"
         }
@@ -18247,13 +18307,13 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-01T19:26:49.671Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-01T19:26:49.671Z"
+          "transitioned_at": "2025-09-03T13:11:49.671Z"
         },
         {
           "from_status": "In Progress",
@@ -18262,6 +18322,11 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-07T00:41:49.671Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-08T18:26:49.671Z"
         }
@@ -18280,26 +18345,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-01T14:50:24.285Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-01T14:50:24.285Z"
+          "transitioned_at": "2025-09-02T20:35:24.285Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-03T06:30:24.285Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-04T22:10:24.285Z"
+          "transitioned_at": "2025-09-04T02:20:24.285Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-05T08:05:24.285Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-06T13:50:24.285Z"
         }
@@ -18318,13 +18383,13 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-01T10:26:22.072Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-01T10:26:22.072Z"
+          "transitioned_at": "2025-09-03T04:11:22.072Z"
         },
         {
           "from_status": "In Progress",
@@ -18333,6 +18398,11 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-06T15:41:22.072Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-08T09:26:22.072Z"
         }
@@ -18356,16 +18426,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-14T11:09:53.241Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-17T22:39:53.241Z"
+          "transitioned_at": "2025-09-16T18:49:53.241Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-19T02:29:53.241Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-21T10:09:53.241Z"
         }
@@ -18389,26 +18459,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-25T17:09:16.339Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-30T16:39:16.339Z"
+          "transitioned_at": "2025-09-29T00:49:16.339Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-10-03T22:26:39.128Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-10-02T08:29:16.339Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-10-04T16:07:07.222Z"
+          "transitioned_at": "2025-10-05T14:16:39.128Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-10-06T07:57:07.222Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-10-08T01:48:18.863Z"
         }
@@ -18445,16 +18515,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-17T17:11:12.498Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-17T18:09:03.623Z"
+          "transitioned_at": "2025-09-17T17:49:46.581Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-17T18:28:20.665Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-17T19:06:54.749Z"
         }
@@ -18473,18 +18543,18 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-01T14:57:00.936Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
           "transitioned_at": "2025-09-01T14:57:00.936Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-05T14:27:00.936Z"
+          "transitioned_at": "2025-09-06T22:17:00.936Z"
         },
         {
           "from_status": "In Review",
@@ -18511,16 +18581,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-02T16:26:38.934Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-08T03:56:38.934Z"
+          "transitioned_at": "2025-09-06T08:06:38.934Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-09T23:46:38.934Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-13T15:26:38.934Z"
         }
@@ -18539,26 +18609,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-16T16:07:55.238Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-16T16:07:55.238Z"
+          "transitioned_at": "2025-09-18T21:52:55.238Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-19T15:47:55.238Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-22T15:27:55.238Z"
+          "transitioned_at": "2025-09-21T03:37:55.238Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-23T09:22:55.238Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-25T15:07:55.238Z"
         }
@@ -18583,22 +18653,22 @@ export const DEMO_REALWORLD: DemoFixture = {
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-17T12:53:02.897Z"
+          "transitioned_at": "2025-09-21T12:23:02.897Z"
         },
         {
           "from_status": "In Review",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-22T22:10:41.782Z"
+          "transitioned_at": "2025-09-26T21:40:41.782Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-24T20:41:35.945Z"
+          "transitioned_at": "2025-09-28T20:11:35.945Z"
         },
         {
           "from_status": "In Review",
           "to_status": "Done",
-          "transitioned_at": "2025-09-27T13:22:57.765Z"
+          "transitioned_at": "2025-09-29T20:11:35.945Z"
         }
       ]
     },
@@ -18615,26 +18685,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-10T11:22:36.266Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-10T11:22:36.266Z"
+          "transitioned_at": "2025-09-10T12:39:37.311Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-10T13:05:17.659Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-10T14:47:59.053Z"
+          "transitioned_at": "2025-09-10T13:56:38.356Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-10T15:13:39.401Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-10T16:30:40.446Z"
         }
@@ -18653,13 +18723,13 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-24T13:48:22.581Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-24T13:48:22.581Z"
+          "transitioned_at": "2025-09-26T13:33:22.581Z"
         },
         {
           "from_status": "In Progress",
@@ -18668,6 +18738,11 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-30T13:03:22.581Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-10-02T12:48:22.581Z"
         }
@@ -18686,26 +18761,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-13T18:28:50.601Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-13T18:28:50.601Z"
+          "transitioned_at": "2025-09-16T12:13:50.601Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-17T10:08:50.601Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-21T01:48:50.601Z"
+          "transitioned_at": "2025-09-19T05:58:50.601Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-21T23:43:50.601Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-24T17:28:50.601Z"
         }
@@ -18724,16 +18799,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "In Progress",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-09T17:40:53.844Z"
+        },
+        {
+          "from_status": "Ready for Dev",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-11T11:25:53.844Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-09T17:40:53.844Z"
+          "transitioned_at": "2025-09-13T05:10:53.844Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-14T22:55:53.844Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-16T16:40:53.844Z"
         }
@@ -18752,26 +18837,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-22T17:34:45.004Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-22T17:34:45.004Z"
+          "transitioned_at": "2025-09-24T17:19:45.004Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-25T09:14:45.004Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-28T00:54:45.004Z"
+          "transitioned_at": "2025-09-26T17:04:45.004Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-28T16:49:45.004Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-30T16:34:45.004Z"
         }
@@ -18790,21 +18875,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "In Progress",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-10T14:56:45.449Z"
+        },
+        {
+          "from_status": "Ready for Dev",
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-10T16:02:05.679Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-10T14:56:45.449Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
           "transitioned_at": "2025-09-10T17:07:25.910Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-10T18:12:46.141Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-10T19:18:06.372Z"
         }
@@ -18828,28 +18918,28 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-19T13:08:24.125Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-23T00:38:24.125Z"
+          "transitioned_at": "2025-09-21T20:48:24.125Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-27T08:28:24.989Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-09-24T04:28:24.125Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-28T10:37:41.178Z"
+          "transitioned_at": "2025-09-28T12:18:24.989Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-29T14:27:41.178Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-09-29T10:37:41.178Z"
+          "transitioned_at": "2025-09-30T14:27:41.178Z"
         }
       ]
     },
@@ -18866,18 +18956,18 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-14T15:00:47.036Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-14T15:00:47.036Z"
+          "transitioned_at": "2025-09-17T14:40:47.036Z"
         },
         {
           "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-19T02:30:47.036Z"
+          "transitioned_at": "2025-09-20T14:20:47.036Z"
         },
         {
           "from_status": "In Review",
@@ -18899,48 +18989,48 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-16T20:18:31.860Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-16T20:18:31.860Z"
+          "transitioned_at": "2025-09-18T20:03:31.860Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-19T11:58:31.860Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review (blocked)",
-          "transitioned_at": "2025-09-21T18:02:31.860Z"
+          "transitioned_at": "2025-09-20T10:12:31.860Z"
         },
         {
           "from_status": "In Review (blocked)",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-22T01:14:31.860Z"
+          "to_status": "In Progress",
+          "transitioned_at": "2025-09-20T17:24:31.860Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "In Progress",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-22T03:38:31.860Z"
+          "transitioned_at": "2025-09-20T19:48:31.860Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-27T15:49:20.135Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-09-22T19:33:31.860Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-29T02:32:58.856Z"
+          "transitioned_at": "2025-09-28T07:44:20.135Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-29T18:27:58.856Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-09-30T02:32:58.856Z"
+          "transitioned_at": "2025-09-30T18:27:58.856Z"
         }
       ]
     },
@@ -18957,26 +19047,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-03T13:57:45.032Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-03T13:57:45.032Z"
+          "transitioned_at": "2025-09-05T13:42:45.032Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-06T05:37:45.032Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-08T21:17:45.032Z"
+          "transitioned_at": "2025-09-07T13:27:45.032Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-09T13:12:45.032Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-11T12:57:45.032Z"
         }
@@ -18995,26 +19085,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-20T21:22:10.380Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-20T21:22:10.380Z"
+          "transitioned_at": "2025-09-23T03:07:10.380Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-23T21:02:10.380Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-26T20:42:10.380Z"
+          "transitioned_at": "2025-09-25T08:52:10.380Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-27T14:37:10.380Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-29T20:22:10.380Z"
         }
@@ -19038,16 +19128,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-19T13:58:17.839Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-21T01:28:17.839Z"
+          "transitioned_at": "2025-09-20T13:38:17.839Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-21T13:18:17.839Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-22T12:58:17.839Z"
         }
@@ -19066,26 +19156,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-08T14:36:21.313Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-08T14:36:21.313Z"
+          "transitioned_at": "2025-09-10T14:21:21.313Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-11T06:16:21.313Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-13T21:56:21.313Z"
+          "transitioned_at": "2025-09-12T14:06:21.313Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-14T13:51:21.313Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-16T13:36:21.313Z"
         }
@@ -19104,26 +19194,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-03T19:42:53.130Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-03T19:42:53.130Z"
+          "transitioned_at": "2025-09-06T13:27:53.130Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-07T11:22:53.130Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-11T03:02:53.130Z"
+          "transitioned_at": "2025-09-09T07:12:53.130Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-12T00:57:53.130Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-14T18:42:53.130Z"
         }
@@ -19147,16 +19237,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-11T18:47:35.553Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-11T19:33:09.115Z"
+          "transitioned_at": "2025-09-11T19:17:57.927Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-11T19:48:20.302Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-11T20:18:42.677Z"
         }
@@ -19175,26 +19265,26 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-21T13:04:39.741Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-21T13:04:39.741Z"
+          "transitioned_at": "2025-09-23T06:49:39.741Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-23T20:44:39.741Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-26T04:24:39.741Z"
+          "transitioned_at": "2025-09-25T00:34:39.741Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-26T18:19:39.741Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-28T12:04:39.741Z"
         }
@@ -19231,16 +19321,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-19T16:45:37.733Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-23T04:15:37.733Z"
+          "transitioned_at": "2025-09-22T00:25:37.733Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-24T08:05:37.733Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
           "transitioned_at": "2025-09-26T15:45:37.733Z"
         }
@@ -19259,38 +19349,38 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "Backlog",
-          "to_status": "Up Next",
+          "to_status": "Ready for Dev",
           "transitioned_at": "2025-09-06T17:02:19.717Z"
         },
         {
-          "from_status": "Up Next",
+          "from_status": "Ready for Dev",
           "to_status": "In Progress",
-          "transitioned_at": "2025-09-06T17:02:19.717Z"
+          "transitioned_at": "2025-09-08T22:47:19.717Z"
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-09T16:42:19.717Z"
-        },
-        {
-          "from_status": "Ready for QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-12T16:22:19.717Z"
+          "transitioned_at": "2025-09-11T04:32:19.717Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for QA",
-          "transitioned_at": "2025-09-17T03:12:30.129Z"
+          "to_status": "QA",
+          "transitioned_at": "2025-09-13T10:17:19.717Z"
         },
         {
-          "from_status": "Ready for QA",
+          "from_status": "QA",
           "to_status": "In Review",
-          "transitioned_at": "2025-09-18T00:51:45.762Z"
+          "transitioned_at": "2025-09-17T21:07:30.129Z"
         },
         {
           "from_status": "In Review",
+          "to_status": "QA",
+          "transitioned_at": "2025-09-18T18:46:45.762Z"
+        },
+        {
+          "from_status": "QA",
           "to_status": "Done",
-          "transitioned_at": "2025-09-19T00:51:45.762Z"
+          "transitioned_at": "2025-09-19T18:46:45.762Z"
         }
       ]
     },
@@ -19312,21 +19402,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-25T17:54:42.003Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-30T05:24:42.003Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for Dev!",
+          "to_status": "In Progress",
           "transitioned_at": "2025-11-03T02:29:35.639Z"
         },
         {
-          "from_status": "Ready for Dev!",
+          "from_status": "In Progress",
           "to_status": "In Review",
           "transitioned_at": "2025-11-04T16:34:24.718Z"
         },
@@ -19355,21 +19440,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-18T14:06:45.710Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-23T13:36:45.710Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for Dev!",
+          "to_status": "In Progress",
           "transitioned_at": "2025-10-29T02:56:38.678Z"
         },
         {
-          "from_status": "Ready for Dev!",
+          "from_status": "In Progress",
           "to_status": "In Review",
           "transitioned_at": "2025-10-30T01:32:29.900Z"
         },
@@ -19398,11 +19478,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-17T20:45:55.522Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-22T08:15:55.522Z"
         },
@@ -19431,11 +19506,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-19T17:24:02.324Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-25T04:54:02.324Z"
         },
@@ -19464,11 +19534,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-09T18:50:42.258Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-12T18:20:42.258Z"
         },
@@ -19497,11 +19562,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-04T16:09:45.300Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-08T03:39:45.300Z"
         },
@@ -19530,21 +19590,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-03T16:31:14.312Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-05T04:01:14.312Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for Dev!",
+          "to_status": "In Progress",
           "transitioned_at": "2025-10-06T20:12:15.953Z"
         },
         {
-          "from_status": "Ready for Dev!",
+          "from_status": "In Progress",
           "to_status": "In Review",
           "transitioned_at": "2025-10-08T01:18:56.794Z"
         },
@@ -19573,11 +19628,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-05T15:17:52.410Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-08T14:47:52.410Z"
         },
@@ -19606,11 +19656,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-18T20:36:18.061Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-21T08:06:18.061Z"
         },
@@ -19639,11 +19684,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-11T17:21:55.650Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-15T04:51:55.650Z"
         },
@@ -19672,11 +19712,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-17T15:18:26.024Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-17T19:17:10.055Z"
         },
@@ -19705,21 +19740,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-16T16:21:26.025Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-20T03:51:26.025Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for Dev!",
+          "to_status": "In Progress",
           "transitioned_at": "2025-10-24T11:30:53.180Z"
         },
         {
-          "from_status": "Ready for Dev!",
+          "from_status": "In Progress",
           "to_status": "In Review",
           "transitioned_at": "2025-10-25T01:05:55.016Z"
         },
@@ -19748,11 +19778,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-06T18:16:21.641Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-09T17:46:21.641Z"
         },
@@ -19781,11 +19806,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-21T19:26:19.840Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-27T06:56:19.840Z"
         },
@@ -19814,11 +19834,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-20T19:00:32.840Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-26T06:30:32.840Z"
         },
@@ -19847,11 +19862,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-20T18:46:29.232Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-23T06:16:29.232Z"
         },
@@ -19880,21 +19890,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-01T13:40:35.010Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-04T13:10:35.010Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for Dev!",
+          "to_status": "In Progress",
           "transitioned_at": "2025-10-07T08:45:50.476Z"
         },
         {
-          "from_status": "Ready for Dev!",
+          "from_status": "In Progress",
           "to_status": "In Review",
           "transitioned_at": "2025-10-08T02:05:54.797Z"
         },
@@ -19923,11 +19928,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-24T19:35:38.830Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-29T07:05:38.830Z"
         },
@@ -19956,11 +19956,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-21T14:47:58.820Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-24T02:17:58.820Z"
         },
@@ -19989,11 +19984,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-13T17:34:21.183Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-13T19:55:35.523Z"
         },
@@ -20022,11 +20012,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-02T16:20:19.645Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-06T03:50:19.645Z"
         },
@@ -20055,11 +20040,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-23T17:40:47.405Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-23T20:38:32.185Z"
         },
@@ -20088,11 +20068,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-02T21:28:53.179Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-05T20:58:53.179Z"
         },
@@ -20121,11 +20096,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-03T13:12:08.036Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-06T12:42:08.036Z"
         },
@@ -20154,11 +20124,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-12T13:58:20.132Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-16T13:28:20.132Z"
         },
@@ -20187,11 +20152,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-23T17:50:39.415Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-27T05:20:39.415Z"
         },
@@ -20220,11 +20180,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-05T17:10:54.124Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-08T16:40:54.124Z"
         },
@@ -20253,11 +20208,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-17T16:13:57.033Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-14T03:43:57.033Z"
         },
@@ -20286,11 +20236,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-16T10:34:06.467Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-19T22:04:06.467Z"
         },
@@ -20319,11 +20264,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-20T14:43:39.301Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-24T02:13:39.301Z"
         },
@@ -20352,11 +20292,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-18T20:22:34.122Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-19T01:06:54.355Z"
         },
@@ -20385,11 +20320,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-23T14:29:37.414Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-29T13:59:37.414Z"
         },
@@ -20418,11 +20348,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-15T17:21:41.872Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-19T16:51:41.872Z"
         },
@@ -20451,11 +20376,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-13T15:59:19.218Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-16T03:29:19.218Z"
         },
@@ -20484,11 +20404,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-08T19:28:52.977Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-13T06:58:52.977Z"
         },
@@ -20517,11 +20432,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-17T20:52:13.262Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-17T23:31:13.271Z"
         },
@@ -20550,11 +20460,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-10-23T13:34:09.264Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-10-27T01:04:09.264Z"
         },
@@ -20583,11 +20488,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-14T17:50:09.562Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-17T17:20:09.562Z"
         },
@@ -20616,21 +20516,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-25T18:51:57.692Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-29T18:21:57.692Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for Dev!",
+          "to_status": "In Progress",
           "transitioned_at": "2025-12-02T07:17:03.291Z"
         },
         {
-          "from_status": "Ready for Dev!",
+          "from_status": "In Progress",
           "to_status": "In Review",
           "transitioned_at": "2025-12-02T21:17:06.545Z"
         },
@@ -20659,11 +20554,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-14T14:04:10.478Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-18T13:34:10.478Z"
         },
@@ -20692,11 +20582,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-16T15:03:11.014Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-22T14:33:11.014Z"
         },
@@ -20725,11 +20610,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-02T18:27:16.802Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-06T17:57:16.802Z"
         },
@@ -20758,11 +20638,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-08T18:12:58.054Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-12T05:42:58.054Z"
         },
@@ -20791,11 +20666,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-05T12:39:12.794Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-09T12:09:12.794Z"
         },
@@ -20824,11 +20694,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-08T10:55:08.902Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-13T10:25:08.902Z"
         },
@@ -20857,11 +20722,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-07T15:07:52.627Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-11T02:37:52.627Z"
         },
@@ -20890,11 +20750,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-20T11:34:59.981Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-22T23:04:59.981Z"
         },
@@ -20923,21 +20778,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-15T13:31:19.465Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-19T13:01:19.465Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for Dev!",
+          "to_status": "In Progress",
           "transitioned_at": "2025-11-22T09:15:20.458Z"
         },
         {
-          "from_status": "Ready for Dev!",
+          "from_status": "In Progress",
           "to_status": "In Review",
           "transitioned_at": "2025-11-23T04:16:04.860Z"
         },
@@ -20966,11 +20816,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-10T16:38:53.873Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-14T16:08:53.873Z"
         },
@@ -20999,11 +20844,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-08T13:24:06.699Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-12T00:54:06.699Z"
         },
@@ -21032,11 +20872,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-20T14:03:52.120Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-24T01:33:52.120Z"
         },
@@ -21065,21 +20900,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-07T18:48:44.743Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-12T06:18:44.743Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for Dev!",
+          "to_status": "In Progress",
           "transitioned_at": "2025-11-18T07:29:08.699Z"
         },
         {
-          "from_status": "Ready for Dev!",
+          "from_status": "In Progress",
           "to_status": "In Review",
           "transitioned_at": "2025-11-18T22:07:53.452Z"
         },
@@ -21108,21 +20938,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-04T13:47:21.358Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-08T01:17:21.358Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for Dev!",
+          "to_status": "In Progress",
           "transitioned_at": "2025-11-11T13:40:20.102Z"
         },
         {
-          "from_status": "Ready for Dev!",
+          "from_status": "In Progress",
           "to_status": "In Review",
           "transitioned_at": "2025-11-13T09:56:09.901Z"
         },
@@ -21151,11 +20976,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-10T10:59:55.277Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-14T22:29:55.277Z"
         },
@@ -21184,11 +21004,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-25T17:19:27.005Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-28T16:49:27.005Z"
         },
@@ -21217,11 +21032,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-21T13:25:00.337Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-26T12:55:00.337Z"
         },
@@ -21250,11 +21060,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-08T12:59:48.308Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-11T00:29:48.308Z"
         },
@@ -21283,11 +21088,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-05T14:34:47.843Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-10T02:04:47.843Z"
         },
@@ -21316,11 +21116,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-24T16:01:05.231Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-29T03:31:05.231Z"
         },
@@ -21349,11 +21144,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-07T16:48:28.415Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-12T04:18:28.415Z"
         },
@@ -21382,11 +21172,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-16T18:46:10.739Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-22T06:16:10.739Z"
         },
@@ -21415,21 +21200,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-23T21:26:29.520Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-28T20:56:29.520Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for Dev!",
+          "to_status": "In Progress",
           "transitioned_at": "2025-12-05T00:37:58.026Z"
         },
         {
-          "from_status": "Ready for Dev!",
+          "from_status": "In Progress",
           "to_status": "In Review",
           "transitioned_at": "2025-12-06T05:56:11.601Z"
         },
@@ -21458,21 +21238,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-04T11:45:06.590Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-08T23:15:06.590Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for Dev!",
+          "to_status": "In Progress",
           "transitioned_at": "2025-11-14T22:31:12.021Z"
         },
         {
-          "from_status": "Ready for Dev!",
+          "from_status": "In Progress",
           "to_status": "In Review",
           "transitioned_at": "2025-11-15T14:02:57.386Z"
         },
@@ -21501,11 +21276,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-08T21:11:31.264Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-12T20:41:31.264Z"
         },
@@ -21547,21 +21317,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-24T19:14:34.261Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-30T06:44:34.261Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for Dev!",
+          "to_status": "In Progress",
           "transitioned_at": "2025-12-05T19:34:41.981Z"
         },
         {
-          "from_status": "Ready for Dev!",
+          "from_status": "In Progress",
           "to_status": "In Review",
           "transitioned_at": "2025-12-07T03:40:14.237Z"
         },
@@ -21590,11 +21355,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-02T18:57:28.032Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-05T18:27:28.032Z"
         },
@@ -21623,11 +21383,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-06T12:05:41.445Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-11T23:35:41.445Z"
         },
@@ -21656,11 +21411,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-06T15:54:09.220Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-11T15:24:09.220Z"
         },
@@ -21689,11 +21439,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-04T16:11:12.867Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-09T03:41:12.867Z"
         },
@@ -21722,21 +21467,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-11T12:09:03.259Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-13T23:39:03.259Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for Dev!",
+          "to_status": "In Progress",
           "transitioned_at": "2025-11-16T11:14:48.532Z"
         },
         {
-          "from_status": "Ready for Dev!",
+          "from_status": "In Progress",
           "to_status": "In Review",
           "transitioned_at": "2025-11-17T05:33:33.105Z"
         },
@@ -21765,11 +21505,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-24T10:48:11.624Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-29T10:18:11.624Z"
         },
@@ -21798,11 +21533,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-11-15T11:11:40.308Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-11-18T22:41:40.308Z"
         },
@@ -21831,11 +21561,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-10T14:33:59.751Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-13T14:03:59.751Z"
         },
@@ -21864,11 +21589,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-20T14:35:54.518Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-20T16:50:18.599Z"
         },
@@ -21897,11 +21617,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-19T15:42:31.490Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-23T03:12:31.490Z"
         },
@@ -21930,11 +21645,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-16T14:39:17.730Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-19T02:09:17.730Z"
         },
@@ -21963,11 +21673,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-24T10:12:35.619Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-28T21:42:35.619Z"
         },
@@ -21996,11 +21701,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-03T17:47:51.159Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-08T05:17:51.159Z"
         },
@@ -22029,11 +21729,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-02T20:32:11.229Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-06T20:02:11.229Z"
         },
@@ -22062,11 +21757,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-10T14:41:57.062Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-13T14:11:57.062Z"
         },
@@ -22095,21 +21785,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-16T14:29:22.358Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-21T13:59:22.358Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for Dev!",
+          "to_status": "In Progress",
           "transitioned_at": "2025-12-27T08:35:56.468Z"
         },
         {
-          "from_status": "Ready for Dev!",
+          "from_status": "In Progress",
           "to_status": "In Review",
           "transitioned_at": "2025-12-28T08:26:54.164Z"
         },
@@ -22138,11 +21823,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-10T16:20:02.839Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-15T15:50:02.839Z"
         },
@@ -22171,11 +21851,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-10T12:21:15.566Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2026-01-26T23:51:15.566Z"
         },
@@ -22204,11 +21879,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-02T16:53:58.537Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-06T04:23:58.537Z"
         },
@@ -22237,11 +21907,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-20T12:09:51.127Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-25T23:39:51.127Z"
         },
@@ -22270,11 +21935,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-15T17:24:36.599Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-20T04:54:36.599Z"
         },
@@ -22303,11 +21963,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-17T16:11:05.681Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-21T15:41:05.681Z"
         },
@@ -22336,11 +21991,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-10T15:53:44.743Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-10T18:01:44.896Z"
         },
@@ -22369,11 +22019,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-19T13:12:42.375Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-24T00:42:42.375Z"
         },
@@ -22415,11 +22060,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-19T18:23:56.572Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2026-02-24T05:53:56.572Z"
         },
@@ -22448,11 +22088,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-20T17:44:14.963Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-20T18:36:04.374Z"
         },
@@ -22494,11 +22129,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-24T20:23:28.521Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-28T07:53:28.521Z"
         },
@@ -22527,11 +22157,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-07T18:06:03.801Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-07T21:38:04.599Z"
         },
@@ -22560,11 +22185,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-11T16:47:59.453Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-16T16:17:59.453Z"
         },
@@ -22593,11 +22213,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-23T12:48:40.379Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2026-02-25T00:18:40.379Z"
         },
@@ -22626,11 +22241,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-20T11:28:38.240Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-24T22:58:38.240Z"
         },
@@ -22659,11 +22269,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-06T19:16:23.853Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-06T21:07:53.067Z"
         },
@@ -22692,11 +22297,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-02T17:59:02.602Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2026-02-09T05:29:02.602Z"
         },
@@ -22725,11 +22325,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-01T20:23:22.085Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-05T19:53:22.085Z"
         },
@@ -22758,11 +22353,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-03T12:39:37.449Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-06T12:09:37.449Z"
         },
@@ -22791,21 +22381,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-17T20:21:34.619Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-20T19:51:34.619Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for Dev!",
+          "to_status": "In Progress",
           "transitioned_at": "2025-12-24T05:32:26.717Z"
         },
         {
-          "from_status": "Ready for Dev!",
+          "from_status": "In Progress",
           "to_status": "In Review",
           "transitioned_at": "2025-12-25T18:29:24.130Z"
         },
@@ -22834,11 +22419,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-11T20:58:26.563Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-15T20:28:26.563Z"
         },
@@ -22880,21 +22460,16 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-06T19:11:28.577Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-11T06:41:28.577Z"
         },
         {
           "from_status": "In Review",
-          "to_status": "Ready for Dev!",
+          "to_status": "In Progress",
           "transitioned_at": "2025-12-16T22:15:11.529Z"
         },
         {
-          "from_status": "Ready for Dev!",
+          "from_status": "In Progress",
           "to_status": "In Review",
           "transitioned_at": "2025-12-18T07:09:06.632Z"
         },
@@ -22923,11 +22498,6 @@ export const DEMO_REALWORLD: DemoFixture = {
         },
         {
           "from_status": "In Progress",
-          "to_status": "Ready for Dev!",
-          "transitioned_at": "2025-12-10T15:15:28.093Z"
-        },
-        {
-          "from_status": "Ready for Dev!",
           "to_status": "In Review",
           "transitioned_at": "2025-12-15T02:45:28.093Z"
         },
