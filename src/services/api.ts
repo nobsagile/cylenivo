@@ -22,6 +22,16 @@ import type {
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8765'
 
+type DateFilter = { from?: string; to?: string }
+
+function dateParams(dates?: DateFilter): string {
+  const p = new URLSearchParams()
+  if (dates?.from) p.set('from', dates.from)
+  if (dates?.to) p.set('to', dates.to)
+  const s = p.toString()
+  return s ? `?${s}` : ''
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
     signal: AbortSignal.timeout(30000),
@@ -70,22 +80,22 @@ export const api = {
       request<string[]>(`/api/v1/imports/${id}/statuses`),
   },
   metrics: {
-    summary: (importId: string) =>
-      request<MetricsSummary>(`/api/v1/metrics/${importId}/summary`),
-    cycleTimes: (importId: string) =>
-      request<CycleTimesResponse>(`/api/v1/metrics/${importId}/cycle-times`),
-    leadTimes: (importId: string) =>
-      request<LeadTimesResponse>(`/api/v1/metrics/${importId}/lead-times`),
-    timeInStatus: (importId: string) =>
-      request<TimeInStatusResponse>(`/api/v1/metrics/${importId}/time-in-status`),
-    rework: (importId: string) =>
-      request<ReworkResponse>(`/api/v1/metrics/${importId}/rework`),
-    cycleTimeByType: (importId: string) =>
-      request<CycleTimeByTypeResponse>(`/api/v1/metrics/${importId}/cycle-time-by-type`),
+    summary: (importId: string, dates?: DateFilter) =>
+      request<MetricsSummary>(`/api/v1/metrics/${importId}/summary${dateParams(dates)}`),
+    cycleTimes: (importId: string, dates?: DateFilter) =>
+      request<CycleTimesResponse>(`/api/v1/metrics/${importId}/cycle-times${dateParams(dates)}`),
+    leadTimes: (importId: string, dates?: DateFilter) =>
+      request<LeadTimesResponse>(`/api/v1/metrics/${importId}/lead-times${dateParams(dates)}`),
+    timeInStatus: (importId: string, dates?: DateFilter) =>
+      request<TimeInStatusResponse>(`/api/v1/metrics/${importId}/time-in-status${dateParams(dates)}`),
+    rework: (importId: string, dates?: DateFilter) =>
+      request<ReworkResponse>(`/api/v1/metrics/${importId}/rework${dateParams(dates)}`),
+    cycleTimeByType: (importId: string, dates?: DateFilter) =>
+      request<CycleTimeByTypeResponse>(`/api/v1/metrics/${importId}/cycle-time-by-type${dateParams(dates)}`),
     forecast: (importId: string, mode: 'how_many' | 'when', value: number) =>
       request<ForecastResponse>(`/api/v1/metrics/${importId}/forecast?mode=${mode}&value=${value}`),
-    throughput: (importId: string) =>
-      request<ThroughputResponse>(`/api/v1/metrics/${importId}/throughput`),
+    throughput: (importId: string, dates?: DateFilter) =>
+      request<ThroughputResponse>(`/api/v1/metrics/${importId}/throughput${dateParams(dates)}`),
     cfd: (importId: string) =>
       request<CfdResponse>(`/api/v1/metrics/${importId}/cfd`),
   },

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Clock, Timer, TrendingUp, Layers, Upload, Info } from 'lucide-react'
+import { Clock, Timer, TrendingUp, Layers, Upload, Info, X } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
 import { useImports } from '@/hooks/useImports'
 import { api } from '@/services/api'
@@ -9,6 +9,7 @@ import type { CycleTimesResponse, LeadTimesResponse, ThroughputResponse, CfdResp
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { DatePicker } from '@/components/ui/date-picker'
 import { PercentileCard } from '@/components/metrics/PercentileCard'
 import { CycleTimeChart } from '@/components/metrics/CycleTimeChart'
 import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
@@ -132,9 +133,11 @@ function TicketsAnalyzedCard({ completed, total, withoutCycleStart, incomplete }
 export default function DashboardPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
-  const { data, loading } = useMetrics(importId)
+  const { data, loading } = useMetrics(importId, fromDate || undefined, toDate || undefined)
   const { data: imports } = useImports()
   const navigate = useNavigate()
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
   const [cycleTimesData, setCycleTimesData] = useState<CycleTimesResponse | null>(null)
   const [leadTimesData, setLeadTimesData] = useState<LeadTimesResponse | null>(null)
   const [throughputData, setThroughputData] = useState<ThroughputResponse | null>(null)
@@ -142,15 +145,16 @@ export default function DashboardPage() {
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
 
   const currentImport = imports.find(imp => imp.id === importId)
+  const dates = { from: fromDate || undefined, to: toDate || undefined }
 
   useEffect(() => {
     if (importId) {
-      api.metrics.cycleTimes(importId).then(setCycleTimesData).catch(console.error)
-      api.metrics.leadTimes(importId).then(setLeadTimesData).catch(console.error)
-      api.metrics.throughput(importId).then(setThroughputData).catch(console.error)
+      api.metrics.cycleTimes(importId, dates).then(setCycleTimesData).catch(console.error)
+      api.metrics.leadTimes(importId, dates).then(setLeadTimesData).catch(console.error)
+      api.metrics.throughput(importId, dates).then(setThroughputData).catch(console.error)
       api.metrics.cfd(importId).then(setCfdData).catch(console.error)
     }
-  }, [importId])
+  }, [importId, fromDate, toDate])
 
   if (!importId) {
     return (
@@ -194,6 +198,22 @@ export default function DashboardPage() {
       {data.config_context && (
         <ConfigContextBar config={data.config_context} />
       )}
+
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-gray-500">{t('common.from')}</span>
+        <DatePicker value={fromDate} onChange={setFromDate} placeholder={t('common.from')} />
+        <span className="text-sm text-gray-500">{t('common.to')}</span>
+        <DatePicker value={toDate} onChange={setToDate} placeholder={t('common.to')} />
+        {(fromDate || toDate) && (
+          <button
+            onClick={() => { setFromDate(''); setToDate('') }}
+            className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <X className="w-3.5 h-3.5" />
+            {t('common.clearFilter')}
+          </button>
+        )}
+      </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <MetricCard

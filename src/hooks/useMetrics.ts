@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { api } from '@/services/api'
 import type { MetricsSummary } from '@/types'
 
-export function useMetrics(importId: string | undefined) {
+export function useMetrics(importId: string | undefined, from?: string, to?: string) {
   const [data, setData] = useState<MetricsSummary | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -12,11 +12,11 @@ export function useMetrics(importId: string | undefined) {
     setLoading(true)
     setError(null)
     api.metrics
-      .summary(importId)
+      .summary(importId, { from: from || undefined, to: to || undefined })
       .then(setData)
       .catch((e: unknown) => setError(e instanceof Error ? e.message : 'Error'))
       .finally(() => setLoading(false))
-  }, [importId])
+  }, [importId, from, to])
 
   return { data, loading, error }
 }

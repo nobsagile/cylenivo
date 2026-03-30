@@ -1,4 +1,4 @@
-import { Hono } from 'hono'
+import { Hono, type Context } from 'hono'
 import { ok } from '../lib/response.js'
 import { calculateTimeInStatus } from '../analyzers/timeInStatus.js'
 import { trimTransitionsToCycleWindow } from '../analyzers/utils.js'
@@ -8,6 +8,26 @@ import { aggregateRework } from '../analyzers/rework.js'
 import { computeWeeklyBuckets, computeWeeklyThroughput, simulateHowMany, simulateWhen, percentileFromSorted, buildHistogram } from '../analyzers/monteCarlo.js'
 import { computeCFD } from '../analyzers/cfd.js'
 import { mean, median } from '../lib/stats.js'
+import type { EnrichedTicket } from '../lib/context.js'
+
+function parseDateFilter(c: Context): { from?: Date; to?: Date } {
+  const f = c.req.query('from')
+  const t = c.req.query('to')
+  return {
+    from: f ? new Date(f) : undefined,
+    to: t ? new Date(t + 'T23:59:59.999Z') : undefined,
+  }
+}
+
+function applyDateFilter(tickets: EnrichedTicket[], from?: Date, to?: Date): EnrichedTicket[] {
+  if (!from && !to) return tickets
+  return tickets.filter(t => {
+    if (!t.completed_at) return false
+    if (from && t.completed_at < from) return false
+    if (to && t.completed_at > to) return false
+    return true
+  })
+}
 
 const metrics = new Hono()
 
@@ -15,7 +35,9 @@ metrics.get('/:importId/summary', async (c) => {
   const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
-  const agg = computeAggregate(ctx)
+  const { from, to } = parseDateFilter(c)
+  const filtered = applyDateFilter(ctx.tickets, from, to)
+  const agg = computeAggregate({ ...ctx, tickets: filtered })
 
   return c.json(ok({
     import_id: ctx.imp.id,
@@ -42,7 +64,8 @@ metrics.get('/:importId/cycle-times', async (c) => {
   const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
-  const result = ctx.tickets
+  const { from, to } = parseDateFilter(c)
+  const result = applyDateFilter(ctx.tickets, from, to)
     .filter(t => t.cycle_time_days !== null && t.completed_at !== null)
     .map(t => ({
       id: t.id,
@@ -60,7 +83,8 @@ metrics.get('/:importId/lead-times', async (c) => {
   const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
-  const tickets = ctx.tickets
+  const { from, to } = parseDateFilter(c)
+  const tickets = applyDateFilter(ctx.tickets, from, to)
     .filter(t => t.lead_time_days !== null && t.completed_at !== null)
     .map(t => ({
       id: t.id,
@@ -81,8 +105,9 @@ metrics.get('/:importId/time-in-status', async (c) => {
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
   const { config, cycleStatuses } = ctx
+  const { from, to } = parseDateFilter(c)
 
-  const result = ctx.tickets
+  const result = applyDateFilter(ctx.tickets, from, to)
     .filter(t => t.cycle_time_days !== null)
     .map(t => ({
       id: t.id,
@@ -108,7 +133,8 @@ metrics.get('/:importId/rework', async (c) => {
   const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
-  const result = aggregateRework(ctx.tickets, ctx.config.status_order)
+  const { from, to } = parseDateFilter(c)
+  const result = aggregateRework(applyDateFilter(ctx.tickets, from, to), ctx.config.status_order)
   return c.json(ok(result))
 })
 
@@ -116,7 +142,8 @@ metrics.get('/:importId/cycle-time-by-type', async (c) => {
   const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
-  const completed = ctx.tickets.filter(t => t.cycle_time_days !== null)
+  const { from, to } = parseDateFilter(c)
+  const completed = applyDateFilter(ctx.tickets, from, to).filter(t => t.cycle_time_days !== null)
   const groups = new Map<string, number[]>()
 
   for (const t of completed) {
@@ -148,7 +175,8 @@ metrics.get('/:importId/throughput', async (c) => {
   const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
-  const agg = computeAggregate(ctx)
+  const { from, to } = parseDateFilter(c)
+  const agg = computeAggregate({ ...ctx, tickets: applyDateFilter(ctx.tickets, from, to) })
   const weeks = computeWeeklyThroughput(agg.completedAtDates)
   return c.json(ok({ weeks }))
 })
