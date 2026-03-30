@@ -77,6 +77,39 @@ export function percentileFromSorted(sorted: number[], p: number): number {
   return sorted[Math.floor(sorted.length * p / 100)]
 }
 
+export interface WeeklyThroughput {
+  week: string // Monday of that ISO week, YYYY-MM-DD
+  count: number
+}
+
+/**
+ * Returns completed ticket count per calendar week (Mon–Sun), including empty weeks.
+ */
+export function computeWeeklyThroughput(completedAtDates: Date[]): WeeklyThroughput[] {
+  if (completedAtDates.length === 0) return []
+
+  const weekStart = (d: Date): number => {
+    const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()))
+    const day = date.getUTCDay() || 7
+    date.setUTCDate(date.getUTCDate() - day + 1)
+    return date.getTime()
+  }
+
+  const timestamps = completedAtDates.map(weekStart)
+  const minWeek = Math.min(...timestamps)
+  const maxWeek = Math.max(...timestamps)
+
+  const counts = new Map<number, number>()
+  for (const ts of timestamps) counts.set(ts, (counts.get(ts) ?? 0) + 1)
+
+  const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000
+  const result: WeeklyThroughput[] = []
+  for (let w = minWeek; w <= maxWeek; w += MS_PER_WEEK) {
+    result.push({ week: new Date(w).toISOString().slice(0, 10), count: counts.get(w) ?? 0 })
+  }
+  return result
+}
+
 /** Builds histogram buckets from sorted simulation results. */
 export function buildHistogram(sorted: number[]): { bucket: number; count: number }[] {
   const counts = new Map<number, number>()

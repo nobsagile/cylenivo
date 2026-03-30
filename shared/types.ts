@@ -194,6 +194,20 @@ export interface ForecastResponse {
   total_completed: number
 }
 
+export interface WeeklyThroughputPoint {
+  week: string
+  count: number
+}
+
+export interface ThroughputResponse {
+  weeks: WeeklyThroughputPoint[]
+}
+
+export interface CfdResponse {
+  statuses: string[]
+  data: Array<{ date: string } & Record<string, string | number>>
+}
+
 export interface CreateConfigRequest {
   name: string
   source_type: string

@@ -9,6 +9,8 @@ import type {
   ReworkResponse,
   CycleTimeByTypeResponse,
   ForecastResponse,
+  ThroughputResponse,
+  CfdResponse,
   LLMStatus,
   LLMInsight,
   LlmConfig,
@@ -82,6 +84,10 @@ export const api = {
       request<CycleTimeByTypeResponse>(`/api/v1/metrics/${importId}/cycle-time-by-type`),
     forecast: (importId: string, mode: 'how_many' | 'when', value: number) =>
       request<ForecastResponse>(`/api/v1/metrics/${importId}/forecast?mode=${mode}&value=${value}`),
+    throughput: (importId: string) =>
+      request<ThroughputResponse>(`/api/v1/metrics/${importId}/throughput`),
+    cfd: (importId: string) =>
+      request<CfdResponse>(`/api/v1/metrics/${importId}/cfd`),
   },
   tickets: {
     list: (importId: string, params?: { type?: string; page?: number; limit?: number; completed_only?: boolean; search?: string }) => {

@@ -5,7 +5,7 @@ import { Clock, Timer, TrendingUp, Layers, Upload, Info } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
 import { useImports } from '@/hooks/useImports'
 import { api } from '@/services/api'
-import type { CycleTimesResponse, LeadTimesResponse } from '@/types'
+import type { CycleTimesResponse, LeadTimesResponse, ThroughputResponse, CfdResponse } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
@@ -13,6 +13,8 @@ import { PercentileCard } from '@/components/metrics/PercentileCard'
 import { CycleTimeChart } from '@/components/metrics/CycleTimeChart'
 import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 import { LeadTimeScatterChart } from '@/components/metrics/LeadTimeScatterChart'
+import { ThroughputChart } from '@/components/metrics/ThroughputChart'
+import { CfdChart } from '@/components/metrics/CfdChart'
 import { TicketDetailDrawer } from '@/components/tickets/TicketDetailDrawer'
 
 interface MetricCardProps {
@@ -135,6 +137,8 @@ export default function DashboardPage() {
   const navigate = useNavigate()
   const [cycleTimesData, setCycleTimesData] = useState<CycleTimesResponse | null>(null)
   const [leadTimesData, setLeadTimesData] = useState<LeadTimesResponse | null>(null)
+  const [throughputData, setThroughputData] = useState<ThroughputResponse | null>(null)
+  const [cfdData, setCfdData] = useState<CfdResponse | null>(null)
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
 
   const currentImport = imports.find(imp => imp.id === importId)
@@ -143,6 +147,8 @@ export default function DashboardPage() {
     if (importId) {
       api.metrics.cycleTimes(importId).then(setCycleTimesData).catch(console.error)
       api.metrics.leadTimes(importId).then(setLeadTimesData).catch(console.error)
+      api.metrics.throughput(importId).then(setThroughputData).catch(console.error)
+      api.metrics.cfd(importId).then(setCfdData).catch(console.error)
     }
   }, [importId])
 
@@ -302,6 +308,58 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+      {throughputData && throughputData.weeks.length > 0 && (
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold text-gray-700 flex items-center gap-1.5">
+              {t('dashboard.weeklyThroughput')}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64">
+                  <div className="text-xs text-gray-600 space-y-1.5">
+                    <p className="font-semibold text-gray-800 mb-1">{t('dashboard.weeklyThroughput')}</p>
+                    <p>{t('help.weeklyThroughput')}</p>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ThroughputChart data={throughputData.weeks} average={data.throughput_per_week} />
+          </CardContent>
+        </Card>
+      )}
+
+      {cfdData && cfdData.statuses.length > 0 && (
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold text-gray-700 flex items-center gap-1.5">
+              {t('dashboard.cfd')}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64">
+                  <div className="text-xs text-gray-600 space-y-1.5">
+                    <p className="font-semibold text-gray-800 mb-1">{t('dashboard.cfd')}</p>
+                    <p>{t('help.cfd')}</p>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CfdChart data={cfdData} />
+          </CardContent>
+        </Card>
+      )}
+
       <TicketDetailDrawer
         ticketId={selectedTicketId}
         config={data.config_context ?? null}

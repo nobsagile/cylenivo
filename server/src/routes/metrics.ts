@@ -5,7 +5,8 @@ import { trimTransitionsToCycleWindow } from '../analyzers/utils.js'
 import { loadImportContext } from '../lib/context.js'
 import { computeAggregate, buildStatsResponse } from '../lib/aggregate.js'
 import { aggregateRework } from '../analyzers/rework.js'
-import { computeWeeklyBuckets, simulateHowMany, simulateWhen, percentileFromSorted, buildHistogram } from '../analyzers/monteCarlo.js'
+import { computeWeeklyBuckets, computeWeeklyThroughput, simulateHowMany, simulateWhen, percentileFromSorted, buildHistogram } from '../analyzers/monteCarlo.js'
+import { computeCFD } from '../analyzers/cfd.js'
 import { mean, median } from '../lib/stats.js'
 
 const metrics = new Hono()
@@ -141,6 +142,23 @@ metrics.get('/:importId/cycle-time-by-type', async (c) => {
   }).sort((a, b) => b.count - a.count)
 
   return c.json(ok({ types }))
+})
+
+metrics.get('/:importId/throughput', async (c) => {
+  const ctx = await loadImportContext(c.req.param('importId'))
+  if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
+
+  const agg = computeAggregate(ctx)
+  const weeks = computeWeeklyThroughput(agg.completedAtDates)
+  return c.json(ok({ weeks }))
+})
+
+metrics.get('/:importId/cfd', async (c) => {
+  const ctx = await loadImportContext(c.req.param('importId'))
+  if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
+
+  const result = computeCFD(ctx.tickets, ctx.config.status_order)
+  return c.json(ok(result))
 })
 
 metrics.get('/:importId/forecast', async (c) => {
