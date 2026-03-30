@@ -328,13 +328,16 @@ function generateGammaTickets(rng: () => number): any[] {
 
       let allTrans: Transition[] = [firstTransition, ...mainTransitions]
 
-      // Rework: insert a backward move before Done
+      // Rework: insert a backward move, Done gets a penalty on top of original
       if (hasRework && allTrans.length >= 3) {
-        const doneT = allTrans[allTrans.length - 1]      // → Done
-        const prevT = allTrans[allTrans.length - 2]      // → [prev before Done]
-        const reworkAt = addMs(new Date(prevT.transitioned_at), Math.floor((0.5 + rng()) * DAY_MS))
-        const resumeAt = addMs(reworkAt, Math.floor((0.5 + rng() * 2) * DAY_MS))
-        const newDoneAt = addMs(resumeAt, Math.floor(rng() * DAY_MS))
+        const doneT = allTrans[allTrans.length - 1]      // original → Done
+        const prevT = allTrans[allTrans.length - 2]      // transition before Done
+        const originalDoneMs = new Date(doneT.transitioned_at).getTime()
+        // Backward move happens ~60-80% through the cycle
+        const reworkAt = addMs(new Date(prevT.transitioned_at), Math.floor((0.3 + rng() * 0.4) * cycleDays * DAY_MS))
+        const resumeAt = addMs(reworkAt, Math.floor((0.5 + rng() * 1.5) * DAY_MS))
+        // New Done = original Done + 0.5–2.5 day penalty (always later, never shorter)
+        const newDoneAt = new Date(Math.max(resumeAt.getTime() + DAY_MS, originalDoneMs + Math.floor((0.5 + rng() * 2) * DAY_MS)))
         allTrans.pop()  // remove old Done
         allTrans.push(
           { from_status: prevT.to_status, to_status: prevT.from_status!, transitioned_at: reworkAt.toISOString() },
