@@ -41,7 +41,7 @@ export const BETA_CONFIG: DemoProjectConfig = {
   leadEnd: BETA_LEAD_END,
 }
 
-const GAMMA_STATUS_ORDER = ['Backlog', 'In Progress', 'In Review', 'Done']
+const GAMMA_STATUS_ORDER = ['Backlog', 'Up Next', 'In Progress', 'Ready for QA', 'Ready for Dev!', 'In Review', 'Done']
 const GAMMA_CYCLE_START = 'In Progress'
 const GAMMA_CYCLE_END = 'Done'
 

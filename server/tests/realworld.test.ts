@@ -25,7 +25,7 @@ const FIXTURE = JSON.parse(
   readFileSync(path.join(import.meta.dirname, 'fixtures/demo-realworld.json'), 'utf-8')
 )
 
-const GAMMA_STATUS_ORDER = ['Backlog', 'In Progress', 'In Review', 'Done']
+const GAMMA_STATUS_ORDER = ['Backlog', 'Up Next', 'In Progress', 'Ready for QA', 'Ready for Dev!', 'In Review', 'Done']
 
 const GAMMA_CONFIG = {
   name: 'Demo: Real World Team',
@@ -197,14 +197,16 @@ describe('GAMMA fixture: computeAggregate', () => {
     const ctx = await loadImportContext(importId)
     const agg = computeAggregate(ctx!)
     const statusKeys = Object.keys(agg.timeInStatus)
-    // GAMMA config: In Progress → Done → cycleStatuses = ['In Progress', 'In Review', 'Done']
+    // GAMMA config: In Progress → Done → cycleStatuses includes all between those two
     expect(statusKeys).toContain('In Progress')
+    expect(statusKeys).toContain('Ready for QA')
+    expect(statusKeys).toContain('Ready for Dev!')
     expect(statusKeys).toContain('In Review')
     expect(statusKeys).toContain('Done')
-    // Should NOT include orphaned statuses from other quarters
+    // Up Next is BEFORE In Progress in status_order → outside cycle window
     expect(statusKeys).not.toContain('Up Next')
-    expect(statusKeys).not.toContain('Ready for QA')
-    expect(statusKeys).not.toContain('Ready for Dev!')
+    // In Review (blocked) is not in status_order at all
+    expect(statusKeys).not.toContain('In Review (blocked)')
   })
 
   it('computeAggregate runs without error and returns expected fields', async () => {
