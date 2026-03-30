@@ -91,9 +91,10 @@ connections.post('/:id/fetch', async (c) => {
   if (!body.project) return c.json({ data: null, error: 'Missing required field: project' }, 422)
 
   const creds: JiraCredentials = { base_url: conn.base_url, email: conn.email, api_token: conn.api_token }
+  const requestedLimit = typeof body.limit === 'number' ? body.limit : 50
   const options = {
     project: body.project,
-    limit: body.limit ?? 50,
+    limit: Math.min(Math.max(1, requestedLimit), 2000),
     issue_types: body.issue_types ?? ['Story', 'Task', 'Bug'],
     resolved_from: body.resolved_from as string | undefined,
     resolved_to: body.resolved_to as string | undefined,

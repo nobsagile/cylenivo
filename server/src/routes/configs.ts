@@ -30,6 +30,10 @@ configs.post('/', async (c) => {
   for (const field of required) {
     if (!body[field]) return c.json({ data: null, error: `Missing required field: ${field}` }, 422)
   }
+  const validModes = ['first_last', 'first_first', 'last_last']
+  if (body.cycle_time_mode && !validModes.includes(body.cycle_time_mode)) {
+    return c.json({ data: null, error: `Invalid cycle_time_mode. Must be one of: ${validModes.join(', ')}` }, 422)
+  }
   const id = crypto.randomUUID()
   const now = new Date().toISOString()
   const row = {

@@ -152,6 +152,9 @@ metrics.get('/:importId/forecast', async (c) => {
   if ((mode !== 'how_many' && mode !== 'when') || !value || value < 1) {
     return c.json({ data: null, error: 'Invalid mode or value' }, 400)
   }
+  if (value > 10000) {
+    return c.json({ data: null, error: 'value must be ≤ 10000' }, 422)
+  }
 
   const agg = computeAggregate(ctx)
   const buckets = computeWeeklyBuckets(agg.completedAtDates)
