@@ -1,0 +1,68 @@
+[
+  {
+    "id": "10001",
+    "created": "2025-01-10T08:00:00.000+0000",
+    "items": [
+      {
+        "field": "status",
+        "fieldtype": "jira",
+        "fromString": null,
+        "toString": "Backlog"
+      }
+    ]
+  },
+  {
+    "id": "10002",
+    "created": "2025-01-12T09:00:00.000+0000",
+    "items": [
+      {
+        "field": "assignee",
+        "fieldtype": "jira",
+        "fromString": null,
+        "toString": "Alice"
+      },
+      {
+        "field": "status",
+        "fieldtype": "jira",
+        "fromString": "Backlog",
+        "toString": "In Progress"
+      }
+    ]
+  },
+  {
+    "id": "10003",
+    "created": "2025-01-15T14:30:00.000+0000",
+    "items": [
+      {
+        "field": "status",
+        "fieldtype": "jira",
+        "fromString": "In Progress",
+        "toString": "In Review (blocked)"
+      }
+    ]
+  },
+  {
+    "id": "10004",
+    "created": "2025-01-16T10:00:00.000+0000",
+    "items": [
+      {
+        "field": "status",
+        "fieldtype": "jira",
+        "fromString": "In Review (blocked)",
+        "toString": "In Progress"
+      }
+    ]
+  },
+  {
+    "id": "10005",
+    "created": "2025-01-20T11:00:00.000+0000",
+    "items": [
+      {
+        "field": "status",
+        "fieldtype": "jira",
+        "fromString": "In Progress",
+        "toString": "Done"
+      }
+    ]
+  }
+]
