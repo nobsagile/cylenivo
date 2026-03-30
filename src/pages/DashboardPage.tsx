@@ -134,8 +134,8 @@ function TicketsAnalyzedCard({ completed, total, withoutCycleStart, incomplete }
 export default function DashboardPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
-  const { fromDate, toDate, setFromDate, setToDate, clearDates } = useDateFilter()
-  const { data, loading } = useMetrics(importId, fromDate || undefined, toDate || undefined)
+  const { fromDate, toDate } = useDateFilter()
+  const { data } = useMetrics(importId, fromDate || undefined, toDate || undefined)
   const { data: imports } = useImports()
   const navigate = useNavigate()
   const [cycleTimesData, setCycleTimesData] = useState<CycleTimesResponse | null>(null)
@@ -171,7 +171,7 @@ export default function DashboardPage() {
     )
   }
 
-  if (loading || !data) {
+  if (!data) {
     return (
       <div className="space-y-6">
         <div className="h-8 w-32 bg-gray-100 rounded animate-pulse" />
@@ -202,11 +202,6 @@ export default function DashboardPage() {
       <DateRangeSlider
         dataFrom={data.date_range.from}
         dataTo={data.date_range.to}
-        fromDate={fromDate}
-        toDate={toDate}
-        onFromChange={setFromDate}
-        onToChange={setToDate}
-        onClear={clearDates}
       />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

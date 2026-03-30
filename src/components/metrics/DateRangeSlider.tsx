@@ -2,15 +2,11 @@ import { useMemo, useState, useEffect } from 'react'
 import { Slider } from '@/components/ui/slider'
 import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { useDateFilter } from '@/contexts/DateFilterContext'
 
 interface Props {
   dataFrom: string | null
   dataTo: string | null
-  fromDate: string
-  toDate: string
-  onFromChange: (v: string) => void
-  onToChange: (v: string) => void
-  onClear: () => void
 }
 
 function toDateOnly(iso: string): string {
@@ -31,22 +27,21 @@ function formatMonth(dateOnly: string): string {
   return new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })
 }
 
-export function DateRangeSlider({ dataFrom, dataTo, fromDate, toDate, onFromChange, onToChange, onClear }: Props) {
+export function DateRangeSlider({ dataFrom, dataTo }: Props) {
   const { t } = useTranslation()
+  const { fromDate, toDate, setFromDate, setToDate, clearDates, originalRange, setOriginalRange } = useDateFilter()
 
-  // Stable bounds: only captured when no filter is active.
-  // When a filter is applied, dataFrom/dataTo reflect the filtered range —
-  // we must NOT update bounds then or all positions recalculate and thumbs snap.
-  const [stableBounds, setStableBounds] = useState<{ from: string; to: string } | null>(null)
-
+  // Capture original range once — only when no filter is active and real data is available.
+  // Stored in context so it survives component unmounts (e.g. loading skeleton).
   useEffect(() => {
     if (!fromDate && !toDate && dataFrom && dataTo) {
-      setStableBounds({ from: toDateOnly(dataFrom), to: toDateOnly(dataTo) })
+      setOriginalRange({ from: toDateOnly(dataFrom), to: toDateOnly(dataTo) })
     }
   }, [dataFrom, dataTo, fromDate, toDate])
 
-  const baseFrom = stableBounds?.from ?? (dataFrom ? toDateOnly(dataFrom) : null)
-  const baseTo = stableBounds?.to ?? (dataTo ? toDateOnly(dataTo) : null)
+  // Stable slider bounds always come from the original (unfiltered) range
+  const baseFrom = originalRange?.from ?? (dataFrom ? toDateOnly(dataFrom) : null)
+  const baseTo = originalRange?.to ?? (dataTo ? toDateOnly(dataTo) : null)
 
   const totalDays = useMemo(() => {
     if (!baseFrom || !baseTo) return 0
@@ -63,7 +58,8 @@ export function DateRangeSlider({ dataFrom, dataTo, fromDate, toDate, onFromChan
     return Math.max(0, Math.min(totalDays, Math.round((dateOnlyToMs(toDate) - dateOnlyToMs(baseFrom)) / 86400000)))
   }, [toDate, baseFrom, totalDays])
 
-  // Local state drives the slider — synced from context only when context changes externally
+  // Local state drives the slider for smooth dragging.
+  // Synced from context only when context changes externally (clear, project switch).
   const [localValue, setLocalValue] = useState<[number, number]>([0, 0])
 
   useEffect(() => {
@@ -95,8 +91,8 @@ export function DateRangeSlider({ dataFrom, dataTo, fromDate, toDate, onFromChan
   }
 
   function handleCommit([start, end]: number[]) {
-    onFromChange(start === 0 ? '' : dayToDate(start))
-    onToChange(end === totalDays ? '' : dayToDate(end))
+    setFromDate(start === 0 ? '' : dayToDate(start))
+    setToDate(end === totalDays ? '' : dayToDate(end))
   }
 
   const isFiltered = !!(fromDate || toDate)
@@ -112,7 +108,7 @@ export function DateRangeSlider({ dataFrom, dataTo, fromDate, toDate, onFromChan
           <span className="text-sm font-medium text-gray-700">{formatMonth(displayTo)}</span>
           {isFiltered && (
             <button
-              onClick={onClear}
+              onClick={clearDates}
               className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors ml-1"
             >
               <X className="w-3.5 h-3.5" />

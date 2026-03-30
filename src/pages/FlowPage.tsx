@@ -17,7 +17,7 @@ import { CycleTimeByTypeChart } from '@/components/metrics/CycleTimeByTypeChart'
 export default function FlowPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
-  const { fromDate, toDate, setFromDate, setToDate, clearDates } = useDateFilter()
+  const { fromDate, toDate } = useDateFilter()
   const dates = { from: fromDate || undefined, to: toDate || undefined }
   const { data: metrics } = useMetrics(importId, fromDate || undefined, toDate || undefined)
   const [statusData, setStatusData] = useState<TimeInStatusResponse | null>(null)
@@ -55,11 +55,6 @@ export default function FlowPage() {
         <DateRangeSlider
           dataFrom={metrics.date_range.from}
           dataTo={metrics.date_range.to}
-          fromDate={fromDate}
-          toDate={toDate}
-          onFromChange={setFromDate}
-          onToChange={setToDate}
-          onClear={clearDates}
         />
       )}
 
