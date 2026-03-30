@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react'
 import { TicketDetailDrawer } from '@/components/tickets/TicketDetailDrawer'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { X } from 'lucide-react'
 import { api } from '@/services/api'
 import { useMetrics } from '@/hooks/useMetrics'
+import { useDateFilter } from '@/contexts/DateFilterContext'
 import type { TimeInStatusResponse, ReworkResponse, CycleTimeByTypeResponse } from '@/types'
-import { DatePicker } from '@/components/ui/date-picker'
 import { Card, CardContent } from '@/components/ui/card'
+import { DateRangeSlider } from '@/components/metrics/DateRangeSlider'
 import { AvgTimeInStatusChart, PerTicketBreakdownChart } from '@/components/metrics/TimeInStatusChart'
 import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 import { BoardVisualization } from '@/components/metrics/BoardVisualization'
@@ -17,8 +17,7 @@ import { CycleTimeByTypeChart } from '@/components/metrics/CycleTimeByTypeChart'
 export default function FlowPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
-  const [fromDate, setFromDate] = useState('')
-  const [toDate, setToDate] = useState('')
+  const { fromDate, toDate, setFromDate, setToDate, clearDates } = useDateFilter()
   const dates = { from: fromDate || undefined, to: toDate || undefined }
   const { data: metrics } = useMetrics(importId, fromDate || undefined, toDate || undefined)
   const [statusData, setStatusData] = useState<TimeInStatusResponse | null>(null)
@@ -52,21 +51,17 @@ export default function FlowPage() {
         <ConfigContextBar config={metrics.config_context} />
       )}
 
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-gray-500">{t('common.from')}</span>
-        <DatePicker value={fromDate} onChange={setFromDate} placeholder={t('common.from')} />
-        <span className="text-sm text-gray-500">{t('common.to')}</span>
-        <DatePicker value={toDate} onChange={setToDate} placeholder={t('common.to')} />
-        {(fromDate || toDate) && (
-          <button
-            onClick={() => { setFromDate(''); setToDate('') }}
-            className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="w-3.5 h-3.5" />
-            {t('common.clearFilter')}
-          </button>
-        )}
-      </div>
+      {metrics.date_range && (
+        <DateRangeSlider
+          dataFrom={metrics.date_range.from}
+          dataTo={metrics.date_range.to}
+          fromDate={fromDate}
+          toDate={toDate}
+          onFromChange={setFromDate}
+          onToChange={setToDate}
+          onClear={clearDates}
+        />
+      )}
 
       {metrics.config_context && metrics.time_in_status && (
         <BoardVisualization

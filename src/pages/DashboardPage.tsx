@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Clock, Timer, TrendingUp, Layers, Upload, Info, X } from 'lucide-react'
+import { Clock, Timer, TrendingUp, Layers, Upload, Info } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
 import { useImports } from '@/hooks/useImports'
+import { useDateFilter } from '@/contexts/DateFilterContext'
 import { api } from '@/services/api'
 import type { CycleTimesResponse, LeadTimesResponse, ThroughputResponse, CfdResponse } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
-import { DatePicker } from '@/components/ui/date-picker'
+import { DateRangeSlider } from '@/components/metrics/DateRangeSlider'
 import { PercentileCard } from '@/components/metrics/PercentileCard'
 import { CycleTimeChart } from '@/components/metrics/CycleTimeChart'
 import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
@@ -133,11 +134,10 @@ function TicketsAnalyzedCard({ completed, total, withoutCycleStart, incomplete }
 export default function DashboardPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
+  const { fromDate, toDate, setFromDate, setToDate, clearDates } = useDateFilter()
   const { data, loading } = useMetrics(importId, fromDate || undefined, toDate || undefined)
   const { data: imports } = useImports()
   const navigate = useNavigate()
-  const [fromDate, setFromDate] = useState('')
-  const [toDate, setToDate] = useState('')
   const [cycleTimesData, setCycleTimesData] = useState<CycleTimesResponse | null>(null)
   const [leadTimesData, setLeadTimesData] = useState<LeadTimesResponse | null>(null)
   const [throughputData, setThroughputData] = useState<ThroughputResponse | null>(null)
@@ -199,21 +199,15 @@ export default function DashboardPage() {
         <ConfigContextBar config={data.config_context} />
       )}
 
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-gray-500">{t('common.from')}</span>
-        <DatePicker value={fromDate} onChange={setFromDate} placeholder={t('common.from')} />
-        <span className="text-sm text-gray-500">{t('common.to')}</span>
-        <DatePicker value={toDate} onChange={setToDate} placeholder={t('common.to')} />
-        {(fromDate || toDate) && (
-          <button
-            onClick={() => { setFromDate(''); setToDate('') }}
-            className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="w-3.5 h-3.5" />
-            {t('common.clearFilter')}
-          </button>
-        )}
-      </div>
+      <DateRangeSlider
+        dataFrom={data.date_range.from}
+        dataTo={data.date_range.to}
+        fromDate={fromDate}
+        toDate={toDate}
+        onFromChange={setFromDate}
+        onToChange={setToDate}
+        onClear={clearDates}
+      />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <MetricCard
