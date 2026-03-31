@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Clock, Timer, TrendingUp, Layers, Upload, Info } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
 import { useImports } from '@/hooks/useImports'
 import { useDateFilter } from '@/contexts/DateFilterContext'
-import { api } from '@/services/api'
-import type { CycleTimesResponse, LeadTimesResponse, ThroughputResponse, CfdResponse } from '@/types'
+import { useCycleTimes, useLeadTimes, useThroughput, useCfd } from '@/hooks/useChartData'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
@@ -138,23 +137,14 @@ export default function DashboardPage() {
   const { data } = useMetrics(importId, fromDate || undefined, toDate || undefined)
   const { data: imports } = useImports()
   const navigate = useNavigate()
-  const [cycleTimesData, setCycleTimesData] = useState<CycleTimesResponse | null>(null)
-  const [leadTimesData, setLeadTimesData] = useState<LeadTimesResponse | null>(null)
-  const [throughputData, setThroughputData] = useState<ThroughputResponse | null>(null)
-  const [cfdData, setCfdData] = useState<CfdResponse | null>(null)
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
 
   const currentImport = imports.find(imp => imp.id === importId)
-  const dates = { from: fromDate || undefined, to: toDate || undefined }
 
-  useEffect(() => {
-    if (importId) {
-      api.metrics.cycleTimes(importId, dates).then(setCycleTimesData).catch(console.error)
-      api.metrics.leadTimes(importId, dates).then(setLeadTimesData).catch(console.error)
-      api.metrics.throughput(importId, dates).then(setThroughputData).catch(console.error)
-      api.metrics.cfd(importId).then(setCfdData).catch(console.error)
-    }
-  }, [importId, fromDate, toDate])
+  const cycleTimesData = useCycleTimes(importId, fromDate, toDate)
+  const leadTimesData = useLeadTimes(importId, fromDate, toDate)
+  const throughputData = useThroughput(importId, fromDate, toDate)
+  const cfdData = useCfd(importId)
 
   if (!importId) {
     return (
