@@ -1,8 +1,10 @@
 import { useMemo, useState, useEffect } from 'react'
 import { Slider } from '@/components/ui/slider'
-import { X } from 'lucide-react'
+import { X, Info } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDateFilter } from '@/contexts/DateFilterContext'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 
 interface Props {
   dataFrom: string | null
@@ -100,49 +102,67 @@ export function DateRangeSlider({ dataFrom, dataTo }: Props) {
   const displayTo = localValue[1] === totalDays ? baseTo : dayToDate(localValue[1])
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-700">{formatDate(displayFrom)}</span>
-          <span className="text-gray-300">→</span>
-          <span className="text-sm font-medium text-gray-700">{formatDate(displayTo)}</span>
-          {isFiltered && (
-            <button
-              onClick={clearDates}
-              className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors ml-1"
-            >
-              <X className="w-3.5 h-3.5" />
-              {t('common.clearFilter')}
-            </button>
-          )}
+    <Card className="shadow-sm">
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base font-semibold text-gray-700 flex items-center gap-1.5">
+            {t('dashboard.timeRange')}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                  <Info className="w-3.5 h-3.5" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64">
+                <div className="text-xs text-gray-600 space-y-1.5">
+                  <p className="font-semibold text-gray-800 mb-1">{t('dashboard.timeRange')}</p>
+                  <p>{t('help.timeRange')}</p>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </CardTitle>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-gray-700">{formatDate(displayFrom)}</span>
+            <span className="text-gray-300">→</span>
+            <span className="text-sm font-medium text-gray-700">{formatDate(displayTo)}</span>
+            {isFiltered ? (
+              <button
+                onClick={clearDates}
+                className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors ml-1"
+              >
+                <X className="w-3.5 h-3.5" />
+                {t('common.clearFilter')}
+              </button>
+            ) : (
+              <span className="text-xs text-gray-400 ml-1">{t('common.allData')}</span>
+            )}
+          </div>
         </div>
-        {!isFiltered && (
-          <span className="text-xs text-gray-400">{t('common.allData')}</span>
-        )}
-      </div>
-
-      <div className="relative px-1">
-        <Slider
-          min={0}
-          max={totalDays}
-          step={1}
-          value={localValue}
-          onValueChange={(v) => setLocalValue(v as [number, number])}
-          onValueCommit={handleCommit}
-          className="w-full"
-        />
-        <div className="relative mt-2 h-5">
-          {ticks.map(({ day, label }) => (
-            <span
-              key={day}
-              className="absolute text-[10px] text-gray-400 -translate-x-1/2 whitespace-nowrap"
-              style={{ left: `${(day / totalDays) * 100}%` }}
-            >
-              {label}
-            </span>
-          ))}
+      </CardHeader>
+      <CardContent className="pt-1">
+        <div className="relative px-1">
+          <Slider
+            min={0}
+            max={totalDays}
+            step={1}
+            value={localValue}
+            onValueChange={(v) => setLocalValue(v as [number, number])}
+            onValueCommit={handleCommit}
+            className="w-full"
+          />
+          <div className="relative mt-2 h-5">
+            {ticks.map(({ day, label }) => (
+              <span
+                key={day}
+                className="absolute text-[10px] text-gray-400 -translate-x-1/2 whitespace-nowrap"
+                style={{ left: `${(day / totalDays) * 100}%` }}
+              >
+                {label}
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }
