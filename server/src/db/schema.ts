@@ -72,3 +72,15 @@ export const llmConfig = sqliteTable('llm_config', {
   system_prompt: text('system_prompt').notNull(),
   created_at: text('created_at').notNull(),
 })
+
+// ── Row type aliases ─────────────────────────────────────────────────────────
+export type ProjectConfigRow = typeof projectConfigs.$inferSelect
+export type ProjectConfigInsert = typeof projectConfigs.$inferInsert
+export type ImportSessionRow = typeof importSessions.$inferSelect
+export type TicketRow = typeof tickets.$inferSelect
+export type TicketInsert = typeof tickets.$inferInsert
+export type TransitionRow = typeof ticketTransitions.$inferSelect
+export type TransitionInsert = typeof ticketTransitions.$inferInsert
+export type ConnectionRow = typeof sourceConnections.$inferSelect
+export type ConnectionInsert = typeof sourceConnections.$inferInsert
+export type LlmConfigRow = typeof llmConfig.$inferSelect

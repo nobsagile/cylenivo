@@ -2,14 +2,14 @@ import { Hono } from 'hono'
 import { streamSSE } from 'hono/streaming'
 import { eq } from 'drizzle-orm'
 import { db } from '../db/index.js'
-import { sourceConnections } from '../db/schema.js'
+import { sourceConnections, type ConnectionRow, type ConnectionInsert } from '../db/schema.js'
 import { ok } from '../lib/response.js'
 import { testConnection, buildImportFile } from '../connectors/jira.js'
 import type { JiraCredentials } from '../connectors/jira.js'
 
 const connections = new Hono()
 
-function serialize(row: typeof sourceConnections.$inferSelect) {
+function serialize(row: ConnectionRow) {
   // Never expose api_token to frontend
   const { api_token: _, ...rest } = row
   return rest
@@ -47,7 +47,7 @@ connections.put('/:id', async (c) => {
   if (!existing.length) return c.json({ data: null, error: 'Connection not found' }, 404)
 
   const body = await c.req.json()
-  const updates: Partial<typeof sourceConnections.$inferInsert> = {}
+  const updates: Partial<ConnectionInsert> = {}
   if (body.name !== undefined) updates.name = body.name
   if (body.base_url !== undefined) updates.base_url = (body.base_url ?? '').replace(/\/$/, '')
   if (body.email !== undefined) updates.email = body.email

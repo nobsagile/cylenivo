@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 import { eq } from 'drizzle-orm'
 import { db } from '../db/index.js'
-import { projectConfigs, importSessions } from '../db/schema.js'
+import { projectConfigs, importSessions, type ProjectConfigRow, type ProjectConfigInsert } from '../db/schema.js'
 import { ok } from '../lib/response.js'
 
 const configs = new Hono()
 
-function serializeConfig(row: typeof projectConfigs.$inferSelect) {
+function serializeConfig(row: ProjectConfigRow) {
   return {
     ...row,
     status_order: JSON.parse(row.status_order) as string[],
@@ -64,7 +64,7 @@ configs.put('/:id', async (c) => {
   if (body.cycle_time_end_status === '') return c.json({ data: null, error: 'cycle_time_end_status cannot be empty' }, 422)
   if (body.name === '') return c.json({ data: null, error: 'name cannot be empty' }, 422)
 
-  const updates: Partial<typeof projectConfigs.$inferInsert> = {}
+  const updates: Partial<ProjectConfigInsert> = {}
   if (body.name !== undefined) updates.name = body.name
   if (body.source_type !== undefined) updates.source_type = body.source_type
   if (body.base_url !== undefined) updates.base_url = body.base_url

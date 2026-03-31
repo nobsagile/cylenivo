@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { eq } from 'drizzle-orm'
 import { db } from '../db/index.js'
-import { llmInsights, llmConfig } from '../db/schema.js'
+import { llmInsights, llmConfig, type LlmConfigRow } from '../db/schema.js'
 import { ok } from '../lib/response.js'
 import { mean, median } from '../lib/stats.js'
 import { loadImportContext } from '../lib/context.js'
@@ -11,8 +11,6 @@ import { DEFAULT_SYSTEM_PROMPT } from './llm-config.js'
 const llm = new Hono()
 
 const CONFIG_ID = 'default'
-
-type LlmConfigRow = typeof llmConfig.$inferSelect
 
 async function getLlmConfig(): Promise<LlmConfigRow | null> {
   const rows = await db.select().from(llmConfig).where(eq(llmConfig.id, CONFIG_ID))

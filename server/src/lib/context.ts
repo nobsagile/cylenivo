@@ -1,6 +1,6 @@
 import { eq, inArray } from 'drizzle-orm'
 import { db } from '../db/index.js'
-import { projectConfigs, importSessions, tickets, ticketTransitions } from '../db/schema.js'
+import { projectConfigs, importSessions, tickets, ticketTransitions, type ImportSessionRow, type TicketRow } from '../db/schema.js'
 import { calculateCycleTime, type CycleTimeMode } from '../analyzers/cycleTime.js'
 import { calculateLeadTime } from '../analyzers/leadTime.js'
 import { firstTransitionTo, lastTransitionTo, sortTransitions, type Transition } from '../analyzers/utils.js'
@@ -36,14 +36,14 @@ export interface EnrichedTicket {
 }
 
 export interface ImportContext {
-  imp: typeof importSessions.$inferSelect
+  imp: ImportSessionRow
   config: ParsedConfig
   tickets: EnrichedTicket[]
   cycleStatuses: string[]   // status_order sliced to cycle window
 }
 
 export function buildEnrichedTicket(
-  ticket: typeof tickets.$inferSelect,
+  ticket: TicketRow,
   transitions: Transition[],
   config: ParsedConfig,
 ): EnrichedTicket {

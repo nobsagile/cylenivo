@@ -1,4 +1,4 @@
-import type { tickets, ticketTransitions } from '../db/schema.js'
+import type { TicketInsert, TransitionInsert } from '../db/schema.js'
 
 interface TicketInput {
   external_id: string
@@ -22,11 +22,11 @@ export function buildTicketRows(
   importId: string,
   inputTickets: TicketInput[],
 ): {
-  ticketRows: (typeof tickets.$inferInsert)[]
-  transitionRows: (typeof ticketTransitions.$inferInsert)[]
+  ticketRows: (TicketInsert)[]
+  transitionRows: (TransitionInsert)[]
 } {
-  const ticketRows: (typeof tickets.$inferInsert)[] = []
-  const transitionRows: (typeof ticketTransitions.$inferInsert)[] = []
+  const ticketRows: (TicketInsert)[] = []
+  const transitionRows: (TransitionInsert)[] = []
 
   for (const t of inputTickets) {
     const ticketId = crypto.randomUUID()

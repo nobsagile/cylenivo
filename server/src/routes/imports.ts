@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { eq, inArray, sql } from 'drizzle-orm'
 import { db } from '../db/index.js'
-import { projectConfigs, importSessions, tickets, ticketTransitions } from '../db/schema.js'
+import { projectConfigs, importSessions, tickets, ticketTransitions, type ImportSessionRow } from '../db/schema.js'
 import { ok } from '../lib/response.js'
 import { buildHealthReport } from '../analyzers/healthReport.js'
 import { buildTicketRows } from '../lib/ticketInsert.js'
@@ -46,7 +46,7 @@ function validateImportFile(raw: unknown): ImportFile {
 }
 
 function serializeSession(
-  row: typeof importSessions.$inferSelect,
+  row: ImportSessionRow,
   cfg?: { name: string | null; cycle_time_start_status: string; cycle_time_end_status: string } | null,
 ) {
   return {
