@@ -1,19 +1,19 @@
 const ITERATIONS = 10_000
 
+/** Returns the Monday (UTC midnight) of the ISO week containing `d`. */
+function weekStart(d: Date): number {
+  const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()))
+  const day = date.getUTCDay() || 7 // Mon=1 … Sun=7
+  date.setUTCDate(date.getUTCDate() - day + 1)
+  return date.getTime()
+}
+
 /**
  * Groups completion dates into weekly buckets (ISO week).
  * Includes empty weeks (0 completions) between first and last completion.
  */
 export function computeWeeklyBuckets(completedAtDates: Date[]): number[] {
   if (completedAtDates.length === 0) return []
-
-  // Get Monday of ISO week for a date
-  const weekStart = (d: Date): number => {
-    const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()))
-    const day = date.getUTCDay() || 7 // Mon=1 … Sun=7
-    date.setUTCDate(date.getUTCDate() - day + 1)
-    return date.getTime()
-  }
 
   const timestamps = completedAtDates.map(weekStart)
   const minWeek = Math.min(...timestamps)
@@ -87,13 +87,6 @@ export interface WeeklyThroughput {
  */
 export function computeWeeklyThroughput(completedAtDates: Date[]): WeeklyThroughput[] {
   if (completedAtDates.length === 0) return []
-
-  const weekStart = (d: Date): number => {
-    const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()))
-    const day = date.getUTCDay() || 7
-    date.setUTCDate(date.getUTCDate() - day + 1)
-    return date.getTime()
-  }
 
   const timestamps = completedAtDates.map(weekStart)
   const minWeek = Math.min(...timestamps)
