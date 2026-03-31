@@ -32,11 +32,52 @@ export interface ImportFile {
   tickets: ImportTicket[]
 }
 
+// ── Jira API response types ──────────────────────────────────────────────────
+
+interface JiraUser {
+  displayName: string
+  emailAddress: string
+}
+
+interface JiraIssueFields {
+  summary: string
+  issuetype: { name: string }
+  created: string
+}
+
+interface JiraIssue {
+  key: string
+  fields: JiraIssueFields
+}
+
+interface JiraSearchResponse {
+  issues: JiraIssue[]
+  total: number
+}
+
+interface JiraChangelogItem {
+  field: string
+  fromString: string | null
+  toString: string
+}
+
+interface JiraChangelogHistory {
+  created: string
+  items: JiraChangelogItem[]
+}
+
+interface JiraChangelogResponse {
+  values: JiraChangelogHistory[]
+  total: number
+}
+
+// ── API helpers ──────────────────────────────────────────────────────────────
+
 function authHeader(creds: JiraCredentials): string {
   return 'Basic ' + Buffer.from(`${creds.email}:${creds.api_token}`).toString('base64')
 }
 
-async function jiraGet(creds: JiraCredentials, path: string): Promise<any> {
+async function jiraGet<T>(creds: JiraCredentials, path: string): Promise<T> {
   const url = `${creds.base_url}/rest/api/3${path}`
   const res = await fetch(url, {
     headers: { Authorization: authHeader(creds), Accept: 'application/json' },
@@ -59,28 +100,28 @@ export function mapIssueType(jiraType: string): string {
 }
 
 export async function testConnection(creds: JiraCredentials): Promise<{ display_name: string; email: string }> {
-  const data = await jiraGet(creds, '/myself')
+  const data = await jiraGet<JiraUser>(creds, '/myself')
   return { display_name: data.displayName, email: data.emailAddress }
 }
 
 const JIRA_PAGE_SIZE = 100
 
-export async function fetchIssues(creds: JiraCredentials, options: JiraFetchOptions): Promise<any[]> {
+export async function fetchIssues(creds: JiraCredentials, options: JiraFetchOptions): Promise<JiraIssue[]> {
   const { project, limit = 50, issue_types = ['Story', 'Task', 'Bug'], resolved_from, resolved_to } = options
   const typeList = issue_types.map(t => `"${t}"`).join(', ')
   const fromFilter = resolved_from ? ` AND resolved >= "${resolved_from}"` : ''
   const toFilter = resolved_to ? ` AND resolved <= "${resolved_to}"` : ''
   const jql = `project = ${project} AND issuetype in (${typeList}) AND statusCategory = Done${fromFilter}${toFilter} ORDER BY resolved DESC`
 
-  const all: any[] = []
+  const all: JiraIssue[] = []
   let startAt = 0
   while (all.length < limit) {
     const pageSize = Math.min(JIRA_PAGE_SIZE, limit - all.length)
-    const data = await jiraGet(
+    const data = await jiraGet<JiraSearchResponse>(
       creds,
       `/search/jql?jql=${encodeURIComponent(jql)}&startAt=${startAt}&maxResults=${pageSize}&fields=summary,issuetype,created`
     )
-    const issues: any[] = data.issues ?? []
+    const issues = data.issues ?? []
     all.push(...issues)
     if (issues.length < pageSize || all.length >= limit) break
     startAt += issues.length
@@ -88,11 +129,11 @@ export async function fetchIssues(creds: JiraCredentials, options: JiraFetchOpti
   return all.slice(0, limit)
 }
 
-export async function fetchChangelog(creds: JiraCredentials, issueKey: string): Promise<any[]> {
-  const histories: any[] = []
+export async function fetchChangelog(creds: JiraCredentials, issueKey: string): Promise<JiraChangelogHistory[]> {
+  const histories: JiraChangelogHistory[] = []
   let startAt = 0
   while (true) {
-    const data = await jiraGet(creds, `/issue/${issueKey}/changelog?startAt=${startAt}&maxResults=100`)
+    const data = await jiraGet<JiraChangelogResponse>(creds, `/issue/${issueKey}/changelog?startAt=${startAt}&maxResults=100`)
     histories.push(...data.values)
     if (startAt + data.values.length >= data.total) break
     startAt += data.values.length
@@ -100,7 +141,7 @@ export async function fetchChangelog(creds: JiraCredentials, issueKey: string): 
   return histories
 }
 
-export function extractTransitions(histories: any[]) {
+export function extractTransitions(histories: JiraChangelogHistory[]) {
   const transitions: ImportTicket['transitions'] = []
   for (const history of histories) {
     for (const item of history.items) {
