@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Info } from 'lucide-react'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import type { ConfigContext } from '@/types'
+import { getConfigIndices, isInCycle, isInLead, pickShade, CYCLE_CLASS_SHADES, LEAD_CLASS_SHADES } from '@/lib/statusColors'
 
 interface Props {
   config: ConfigContext
@@ -18,41 +19,15 @@ export function ConfigContextBar({ config }: Props) {
     cycle_time_mode,
   } = config
 
-  const cycleStartIdx = status_order.indexOf(cycle_time_start_status)
-  const cycleEndIdx = status_order.indexOf(cycle_time_end_status)
+  const indices = getConfigIndices(config)
   const leadEndStatus = lead_time_end_status ?? cycle_time_end_status
-  const leadStartIdx = lead_time_start_status ? status_order.indexOf(lead_time_start_status) : -1
-  const leadEndIdx = status_order.indexOf(leadEndStatus)
 
-  const inCycleFn = (i: number) => i >= cycleStartIdx && i <= cycleEndIdx && cycleStartIdx !== -1
-  const inLeadFn = (i: number) => (lead_time_start_status ? i >= leadStartIdx : true) && i <= leadEndIdx && leadEndIdx !== -1
-
-  const cycleAll = status_order.filter((_, i) => inCycleFn(i))
-  const leadOnly = status_order.filter((_, i) => inLeadFn(i) && !inCycleFn(i))
-
-  const LEAD_SHADES = [
-    'bg-violet-100 border-violet-200 text-violet-800',
-    'bg-violet-200 border-violet-300 text-violet-800',
-    'bg-violet-300 border-violet-400 text-violet-900',
-    'bg-violet-400 border-violet-500 text-violet-950',
-  ]
-  const CYCLE_SHADES = [
-    'bg-teal-200 border-teal-300 text-teal-800',
-    'bg-teal-300 border-teal-400 text-teal-800',
-    'bg-teal-400 border-teal-500 text-teal-900',
-    'bg-teal-500 border-teal-600 text-teal-950',
-  ]
-
-  function pickShade(arr: string[], group: string[], status: string) {
-    const pos = group.indexOf(status)
-    if (pos === -1) return arr[0]
-    const idx = group.length <= 1 ? 0 : Math.round((pos / (group.length - 1)) * (arr.length - 1))
-    return arr[Math.max(0, Math.min(idx, arr.length - 1))]
-  }
+  const cycleAll = status_order.filter((_, i) => isInCycle(i, indices))
+  const leadOnly = status_order.filter((_, i) => isInLead(i, indices) && !isInCycle(i, indices))
 
   function getStatusColor(status: string, i: number) {
-    if (inCycleFn(i)) return pickShade(CYCLE_SHADES, cycleAll, status)
-    if (inLeadFn(i)) return pickShade(LEAD_SHADES, leadOnly, status)
+    if (isInCycle(i, indices)) return pickShade(CYCLE_CLASS_SHADES, cycleAll, status)
+    if (isInLead(i, indices)) return pickShade(LEAD_CLASS_SHADES, leadOnly, status)
     return 'bg-gray-50 border-gray-200 text-gray-500'
   }
 

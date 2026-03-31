@@ -11,40 +11,27 @@ import {
 } from 'recharts'
 
 import type { TimeInStatusResponse, MetricsSummary, ConfigContext } from '@/types'
+import { getConfigIndices, isInCycle, isInLead, pickShade, CYCLE_HEX, LEAD_HEX, FALLBACK_HEX } from '@/lib/statusColors'
 import { ChartTooltip } from './ChartTooltip'
 import { Info } from 'lucide-react'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 
-// Hex gradients matching design system (light → dark)
-const LEAD_COLORS = ['#ede9fe', '#ddd6fe', '#c4b5fd', '#a78bfa']   // violet-100→400
-const CYCLE_COLORS = ['#99f6e4', '#5eead4', '#2dd4bf', '#14b8a6']  // teal-200→500
-const FALLBACK_COLORS = ['#94a3b8', '#64748b', '#475569', '#334155'] // slate
-
 function buildStatusColors(statuses: string[], config: ConfigContext | null | undefined): Record<string, string> {
-  if (!config) return Object.fromEntries(statuses.map((s, i) => [s, FALLBACK_COLORS[i % FALLBACK_COLORS.length]]))
+  if (!config) return Object.fromEntries(statuses.map((s, i) => [s, FALLBACK_HEX[i % FALLBACK_HEX.length]]))
 
-  const { status_order, cycle_time_start_status, cycle_time_end_status, lead_time_start_status, lead_time_end_status } = config
-  const cycleStart = status_order.indexOf(cycle_time_start_status)
-  const cycleEnd = status_order.indexOf(cycle_time_end_status)
-  const leadEnd = status_order.indexOf(lead_time_end_status ?? cycle_time_end_status)
-  const leadStart = lead_time_start_status ? status_order.indexOf(lead_time_start_status) : -1
+  const indices = getConfigIndices(config)
+  const { status_order } = config
 
-  const inCycle = (s: string) => { const i = status_order.indexOf(s); return i >= cycleStart && i <= cycleEnd }
-  const inLead = (s: string) => { const i = status_order.indexOf(s); return (lead_time_start_status ? i >= leadStart : true) && i <= leadEnd }
+  const inCycle = (s: string) => isInCycle(status_order.indexOf(s), indices)
+  const inLead = (s: string) => isInLead(status_order.indexOf(s), indices)
 
   const cycleAll = statuses.filter(s => inCycle(s))
   const leadOnly = statuses.filter(s => inLead(s) && !inCycle(s))
 
-  function pick(arr: string[], group: string[], status: string) {
-    const pos = group.indexOf(status)
-    const idx = group.length <= 1 ? 0 : Math.round((pos / (group.length - 1)) * (arr.length - 1))
-    return arr[Math.max(0, Math.min(idx, arr.length - 1))]
-  }
-
   return Object.fromEntries(statuses.map(s => {
-    if (inCycle(s)) return [s, pick(CYCLE_COLORS, cycleAll, s)]
-    if (inLead(s)) return [s, pick(LEAD_COLORS, leadOnly, s)]
-    return [s, FALLBACK_COLORS[0]]
+    if (inCycle(s)) return [s, pickShade([...CYCLE_HEX], cycleAll, s)]
+    if (inLead(s)) return [s, pickShade([...LEAD_HEX], leadOnly, s)]
+    return [s, FALLBACK_HEX[0]]
   }))
 }
 

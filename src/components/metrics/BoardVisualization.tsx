@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Info } from 'lucide-react'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import type { ConfigContext, StatusDuration, TimeInStatusResponse } from '@/types'
+import { getConfigIndices, isInCycle, isInLead, pickShade, CYCLE_STYLE_SHADES, LEAD_STYLE_SHADES } from '@/lib/statusColors'
 
 interface Props {
   config: ConfigContext
@@ -41,17 +42,11 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
   const { t } = useTranslation()
   const { status_order, cycle_time_start_status, cycle_time_end_status, lead_time_start_status, lead_time_end_status } = config
 
-  const cycleStartIdx = status_order.indexOf(cycle_time_start_status)
-  const cycleEndIdx = status_order.indexOf(cycle_time_end_status)
-  const leadEndStatus = lead_time_end_status ?? cycle_time_end_status
-  const leadStartIdx = lead_time_start_status ? status_order.indexOf(lead_time_start_status) : -1
-  const leadEndIdx = status_order.indexOf(leadEndStatus)
+  const indices = getConfigIndices(config)
 
   // Only show statuses within lead or cycle window (relevant ones)
   const relevantStatuses = status_order.filter((_, idx) => {
-    const inCycle = idx >= cycleStartIdx && idx <= cycleEndIdx && cycleStartIdx !== -1
-    const inLead = (lead_time_start_status ? idx >= leadStartIdx : true) && idx <= leadEndIdx && leadEndIdx !== -1
-    return inCycle || inLead
+    return isInCycle(idx, indices) || isInLead(idx, indices)
   })
 
   const meanDays = relevantStatuses.map(s => timeInStatus[s]?.mean_days ?? 0)
@@ -67,36 +62,13 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
     }
   }
 
-  const inLeadFn = (idx: number) => (lead_time_start_status ? idx >= leadStartIdx : true) && idx <= leadEndIdx
-  const inCycleFn = (idx: number) => idx >= cycleStartIdx && idx <= cycleEndIdx
-
-  const cycleAllStatuses = relevantStatuses.filter(s => { const i = status_order.indexOf(s); return inCycleFn(i) })
-  const leadOnlyStatuses = relevantStatuses.filter(s => { const i = status_order.indexOf(s); return inLeadFn(i) && !inCycleFn(i) })
-
-  // Gradient shades per category (light → dark)
-  const LEAD_SHADES = [
-    { bg: 'bg-violet-100', border: 'border-violet-200', text: 'text-violet-800', bar: 'text-violet-300' },
-    { bg: 'bg-violet-200', border: 'border-violet-300', text: 'text-violet-800', bar: 'text-violet-400' },
-    { bg: 'bg-violet-300', border: 'border-violet-400', text: 'text-violet-900', bar: 'text-violet-500' },
-    { bg: 'bg-violet-400', border: 'border-violet-500', text: 'text-violet-950', bar: 'text-violet-600' },
-  ]
-  const CYCLE_SHADES = [
-    { bg: 'bg-teal-200', border: 'border-teal-300', text: 'text-teal-800', bar: 'text-teal-400' },
-    { bg: 'bg-teal-300', border: 'border-teal-400', text: 'text-teal-800', bar: 'text-teal-500' },
-    { bg: 'bg-teal-400', border: 'border-teal-500', text: 'text-teal-900', bar: 'text-teal-600' },
-    { bg: 'bg-teal-500', border: 'border-teal-600', text: 'text-teal-950', bar: 'text-teal-700' },
-  ]
-
-  function pickShade<T>(arr: T[], statuses: string[], status: string): T {
-    const pos = statuses.indexOf(status)
-    const idx = statuses.length <= 1 ? 0 : Math.round((pos / (statuses.length - 1)) * (arr.length - 1))
-    return arr[Math.max(0, Math.min(idx, arr.length - 1))]
-  }
+  const cycleAllStatuses = relevantStatuses.filter(s => isInCycle(status_order.indexOf(s), indices))
+  const leadOnlyStatuses = relevantStatuses.filter(s => isInLead(status_order.indexOf(s), indices) && !isInCycle(status_order.indexOf(s), indices))
 
   function getStatusStyle(status: string) {
     const idx = status_order.indexOf(status)
-    if (inCycleFn(idx)) return pickShade(CYCLE_SHADES, cycleAllStatuses, status)
-    return pickShade(LEAD_SHADES, leadOnlyStatuses, status)
+    if (isInCycle(idx, indices)) return pickShade(CYCLE_STYLE_SHADES, cycleAllStatuses, status)
+    return pickShade(LEAD_STYLE_SHADES, leadOnlyStatuses, status)
   }
 
   const [hovered, setHovered] = useState<string | null>(null)

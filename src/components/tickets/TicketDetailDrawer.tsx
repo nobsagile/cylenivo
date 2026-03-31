@@ -4,16 +4,8 @@ import { X, ExternalLink, ChevronUp, ChevronDown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '@/services/api'
 import type { TicketDetail, ConfigContext } from '@/types'
+import { TYPE_COLORS } from '@/lib/statusColors'
 import { TicketTimeline } from './TicketTimeline'
-
-const TYPE_COLORS: Record<string, string> = {
-  story: 'bg-green-50 text-green-700 border-green-200',
-  task: 'bg-gray-50 text-gray-700 border-gray-200',
-  bug: 'bg-red-50 text-red-700 border-red-200',
-  epic: 'bg-purple-50 text-purple-700 border-purple-200',
-  'sub-task': 'bg-slate-50 text-slate-600 border-slate-200',
-  'qa finding': 'bg-orange-50 text-orange-700 border-orange-200',
-}
 
 interface Props {
   ticketId: string | null

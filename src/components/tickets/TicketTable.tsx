@@ -9,6 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import type { Ticket, ConfigContext } from '@/types'
+import { TYPE_COLORS } from '@/lib/statusColors'
 import { ExternalLink, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 
 interface Props {
@@ -30,15 +31,6 @@ function cycleTimeColor(days: number | null, p50?: number | null, p85?: number |
   if (p85 != null && days >= p85) return 'text-rose-600 font-semibold'
   if (p50 != null && days < p50) return 'text-emerald-600 font-semibold'
   return 'text-amber-600 font-semibold'
-}
-
-const TYPE_COLORS: Record<string, string> = {
-  story: 'bg-green-50 text-green-700 border-green-200',
-  task: 'bg-gray-50 text-gray-700 border-gray-200',
-  bug: 'bg-red-50 text-red-700 border-red-200',
-  epic: 'bg-purple-50 text-purple-700 border-purple-200',
-  'sub-task': 'bg-slate-50 text-slate-600 border-slate-200',
-  'qa finding': 'bg-orange-50 text-orange-700 border-orange-200',
 }
 
 export function sortTickets(tickets: Ticket[], key: SortKey, dir: SortDir): Ticket[] {
