@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/select'
 import ConnectionDialog from '@/components/connections/ConnectionDialog'
 import { DatePicker } from '@/components/ui/date-picker'
+import { ErrorBanner } from '@/components/ui/ErrorBanner'
 
 type Step = 'source' | 'upload' | 'jira' | 'configure'
 type SourceMode = 'upload' | 'jira' | null
@@ -104,6 +105,7 @@ export default function ImportPage() {
   const [leadStart, setLeadStart] = useState('')
   const [leadEnd, setLeadEnd] = useState('')
   const [importing, setImporting] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -124,7 +126,7 @@ export default function ImportPage() {
           raw: f,
         })
       } catch {
-        alert(t('import.invalidJson'))
+        setErrorMsg(t('import.invalidJson'))
       }
     }
     reader.readAsText(f)
@@ -174,7 +176,7 @@ export default function ImportPage() {
       await goToConfigure(p)
     } catch (e) {
       setFetchMsg('')
-      alert(e instanceof Error ? e.message : 'Fetch failed')
+      setErrorMsg(e instanceof Error ? e.message : 'Fetch failed')
     } finally {
       setFetching(false)
     }
@@ -207,7 +209,7 @@ export default function ImportPage() {
 
       if (configMode === 'new') {
         if (!newName || !cycleStart || !cycleEnd) {
-          alert('Please fill in config name, cycle start and end status.')
+          setErrorMsg('Please fill in config name, cycle start and end status.')
           setImporting(false)
           return
         }
@@ -237,7 +239,7 @@ export default function ImportPage() {
         navigate(`/projects/${session.id}`)
       }
     } catch (e) {
-      alert(e instanceof Error ? e.message : 'Error')
+      setErrorMsg(e instanceof Error ? e.message : 'Error')
       setImporting(false)
     }
   }
@@ -325,6 +327,7 @@ export default function ImportPage() {
     return (
       <div className="max-w-lg">
         <StepHeader current={2} total={3} />
+        <ErrorBanner message={errorMsg} onDismiss={() => setErrorMsg(null)} />
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('import.fetchFromJira')}</h2>
           <p className="text-sm text-gray-400 mt-1">{t('import.fetchFromJiraHint')}</p>
@@ -517,6 +520,7 @@ export default function ImportPage() {
     return (
       <div className="max-w-lg">
         <StepHeader current={2} total={3} />
+        <ErrorBanner message={errorMsg} onDismiss={() => setErrorMsg(null)} />
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('import.uploadYourExport')}</h2>
           <p className="text-sm text-gray-400 mt-1">
@@ -594,6 +598,7 @@ export default function ImportPage() {
   return (
     <div className="max-w-lg">
       <StepHeader current={3} total={3} />
+      <ErrorBanner message={errorMsg} onDismiss={() => setErrorMsg(null)} />
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('import.configureMetrics')}</h2>
         <p className="text-sm text-gray-400 mt-1">

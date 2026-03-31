@@ -8,6 +8,7 @@ import { useMetrics } from '@/hooks/useMetrics'
 import type { LLMInsight, LLMStatus, CycleTimesResponse, ReworkResponse } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ErrorBanner } from '@/components/ui/ErrorBanner'
 
 interface ChatMessage {
   role: 'user' | 'assistant'
@@ -46,6 +47,7 @@ export default function InsightsPage() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [chatInput, setChatInput] = useState('')
   const [chatLoading, setChatLoading] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [cycleData, setCycleData] = useState<CycleTimesResponse | null>(null)
   const [reworkData, setReworkData] = useState<ReworkResponse | null>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
@@ -79,7 +81,7 @@ export default function InsightsPage() {
       const result = await api.llm.analyze(importId)
       setInsight(result)
     } catch (e) {
-      alert(e instanceof Error ? e.message : 'Error')
+      setErrorMsg(e instanceof Error ? e.message : 'Error')
     } finally {
       setAnalyzing(false)
     }
@@ -168,6 +170,7 @@ export default function InsightsPage() {
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('insights.title')}</h2>
         <p className="text-sm text-gray-400 mt-0.5">{t('insights.subtitle')}</p>
       </div>
+      <ErrorBanner message={errorMsg} onDismiss={() => setErrorMsg(null)} />
 
       {/* LLM status */}
       {llmStatusLoaded && (

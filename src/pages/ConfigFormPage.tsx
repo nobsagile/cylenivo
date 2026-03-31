@@ -163,7 +163,7 @@ export default function ConfigFormPage() {
       setCycleEnd('')
       setLeadStart('')
     } catch (e) {
-      alert(e instanceof Error ? e.message : 'Error loading statuses')
+      setFormError(e instanceof Error ? e.message : 'Error loading statuses')
     } finally {
       setLoadingStatuses(false)
     }

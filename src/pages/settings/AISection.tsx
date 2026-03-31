@@ -6,6 +6,7 @@ import { api } from '@/services/api'
 import type { LlmConfig } from '@/types'
 import { Button } from '@/components/ui/button'
 import { SectionHeader } from './shared'
+import { ErrorBanner } from '@/components/ui/ErrorBanner'
 
 const DEFAULT_SYSTEM_PROMPT = 'You are a flow analysis expert for software development teams. Analyze flow metrics data and provide clear, actionable insights. Be specific with numbers and focus on what matters most to the team.'
 const OPENAI_MODELS = ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-turbo']
@@ -29,6 +30,7 @@ export function AISection({ onConfigChange }: Props) {
   const [llmSaving, setLlmSaving] = useState(false)
   const [llmTestResult, setLlmTestResult] = useState<'ok' | 'error' | null>(null)
   const [llmTesting, setLlmTesting] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   useEffect(() => {
     api.llmConfig.get().then((cfg) => {
@@ -82,7 +84,7 @@ export function AISection({ onConfigChange }: Props) {
       setLlmApiKey('')
       onConfigChange?.(saved)
     } catch (e) {
-      alert(e instanceof Error ? e.message : 'Error saving')
+      setErrorMsg(e instanceof Error ? e.message : 'Error saving')
     }
     setLlmSaving(false)
   }
@@ -115,6 +117,7 @@ export function AISection({ onConfigChange }: Props) {
   return (
     <>
       <SectionHeader title={t('settings.tabAi')} desc={t('settings.aiDesc')} />
+      <ErrorBanner message={errorMsg} onDismiss={() => setErrorMsg(null)} />
       {llmLoaded && (
         <div className="space-y-5">
           {llmConfig && (
