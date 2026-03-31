@@ -1,6 +1,7 @@
 import { db } from '../db/index.js'
 import { projectConfigs, importSessions, tickets, ticketTransitions } from '../db/schema.js'
 import { buildHealthReport } from '../analyzers/healthReport.js'
+import { buildTicketRows } from './ticketInsert.js'
 import { DEMO_IMPROVING, DEMO_DECLINING, DEMO_REALWORLD, type DemoFixture } from './demoData.js'
 
 const ALPHA_STATUS_ORDER = ['Backlog', 'In Progress', 'In Review', 'Done']
@@ -101,35 +102,7 @@ export async function seedDemoProject(
     health_report: JSON.stringify(healthReport),
   })
 
-  const ticketRows: (typeof tickets.$inferInsert)[] = []
-  const transitionRows: (typeof ticketTransitions.$inferInsert)[] = []
-
-  for (const t of fixture.tickets) {
-    const ticketId = crypto.randomUUID()
-    ticketRows.push({
-      id: ticketId,
-      import_id: importId,
-      external_id: t.external_id,
-      title: t.title,
-      ticket_type: t.ticket_type,
-      created_at: new Date(t.created_at).toISOString(),
-      external_link: null,
-      extra_metadata: t.metadata ? JSON.stringify(t.metadata) : null,
-    })
-
-    const sorted = [...t.transitions].sort(
-      (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime(),
-    )
-    for (const tr of sorted) {
-      transitionRows.push({
-        id: crypto.randomUUID(),
-        ticket_id: ticketId,
-        from_status: tr.from_status ?? null,
-        to_status: tr.to_status,
-        transitioned_at: new Date(tr.transitioned_at).toISOString(),
-      })
-    }
-  }
+  const { ticketRows, transitionRows } = buildTicketRows(importId, fixture.tickets)
 
   if (ticketRows.length) await db.insert(tickets).values(ticketRows)
   if (transitionRows.length) await db.insert(ticketTransitions).values(transitionRows)

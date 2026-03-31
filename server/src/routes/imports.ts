@@ -4,6 +4,7 @@ import { db } from '../db/index.js'
 import { projectConfigs, importSessions, tickets, ticketTransitions } from '../db/schema.js'
 import { ok } from '../lib/response.js'
 import { buildHealthReport } from '../analyzers/healthReport.js'
+import { buildTicketRows } from '../lib/ticketInsert.js'
 
 const imports = new Hono()
 
@@ -161,38 +162,13 @@ imports.post('/', async (c) => {
     health_report: JSON.stringify(healthReport),
   }
 
-  const ticketRows: (typeof tickets.$inferInsert)[] = []
-  const transitionRows: (typeof ticketTransitions.$inferInsert)[] = []
-
   for (const t of data.tickets) {
     if (!t.external_id) {
       return c.json({ data: null, error: 'Ticket missing external_id' }, 422)
     }
-    const ticketId = crypto.randomUUID()
-    ticketRows.push({
-      id: ticketId,
-      import_id: importId,
-      external_id: t.external_id,
-      title: t.title,
-      ticket_type: t.ticket_type,
-      created_at: new Date(t.created_at).toISOString(),
-      external_link: t.external_link ?? null,
-      extra_metadata: t.metadata ? JSON.stringify(t.metadata) : null,
-    })
-
-    const sorted = [...t.transitions].sort(
-      (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime()
-    )
-    for (const tr of sorted) {
-      transitionRows.push({
-        id: crypto.randomUUID(),
-        ticket_id: ticketId,
-        from_status: tr.from_status ?? null,
-        to_status: tr.to_status,
-        transitioned_at: new Date(tr.transitioned_at).toISOString(),
-      })
-    }
   }
+
+  const { ticketRows, transitionRows } = buildTicketRows(importId, data.tickets)
 
   await db.insert(importSessions).values(sessionRow)
   if (ticketRows.length) await db.insert(tickets).values(ticketRows)
