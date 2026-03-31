@@ -185,7 +185,16 @@ metrics.get('/:importId/cfd', async (c) => {
   const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
+  const { from, to } = parseDateFilter(c)
   const result = computeCFD(ctx.tickets, ctx.config.status_order)
+  if (from || to) {
+    result.data = result.data.filter(d => {
+      const ms = new Date(d.date).getTime()
+      if (from && ms < from.getTime()) return false
+      if (to && ms > to.getTime()) return false
+      return true
+    })
+  }
   return c.json(ok(result))
 })
 

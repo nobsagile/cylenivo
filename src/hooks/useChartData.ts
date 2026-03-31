@@ -29,11 +29,11 @@ export function useThroughput(importId: string | undefined, from?: string | null
   return data
 }
 
-export function useCfd(importId: string | undefined) {
+export function useCfd(importId: string | undefined, from?: string | null, to?: string | null) {
   const [data, setCfdData] = useState<CfdResponse | null>(null)
   useEffect(() => {
     if (!importId) return
-    api.metrics.cfd(importId).then(setCfdData).catch(() => {})
-  }, [importId])
+    api.metrics.cfd(importId, { from: from || undefined, to: to || undefined }).then(setCfdData).catch(() => {})
+  }, [importId, from, to])
   return data
 }

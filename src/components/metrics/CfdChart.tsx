@@ -43,7 +43,7 @@ export function CfdChart({ data }: CfdChartProps) {
             return (
               <ChartTooltip>
                 <p className="text-gray-500 mb-1.5">{label ? format(parseISO(String(label)), 'MMM d, yyyy') : ''}</p>
-                {payload.map((entry) => (
+                {payload.filter(entry => (entry.value as number) > 0).map((entry) => (
                   <div key={entry.name} className="flex items-center justify-between gap-4">
                     <span className="flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: entry.color }} />

@@ -144,7 +144,7 @@ export default function DashboardPage() {
   const cycleTimesData = useCycleTimes(importId, fromDate, toDate)
   const leadTimesData = useLeadTimes(importId, fromDate, toDate)
   const throughputData = useThroughput(importId, fromDate, toDate)
-  const cfdData = useCfd(importId)
+  const cfdData = useCfd(importId, fromDate, toDate)
 
   if (!importId) {
     return (

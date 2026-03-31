@@ -96,8 +96,8 @@ export const api = {
       request<ForecastResponse>(`/api/v1/metrics/${importId}/forecast?mode=${mode}&value=${value}`),
     throughput: (importId: string, dates?: DateFilter) =>
       request<ThroughputResponse>(`/api/v1/metrics/${importId}/throughput${dateParams(dates)}`),
-    cfd: (importId: string) =>
-      request<CfdResponse>(`/api/v1/metrics/${importId}/cfd`),
+    cfd: (importId: string, dates?: DateFilter) =>
+      request<CfdResponse>(`/api/v1/metrics/${importId}/cfd${dateParams(dates)}`),
   },
   tickets: {
     list: (importId: string, params?: { type?: string; page?: number; limit?: number; completed_only?: boolean; search?: string }) => {
