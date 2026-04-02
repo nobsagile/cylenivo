@@ -75,14 +75,6 @@ jobs:
         working-directory: server
         run: bun build --compile --target=${{ matrix.bun-target }} src/index.ts --outfile ../src-tauri/binaries/cylenivo-server-${{ matrix.target }}.exe
 
-      - name: Debug sidecar binary (Linux)
-        if: matrix.os == 'ubuntu-22.04'
-        run: |
-          echo "=== file ===" && file src-tauri/binaries/cylenivo-server-x86_64-unknown-linux-gnu
-          echo "=== size ===" && ls -lh src-tauri/binaries/cylenivo-server-x86_64-unknown-linux-gnu
-          echo "=== ldd ===" && ldd src-tauri/binaries/cylenivo-server-x86_64-unknown-linux-gnu || true
-          echo "=== patchelf --print-needed ===" && patchelf --print-needed src-tauri/binaries/cylenivo-server-x86_64-unknown-linux-gnu || true
-
       - name: Build Tauri app
         uses: tauri-apps/tauri-action@v0
         env:
@@ -95,4 +87,4 @@ jobs:
           releaseBody: ''
           releaseDraft: false
           prerelease: false
-          args: --target ${{ matrix.target }}
+          args: --target ${{ matrix.target }}${{ matrix.os == 'ubuntu-22.04' && ' --bundles deb,rpm' || '' }}
