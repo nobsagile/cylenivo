@@ -4,18 +4,15 @@ about: Something isn't working as expected
 labels: bug,app
 ---
 
-**Version:**
+**Version:** 
 **Platform:** (macOS / Windows / Linux)
 
-**Describe the bug**
+### Describe the bug
 
+### Steps to reproduce
+1. 
+2. 
 
-**Steps to reproduce**
-1.
-2.
+### Expected behavior
 
-**Expected behavior**
-
-
-**Actual behavior**
-
+### Actual behavior

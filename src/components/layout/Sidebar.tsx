@@ -401,7 +401,10 @@ export function Sidebar() {
           {t('nav.settings')}
         </NavLink>
         <button
-          onClick={() => openUrl(`https://github.com/nobsagile/cylenivo/issues/new?template=bug_report.md&labels=bug&body=**Version%3A** v${appVersion}%0A**OS%3A** ${navigator.platform}%0A%0A**Describe the bug**%0A%0A**Steps to reproduce**%0A1.%0A2.%0A%0A**Expected behavior**%0A%0A**Actual behavior**%0A`)}
+          onClick={() => {
+            const body = `**Version:** v${appVersion}\n**Platform:** ${navigator.platform}\n\n### Describe the bug\n\n### Steps to reproduce\n1. \n2. \n\n### Expected behavior\n\n### Actual behavior\n`
+            openUrl(`https://github.com/nobsagile/cylenivo/issues/new?template=bug_report.md&labels=bug,app&body=${encodeURIComponent(body)}`)
+          }}
           className="flex items-center gap-2.5 px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors w-full text-left"
         >
           <Bug className="w-4 h-4 shrink-0" />
