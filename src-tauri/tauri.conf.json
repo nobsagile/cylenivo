@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Cylenivo",
-  "version": "0.50.6",
+  "version": "0.50.7",
   "identifier": "com.cylenivo.app",
   "build": {
     "frontendDist": "../dist",
@@ -23,8 +23,7 @@
     ],
     "security": {
       "csp": null
-    },
-    "enableBrowserContextMenu": false
+    }
   },
   "bundle": {
     "active": true,
