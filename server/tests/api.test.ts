@@ -113,6 +113,49 @@ describe('configs', () => {
     expect(data.name).toBe('Updated Team')
   })
 
+  it('returns 404 for update on unknown config', async () => {
+    const res = await app.request('/api/v1/configs/nonexistent', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'x' }),
+    })
+    expect(res.status).toBe(404)
+  })
+
+  it('returns 422 for invalid cycle_time_mode on create', async () => {
+    const res = await app.request('/api/v1/configs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...BASE_CONFIG, cycle_time_mode: 'invalid_mode' }),
+    })
+    expect(res.status).toBe(422)
+  })
+
+  it('returns 422 for invalid cycle_time_mode on update', async () => {
+    const cfg = await createConfig()
+    const res = await app.request(`/api/v1/configs/${cfg.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cycle_time_mode: 'bad_mode' }),
+    })
+    expect(res.status).toBe(422)
+  })
+
+  it('returns 422 for empty name on update', async () => {
+    const cfg = await createConfig()
+    const res = await app.request(`/api/v1/configs/${cfg.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: '' }),
+    })
+    expect(res.status).toBe(422)
+  })
+
+  it('returns 404 for delete on unknown config', async () => {
+    const res = await app.request('/api/v1/configs/nonexistent', { method: 'DELETE' })
+    expect(res.status).toBe(404)
+  })
+
   it('blocks deleting a config that has imports', async () => {
     const cfg = await createConfig()
     await doImport(cfg.id)
@@ -174,6 +217,60 @@ describe('imports', () => {
     const { data } = await res.json() as { data: string[] }
     expect(Array.isArray(data)).toBe(true)
     expect(data.length).toBeGreaterThan(0)
+  })
+
+  it('returns 400 when no file is provided', async () => {
+    const cfg = await createConfig()
+    const form = new FormData()
+    form.append('config_id', cfg.id)
+    const res = await app.request('/api/v1/imports', { method: 'POST', body: form })
+    expect(res.status).toBe(400)
+  })
+
+  it('returns 422 for empty tickets array', async () => {
+    const cfg = await createConfig()
+    const form = new FormData()
+    form.append('file', new Blob([JSON.stringify({ source_type: 'jira', project_key: 'X', exported_at: '2026-01-01T00:00:00Z', tickets: [] })], { type: 'application/json' }), 'empty.json')
+    form.append('config_id', cfg.id)
+    const res = await app.request('/api/v1/imports', { method: 'POST', body: form })
+    expect(res.status).toBe(422)
+  })
+
+  it('returns 422 for unsupported source_type', async () => {
+    const cfg = await createConfig()
+    const form = new FormData()
+    form.append('file', new Blob([JSON.stringify({ source_type: 'linear', project_key: 'X', exported_at: '2026-01-01T00:00:00Z', tickets: [{ external_id: 'X-1', title: 't', ticket_type: 'story', created_at: '2026-01-01T00:00:00Z', transitions: [] }] })], { type: 'application/json' }), 'bad.json')
+    form.append('config_id', cfg.id)
+    const res = await app.request('/api/v1/imports', { method: 'POST', body: form })
+    expect(res.status).toBe(422)
+  })
+
+  it('returns 422 for ticket missing external_id', async () => {
+    const cfg = await createConfig()
+    const form = new FormData()
+    form.append('file', new Blob([JSON.stringify({ source_type: 'jira', project_key: 'X', exported_at: '2026-01-01T00:00:00Z', tickets: [{ title: 'no id', ticket_type: 'story', created_at: '2026-01-01T00:00:00Z', transitions: [] }] })], { type: 'application/json' }), 'bad.json')
+    form.append('config_id', cfg.id)
+    const res = await app.request('/api/v1/imports', { method: 'POST', body: form })
+    expect(res.status).toBe(422)
+  })
+
+  it('returns 404 for PATCH on unknown import', async () => {
+    const res = await app.request('/api/v1/imports/nonexistent', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'x' }),
+    })
+    expect(res.status).toBe(404)
+  })
+
+  it('returns 404 for DELETE on unknown import', async () => {
+    const res = await app.request('/api/v1/imports/nonexistent', { method: 'DELETE' })
+    expect(res.status).toBe(404)
+  })
+
+  it('returns 404 for GET single unknown import', async () => {
+    const res = await app.request('/api/v1/imports/nonexistent')
+    expect(res.status).toBe(404)
   })
 
   it('returns empty statuses for ticket with no transitions', async () => {
@@ -246,6 +343,21 @@ describe('metrics', () => {
     const { data } = await res.json() as { data: { values: unknown[] } }
     expect(Array.isArray(data.values)).toBe(true)
     for (const v of data.values) expect(typeof v).toBe('number')
+  })
+
+  it('cycle-times returns 404 for unknown import', async () => {
+    const res = await app.request('/api/v1/metrics/nonexistent/cycle-times')
+    expect(res.status).toBe(404)
+  })
+
+  it('lead-times returns 404 for unknown import', async () => {
+    const res = await app.request('/api/v1/metrics/nonexistent/lead-times')
+    expect(res.status).toBe(404)
+  })
+
+  it('time-in-status returns 404 for unknown import', async () => {
+    const res = await app.request('/api/v1/metrics/nonexistent/time-in-status')
+    expect(res.status).toBe(404)
   })
 
   it('time-in-status returns statuses and tickets', async () => {
@@ -525,6 +637,25 @@ describe('connections', () => {
 
   it('returns 404 when duplicating nonexistent connection', async () => {
     const res = await app.request('/api/v1/connections/nonexistent/duplicate', { method: 'POST' })
+    expect(res.status).toBe(404)
+  })
+
+  it('returns 404 for DELETE on nonexistent connection', async () => {
+    const res = await app.request('/api/v1/connections/nonexistent', { method: 'DELETE' })
+    expect(res.status).toBe(404)
+  })
+
+  it('returns 404 for test on nonexistent connection', async () => {
+    const res = await app.request('/api/v1/connections/nonexistent/test', { method: 'POST' })
+    expect(res.status).toBe(404)
+  })
+
+  it('returns 404 for fetch on nonexistent connection', async () => {
+    const res = await app.request('/api/v1/connections/nonexistent/fetch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ project: 'PROJ' }),
+    })
     expect(res.status).toBe(404)
   })
 
