@@ -248,6 +248,11 @@
     "tabConfigs": "Configurations",
     "tabDatasets": "Datasets",
     "tabConnections": "Connections",
+    "navDataSources": "Data Sources",
+    "dataSourcesDesc": "Manage your Jira connections and import settings. Each data source stores credentials and default parameters for fetching.",
+    "addDataSource": "New Data Source",
+    "noDataSources": "No data sources yet",
+    "noDataSourcesHint": "Add a Jira connection to start importing tickets.",
     "tabAi": "AI",
     "configsDesc": "Measurement rules — define which statuses mark cycle time start and end. One configuration can be reused for multiple datasets of the same team.",
     "noConfigs": "No configurations yet",
@@ -430,6 +435,14 @@
     "projectKeyPlaceholder": "e.g. PROJ",
     "issueTypes": "Issue Types",
     "resolvedBetween": "Completed between"
+  },
+  "refresh": {
+    "title": "Refresh Data",
+    "preflight": "Review import settings before fetching",
+    "fetching": "Fetching tickets...",
+    "fetchingTicket": "Fetching ticket {{current}}/{{total}} ({{key}})…",
+    "confirm": "Refresh",
+    "configNeeded": "Set up your workflow"
   },
   "errors": {
     "notFound": "Not found",

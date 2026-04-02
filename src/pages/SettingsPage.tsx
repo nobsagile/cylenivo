@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useLocation } from 'react-router-dom'
 import {
-  Plus, Pencil, Trash2, ArrowRight, Settings2, Copy,
+  Plus, Pencil, Trash2, ArrowRight, Settings2, Copy, Zap,
   Database, FileJson, Calendar, Ticket, Link2, CheckCircle2, XCircle, Loader2,
   X, Bot, RefreshCw, Puzzle, Globe,
 } from 'lucide-react'
@@ -10,6 +10,7 @@ import { api } from '@/services/api'
 import type { ProjectConfig, ImportSession, SourceConnection } from '@/types'
 import { Button } from '@/components/ui/button'
 import ConnectionDialog from '@/components/connections/ConnectionDialog'
+import RefreshDialog from '@/components/connections/RefreshDialog'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { notifyImportsChanged } from '@/hooks/useImports'
 import { EmptyState, SectionHeader, Card, IconBtn, NavGroup, NavItem, type Section, type PendingDelete } from './settings/shared'
@@ -18,7 +19,7 @@ import { AISection } from './settings/AISection'
 function resolveInitialSection(state: unknown): Section {
   const s = state as { tab?: string; section?: string } | null
   const raw = s?.section ?? s?.tab ?? 'configs'
-  const valid: Section[] = ['configs', 'datasets', 'connections', 'plugins', 'ai', 'language', 'data-management']
+  const valid: Section[] = ['configs', 'datasets', 'data-sources', 'plugins', 'ai', 'language', 'data-management']
   return valid.includes(raw as Section) ? (raw as Section) : 'configs'
 }
 
@@ -35,6 +36,7 @@ export default function SettingsPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editConn, setEditConn] = useState<SourceConnection | null>(null)
   const [testingId, setTestingId] = useState<string | null>(null)
+  const [refreshConn, setRefreshConn] = useState<SourceConnection | null>(null)
   const [testResults, setTestResults] = useState<Record<string, 'ok' | 'error'>>({})
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null)
   const [pendingReset, setPendingReset] = useState(false)
@@ -294,16 +296,16 @@ export default function SettingsPage() {
     )
   }
 
-  function renderConnections() {
+  function renderDataSources() {
     return (
       <>
         <SectionHeader
-          title={t('settings.tabConnections')}
-          desc={t('settings.connectionsDesc')}
+          title={t('settings.navDataSources')}
+          desc={t('settings.dataSourcesDesc')}
           action={
             <Button onClick={() => { setEditConn(null); setDialogOpen(true) }} variant="outline" size="sm" className="gap-1.5 shrink-0">
               <Plus className="w-3.5 h-3.5" />
-              {t('settings.addConnection')}
+              {t('settings.addDataSource')}
             </Button>
           }
         />
@@ -327,9 +329,9 @@ export default function SettingsPage() {
         {connections.length === 0 ? (
           <EmptyState
             icon={Link2}
-            title={t('settings.noConnections')}
-            hint={t('settings.noConnectionsHint')}
-            ctaLabel={t('settings.addConnection')}
+            title={t('settings.noDataSources')}
+            hint={t('settings.noDataSourcesHint')}
+            ctaLabel={t('settings.addDataSource')}
             onCta={() => { setEditConn(null); setDialogOpen(true) }}
           />
         ) : (
@@ -341,13 +343,20 @@ export default function SettingsPage() {
                 actions={
                   <>
                     <IconBtn
+                      onClick={() => setRefreshConn(conn)}
+                      disabled={!conn.project_key}
+                      title={t('refresh.confirm')}
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                    </IconBtn>
+                    <IconBtn
                       onClick={() => handleTestConnection(conn.id)}
                       disabled={testingId === conn.id}
                       title={t('common.test')}
                     >
                       {testingId === conn.id
                         ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        : <RefreshCw className="w-3.5 h-3.5" />}
+                        : <Zap className="w-3.5 h-3.5" />}
                     </IconBtn>
                     <IconBtn onClick={() => handleDuplicate(conn.id)} title={t('common.duplicate')}>
                       <Copy className="w-3.5 h-3.5" />
@@ -460,7 +469,7 @@ export default function SettingsPage() {
   const contentMap: Record<Section, () => React.ReactNode> = {
     configs: renderConfigs,
     datasets: renderDatasets,
-    connections: renderConnections,
+    'data-sources': renderDataSources,
     plugins: renderPlugins,
     ai: () => <AISection onConfigChange={(cfg) => setLlmConfigExists(!!cfg)} />,
     language: renderLanguage,
@@ -482,7 +491,7 @@ export default function SettingsPage() {
             <NavItem id="datasets" active={section === 'datasets'} icon={Database} label={t('settings.tabDatasets')} count={imports.length} onClick={setSection} />
           </NavGroup>
           <NavGroup label={t('settings.navIntegrations')}>
-            <NavItem id="connections" active={section === 'connections'} icon={Link2} label={t('settings.tabConnections')} count={connections.length} onClick={setSection} />
+            <NavItem id="data-sources" active={section === 'data-sources'} icon={Link2} label={t('settings.navDataSources')} count={connections.length} onClick={setSection} />
             <NavItem id="plugins" active={section === 'plugins'} icon={Puzzle} label={t('settings.tabPlugins')} soon onClick={setSection} />
           </NavGroup>
           <NavGroup label="AI">
@@ -506,6 +515,14 @@ export default function SettingsPage() {
         onClose={() => setDialogOpen(false)}
         onSaved={(conn) => { handleSaved(conn); setDialogOpen(false) }}
       />
+
+      {refreshConn && (
+        <RefreshDialog
+          open
+          connection={refreshConn}
+          onClose={() => setRefreshConn(null)}
+        />
+      )}
 
       {pendingDelete && (
         <ConfirmDialog
