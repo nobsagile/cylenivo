@@ -40,7 +40,7 @@ function MiniHistogram({ values }: { values: number[] }) {
 
 export function BoardVisualization({ config, timeInStatus, ticketData }: Props) {
   const { t } = useTranslation()
-  const { status_order, cycle_time_start_status, cycle_time_end_status, lead_time_start_status, lead_time_end_status } = config
+  const { status_order } = config
 
   const indices = getConfigIndices(config)
 

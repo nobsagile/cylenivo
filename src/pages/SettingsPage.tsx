@@ -7,7 +7,7 @@ import {
   X, Bot, RefreshCw, Puzzle, Globe,
 } from 'lucide-react'
 import { api } from '@/services/api'
-import type { ProjectConfig, ImportSession, SourceConnection, LlmConfig } from '@/types'
+import type { ProjectConfig, ImportSession, SourceConnection } from '@/types'
 import { Button } from '@/components/ui/button'
 import ConnectionDialog from '@/components/connections/ConnectionDialog'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
