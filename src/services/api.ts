@@ -20,7 +20,11 @@ import type {
   JiraFetchOptions,
 } from '@/types'
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8765'
+let BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8765'
+
+export function setApiPort(port: number) {
+  BASE_URL = `http://localhost:${port}`
+}
 
 type DateFilter = { from?: string; to?: string }
 

@@ -428,7 +428,9 @@
     "notFound": "Not found",
     "serverError": "Server error",
     "invalidFile": "Invalid file format",
-    "somethingWentWrong": "Something went wrong"
+    "somethingWentWrong": "Something went wrong",
+    "serverCrashed": "The background server stopped unexpectedly. Please restart the app.",
+    "serverCrashedTitle": "Server crashed"
   },
   "help": {
     "cycleTime": "Time from when work starts (cycle start status) to when it's done (cycle end status). Measures how long active work takes.",

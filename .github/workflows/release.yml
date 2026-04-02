@@ -55,6 +55,13 @@ jobs:
         working-directory: server
         run: npm ci
 
+      - name: Run frontend tests
+        run: npm test
+
+      - name: Run server tests
+        working-directory: server
+        run: npm test
+
       - name: Build server bundle
         working-directory: server
         run: npm run build:bundle
