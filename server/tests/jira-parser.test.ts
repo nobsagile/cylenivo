@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'bun:test'
 import { extractTransitions, mapIssueType } from '../src/connectors/jira.js'
 import changelog from './fixtures/jira-api-changelog.json'
 

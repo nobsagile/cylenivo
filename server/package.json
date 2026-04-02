@@ -4,32 +4,17 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "build:bundle": "esbuild src/index.ts --bundle --platform=node --format=cjs --outfile=dist/bundle.cjs --external:better-sqlite3",
-    "build:bin": "node -e \"require('@yao-pkg/pkg').exec(['dist/bundle.cjs','--targets','node20','--output','dist/server','--public'])\"",
-    "build": "npm run build:bundle && npm run build:bin"
+    "dev": "bun --watch src/index.ts",
+    "test": "bun test",
+    "build": "bun build --compile src/index.ts --outfile dist/server"
   },
   "dependencies": {
-    "@hono/node-server": "^1.12.0",
-    "better-sqlite3": "^12.8.0",
     "drizzle-orm": "^0.30.10",
     "hono": "^4.3.11"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.13",
-    "@types/node": "^20.14.0",
-    "@yao-pkg/pkg": "^5.12.0",
+    "@types/bun": "latest",
     "drizzle-kit": "^0.21.4",
-    "esbuild": "^0.21.5",
-    "tsx": "^4.15.7",
-    "typescript": "^5.5.2",
-    "vitest": "^1.6.0"
-  },
-  "pkg": {
-    "assets": [
-      "node_modules/better-sqlite3/build/Release/better_sqlite3.node"
-    ]
+    "typescript": "^5.5.2"
   }
 }

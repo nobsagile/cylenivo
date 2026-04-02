@@ -13,7 +13,7 @@
  * Config: cycle_start="In Dev", cycle_end="Done", status_order=[Backlog,Ready,In Dev,Review,Done]
  */
 
-import { describe, it, expect, beforeAll, beforeEach } from 'vitest'
+import { describe, it, expect, beforeAll, beforeEach } from 'bun:test'
 import { readFileSync } from 'fs'
 
 import path from 'path'

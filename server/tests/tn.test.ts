@@ -23,7 +23,7 @@
  * Do not modify expected values without re-verifying from raw data.
  */
 
-import { describe, it, expect, beforeAll, beforeEach } from 'vitest'
+import { describe, it, expect, beforeAll, beforeEach } from 'bun:test'
 import { readFileSync } from 'fs'
 import path from 'path'
 import { app } from '../src/app.js'

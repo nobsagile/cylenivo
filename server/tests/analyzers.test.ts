@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'bun:test'
 import { computeWeeklyBuckets, simulateHowMany, simulateWhen, percentileFromSorted, buildHistogram } from '../src/analyzers/monteCarlo.js'
 import { firstTransitionTo, lastTransitionTo, sortTransitions, trimTransitionsToCycleWindow, type Transition } from '../src/analyzers/utils.js'
 import { buildHealthReport } from '../src/analyzers/healthReport.js'

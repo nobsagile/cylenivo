@@ -1,11 +1,11 @@
 {
   "name": "cylenivo",
   "private": true,
-  "version": "0.50.8",
+  "version": "0.51.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "server:dev": "cd server && DB_PATH=./dev.db SERVER_PORT=8765 npm run dev",
+    "server:dev": "cd server && DB_PATH=./dev.db SERVER_PORT=8765 bun run dev",
     "tauri": "tauri",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
