@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
 import { streamSSE } from 'hono/streaming'
-import { eq } from 'drizzle-orm'
+import { eq, desc } from 'drizzle-orm'
 import { db } from '../db/index.js'
-import { sourceConnections, type ConnectionRow, type ConnectionInsert } from '../db/schema.js'
+import { sourceConnections, importSessions, type ConnectionRow, type ConnectionInsert } from '../db/schema.js'
 import { ok } from '../lib/response.js'
 import { testConnection, buildImportFile } from '../connectors/jira.js'
 import type { JiraCredentials } from '../connectors/jira.js'
@@ -140,6 +140,13 @@ connections.post('/:id/duplicate', async (c) => {
   }
   await db.insert(sourceConnections).values(row)
   return c.json(ok(serialize(row)), 201)
+})
+
+connections.get('/:id/datasets', async (c) => {
+  const rows = await db.select().from(importSessions)
+    .where(eq(importSessions.connection_id, c.req.param('id')))
+    .orderBy(desc(importSessions.imported_at))
+  return c.json(ok(rows))
 })
 
 export default connections

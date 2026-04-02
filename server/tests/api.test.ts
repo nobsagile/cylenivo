@@ -539,4 +539,41 @@ describe('connections', () => {
     })
     expect(res.status).toBe(422)
   })
+
+  // ─── connection_id on imports ──────────────────────────────────────────
+
+  it('stores connection_id on import session', async () => {
+    const config = await createConfig()
+    const { data: conn } = await createConnection()
+    const form = new FormData()
+    const blob = new Blob([JSON.stringify(FIXTURE)], { type: 'application/json' })
+    form.append('file', blob, 'test.json')
+    form.append('config_id', config.id)
+    form.append('connection_id', conn.id as string)
+    const res = await app.request('/api/v1/imports', { method: 'POST', body: form })
+    expect(res.status).toBe(201)
+    const { data } = await res.json() as { data: Record<string, unknown> }
+    expect(data.connection_id).toBe(conn.id)
+  })
+
+  it('GET /:id/datasets returns datasets for connection', async () => {
+    const config = await createConfig()
+    const { data: conn } = await createConnection()
+    // Import with connection_id
+    const form = new FormData()
+    const blob = new Blob([JSON.stringify(FIXTURE)], { type: 'application/json' })
+    form.append('file', blob, 'test.json')
+    form.append('config_id', config.id)
+    form.append('connection_id', conn.id as string)
+    await app.request('/api/v1/imports', { method: 'POST', body: form })
+    // Import without connection_id
+    const form2 = new FormData()
+    form2.append('file', new Blob([JSON.stringify(FIXTURE)], { type: 'application/json' }), 'test2.json')
+    form2.append('config_id', config.id)
+    await app.request('/api/v1/imports', { method: 'POST', body: form2 })
+
+    const res = await app.request(`/api/v1/connections/${conn.id}/datasets`)
+    const { data } = await res.json() as { data: unknown[] }
+    expect(data.length).toBe(1) // Only the one with connection_id
+  })
 })

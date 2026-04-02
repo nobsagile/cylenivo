@@ -69,11 +69,12 @@ export const api = {
   imports: {
     list: () => request<ImportSession[]>('/api/v1/imports'),
     get: (id: string) => request<ImportSession>(`/api/v1/imports/${id}`),
-    upload: (file: File, configId: string, name?: string) => {
+    upload: (file: File, configId: string, name?: string, connectionId?: string) => {
       const form = new FormData()
       form.append('file', file)
       form.append('config_id', configId)
       if (name) form.append('name', name)
+      if (connectionId) form.append('connection_id', connectionId)
       return request<ImportSession>('/api/v1/imports', { method: 'POST', body: form })
     },
     update: (id: string, body: { name?: string; config_id?: string }) =>
@@ -133,6 +134,8 @@ export const api = {
       request<null>(`/api/v1/connections/${id}`, { method: 'DELETE' }),
     duplicate: (id: string) =>
       request<SourceConnection>(`/api/v1/connections/${id}/duplicate`, { method: 'POST' }),
+    datasets: (id: string) =>
+      request<ImportSession[]>(`/api/v1/connections/${id}/datasets`),
     test: (id: string) =>
       request<{ display_name: string; email: string }>(`/api/v1/connections/${id}/test`, { method: 'POST' }),
     fetchStream: async (

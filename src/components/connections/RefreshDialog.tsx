@@ -89,19 +89,24 @@ export default function RefreshDialog({ open, connection, onClose }: Props) {
       setFetchedStatuses(statuses)
       setTicketCount(count)
 
-      // Check if configs exist — if yes, auto-import with the first one
-      const configs = await api.configs.list().catch(() => [])
-      if (configs.length > 0) {
-        // Auto-import with first config
-        const configId = configs[0].id
+      // Smart config selection: use last import's config, or first available, or show setup
+      const [datasets, configs] = await Promise.all([
+        api.connections.datasets(connection.id).catch(() => []),
+        api.configs.list().catch(() => []),
+      ])
+      const lastConfigId = datasets[0]?.config_id
+      const configId = (lastConfigId && configs.find(c => c.id === lastConfigId))
+        ? lastConfigId
+        : configs[0]?.id
+
+      if (configId) {
         const blob = new Blob([JSON.stringify(result)], { type: 'application/json' })
         const file = new File([blob], `${projectKey}-refresh.json`, { type: 'application/json' })
-        const session = await api.imports.upload(file, configId, projectKey || undefined)
+        const session = await api.imports.upload(file, configId, projectKey || undefined, connection.id)
         notifyImportsChanged()
         onClose()
         navigate(`/projects/${session.id}`)
       } else {
-        // No config — show configure step
         setStep('configure')
       }
     } catch (e) {
@@ -237,7 +242,7 @@ export default function RefreshDialog({ open, connection, onClose }: Props) {
           onComplete={async (configId, datasetName) => {
             const blob = new Blob([JSON.stringify(fetchResult)], { type: 'application/json' })
             const file = new File([blob], `${projectKey}-refresh.json`, { type: 'application/json' })
-            const session = await api.imports.upload(file, configId, datasetName || undefined)
+            const session = await api.imports.upload(file, configId, datasetName || undefined, connection.id)
             notifyImportsChanged()
             onClose()
             navigate(`/projects/${session.id}`)

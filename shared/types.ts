@@ -32,6 +32,7 @@ export interface ImportSession {
   cycle_time_start_status?: string | null
   cycle_time_end_status?: string | null
   health_report?: ImportHealthReport | null
+  connection_id?: string | null
 }
 
 export interface TicketTransition {

@@ -44,12 +44,20 @@ export default function SettingsPage() {
   const [seeding, setSeeding] = useState(false)
   const [errorMsg, setErrorMsg] = useState<{ title: string; description: string; action?: string } | null>(null)
   const [showConnBanner, setShowConnBanner] = useState(false)
+  const [connDatasets, setConnDatasets] = useState<Record<string, ImportSession[]>>({})
   const [llmConfigExists, setLlmConfigExists] = useState(false)
 
   useEffect(() => {
     api.configs.list().then(setConfigs).catch(console.error)
     api.imports.list().then(setImports).catch(console.error)
-    api.connections.list().then(setConnections).catch(console.error)
+    api.connections.list().then((conns) => {
+      setConnections(conns)
+      for (const c of conns) {
+        api.connections.datasets(c.id).then((ds) => {
+          setConnDatasets((prev) => ({ ...prev, [c.id]: ds }))
+        }).catch(() => {})
+      }
+    }).catch(console.error)
     api.llmConfig.get().then((cfg) => setLlmConfigExists(!!cfg)).catch(console.error)
   }, [])
 
@@ -382,6 +390,15 @@ export default function SettingsPage() {
                   {conn.project_key && <span className="font-medium text-gray-500">{conn.project_key} · </span>}
                   {conn.base_url} · {conn.email}
                 </p>
+                {connDatasets[conn.id]?.length > 0 && (
+                  <div className="mt-2 pt-2 border-t border-gray-100 space-y-0.5">
+                    {connDatasets[conn.id].slice(0, 3).map((ds) => (
+                      <p key={ds.id} className="text-xs text-gray-400">
+                        {ds.name ?? ds.project_key} · {ds.ticket_count} tickets · {new Date(ds.imported_at).toLocaleDateString()}
+                      </p>
+                    ))}
+                  </div>
+                )}
               </Card>
             ))}
           </div>

@@ -114,6 +114,7 @@ imports.post('/', async (c) => {
   const file = body['file']
   const configId = body['config_id'] as string
   const datasetName = (body['name'] as string) || null
+  const connectionId = (body['connection_id'] as string) || null
 
   if (!file || typeof file === 'string') {
     return c.json({ data: null, error: 'No file provided' }, 400)
@@ -160,6 +161,7 @@ imports.post('/', async (c) => {
     ticket_count: data.tickets.length,
     imported_at: now,
     health_report: JSON.stringify(healthReport),
+    connection_id: connectionId,
   }
 
   for (const t of data.tickets) {

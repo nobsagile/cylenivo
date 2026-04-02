@@ -33,7 +33,8 @@ const CREATE_TABLES_SQL = `
     file_name TEXT NOT NULL,
     ticket_count INTEGER NOT NULL DEFAULT 0,
     imported_at TEXT NOT NULL,
-    health_report TEXT
+    health_report TEXT,
+    connection_id TEXT
   );
 
   CREATE TABLE IF NOT EXISTS tickets (
@@ -136,6 +137,7 @@ export async function migrate() {
   addColumn(`ALTER TABLE source_connections ADD COLUMN issue_types TEXT`)
   addColumn(`ALTER TABLE source_connections ADD COLUMN resolved_from TEXT`)
   addColumn(`ALTER TABLE source_connections ADD COLUMN resolved_to TEXT`)
+  addColumn(`ALTER TABLE import_sessions ADD COLUMN connection_id TEXT`)
   // Indexes (safe to re-run — IF NOT EXISTS)
   sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_tickets_import_id ON tickets(import_id)`)
   sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_transitions_ticket_id ON ticket_transitions(ticket_id)`)

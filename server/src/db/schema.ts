@@ -24,6 +24,7 @@ export const importSessions = sqliteTable('import_sessions', {
   ticket_count: integer('ticket_count').notNull().default(0),
   imported_at: text('imported_at').notNull(),
   health_report: text('health_report'), // JSON
+  connection_id: text('connection_id'),
 })
 
 export const tickets = sqliteTable('tickets', {
