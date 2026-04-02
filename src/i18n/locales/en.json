@@ -12,6 +12,7 @@
     "edit": "Edit",
     "open": "Open",
     "test": "Test",
+    "duplicate": "Duplicate",
     "loading": "Loading…",
     "noData": "No data",
     "comingSoon": "Coming soon",
@@ -422,7 +423,13 @@
     "apiTokenPlaceholder": "Paste your API token",
     "getTokenAt": "Get your token at",
     "atlassianTokens": "Atlassian API Tokens",
-    "testConnection": "Test Connection"
+    "testConnection": "Test Connection",
+    "defaultSettings": "Default Import Settings",
+    "defaultSettingsHint": "Pre-filled when importing from this connection",
+    "projectKey": "Project Key",
+    "projectKeyPlaceholder": "e.g. PROJ",
+    "issueTypes": "Issue Types",
+    "resolvedBetween": "Completed between"
   },
   "errors": {
     "notFound": "Not found",

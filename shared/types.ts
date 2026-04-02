@@ -172,6 +172,10 @@ export interface SourceConnection {
   base_url: string
   email: string
   created_at: string
+  project_key?: string
+  issue_types?: string[]
+  resolved_from?: string
+  resolved_to?: string
 }
 
 export interface JiraFetchOptions {

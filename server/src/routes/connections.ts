@@ -11,8 +11,11 @@ const connections = new Hono()
 
 function serialize(row: ConnectionRow) {
   // Never expose api_token to frontend
-  const { api_token: _, ...rest } = row
-  return rest
+  const { api_token: _, issue_types, ...rest } = row
+  return {
+    ...rest,
+    issue_types: issue_types ? JSON.parse(issue_types) : null,
+  }
 }
 
 connections.get('/', async (c) => {
@@ -36,6 +39,10 @@ connections.post('/', async (c) => {
     email: body.email,
     api_token: body.api_token,
     created_at: now,
+    project_key: body.project_key ?? null,
+    issue_types: body.issue_types ? JSON.stringify(body.issue_types) : null,
+    resolved_from: body.resolved_from ?? null,
+    resolved_to: body.resolved_to ?? null,
   }
   await db.insert(sourceConnections).values(row)
   return c.json(ok(serialize(row)), 201)
@@ -52,6 +59,10 @@ connections.put('/:id', async (c) => {
   if (body.base_url !== undefined) updates.base_url = (body.base_url ?? '').replace(/\/$/, '')
   if (body.email !== undefined) updates.email = body.email
   if (body.api_token !== undefined) updates.api_token = body.api_token
+  if (body.project_key !== undefined) updates.project_key = body.project_key || null
+  if (body.issue_types !== undefined) updates.issue_types = body.issue_types ? JSON.stringify(body.issue_types) : null
+  if (body.resolved_from !== undefined) updates.resolved_from = body.resolved_from || null
+  if (body.resolved_to !== undefined) updates.resolved_to = body.resolved_to || null
 
   await db.update(sourceConnections).set(updates).where(eq(sourceConnections.id, id))
   const updated = await db.select().from(sourceConnections).where(eq(sourceConnections.id, id))
@@ -88,16 +99,18 @@ connections.post('/:id/fetch', async (c) => {
 
   const conn = rows[0]
   const body = await c.req.json()
-  if (!body.project) return c.json({ data: null, error: 'Missing required field: project' }, 422)
+  const project = body.project || conn.project_key
+  if (!project) return c.json({ data: null, error: 'Missing required field: project' }, 422)
 
   const creds: JiraCredentials = { base_url: conn.base_url, email: conn.email, api_token: conn.api_token }
   const requestedLimit = typeof body.limit === 'number' ? body.limit : 50
+  const storedTypes = conn.issue_types ? JSON.parse(conn.issue_types) : null
   const options = {
-    project: body.project,
+    project,
     limit: Math.min(Math.max(1, requestedLimit), 2000),
-    issue_types: body.issue_types ?? ['Story', 'Task', 'Bug'],
-    resolved_from: body.resolved_from as string | undefined,
-    resolved_to: body.resolved_to as string | undefined,
+    issue_types: body.issue_types ?? storedTypes ?? ['Story', 'Task', 'Bug'],
+    resolved_from: body.resolved_from ?? conn.resolved_from ?? undefined,
+    resolved_to: body.resolved_to ?? conn.resolved_to ?? undefined,
   }
 
   return streamSSE(c, async (stream) => {
@@ -110,6 +123,23 @@ connections.post('/:id/fetch', async (c) => {
       await stream.writeSSE({ data: JSON.stringify({ type: 'error', message: e instanceof Error ? e.message : 'Fetch failed' }) })
     }
   })
+})
+
+connections.post('/:id/duplicate', async (c) => {
+  const id = c.req.param('id')
+  const existing = await db.select().from(sourceConnections).where(eq(sourceConnections.id, id))
+  if (!existing.length) return c.json({ data: null, error: 'Connection not found' }, 404)
+
+  const source = existing[0]
+  const newId = crypto.randomUUID()
+  const row = {
+    ...source,
+    id: newId,
+    name: `${source.name} (copy)`,
+    created_at: new Date().toISOString(),
+  }
+  await db.insert(sourceConnections).values(row)
+  return c.json(ok(serialize(row)), 201)
 })
 
 export default connections

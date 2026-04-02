@@ -62,7 +62,11 @@ const CREATE_TABLES_SQL = `
     base_url TEXT NOT NULL,
     email TEXT NOT NULL,
     api_token TEXT NOT NULL,
-    created_at TEXT NOT NULL
+    created_at TEXT NOT NULL,
+    project_key TEXT,
+    issue_types TEXT,
+    resolved_from TEXT,
+    resolved_to TEXT
   );
 
   CREATE TABLE IF NOT EXISTS llm_insights (
@@ -110,7 +114,11 @@ export async function migrate() {
     base_url TEXT NOT NULL,
     email TEXT NOT NULL,
     api_token TEXT NOT NULL,
-    created_at TEXT NOT NULL
+    created_at TEXT NOT NULL,
+    project_key TEXT,
+    issue_types TEXT,
+    resolved_from TEXT,
+    resolved_to TEXT
   )`)
   addColumn(`ALTER TABLE import_sessions ADD COLUMN health_report TEXT`)
   sqlite.exec(`CREATE TABLE IF NOT EXISTS llm_config (
@@ -124,6 +132,10 @@ export async function migrate() {
   )`)
   addColumn(`ALTER TABLE project_configs ADD COLUMN lead_time_end_status TEXT`)
   addColumn(`ALTER TABLE import_sessions ADD COLUMN name TEXT`)
+  addColumn(`ALTER TABLE source_connections ADD COLUMN project_key TEXT`)
+  addColumn(`ALTER TABLE source_connections ADD COLUMN issue_types TEXT`)
+  addColumn(`ALTER TABLE source_connections ADD COLUMN resolved_from TEXT`)
+  addColumn(`ALTER TABLE source_connections ADD COLUMN resolved_to TEXT`)
   // Indexes (safe to re-run — IF NOT EXISTS)
   sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_tickets_import_id ON tickets(import_id)`)
   sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_transitions_ticket_id ON ticket_transitions(ticket_id)`)

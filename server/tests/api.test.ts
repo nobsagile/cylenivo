@@ -3,7 +3,7 @@ import { readFileSync } from 'fs'
 import path from 'path'
 import { app } from '../src/app.js'
 import { migrate, db } from '../src/db/index.js'
-import { projectConfigs, importSessions, tickets, ticketTransitions, llmInsights, llmConfig } from '../src/db/schema.js'
+import { projectConfigs, importSessions, tickets, ticketTransitions, llmInsights, llmConfig, sourceConnections } from '../src/db/schema.js'
 
 const FIXTURE = JSON.parse(
   readFileSync(path.join(import.meta.dirname, 'fixtures/sample_jira_export.json'), 'utf-8')
@@ -30,6 +30,7 @@ beforeEach(async () => {
   await db.delete(importSessions)
   await db.delete(projectConfigs)
   await db.delete(llmConfig)
+  await db.delete(sourceConnections)
 })
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -394,5 +395,148 @@ describe('llm-config', () => {
     const res = await app.request('/api/v1/llm-config')
     const { data } = await res.json() as { data: null }
     expect(data).toBeNull()
+  })
+})
+
+// ─── connections ──────────────────────────────────────────────────────────────
+
+const BASE_CONN = {
+  name: 'Test Jira',
+  source_type: 'jira',
+  base_url: 'https://test.atlassian.net',
+  email: 'user@test.com',
+  api_token: 'secret-token-123',
+}
+
+async function createConnection(overrides: Record<string, unknown> = {}) {
+  const res = await app.request('/api/v1/connections', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...BASE_CONN, ...overrides }),
+  })
+  const json = await res.json() as { data: Record<string, unknown> }
+  return { res, data: json.data }
+}
+
+describe('connections', () => {
+  it('creates a connection and returns 201', async () => {
+    const { res, data } = await createConnection()
+    expect(res.status).toBe(201)
+    expect(data.name).toBe('Test Jira')
+    expect(data.source_type).toBe('jira')
+    expect(data.base_url).toBe('https://test.atlassian.net')
+    expect(data.email).toBe('user@test.com')
+  })
+
+  it('never exposes api_token', async () => {
+    const { data } = await createConnection()
+    expect(data).not.toHaveProperty('api_token')
+  })
+
+  it('strips trailing slash from base_url', async () => {
+    const { data } = await createConnection({ base_url: 'https://test.atlassian.net/' })
+    expect(data.base_url).toBe('https://test.atlassian.net')
+  })
+
+  it('stores and returns project_key and issue_types', async () => {
+    const { data } = await createConnection({
+      project_key: 'PROJ',
+      issue_types: ['Story', 'Bug'],
+      resolved_from: '2026-01-01',
+      resolved_to: '2026-03-31',
+    })
+    expect(data.project_key).toBe('PROJ')
+    expect(data.issue_types).toEqual(['Story', 'Bug'])
+    expect(data.resolved_from).toBe('2026-01-01')
+    expect(data.resolved_to).toBe('2026-03-31')
+  })
+
+  it('returns null for unset data source fields', async () => {
+    const { data } = await createConnection()
+    expect(data.project_key).toBeNull()
+    expect(data.issue_types).toBeNull()
+    expect(data.resolved_from).toBeNull()
+    expect(data.resolved_to).toBeNull()
+  })
+
+  it('lists connections', async () => {
+    await createConnection({ name: 'A' })
+    await createConnection({ name: 'B' })
+    const res = await app.request('/api/v1/connections')
+    const { data } = await res.json() as { data: unknown[] }
+    expect(data.length).toBe(2)
+  })
+
+  it('updates connection with new fields', async () => {
+    const { data: created } = await createConnection()
+    const res = await app.request(`/api/v1/connections/${created.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ project_key: 'NEW', issue_types: ['Epic'] }),
+    })
+    const { data } = await res.json() as { data: Record<string, unknown> }
+    expect(data.project_key).toBe('NEW')
+    expect(data.issue_types).toEqual(['Epic'])
+  })
+
+  it('returns 404 for update on nonexistent connection', async () => {
+    const res = await app.request('/api/v1/connections/nonexistent', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'x' }),
+    })
+    expect(res.status).toBe(404)
+  })
+
+  it('deletes a connection', async () => {
+    const { data } = await createConnection()
+    const res = await app.request(`/api/v1/connections/${data.id}`, { method: 'DELETE' })
+    expect(res.status).toBe(204)
+    const list = await app.request('/api/v1/connections')
+    const { data: remaining } = await list.json() as { data: unknown[] }
+    expect(remaining.length).toBe(0)
+  })
+
+  it('returns 422 when required field is missing', async () => {
+    const res = await app.request('/api/v1/connections', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ source_type: 'jira' }),
+    })
+    expect(res.status).toBe(422)
+  })
+
+  // ─── duplicate ─────────────────────────────────────────────────────────────
+
+  it('duplicates a connection', async () => {
+    const { data: original } = await createConnection({
+      project_key: 'ORIG',
+      issue_types: ['Story'],
+    })
+    const res = await app.request(`/api/v1/connections/${original.id}/duplicate`, { method: 'POST' })
+    expect(res.status).toBe(201)
+    const { data: dup } = await res.json() as { data: Record<string, unknown> }
+    expect(dup.id).not.toBe(original.id)
+    expect(dup.name).toBe('Test Jira (copy)')
+    expect(dup.base_url).toBe(original.base_url)
+    expect(dup.project_key).toBe('ORIG')
+    expect(dup.issue_types).toEqual(['Story'])
+  })
+
+  it('returns 404 when duplicating nonexistent connection', async () => {
+    const res = await app.request('/api/v1/connections/nonexistent/duplicate', { method: 'POST' })
+    expect(res.status).toBe(404)
+  })
+
+  // ─── fetch param merge ─────────────────────────────────────────────────────
+
+  it('returns 422 when fetch has no project in body or stored', async () => {
+    const { data } = await createConnection()
+    const res = await app.request(`/api/v1/connections/${data.id}/fetch`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    })
+    expect(res.status).toBe(422)
   })
 })

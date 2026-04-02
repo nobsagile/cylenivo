@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { notifyImportsChanged } from '@/hooks/useImports'
@@ -106,6 +106,16 @@ export default function ImportPage() {
   const [leadEnd, setLeadEnd] = useState('')
   const [importing, setImporting] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+
+  // Prefill Jira form fields from connection's stored defaults
+  useEffect(() => {
+    const conn = connections.find((c) => c.id === selectedConnId)
+    if (!conn) return
+    if (conn.project_key) setJiraProject(conn.project_key)
+    if (conn.issue_types?.length) setJiraIssueTypes(conn.issue_types)
+    if (conn.resolved_from) setResolvedFrom(conn.resolved_from)
+    if (conn.resolved_to) setResolvedTo(conn.resolved_to)
+  }, [selectedConnId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const sensors = useSensors(
     useSensor(PointerSensor),

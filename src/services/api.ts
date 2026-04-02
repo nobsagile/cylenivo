@@ -131,6 +131,8 @@ export const api = {
       }),
     delete: (id: string) =>
       request<null>(`/api/v1/connections/${id}`, { method: 'DELETE' }),
+    duplicate: (id: string) =>
+      request<SourceConnection>(`/api/v1/connections/${id}/duplicate`, { method: 'POST' }),
     test: (id: string) =>
       request<{ display_name: string; email: string }>(`/api/v1/connections/${id}/test`, { method: 'POST' }),
     fetchStream: async (

@@ -53,6 +53,10 @@ export const sourceConnections = sqliteTable('source_connections', {
   email: text('email').notNull(),
   api_token: text('api_token').notNull(),
   created_at: text('created_at').notNull(),
+  project_key: text('project_key'),
+  issue_types: text('issue_types'),       // JSON array string
+  resolved_from: text('resolved_from'),
+  resolved_to: text('resolved_to'),
 })
 
 export const llmInsights = sqliteTable('llm_insights', {

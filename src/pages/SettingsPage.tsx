@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useLocation } from 'react-router-dom'
 import {
-  Plus, Pencil, Trash2, ArrowRight, Settings2,
+  Plus, Pencil, Trash2, ArrowRight, Settings2, Copy,
   Database, FileJson, Calendar, Ticket, Link2, CheckCircle2, XCircle, Loader2,
   X, Bot, RefreshCw, Puzzle, Globe,
 } from 'lucide-react'
@@ -105,6 +105,13 @@ export default function SettingsPage() {
       setErrorMsg({ title: 'Could not generate demo data', description: e instanceof Error ? e.message : 'Error' })
     }
     setSeeding(false)
+  }
+
+  async function handleDuplicate(id: string) {
+    try {
+      const dup = await api.connections.duplicate(id) as SourceConnection
+      setConnections((prev) => [...prev, dup])
+    } catch { /* ignore */ }
   }
 
   async function handleTestConnection(id: string) {
@@ -342,6 +349,9 @@ export default function SettingsPage() {
                         ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
                         : <RefreshCw className="w-3.5 h-3.5" />}
                     </IconBtn>
+                    <IconBtn onClick={() => handleDuplicate(conn.id)} title={t('common.duplicate')}>
+                      <Copy className="w-3.5 h-3.5" />
+                    </IconBtn>
                     <IconBtn onClick={() => { setEditConn(conn); setDialogOpen(true) }} title={t('common.edit')}>
                       <Pencil className="w-3.5 h-3.5" />
                     </IconBtn>
@@ -359,7 +369,10 @@ export default function SettingsPage() {
                   {testResults[conn.id] === 'ok' && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />}
                   {testResults[conn.id] === 'error' && <XCircle className="w-3.5 h-3.5 text-red-400" />}
                 </div>
-                <p className="text-xs text-gray-400 mt-1">{conn.base_url} · {conn.email}</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {conn.project_key && <span className="font-medium text-gray-500">{conn.project_key} · </span>}
+                  {conn.base_url} · {conn.email}
+                </p>
               </Card>
             ))}
           </div>
