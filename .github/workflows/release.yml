@@ -69,6 +69,7 @@ jobs:
         id: notes
         shell: bash
         run: |
+          set +o pipefail
           PREV=$(git tag --sort=-version:refname | grep -v "^${{ github.ref_name }}$" | head -1)
           if [ -n "$PREV" ]; then
             BODY=$(git log --pretty=format:"- %s" "$PREV".."${{ github.ref_name }}" | grep -v "^- ${{ github.ref_name }}" || true)
