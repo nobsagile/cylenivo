@@ -266,9 +266,16 @@ export function Sidebar() {
 
   useEffect(() => {
     if (!window.__TAURI_INTERNALS__) return
-    import('@tauri-apps/plugin-updater').then(({ check }) =>
-      check().then((u) => { if (u?.available) setPendingUpdate(u) }).catch(() => {})
-    )
+    import('@tauri-apps/plugin-updater')
+      .then(({ check }) =>
+        check()
+          .then((u) => {
+            console.log('[updater] result:', JSON.stringify(u))
+            if (u?.available) setPendingUpdate(u)
+          })
+          .catch((e) => console.error('[updater] check error:', e))
+      )
+      .catch((e) => console.error('[updater] import error:', e))
   }, [])
 
   const currentImport = imports.find(imp => imp.id === importId)
