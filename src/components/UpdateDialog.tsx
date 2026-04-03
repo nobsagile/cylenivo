@@ -20,8 +20,6 @@ export function UpdateDialog({ update, onClose }: Props) {
       const { relaunch } = await import('@tauri-apps/plugin-process')
       await relaunch()
     } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e)
-      alert('Update failed: ' + msg)
       setInstalling(false)
     }
   }
