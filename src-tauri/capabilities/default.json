@@ -11,6 +11,7 @@
     "shell:allow-spawn",
     "shell:allow-open",
     "updater:allow-check",
-    "updater:allow-download-and-install"
+    "updater:allow-download-and-install",
+    "process:allow-relaunch"
   ]
 }
