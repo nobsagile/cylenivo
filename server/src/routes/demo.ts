@@ -80,11 +80,11 @@ demo.post('/seed', async (c) => {
  * Does NOT touch source_connections or llm_config.
  */
 demo.delete('/reset', async () => {
-  await db.delete(ticketTransitions).where(sql`1=1`)
-  await db.delete(tickets).where(sql`1=1`)
-  await db.delete(llmInsights).where(sql`1=1`)
-  await db.delete(importSessions).where(sql`1=1`)
-  await db.delete(projectConfigs).where(sql`1=1`)
+  await db.run(sql`DELETE FROM ticket_transitions`)
+  await db.run(sql`DELETE FROM tickets`)
+  await db.run(sql`DELETE FROM llm_insights`)
+  await db.run(sql`DELETE FROM import_sessions`)
+  await db.run(sql`DELETE FROM project_configs`)
   return new Response(null, { status: 204 })
 })
 
@@ -94,13 +94,13 @@ demo.delete('/reset', async () => {
  * Returns the app to a fresh-install state.
  */
 demo.delete('/full-reset', async () => {
-  await db.delete(ticketTransitions).where(sql`1=1`)
-  await db.delete(tickets).where(sql`1=1`)
-  await db.delete(llmInsights).where(sql`1=1`)
-  await db.delete(importSessions).where(sql`1=1`)
-  await db.delete(projectConfigs).where(sql`1=1`)
-  await db.delete(sourceConnections).where(sql`1=1`)
-  await db.delete(llmConfig).where(sql`1=1`)
+  await db.run(sql`DELETE FROM ticket_transitions`)
+  await db.run(sql`DELETE FROM tickets`)
+  await db.run(sql`DELETE FROM llm_insights`)
+  await db.run(sql`DELETE FROM import_sessions`)
+  await db.run(sql`DELETE FROM project_configs`)
+  await db.run(sql`DELETE FROM source_connections`)
+  await db.run(sql`DELETE FROM llm_config`)
   return new Response(null, { status: 204 })
 })
 
