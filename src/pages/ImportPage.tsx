@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
-  Link2, Clock, ArrowRight, ArrowLeft, Loader2, ExternalLink, GripVertical, X,
+  Link2, Clock, ArrowRight, ArrowLeft, Loader2, ExternalLink, GripVertical, X, Plus,
 } from 'lucide-react'
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor,
@@ -21,7 +21,7 @@ import { DatePicker } from '@/components/ui/date-picker'
 import { ErrorBanner } from '@/components/ui/ErrorBanner'
 import { notifyImportsChanged } from '@/hooks/useImports'
 
-type Step = 'source' | 'connect' | 'fetch' | 'statuses' | 'measure'
+type Step = 'source' | 'pick-connection' | 'connect' | 'fetch' | 'statuses' | 'measure'
 
 function SortableStatus({ id, onRemove }: { id: string; onRemove: () => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
@@ -93,6 +93,10 @@ export default function ImportPage() {
   const [hadConnections, setHadConnections] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
+  // pick-connection step
+  const [availableConns, setAvailableConns] = useState<SourceConnection[]>([])
+  const [selectedConnId, setSelectedConnId] = useState('')
+
   // connect step
   const [connName, setConnName] = useState('')
   const [connBaseUrl, setConnBaseUrl] = useState('')
@@ -132,10 +136,10 @@ export default function ImportPage() {
       setErrorMsg(null)
       const conns = await api.connections.list().catch(() => [] as SourceConnection[])
       if (conns.length > 0) {
-        const conn = conns[0]
-        setConnection(conn)
+        setAvailableConns(conns)
+        setSelectedConnId(conns[0].id)
         setHadConnections(true)
-        setStep('fetch')
+        setStep('pick-connection')
       } else {
         setHadConnections(false)
         setStep('connect')
@@ -181,6 +185,78 @@ export default function ImportPage() {
     )
   }
 
+  // ── Step: Pick connection ─────────────────────────────────────────────────
+  if (step === 'pick-connection') {
+    const steps = [t('wizard.stepImport'), t('wizard.stepStatuses'), t('wizard.stepSetup')]
+
+    function handleContinue() {
+      const conn = availableConns.find((c) => c.id === selectedConnId)
+      if (!conn) return
+      setConnection(conn)
+      setStep('fetch')
+    }
+
+    function handleAddNew() {
+      setStep('connect')
+    }
+
+    return (
+      <div className="max-w-lg">
+        <WizardHeader steps={steps} current={0} />
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('wizard.pickConnTitle')}</h2>
+          <p className="text-sm text-gray-400 mt-1">{t('wizard.pickConnHint')}</p>
+        </div>
+
+        <div className="space-y-2 mb-4">
+          {availableConns.map((conn) => (
+            <button
+              key={conn.id}
+              onClick={() => setSelectedConnId(conn.id)}
+              className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 text-left transition-colors ${
+                selectedConnId === conn.id
+                  ? 'border-blue-400 bg-blue-50'
+                  : 'border-gray-200 bg-white hover:border-gray-300'
+              }`}
+            >
+              <div className={`p-2 rounded-lg ${selectedConnId === conn.id ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                <Link2 className={`w-4 h-4 ${selectedConnId === conn.id ? 'text-blue-600' : 'text-gray-500'}`} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className={`font-semibold text-sm ${selectedConnId === conn.id ? 'text-blue-800' : 'text-gray-900'}`}>
+                  {conn.name}
+                </p>
+                <p className="text-xs text-gray-400 mt-0.5 truncate">{conn.base_url} · {conn.email}</p>
+              </div>
+              {selectedConnId === conn.id && (
+                <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center shrink-0">
+                  <div className="w-2 h-2 rounded-full bg-white" />
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+
+        <button
+          onClick={handleAddNew}
+          className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors mb-6"
+        >
+          <Plus className="w-4 h-4" />
+          {t('wizard.addNewConn')}
+        </button>
+
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={() => setStep('source')} className="gap-1.5">
+            <ArrowLeft className="w-4 h-4" /> {t('common.back')}
+          </Button>
+          <Button onClick={handleContinue} disabled={!selectedConnId} className="flex-1 gap-2 h-11">
+            {t('common.continue')} <ArrowRight className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   // ── Step: Connect ─────────────────────────────────────────────────────────
   if (step === 'connect') {
     const canConnect = Boolean(connName && connBaseUrl && connEmail && connApiToken)
@@ -197,6 +273,8 @@ export default function ImportPage() {
           api_token: connApiToken,
         }) as SourceConnection
         setConnection(conn)
+        setAvailableConns((prev) => [...prev, conn])
+        setSelectedConnId(conn.id)
         setStep('fetch')
       } catch (e) {
         setErrorMsg(e instanceof Error ? e.message : 'Connection failed')
@@ -243,7 +321,7 @@ export default function ImportPage() {
           </div>
         </div>
         <div className="flex gap-3 mt-6">
-          <Button variant="outline" onClick={() => setStep('source')} className="gap-1.5">
+          <Button variant="outline" onClick={() => setStep(hadConnections ? 'pick-connection' : 'source')} className="gap-1.5">
             <ArrowLeft className="w-4 h-4" /> {t('common.back')}
           </Button>
           <Button onClick={handleConnect} disabled={!canConnect || connecting} className="flex-1 gap-2 h-11">
