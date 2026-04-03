@@ -409,13 +409,10 @@ export function Sidebar() {
           <Settings className="w-4 h-4 shrink-0" />
           {t('nav.settings')}
         </NavLink>
-        <button
-          onClick={() => navigate('/settings', { state: { section: 'about' } })}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors w-full text-left"
-        >
+        <NavLink to="/about" className={navClass}>
           <Info className="w-4 h-4 shrink-0" />
           {t('sidebar.about')}
-        </button>
+        </NavLink>
         <button
           onClick={() => {
             const body = `**Version:** v${appVersion}\n**Platform:** ${navigator.platform}\n\n### Describe the bug\n\n### Steps to reproduce\n1. \n2. \n\n### Expected behavior\n\n### Actual behavior\n`
@@ -427,7 +424,7 @@ export function Sidebar() {
           {t('sidebar.reportBug')}
         </button>
         <button
-          onClick={() => navigate('/settings', { state: { section: 'about' } })}
+          onClick={() => navigate('/about')}
           className="text-[10px] text-gray-300 hover:text-gray-500 px-3 pt-1 text-left transition-colors"
         >
           v{appVersion}
