@@ -11,6 +11,7 @@ makedepends=('binutils')
 optdepends=('libappindicator-gtk3: alternative tray icon support')
 provides=('cylenivo')
 conflicts=('cylenivo')
+options=('!debug' '!strip')
 
 source_x86_64=("${pkgname}-${pkgver}.deb::https://github.com/nobsagile/cylenivo/releases/download/v${pkgver}/Cylenivo_${pkgver}_amd64.deb")
 sha256sums_x86_64=('43fad4885191a200d4880798e55149a95f863788b0fed6fd5f0970ec767c3e27')
