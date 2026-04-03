@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Calendar, Ticket } from 'lucide-react'
+import { ArrowLeft, Calendar, Ticket, Info } from 'lucide-react'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { api } from '@/services/api'
 import type { ImportSession, ProjectConfig } from '@/types'
 import { Button } from '@/components/ui/button'
@@ -102,9 +103,19 @@ export default function DatasetEditPage() {
 
       <div className="space-y-5">
         <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-            {t('dataset.name')}
-          </label>
+          <div className="flex items-center gap-1 mb-1.5">
+            <span className="text-xs font-semibold text-gray-600">{t('dataset.name')}</span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                  <Info className="w-3.5 h-3.5" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64">
+                <p className="text-xs text-gray-600">{t('help.datasetName')}</p>
+              </PopoverContent>
+            </Popover>
+          </div>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -115,9 +126,19 @@ export default function DatasetEditPage() {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-            {t('dataset.config')}
-          </label>
+          <div className="flex items-center gap-1 mb-1.5">
+            <span className="text-xs font-semibold text-gray-600">{t('dataset.config')}</span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                  <Info className="w-3.5 h-3.5" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64">
+                <p className="text-xs text-gray-600">{t('help.datasetConfig')}</p>
+              </PopoverContent>
+            </Popover>
+          </div>
           <Select value={configId} onValueChange={setConfigId}>
             <SelectTrigger>
               <SelectValue />

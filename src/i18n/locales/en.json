@@ -549,6 +549,8 @@
     "llmBaseUrl": "The URL where the AI service is running. For Ollama, this is usually http://localhost:11434.",
     "llmSystemPrompt": "Instructions that shape how the AI analyzes your data. The default prompt is optimized for flow metrics — only change this if you know what you're doing.",
     "perTicketBreakdown": "Time per status for each of the last 30 completed tickets, sorted by completion date. Shows how individual tickets flowed through your process.",
+    "datasetName": "A friendly name for this dataset shown in the sidebar and dashboard. Defaults to the project key.",
+    "datasetConfig": "The configuration defines which statuses mark cycle time start and end, and how time is measured. Changing this affects all metrics for this dataset.",
     "connName": "A friendly label for this connection — only shown inside Cylenivo.",
     "connBaseUrl": "The root URL of your Jira instance, e.g. https://yourcompany.atlassian.net. Found in your browser's address bar when you open Jira.",
     "connEmail": "The email address you use to log into Jira.",
