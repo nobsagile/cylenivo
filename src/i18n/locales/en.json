@@ -531,6 +531,7 @@
     "projectKey": "The project identifier in your issue tracker (e.g. TN, PROJ). In Jira, it's the prefix before the ticket number.",
     "issueTypes": "Which ticket types to import. Deselect types you don't want in your analysis (e.g. Epics if you only track stories).",
     "maxTickets": "Limits the number of tickets fetched. Start small (50–100) for a quick test, increase for full analysis.",
+    "completedBetween": "Narrows the import to tickets that were completed (reached your cycle end status) within this date range. Leave empty to import all completed tickets.",
     "cycleTimeConfig": "Define which statuses mark the start and end of active work. Cycle time is measured between these two statuses.",
     "leadTimeConfig": "Lead time starts at ticket creation (or a specific status) and ends when the ticket is done. It includes cycle time plus any wait time before work starts.",
     "llmProvider": "Ollama runs locally on your machine (free, private). OpenAI uses the cloud API (requires API key). OpenAI compatible works with any API that follows the OpenAI format.",

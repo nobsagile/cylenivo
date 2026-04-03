@@ -432,7 +432,7 @@ export default function ImportPage() {
         </div>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('import.projectKey')}</label>
+            <ConnFieldLabel label={t('import.projectKey')} helpKey="help.projectKey" />
             <Input
               value={jiraProject}
               onChange={(e) => setJiraProject(e.target.value.toUpperCase())}
@@ -440,7 +440,7 @@ export default function ImportPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('import.issueTypes')}</label>
+            <ConnFieldLabel label={t('import.issueTypes')} helpKey="help.issueTypes" />
             <div className="flex flex-wrap gap-2">
               {ISSUE_TYPE_OPTIONS.map((type) => (
                 <button
@@ -457,22 +457,44 @@ export default function ImportPage() {
               ))}
             </div>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-700">
-            <span>{t('import.maxTickets')}</span>
-            <Input
-              type="number"
-              value={jiraLimit}
-              onChange={(e) => setJiraLimit(Number(e.target.value))}
-              className="w-20 h-8 text-sm"
-              min={1}
-              max={500}
-            />
+          <div>
+            <div className="flex items-center gap-1 mb-1.5">
+              <span className="text-sm font-medium text-gray-700">{t('import.maxTickets')}</span>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64">
+                  <p className="text-xs text-gray-600">{t('help.maxTickets')}</p>
+                </PopoverContent>
+              </Popover>
+              <Input
+                type="number"
+                value={jiraLimit}
+                onChange={(e) => setJiraLimit(Number(e.target.value))}
+                className="w-20 h-8 text-sm ml-1"
+                min={1}
+                max={500}
+              />
+            </div>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-1.5">
-              {t('import.completedBetween')}
-              <span className="text-gray-400 font-normal ml-1">{t('import.completedBetweenHint')}</span>
-            </p>
+            <div className="flex items-center gap-1 mb-1.5">
+              <span className="text-sm font-medium text-gray-700">{t('import.completedBetween')}</span>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64">
+                  <p className="text-xs text-gray-600">{t('help.completedBetween')}</p>
+                </PopoverContent>
+              </Popover>
+              <span className="text-gray-400 text-sm font-normal">{t('import.completedBetweenHint')}</span>
+            </div>
             <div className="flex items-center gap-2">
               <DatePicker value={resolvedFrom} onChange={setResolvedFrom} placeholder={t('common.from')} />
               <span className="text-gray-400 text-sm">{t('common.to')}</span>
