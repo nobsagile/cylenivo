@@ -391,7 +391,6 @@ export default function SettingsPage() {
                   <>
                     <IconBtn
                       onClick={() => setRefreshConn(conn)}
-                      disabled={!conn.project_key}
                       title={t('refresh.confirm')}
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
@@ -425,10 +424,7 @@ export default function SettingsPage() {
                   {testResults[conn.id] === 'ok' && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />}
                   {testResults[conn.id] === 'error' && <XCircle className="w-3.5 h-3.5 text-red-400" />}
                 </div>
-                <p className="text-xs text-gray-400 mt-1">
-                  {conn.project_key && <span className="font-medium text-gray-500">{conn.project_key} · </span>}
-                  {conn.base_url} · {conn.email}
-                </p>
+                <p className="text-xs text-gray-400 mt-1">{conn.base_url} · {conn.email}</p>
                 {connDatasets[conn.id]?.length > 0 && (
                   <div className="mt-2 pt-2 border-t border-gray-100 space-y-0.5">
                     {connDatasets[conn.id].slice(0, 3).map((ds) => (

@@ -5,7 +5,6 @@ import { api } from '@/services/api'
 import type { SourceConnection } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { DatePicker } from '@/components/ui/date-picker'
 import {
   Dialog,
   DialogContent,
@@ -23,8 +22,6 @@ interface Props {
 
 type TestState = 'idle' | 'loading' | 'ok' | 'error'
 
-const ISSUE_TYPE_OPTIONS = ['Story', 'Task', 'Bug', 'Epic']
-
 export default function ConnectionDialog({ open, connection, onClose, onSaved }: Props) {
   const { t } = useTranslation()
   const isEdit = Boolean(connection)
@@ -32,24 +29,13 @@ export default function ConnectionDialog({ open, connection, onClose, onSaved }:
   const [baseUrl, setBaseUrl] = useState(connection?.base_url ?? '')
   const [email, setEmail] = useState(connection?.email ?? '')
   const [apiToken, setApiToken] = useState('')
-  const [projectKey, setProjectKey] = useState(connection?.project_key ?? '')
-  const [issueTypes, setIssueTypes] = useState<string[]>(connection?.issue_types ?? [])
-  const [resolvedFrom, setResolvedFrom] = useState(connection?.resolved_from ?? '')
-  const [resolvedTo, setResolvedTo] = useState(connection?.resolved_to ?? '')
   const [testState, setTestState] = useState<TestState>('idle')
   const [testMsg, setTestMsg] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
-  // Track connection created during test so Save just closes
   const [pendingId, setPendingId] = useState<string | null>(connection?.id ?? null)
 
   const canSave = Boolean(name && baseUrl && email && (apiToken || isEdit))
-
-  function toggleIssueType(type: string) {
-    setIssueTypes((prev) =>
-      prev.includes(type) ? prev.filter((x) => x !== type) : [...prev, type]
-    )
-  }
 
   function handleOpenChange(isOpen: boolean) {
     if (!isOpen) onClose()
@@ -61,10 +47,6 @@ export default function ConnectionDialog({ open, connection, onClose, onSaved }:
       source_type: 'jira' as const,
       base_url: baseUrl,
       email,
-      project_key: projectKey || undefined,
-      issue_types: issueTypes.length > 0 ? issueTypes : undefined,
-      resolved_from: resolvedFrom || undefined,
-      resolved_to: resolvedTo || undefined,
     }
     if (pendingId) {
       // Already exists — update
@@ -165,53 +147,6 @@ export default function ConnectionDialog({ open, connection, onClose, onSaved }:
                 {t('connection.atlassianTokens')} <ExternalLink className="w-3 h-3" />
               </a>
             </p>
-          </div>
-
-          {/* ── Default Import Settings ──────────────────────────────────── */}
-          <div className="border-t pt-4 mt-4">
-            <p className="text-sm font-medium text-gray-700 mb-0.5">{t('connection.defaultSettings')}</p>
-            <p className="text-xs text-gray-400 mb-3">{t('connection.defaultSettingsHint')}</p>
-
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">{t('connection.projectKey')}</label>
-                <Input
-                  value={projectKey}
-                  onChange={(e) => setProjectKey(e.target.value.toUpperCase())}
-                  placeholder={t('connection.projectKeyPlaceholder')}
-                  className="h-8 text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">{t('connection.issueTypes')}</label>
-                <div className="flex flex-wrap gap-1.5">
-                  {ISSUE_TYPE_OPTIONS.map((type) => (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => toggleIssueType(type)}
-                      className={`px-2.5 py-1 text-xs rounded-lg border font-medium transition-colors ${
-                        issueTypes.includes(type)
-                          ? 'bg-blue-50 border-blue-300 text-blue-700'
-                          : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300'
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">{t('connection.resolvedBetween')}</label>
-                <div className="flex items-center gap-2">
-                  <DatePicker value={resolvedFrom} onChange={setResolvedFrom} placeholder={t('common.from')} />
-                  <span className="text-gray-400 text-xs">{t('common.to')}</span>
-                  <DatePicker value={resolvedTo} onChange={setResolvedTo} placeholder={t('common.to')} />
-                </div>
-              </div>
-            </div>
           </div>
 
           {testState === 'ok' && (

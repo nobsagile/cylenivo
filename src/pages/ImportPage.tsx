@@ -134,10 +134,6 @@ export default function ImportPage() {
       if (conns.length > 0) {
         const conn = conns[0]
         setConnection(conn)
-        setJiraProject(conn.project_key ?? '')
-        setJiraIssueTypes(conn.issue_types?.length ? conn.issue_types : ['Story', 'Task', 'Bug'])
-        setResolvedFrom(conn.resolved_from ?? '')
-        setResolvedTo(conn.resolved_to ?? '')
         setHadConnections(true)
         setStep('fetch')
       } else {
