@@ -62,3 +62,9 @@ body {
   font-family: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
   margin: 0;
 }
+
+/* Remove focus ring from icon-only info popover trigger buttons */
+button:has(> .lucide-info):focus-visible {
+  outline: none;
+  box-shadow: none;
+}
