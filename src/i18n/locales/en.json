@@ -42,6 +42,7 @@
     "fetchData": "Fetch data",
     "measureTitle": "Set up measurement",
     "measureHint": "Tell us which statuses mark the start and end of active work.",
+    "measureLeadTimeNote": "Lead time will be measured from ticket creation to the end status. You can customize this later in Settings → Configurations.",
     "measureStartQ": "Which status means work has started?",
     "measureEndQ": "Which status means it's done?",
     "measureModeQ": "How should we measure time?",

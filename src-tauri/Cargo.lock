@@ -583,7 +583,7 @@ dependencies = [
 
 [[package]]
 name = "cylenivo"
-version = "0.54.16"
+version = "0.54.17"
 dependencies = [
  "log",
  "serde",

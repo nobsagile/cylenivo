@@ -665,6 +665,9 @@ export default function ImportPage() {
           </div>
         </div>
 
+        {/* Lead time note */}
+        <p className="text-xs text-gray-400 -mt-1">{t('wizard.measureLeadTimeNote')}</p>
+
         {/* Measurement mode */}
         <div>
           <p className="text-sm font-semibold text-gray-800 mb-3">{t('wizard.measureModeQ')}</p>
