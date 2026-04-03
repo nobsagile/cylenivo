@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import {
   Plus, Pencil, Trash2, ArrowRight, Settings2, Copy, Zap,
   Database, FileJson, Calendar, Ticket, Link2, CheckCircle2, XCircle, Loader2,
-  X, Bot, RefreshCw, Puzzle, Globe, LayoutDashboard, Info, ExternalLink,
+  X, Bot, RefreshCw, Puzzle, Globe, LayoutDashboard, ExternalLink,
 } from 'lucide-react'
 import { open as tauriOpen } from '@tauri-apps/plugin-shell'
 import { getVersion } from '@tauri-apps/api/app'
@@ -670,7 +670,6 @@ export default function SettingsPage() {
             <NavItem id="ai" active={section === 'ai'} icon={Bot} label={t('settings.tabAi')} dot={llmConfigExists} onClick={setSection} />
           </NavGroup>
           <NavGroup label={t('settings.navGeneral')}>
-            <NavItem id="about" active={section === 'about'} icon={Info} label={t('settings.navAbout')} onClick={setSection} />
             <NavItem id="language" active={section === 'language'} icon={Globe} label={t('settings.tabLanguage')} soon onClick={setSection} />
             <NavItem id="data-management" active={section === 'data-management'} icon={Trash2} label={t('settings.dataManagement')} onClick={setSection} />
           </NavGroup>
