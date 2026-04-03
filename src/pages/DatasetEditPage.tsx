@@ -52,13 +52,16 @@ export default function DatasetEditPage() {
   if (loading) {
     return (
       <div className="max-w-lg">
-        <button
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
           onClick={() => navigate('/settings', { state: { section: 'datasets' } })}
-          className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 mb-6 transition-colors"
+          className="gap-1.5 text-gray-500 mb-6 -ml-2"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           {t('dataset.backToSettings')}
-        </button>
+        </Button>
         <div className="text-sm text-gray-400">{t('common.loading')}</div>
       </div>
     )
@@ -68,13 +71,16 @@ export default function DatasetEditPage() {
 
   return (
     <div className="max-w-lg">
-      <button
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
         onClick={() => navigate('/settings', { state: { section: 'datasets' } })}
-        className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 mb-6 transition-colors"
+        className="gap-1.5 text-gray-500 mb-6 -ml-2"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         {t('dataset.backToSettings')}
-      </button>
+      </Button>
 
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('dataset.editTitle')}</h2>
@@ -127,7 +133,11 @@ export default function DatasetEditPage() {
           <p className="text-[11px] text-gray-400 mt-1">{t('dataset.configHint')}</p>
         </div>
 
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        {error && (
+          <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+            {error}
+          </div>
+        )}
 
         <div className="flex gap-2 pt-2">
           <Button onClick={handleSave} disabled={saving}>

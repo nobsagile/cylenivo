@@ -86,12 +86,15 @@ function SortableStatus({
       {isLeadEnd && (
         <span className="text-[10px] font-semibold uppercase tracking-wide text-violet-600 opacity-70">lead end</span>
       )}
-      <button
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
         onClick={onRemove}
-        className="text-gray-300 hover:text-red-400 transition-colors shrink-0"
+        className="h-6 w-6 p-0 text-gray-300 hover:text-red-400 shrink-0"
       >
         <X className="w-3.5 h-3.5" />
-      </button>
+      </Button>
     </div>
   )
 }
@@ -213,13 +216,16 @@ export default function ConfigFormPage() {
   if (loading) {
     return (
       <div className="max-w-lg">
-        <button
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
           onClick={() => navigate('/settings')}
-          className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 mb-6 transition-colors"
+          className="gap-1.5 text-gray-500 mb-6 -ml-2"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           {t('config.backToSettings')}
-        </button>
+        </Button>
         <div className="text-sm text-gray-400">Loading…</div>
       </div>
     )
@@ -227,13 +233,16 @@ export default function ConfigFormPage() {
 
   return (
     <div className="max-w-lg">
-      <button
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
         onClick={() => navigate('/settings')}
-        className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 mb-6 transition-colors"
+        className="gap-1.5 text-gray-500 mb-6 -ml-2"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         {t('config.backToSettings')}
-      </button>
+      </Button>
 
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
@@ -484,9 +493,9 @@ export default function ConfigFormPage() {
         </div>
 
         {formError && (
-          <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
             {formError}
-          </p>
+          </div>
         )}
 
         <div className="flex gap-2 pt-1">
