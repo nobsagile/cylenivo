@@ -281,6 +281,14 @@ export default function SettingsPage() {
                 icon={FileJson}
                 actions={
                   <>
+                    {imp.connection_id && connections.find((c) => c.id === imp.connection_id) && (
+                      <IconBtn
+                        onClick={() => setRefreshConn(connections.find((c) => c.id === imp.connection_id)!)}
+                        title={t('refresh.confirm')}
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                      </IconBtn>
+                    )}
                     <IconBtn onClick={() => navigate(`/settings/datasets/${imp.id}`)} title={t('common.edit')}>
                       <Pencil className="w-3.5 h-3.5" />
                     </IconBtn>
@@ -366,12 +374,6 @@ export default function SettingsPage() {
                 icon={Link2}
                 actions={
                   <>
-                    <IconBtn
-                      onClick={() => setRefreshConn(conn)}
-                      title={t('refresh.confirm')}
-                    >
-                      <RefreshCw className="w-3.5 h-3.5" />
-                    </IconBtn>
                     <IconBtn
                       onClick={() => handleTestConnection(conn.id)}
                       disabled={testingId === conn.id}
