@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import {
   Plus, Pencil, Trash2, ArrowRight, Settings2, Copy, Zap,
   Database, FileJson, Calendar, Ticket, Link2, CheckCircle2, XCircle, Loader2,
-  X, Bot, RefreshCw, Puzzle, Globe, ChevronDown, LayoutDashboard,
+  X, Bot, RefreshCw, Puzzle, Globe, LayoutDashboard,
 } from 'lucide-react'
 import { api } from '@/services/api'
 import type { ProjectConfig, ImportSession, SourceConnection } from '@/types'
@@ -16,8 +16,6 @@ import { notifyImportsChanged } from '@/hooks/useImports'
 import { EmptyState, SectionHeader, Card, IconBtn, NavGroup, NavItem, type Section, type PendingDelete } from './settings/shared'
 import { AISection } from './settings/AISection'
 
-type ExpertSubSection = 'data-sources' | 'configs' | 'datasets' | null
-
 function resolveInitialSection(state: unknown): Section {
   const s = state as { tab?: string; section?: string } | null
   const raw = s?.section ?? s?.tab ?? 'overview'
@@ -25,27 +23,6 @@ function resolveInitialSection(state: unknown): Section {
   return valid.includes(raw as Section) ? (raw as Section) : 'overview'
 }
 
-
-// ── Expert accordion sub-section ─────────────────────────────────────────────
-function ExpertSection({ label, open, onToggle, children }: {
-  label: string
-  open: boolean
-  onToggle: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <div className="border-b border-gray-100 last:border-b-0">
-      <button
-        onClick={onToggle}
-        className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors text-left"
-      >
-        <span className="text-sm font-medium text-gray-600">{label}</span>
-        <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
-      </button>
-      {open && <div className="px-4 pb-5 pt-1">{children}</div>}
-    </div>
-  )
-}
 
 // ── Main component ────────────────────────────────────────────────────────────
 export default function SettingsPage() {
@@ -443,59 +420,52 @@ export default function SettingsPage() {
   }
 
   function renderOverview() {
-    const hasSetup = connections.length > 0 || configs.length > 0 || imports.length > 0
-
-    function toggleExpertSection(id: ExpertSubSection) {
-      setExpertSection((prev) => prev === id ? null : id)
-    }
+    const quickLinks = [
+      { id: 'data-sources' as Section, icon: Link2, label: t('settings.navDataSources'), desc: t('settings.dataSourcesDesc'), count: connections.length },
+      { id: 'configs' as Section, icon: Settings2, label: t('settings.tabConfigs'), desc: t('settings.configsDesc'), count: configs.length },
+      { id: 'datasets' as Section, icon: Database, label: t('settings.tabDatasets'), desc: t('settings.datasetsDesc'), count: imports.length },
+    ]
 
     return (
       <>
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-base font-semibold text-gray-900">{t('settings.overview')}</h2>
-            <p className="text-xs text-gray-400 mt-0.5">{t('settings.overviewDesc')}</p>
+        {/* Hero card */}
+        <div className="rounded-xl border-2 border-dashed border-blue-200 bg-blue-50/50 p-8 text-center mb-6">
+          <div className="flex items-center justify-center mb-4">
+            <div className="p-3 rounded-xl bg-white border border-blue-200 shadow-sm">
+              <Plus className="w-6 h-6 text-blue-500" />
+            </div>
           </div>
-          <Button onClick={() => navigate('/import')} size="sm" className="gap-1.5 shrink-0">
+          <h3 className="text-base font-semibold text-gray-900 mb-1.5">{t('settings.addNewData')}</h3>
+          <p className="text-sm text-gray-500 max-w-xs mx-auto mb-5 leading-relaxed">{t('settings.addNewDataDesc')}</p>
+          <Button onClick={() => navigate('/import')} className="gap-1.5">
             <Plus className="w-3.5 h-3.5" />
             {t('settings.addNewData')}
           </Button>
         </div>
 
-        {/* Your setup summary */}
-        <div className="rounded-xl border border-gray-200 bg-white p-4 mb-4">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">{t('settings.yourSetup')}</p>
-          {!hasSetup ? (
-            <p className="text-sm text-gray-400">{t('settings.noSetup')}</p>
-          ) : (
-            <div className="space-y-2.5">
-              {connections.length > 0 && (
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span className="font-medium text-gray-700">{t('settings.navDataSources')}</span>
-                  <span className="text-gray-400">{connections.map((c) => c.name).join(', ')}</span>
-                </div>
+        {/* Quick links */}
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-2">{t('settings.manageData')}</p>
+        <div className="space-y-2">
+          {quickLinks.map(({ id, icon: Icon, label, desc, count }) => (
+            <button
+              key={id}
+              onClick={() => setSection(id)}
+              className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 transition-colors text-left"
+            >
+              <div className="p-2 rounded-lg bg-gray-50 border border-gray-100 shrink-0">
+                <Icon className="w-4 h-4 text-gray-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-800">{label}</p>
+                <p className="text-xs text-gray-400 mt-0.5 truncate">{desc}</p>
+              </div>
+              {count > 0 && (
+                <span className="text-[10px] bg-gray-100 text-gray-600 rounded-full px-1.5 py-0.5 font-semibold shrink-0">{count}</span>
               )}
-              {configs.length > 0 && (
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span className="font-medium text-gray-700">{t('settings.tabConfigs')}</span>
-                  <span className="text-gray-400">{configs.map((c) => c.name).join(', ')}</span>
-                </div>
-              )}
-              {imports.length > 0 && (
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span className="font-medium text-gray-700">{t('settings.tabDatasets')}</span>
-                  <span className="text-gray-400">
-                    {imports.length} {imports.length === 1 ? 'dataset' : 'datasets'}
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
+              <ArrowRight className="w-3.5 h-3.5 text-gray-300 shrink-0" />
+            </button>
+          ))}
         </div>
-
       </>
     )
   }
@@ -619,9 +589,9 @@ export default function SettingsPage() {
       <div className="flex gap-8">
         {/* Left nav */}
         <nav className="w-44 shrink-0">
-          <NavGroup label={t('settings.overview')}>
+          <div className="mb-2">
             <NavItem id="overview" active={section === 'overview'} icon={LayoutDashboard} label={t('settings.overview')} onClick={setSection} />
-          </NavGroup>
+          </div>
           <NavGroup label={t('settings.manageData')}>
             <NavItem id="data-sources" active={section === 'data-sources'} icon={Link2} label={t('settings.navDataSources')} count={connections.length} onClick={setSection} />
             <NavItem id="configs" active={section === 'configs'} icon={Settings2} label={t('settings.tabConfigs')} count={configs.length} onClick={setSection} />
