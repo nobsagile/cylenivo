@@ -6,9 +6,9 @@
   <!-- CCM19 Consent Manager -->
   <script src="https://cloud.ccm19.de/app.js?apiKey=38ae5d7d031a986429321a2604cb6db7faa7760590010937&amp;domain=69cfa736af099e7822049bb2" referrerpolicy="origin"></script>
   <title>Cylenivo — Flow metrics for software teams</title>
-  <meta name="description" content="Understand how your team actually works. Cycle Time, Lead Time, Throughput and delivery forecasts — local, private, no accounts." />
+  <meta name="description" content="Jira's built-in reports don't give you cycle time or delivery forecasts. Cylenivo does — free, open source, runs entirely on your machine." />
   <meta property="og:title" content="Cylenivo — Flow metrics for software teams" />
-  <meta property="og:description" content="Understand how your team actually works. Local, private, no accounts." />
+  <meta property="og:description" content="Jira's reports don't tell you how fast your team ships. Cylenivo does — cycle time, throughput, forecasts. Free &amp; local." />
   <meta property="og:image" content="https://cylenivo.org/assets/screenshot.png" />
   <link rel="icon" type="image/png" href="assets/logo.png" />
   <style>
@@ -93,10 +93,42 @@
     .other-platforms a { font-size: .8125rem; color: var(--gray-500); text-decoration: none; padding: .25rem .5rem; border-radius: 6px; transition: background .15s, color .15s; }
     .other-platforms a:hover { background: var(--gray-100); color: var(--gray-900); }
 
+    /* INSTALL CALLOUT */
+    .install-callout {
+      max-width: 760px; margin: 2rem auto 0; padding: 0 2rem;
+    }
+    .install-inner {
+      background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 1.25rem 1.5rem;
+    }
+    .install-header {
+      display: flex; align-items: center; gap: .5rem;
+      font-size: .875rem; font-weight: 600; color: #92400e; margin-bottom: .875rem;
+    }
+    .install-header svg { flex-shrink: 0; }
+    .install-cards { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    .install-card { background: white; border: 1px solid #fde68a; border-radius: 8px; padding: .875rem; }
+    .install-card strong { display: block; font-size: .8125rem; color: #111827; margin-bottom: .3rem; }
+    .install-card p { font-size: .8125rem; color: #6b7280; line-height: 1.6; }
+    .install-card code { background: #f3f4f6; padding: .1em .3em; border-radius: 4px; }
+    @media (max-width: 640px) {
+      .install-cards { grid-template-columns: 1fr; }
+      .install-callout { padding: 0 1rem; }
+    }
+
     /* SCREENSHOT */
     .screenshot-wrap {
-      max-width: 1000px; margin: 3rem auto 0; padding: 0 2rem;
+      max-width: 1000px; margin: 2.5rem auto 0; padding: 0 2rem;
     }
+    .gallery-tabs {
+      display: flex; gap: .375rem; justify-content: center; margin-bottom: 1rem;
+    }
+    .gallery-tab {
+      padding: .375rem .875rem; border-radius: 999px; font-size: .8125rem; font-weight: 500;
+      border: 1px solid var(--gray-300); background: white; color: var(--gray-500);
+      cursor: pointer; transition: all .15s;
+    }
+    .gallery-tab:hover { color: var(--gray-900); border-color: var(--gray-500); }
+    .gallery-tab.active { background: var(--violet); color: white; border-color: var(--violet); }
     .screenshot-frame {
       border-radius: 14px; overflow: hidden;
       box-shadow: var(--shadow-lg), 0 0 0 1px rgba(0,0,0,.07);
@@ -203,10 +235,10 @@
 <section class="hero">
   <div class="hero-badge">
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-    Free &amp; local — no accounts
+    Free &amp; open source — runs locally
   </div>
-  <h1>Understand how your team<br /><em>actually works</em></h1>
-  <p>Flow metrics for software teams. See cycle time trends, delivery forecasts, and what's slowing you down — all on your own machine.</p>
+  <h1><em>Jira's reports</em> don't tell you<br />how fast your team ships.</h1>
+  <p>Cylenivo fills the gap. Cycle time, lead time, throughput, and delivery forecasts — pulled straight from your Jira data. No cloud, no accounts, no subscription.</p>
 
   <div id="download" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:.5rem">
     <div class="hero-actions">
@@ -221,10 +253,35 @@
   </div>
 </section>
 
+<!-- INSTALL CALLOUT -->
+<div class="install-callout">
+  <div class="install-inner">
+    <div class="install-header">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      First install: your OS will show a security warning — here's how to proceed
+    </div>
+    <div class="install-cards">
+      <div class="install-card">
+        <strong>macOS</strong>
+        <p>Apple requires paid notarization for indie apps. Open <strong>System Settings → Privacy &amp; Security</strong> and click <strong>"Open Anyway"</strong> after the first launch attempt. Or right-click the <code>.dmg</code> → Open.</p>
+      </div>
+      <div class="install-card">
+        <strong>Windows</strong>
+        <p>SmartScreen flags unsigned apps. When the blue warning appears, click <strong>"More info"</strong> then <strong>"Run anyway"</strong>. This is a one-time step.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- SCREENSHOT -->
 <div class="screenshot-wrap">
+  <div class="gallery-tabs" role="tablist">
+    <button class="gallery-tab active" role="tab" aria-selected="true" data-src="assets/screenshot.png" data-alt="Cylenivo dashboard — cycle time, lead time, throughput">Dashboard</button>
+    <button class="gallery-tab" role="tab" aria-selected="false" data-src="assets/screenshot-forecast.png" data-alt="Cylenivo delivery forecast — Monte Carlo simulation">Forecasts</button>
+    <button class="gallery-tab" role="tab" aria-selected="false" data-src="assets/screenshot-tickets.png" data-alt="Cylenivo ticket explorer — filter and drill down">Tickets</button>
+  </div>
   <div class="screenshot-frame">
-    <img src="assets/screenshot.png" alt="Cylenivo dashboard showing cycle time, lead time, throughput and delivery forecast" />
+    <img id="gallery-img" src="assets/screenshot.png" alt="Cylenivo dashboard — cycle time, lead time, throughput" />
   </div>
 </div>
 
@@ -315,26 +372,6 @@
       <p>Cylenivo is a desktop app. All your ticket data is stored locally in a SQLite database on your computer. No cloud, no accounts, no telemetry. Your team's work is yours.</p>
     </div>
   </div>
-</div>
-
-<!-- INSTALL NOTE -->
-<div style="max-width:720px;margin:3rem auto 2rem;padding:0 2rem">
-  <details style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:1rem 1.25rem;cursor:pointer">
-    <summary style="font-size:.9375rem;font-weight:600;color:#374151;list-style:none;display:flex;align-items:center;gap:.5rem">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      macOS or Windows showing a security warning?
-    </summary>
-    <div style="margin-top:.875rem;display:grid;gap:.75rem;grid-template-columns:1fr 1fr">
-      <div style="background:white;border:1px solid #e5e7eb;border-radius:8px;padding:.875rem">
-        <p style="font-size:.8125rem;font-weight:700;color:#111827;margin-bottom:.375rem">macOS</p>
-        <p style="font-size:.8125rem;color:#6b7280;line-height:1.6">Cylenivo is not notarized. Right-click the <code style="background:#f3f4f6;padding:.1em .3em;border-radius:4px">.dmg</code> → Open, then right-click the app → Open. Or go to <strong>System Settings → Privacy &amp; Security</strong> and click <strong>"Open Anyway"</strong>.</p>
-      </div>
-      <div style="background:white;border:1px solid #e5e7eb;border-radius:8px;padding:.875rem">
-        <p style="font-size:.8125rem;font-weight:700;color:#111827;margin-bottom:.375rem">Windows</p>
-        <p style="font-size:.8125rem;color:#6b7280;line-height:1.6">SmartScreen may appear because the app is not code-signed. Click <strong>"More info"</strong> then <strong>"Run anyway"</strong> to proceed.</p>
-      </div>
-    </div>
-  </details>
 </div>
 
 <!-- CTA -->
@@ -443,6 +480,18 @@
   }
 
   initDownload()
+
+  // Screenshot gallery
+  document.querySelectorAll('.gallery-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.gallery-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false') })
+      tab.classList.add('active')
+      tab.setAttribute('aria-selected', 'true')
+      const img = document.getElementById('gallery-img')
+      img.src = tab.dataset.src
+      img.alt = tab.dataset.alt
+    })
+  })
 </script>
 <!-- Matomo -->
 <script>
