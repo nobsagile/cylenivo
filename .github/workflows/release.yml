@@ -112,6 +112,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Wait for .deb asset to be available
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"
+          DEB_URL="https://github.com/nobsagile/cylenivo/releases/download/${{ github.ref_name }}/Cylenivo_${VERSION}_amd64.deb"
+          for i in $(seq 1 12); do
+            if curl -fsL --head "$DEB_URL" > /dev/null 2>&1; then
+              echo "Asset available"; break
+            fi
+            echo "Waiting... ($i/12)"; sleep 10
+          done
+
       - name: Build Arch package
         run: |
           VERSION="${{ github.ref_name }}"
