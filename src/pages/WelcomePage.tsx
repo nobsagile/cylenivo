@@ -30,15 +30,16 @@ export default function WelcomePage() {
         const onlyDemos = imports.length > 0 && imports.every(i => i.config_name?.startsWith('Demo:'))
         const seen = !!localStorage.getItem(ONBOARDING_KEY)
 
-        if (imports.length > 0 && onlyDemos && !seen) {
-          // First launch with demo data → show onboarding
-          // Sort: Improving first, Complex second
-          const sorted = [...imports].sort((a, b) => {
-            const aImproving = a.config_name?.includes('Improving') ? 0 : 1
-            const bImproving = b.config_name?.includes('Improving') ? 0 : 1
-            return aImproving - bImproving
-          })
-          setDemoImports(sorted)
+        if (!seen) {
+          // New user (or after complete reset) → always show welcome page
+          if (imports.length > 0 && onlyDemos) {
+            const sorted = [...imports].sort((a, b) => {
+              const aImproving = a.config_name?.includes('Improving') ? 0 : 1
+              const bImproving = b.config_name?.includes('Improving') ? 0 : 1
+              return aImproving - bImproving
+            })
+            setDemoImports(sorted)
+          }
           setChecking(false)
         } else if (imports.length > 0) {
           navigate(`/projects/${imports[0].id}`, { replace: true })
