@@ -311,6 +311,8 @@
     "yourSetup": "Your setup",
     "expertSettings": "Expert Settings",
     "noSetup": "No data imported yet. Add new data to get started.",
+    "manageData": "Manage Data Sources",
+    "manageDataDesc": "View and edit your data sources, configurations, and datasets.",
     "dataManagement": "Data Management",
     "dataManagementDesc": "Permanently delete all project data or restore the built-in demo datasets.",
     "deleteEverything": "Delete everything",

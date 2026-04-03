@@ -21,7 +21,7 @@ type ExpertSubSection = 'data-sources' | 'configs' | 'datasets' | null
 function resolveInitialSection(state: unknown): Section {
   const s = state as { tab?: string; section?: string } | null
   const raw = s?.section ?? s?.tab ?? 'overview'
-  const valid: Section[] = ['overview', 'plugins', 'ai', 'language', 'data-management']
+  const valid: Section[] = ['overview', 'manage-data', 'plugins', 'ai', 'language', 'data-management']
   return valid.includes(raw as Section) ? (raw as Section) : 'overview'
 }
 
@@ -29,7 +29,7 @@ function resolveInitialExpert(state: unknown): ExpertSubSection {
   const s = state as { section?: string } | null
   const raw = s?.section
   if (raw === 'configs' || raw === 'datasets' || raw === 'data-sources') return raw
-  return null
+  return 'data-sources'
 }
 
 // ── Expert accordion sub-section ─────────────────────────────────────────────
@@ -509,41 +509,40 @@ export default function SettingsPage() {
           )}
         </div>
 
-        {/* Expert Settings accordion */}
-        <div className="rounded-xl border border-gray-200 overflow-hidden">
-          <button
-            onClick={() => setExpertOpen((o) => !o)}
-            className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
-          >
-            <span className="text-sm font-semibold text-gray-700">{t('settings.expertSettings')}</span>
-            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${expertOpen ? 'rotate-180' : ''}`} />
-          </button>
+      </>
+    )
+  }
 
-          {expertOpen && (
-            <div className="border-t border-gray-200">
-              <ExpertSection
-                label={t('settings.navDataSources')}
-                open={expertSection === 'data-sources'}
-                onToggle={() => toggleExpertSection('data-sources')}
-              >
-                {renderDataSources()}
-              </ExpertSection>
-              <ExpertSection
-                label={t('settings.tabConfigs')}
-                open={expertSection === 'configs'}
-                onToggle={() => toggleExpertSection('configs')}
-              >
-                {renderConfigs()}
-              </ExpertSection>
-              <ExpertSection
-                label={t('settings.tabDatasets')}
-                open={expertSection === 'datasets'}
-                onToggle={() => toggleExpertSection('datasets')}
-              >
-                {renderDatasets()}
-              </ExpertSection>
-            </div>
-          )}
+  function renderManageData() {
+    function toggleExpertSection(id: ExpertSubSection) {
+      setExpertSection((prev) => prev === id ? null : id)
+    }
+
+    return (
+      <>
+        <SectionHeader title={t('settings.manageData')} desc={t('settings.manageDataDesc')} />
+        <div className="rounded-xl border border-gray-200 overflow-hidden">
+          <ExpertSection
+            label={t('settings.navDataSources')}
+            open={expertSection === 'data-sources'}
+            onToggle={() => toggleExpertSection('data-sources')}
+          >
+            {renderDataSources()}
+          </ExpertSection>
+          <ExpertSection
+            label={t('settings.tabConfigs')}
+            open={expertSection === 'configs'}
+            onToggle={() => toggleExpertSection('configs')}
+          >
+            {renderConfigs()}
+          </ExpertSection>
+          <ExpertSection
+            label={t('settings.tabDatasets')}
+            open={expertSection === 'datasets'}
+            onToggle={() => toggleExpertSection('datasets')}
+          >
+            {renderDatasets()}
+          </ExpertSection>
         </div>
       </>
     )
@@ -648,6 +647,7 @@ export default function SettingsPage() {
 
   const contentMap: Record<Section, () => React.ReactNode> = {
     overview: renderOverview,
+    'manage-data': renderManageData,
     plugins: renderPlugins,
     ai: () => <AISection onConfigChange={(cfg) => setLlmConfigExists(!!cfg)} />,
     language: renderLanguage,
@@ -666,6 +666,7 @@ export default function SettingsPage() {
         <nav className="w-44 shrink-0">
           <NavGroup label={t('settings.overview')}>
             <NavItem id="overview" active={section === 'overview'} icon={LayoutDashboard} label={t('settings.overview')} onClick={setSection} />
+            <NavItem id="manage-data" active={section === 'manage-data'} icon={Database} label={t('settings.manageData')} onClick={setSection} />
           </NavGroup>
           <NavGroup label="AI">
             <NavItem id="ai" active={section === 'ai'} icon={Bot} label={t('settings.tabAi')} dot={llmConfigExists} onClick={setSection} />
