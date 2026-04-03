@@ -71,9 +71,9 @@ jobs:
         run: |
           PREV=$(git tag --sort=-version:refname | grep -v "^${{ github.ref_name }}$" | head -1)
           if [ -n "$PREV" ]; then
-            BODY=$(git log --pretty=format:"- %s" "$PREV".."${{ github.ref_name }}" | grep -v "^- ${{ github.ref_name }}")
+            BODY=$(git log --pretty=format:"- %s" "$PREV".."${{ github.ref_name }}" | grep -v "^- ${{ github.ref_name }}" || true)
           else
-            BODY=$(git log --pretty=format:"- %s" | grep -v "^- ${{ github.ref_name }}")
+            BODY=$(git log --pretty=format:"- %s" | grep -v "^- ${{ github.ref_name }}" || true)
           fi
           echo "body<<EOF" >> $GITHUB_OUTPUT
           echo "$BODY" >> $GITHUB_OUTPUT
