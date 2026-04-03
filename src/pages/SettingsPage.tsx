@@ -643,6 +643,7 @@ export default function SettingsPage() {
       </div>
 
       <ConnectionDialog
+        key={editConn?.id ?? 'new'}
         open={dialogOpen}
         connection={editConn}
         onClose={() => setDialogOpen(false)}
