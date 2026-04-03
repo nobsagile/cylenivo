@@ -105,3 +105,34 @@ jobs:
           releaseDraft: false
           prerelease: false
           args: --target ${{ matrix.target }}${{ matrix.os == 'ubuntu-22.04' && ' --bundles deb,rpm' || '' }}
+
+  package-arch:
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Arch package
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#v}"
+          DEB_URL="https://github.com/nobsagile/cylenivo/releases/download/${{ github.ref_name }}/Cylenivo_${VERSION}_amd64.deb"
+
+          docker run --rm -v "$PWD/packaging/aur:/work" archlinux:latest bash -c "
+            pacman -Syu --noconfirm base-devel curl &&
+            useradd -m builder &&
+            chown -R builder /work &&
+            cd /work &&
+            sed -i 's/^pkgver=.*/pkgver=${VERSION}/' PKGBUILD &&
+            SHA256=\$(curl -sL '${DEB_URL}' | sha256sum | awk '{print \$1}') &&
+            sed -i \"s/sha256sums_x86_64=('.*')/sha256sums_x86_64=('\${SHA256}')/\" PKGBUILD &&
+            su -s /bin/bash builder -c 'cd /work && makepkg -s --noconfirm --noprogressbar'
+          "
+
+      - name: Upload Arch package to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: packaging/aur/cylenivo-bin-*.pkg.tar.zst
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
