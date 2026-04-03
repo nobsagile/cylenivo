@@ -259,20 +259,24 @@ export function Sidebar() {
   const [healthOpen, setHealthOpen] = useState(false)
   const [appVersion, setAppVersion] = useState<string>(__APP_VERSION__)
   const [pendingUpdate, setPendingUpdate] = useState<Update | null>(null)
+  const [updateDebug, setUpdateDebug] = useState<string>('idle')
 
   useEffect(() => {
     import('@tauri-apps/api/app').then(({ getVersion }) => getVersion().then(setAppVersion)).catch(() => {})
   }, [])
 
   useEffect(() => {
-    if (!('isTauri' in window)) return
+    setUpdateDebug('effect ran, isTauri=' + String(!!(globalThis as unknown as Record<string, unknown>).isTauri) + ' internals=' + String(!!(window as unknown as Record<string, unknown>).__TAURI_INTERNALS__))
     import('@tauri-apps/plugin-updater')
-      .then(({ check }) =>
-        check()
-          .then((u) => { if (u) setPendingUpdate(u) })
-          .catch(() => {})
-      )
-      .catch(() => {})
+      .then(({ check }) => {
+        setUpdateDebug('check() calling...')
+        return check()
+      })
+      .then((u) => {
+        setUpdateDebug('result=' + JSON.stringify(u))
+        if (u) setPendingUpdate(u)
+      })
+      .catch((e) => setUpdateDebug('error=' + String(e)))
   }, [])
 
   const currentImport = imports.find(imp => imp.id === importId)
@@ -433,6 +437,7 @@ export function Sidebar() {
         >
           v{appVersion}
         </button>
+        <p className="text-[9px] text-red-400 px-3 break-all">{updateDebug}</p>
       </div>
       {pendingUpdate && (
         <UpdateDialog update={pendingUpdate} onClose={() => setPendingUpdate(null)} />
