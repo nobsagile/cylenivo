@@ -2,7 +2,7 @@ import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 // ── Section types ────────────────────────────────────────────────────────────
-export type Section = 'overview' | 'data-sources' | 'configs' | 'datasets' | 'plugins' | 'ai' | 'language' | 'data-management'
+export type Section = 'overview' | 'data-sources' | 'configs' | 'datasets' | 'plugins' | 'ai' | 'language' | 'data-management' | 'about'
 
 export interface PendingDelete {
   type: 'config' | 'import' | 'connection'
