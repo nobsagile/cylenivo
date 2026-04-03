@@ -425,9 +425,12 @@ export default function ImportPage() {
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('wizard.fetchTitle')}</h2>
           {connection && (
-            <span className="inline-flex items-center gap-1 mt-2 text-xs px-2 py-0.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-full font-medium">
-              <Link2 className="w-3 h-3" /> {connection.name}
-            </span>
+            <p className="text-sm text-gray-400 mt-1 flex items-center gap-1.5">
+              {t('wizard.fetchVia')}
+              <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-full font-medium">
+                <Link2 className="w-3 h-3" /> {connection.name}
+              </span>
+            </p>
           )}
         </div>
         <div className="space-y-4">
@@ -493,13 +496,13 @@ export default function ImportPage() {
                   <p className="text-xs text-gray-600">{t('help.completedBetween')}</p>
                 </PopoverContent>
               </Popover>
-              <span className="text-gray-400 text-sm font-normal">{t('import.completedBetweenHint')}</span>
             </div>
             <div className="flex items-center gap-2">
               <DatePicker value={resolvedFrom} onChange={setResolvedFrom} placeholder={t('common.from')} />
               <span className="text-gray-400 text-sm">{t('common.to')}</span>
               <DatePicker value={resolvedTo} onChange={setResolvedTo} placeholder={t('common.to')} />
             </div>
+            <p className="text-xs text-gray-400 mt-1">{t('import.completedBetweenHint')}</p>
           </div>
           {fetchMsg && (
             <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">

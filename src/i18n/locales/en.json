@@ -38,6 +38,7 @@
     "connectBtn": "Connect",
     "connecting": "Connecting…",
     "fetchTitle": "Import your tickets",
+    "fetchVia": "Fetching from",
     "fetchData": "Fetch data",
     "measureTitle": "Set up measurement",
     "measureHint": "Tell us which statuses mark the start and end of active work.",
