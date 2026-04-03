@@ -143,7 +143,7 @@ export default function ImportPage() {
   const [fetchedProjectKey, setFetchedProjectKey] = useState('')
   const [cycleStart, setCycleStart] = useState('')
   const [cycleEnd, setCycleEnd] = useState('')
-  const [cycleMode, setCycleMode] = useState<'first_last' | 'first_first'>('first_last')
+  const [cycleMode, setCycleMode] = useState<'first_last' | 'first_first' | 'last_last'>('first_last')
   const [importing, setImporting] = useState(false)
 
   const sensors = useSensors(
@@ -626,6 +626,7 @@ export default function ImportPage() {
   const modeOptions = [
     { value: 'first_last' as const, label: t('wizard.measureModeFullLabel'), hint: t('wizard.measureModeFullHint') },
     { value: 'first_first' as const, label: t('wizard.measureModeFirstLabel'), hint: t('wizard.measureModeFirstHint') },
+    { value: 'last_last' as const, label: t('wizard.measureModeLastLabel'), hint: t('wizard.measureModeLastHint') },
   ]
 
   return (

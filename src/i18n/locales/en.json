@@ -49,6 +49,8 @@
     "measureModeFullHint": "First entry into start → last entry into done. Captures re-opened tickets.",
     "measureModeFirstLabel": "Time to first completion",
     "measureModeFirstHint": "First entry into start → first entry into done. Ignores later rework.",
+    "measureModeLastLabel": "Most recent active period",
+    "measureModeLastHint": "Last entry into start → last entry into done. Only counts the most recent work cycle.",
     "startAnalyzing": "Start analyzing",
     "pickConnTitle": "Which connection?",
     "pickConnHint": "A connection stores your credentials so Cylenivo can fetch ticket data. Choose an existing one or add a new one.",
