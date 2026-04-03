@@ -325,7 +325,17 @@ export default function ImportPage() {
         <ErrorBanner message={errorMsg} onDismiss={() => setErrorMsg(null)} />
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('wizard.connectTitle')}</h2>
-          <p className="text-sm text-gray-400 mt-1">{t('wizard.connectHint')}</p>
+          <p className="text-sm text-gray-400 mt-1">
+            {t('wizard.connectHint')}{' '}
+            <a
+              href="https://id.atlassian.com/manage-profile/security/api-tokens"
+              target="_blank"
+              rel="noreferrer"
+              className="text-blue-500 hover:underline inline-flex items-center gap-0.5"
+            >
+              {t('connection.atlassianTokens')} <ExternalLink className="w-3 h-3" />
+            </a>
+          </p>
         </div>
         <div className="space-y-4">
           <div>
