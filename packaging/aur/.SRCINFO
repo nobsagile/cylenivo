@@ -1,0 +1,17 @@
+pkgbase = cylenivo-bin
+	pkgdesc = Flow metrics for software teams — cycle time, lead time, forecasting. Local desktop app, no accounts.
+	pkgver = 0.57.15
+	pkgrel = 1
+	url = https://cylenivo.com
+	arch = x86_64
+	license = LicenseRef-MIT-Commons-Clause
+	depends = webkit2gtk-4.1
+	depends = gtk3
+	depends = libayatana-appindicator
+	optdepends = libappindicator-gtk3: alternative tray icon support
+	provides = cylenivo
+	conflicts = cylenivo
+	source_x86_64 = cylenivo-bin-0.57.15.deb::https://github.com/nobsagile/cylenivo/releases/download/v0.57.15/Cylenivo_0.57.15_amd64.deb
+	sha256sums_x86_64 = 43fad4885191a200d4880798e55149a95f863788b0fed6fd5f0970ec767c3e27
+
+pkgname = cylenivo-bin
