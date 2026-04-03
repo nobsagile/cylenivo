@@ -8,7 +8,7 @@ export function PopoverContent({ children, className = '' }: { children: React.R
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Content
         sideOffset={6}
-        className={`z-[130] rounded-lg border border-gray-200 bg-white shadow-lg p-3 text-sm ${className}`}
+        className={`z-[130] rounded-lg border border-gray-200 bg-white shadow-lg p-3 text-sm outline-none ${className}`}
       >
         {children}
         <PopoverPrimitive.Arrow className="fill-white stroke-gray-200" />
