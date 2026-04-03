@@ -58,7 +58,7 @@
     "stepStatuses": "Statuses",
     "stepSetup": "Set up",
     "statusesTitle": "Sort your statuses",
-    "statusesHint": "Drag to reorder, remove any you don't need. Only these will appear in the next step.",
+    "statusesHint": "These are the statuses found in your Jira project. Drag to reorder, remove any you don't need — only the ones you keep will appear in the next step.",
     "statusesEmpty": "No statuses left — go back and re-fetch."
   },
   "nav": {

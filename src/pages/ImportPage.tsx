@@ -18,6 +18,7 @@ import type { SourceConnection } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/date-picker'
 import { ErrorBanner } from '@/components/ui/ErrorBanner'
 import { notifyImportsChanged } from '@/hooks/useImports'
@@ -637,43 +638,29 @@ export default function ImportPage() {
       </div>
 
       <div className="space-y-5">
-        {/* Start status */}
-        <div className="rounded-xl border border-gray-200 bg-white p-4">
-          <p className="text-sm font-semibold text-gray-800 mb-3">{t('wizard.measureStartQ')}</p>
-          <div className="space-y-2">
-            {statuses.map((s) => (
-              <label key={s} className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="radio"
-                  name="cycleStart"
-                  value={s}
-                  checked={cycleStart === s}
-                  onChange={() => setCycleStart(s)}
-                  className="text-blue-600"
-                />
-                <span className={`text-sm font-medium ${cycleStart === s ? 'text-blue-700' : 'text-gray-700'}`}>{s}</span>
-              </label>
-            ))}
+        {/* Start + End in one card */}
+        <div className="rounded-xl border border-gray-200 bg-white p-4 space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">{t('wizard.measureStartQ')}</label>
+            <Select value={cycleStart} onValueChange={setCycleStart}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="— select —" />
+              </SelectTrigger>
+              <SelectContent>
+                {statuses.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
-        </div>
-
-        {/* End status */}
-        <div className="rounded-xl border border-gray-200 bg-white p-4">
-          <p className="text-sm font-semibold text-gray-800 mb-3">{t('wizard.measureEndQ')}</p>
-          <div className="space-y-2">
-            {statuses.map((s) => (
-              <label key={s} className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="radio"
-                  name="cycleEnd"
-                  value={s}
-                  checked={cycleEnd === s}
-                  onChange={() => setCycleEnd(s)}
-                  className="text-blue-600"
-                />
-                <span className={`text-sm font-medium ${cycleEnd === s ? 'text-blue-700' : 'text-gray-700'}`}>{s}</span>
-              </label>
-            ))}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">{t('wizard.measureEndQ')}</label>
+            <Select value={cycleEnd} onValueChange={setCycleEnd}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="— select —" />
+              </SelectTrigger>
+              <SelectContent>
+                {statuses.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -682,20 +669,19 @@ export default function ImportPage() {
           <p className="text-sm font-semibold text-gray-800 mb-3">{t('wizard.measureModeQ')}</p>
           <div className="space-y-2">
             {modeOptions.map((opt) => (
-              <label
+              <button
                 key={opt.value}
-                className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
+                type="button"
+                onClick={() => setCycleMode(opt.value)}
+                className={`w-full flex items-start gap-3 p-3 rounded-xl border text-left transition-colors ${
                   cycleMode === opt.value ? 'border-blue-300 bg-blue-50' : 'border-gray-200 bg-white hover:border-gray-300'
                 }`}
               >
-                <input
-                  type="radio"
-                  name="cycleMode"
-                  value={opt.value}
-                  checked={cycleMode === opt.value}
-                  onChange={() => setCycleMode(opt.value)}
-                  className="mt-0.5 text-blue-600"
-                />
+                <div className={`mt-0.5 w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center ${
+                  cycleMode === opt.value ? 'border-blue-500' : 'border-gray-300'
+                }`}>
+                  {cycleMode === opt.value && <div className="w-2 h-2 rounded-full bg-blue-500" />}
+                </div>
                 <div>
                   <p className={`text-sm font-medium ${cycleMode === opt.value ? 'text-blue-800' : 'text-gray-700'}`}>
                     {opt.label}
@@ -705,7 +691,7 @@ export default function ImportPage() {
                   </p>
                   <p className="text-xs text-gray-400 mt-0.5">{opt.hint}</p>
                 </div>
-              </label>
+              </button>
             ))}
           </div>
         </div>
