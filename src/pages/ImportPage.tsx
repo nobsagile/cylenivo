@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
-  Link2, Clock, ArrowRight, ArrowLeft, Loader2, ExternalLink, GripVertical, X, Plus,
+  Link2, Clock, ArrowRight, ArrowLeft, Loader2, ExternalLink, GripVertical, X, Plus, Info,
 } from 'lucide-react'
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor,
@@ -17,11 +17,31 @@ import { api } from '@/services/api'
 import type { SourceConnection } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { DatePicker } from '@/components/ui/date-picker'
 import { ErrorBanner } from '@/components/ui/ErrorBanner'
 import { notifyImportsChanged } from '@/hooks/useImports'
 
 type Step = 'source' | 'pick-connection' | 'connect' | 'fetch' | 'statuses' | 'measure'
+
+function ConnFieldLabel({ label, helpKey }: { label: string; helpKey: string }) {
+  const { t } = useTranslation()
+  return (
+    <div className="flex items-center gap-1 mb-1.5">
+      <span className="text-sm font-medium text-gray-700">{label}</span>
+      <Popover>
+        <PopoverTrigger asChild>
+          <button className="text-gray-300 hover:text-gray-500 transition-colors">
+            <Info className="w-3.5 h-3.5" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-64">
+          <p className="text-xs text-gray-600">{t(helpKey)}</p>
+        </PopoverContent>
+      </Popover>
+    </div>
+  )
+}
 
 function SortableStatus({ id, onRemove }: { id: string; onRemove: () => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
@@ -293,19 +313,19 @@ export default function ImportPage() {
         </div>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('connection.name')}</label>
+            <ConnFieldLabel label={t('connection.name')} helpKey="help.connName" />
             <Input value={connName} onChange={(e) => setConnName(e.target.value)} placeholder={t('connection.namePlaceholder')} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('connection.jiraBaseUrl')}</label>
+            <ConnFieldLabel label={t('connection.jiraBaseUrl')} helpKey="help.connBaseUrl" />
             <Input value={connBaseUrl} onChange={(e) => setConnBaseUrl(e.target.value)} placeholder="https://yourcompany.atlassian.net" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('connection.email')}</label>
+            <ConnFieldLabel label={t('connection.email')} helpKey="help.connEmail" />
             <Input type="email" value={connEmail} onChange={(e) => setConnEmail(e.target.value)} placeholder={t('connection.emailPlaceholder')} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('connection.apiToken')}</label>
+            <ConnFieldLabel label={t('connection.apiToken')} helpKey="help.connApiToken" />
             <Input type="password" value={connApiToken} onChange={(e) => setConnApiToken(e.target.value)} placeholder={t('connection.apiTokenPlaceholder')} />
             <p className="mt-1.5 text-xs text-gray-400 flex items-center gap-1">
               {t('connection.getTokenAt')}{' '}
