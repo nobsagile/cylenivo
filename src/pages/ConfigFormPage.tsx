@@ -29,6 +29,26 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
 
+function FieldLabel({ label, helpKey, optional }: { label: string; helpKey: string; optional?: string }) {
+  const { t } = useTranslation()
+  return (
+    <div className="flex items-center gap-1 mb-1.5">
+      <span className="text-sm font-medium text-gray-700">{label}</span>
+      {optional && <span className="text-gray-400 font-normal text-sm">{optional}</span>}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button className="text-gray-300 hover:text-gray-500 transition-colors">
+            <Info className="w-3.5 h-3.5" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-64">
+          <p className="text-xs text-gray-600">{t(helpKey)}</p>
+        </PopoverContent>
+      </Popover>
+    </div>
+  )
+}
+
 function SortableStatus({
   id,
   isCycleStart,
@@ -292,7 +312,7 @@ export default function ConfigFormPage() {
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('config.name')}</label>
+          <FieldLabel label={t('config.name')} helpKey="help.configName" />
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -303,10 +323,7 @@ export default function ConfigFormPage() {
 
         {/* Base URL */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            {t('config.jiraBaseUrl')}
-            <span className="text-gray-400 font-normal ml-1">{t('config.optional')}</span>
-          </label>
+          <FieldLabel label={t('config.jiraBaseUrl')} helpKey="help.configBaseUrl" optional={t('config.optional')} />
           <Input
             value={baseUrl}
             onChange={(e) => setBaseUrl(e.target.value)}
@@ -388,7 +405,7 @@ export default function ConfigFormPage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('config.startStatus')}</label>
+              <FieldLabel label={t('config.startStatus')} helpKey="help.cycleStartStatus" />
               <Select value={cycleStart} onValueChange={setCycleStart} required>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="— select —" />
@@ -399,7 +416,7 @@ export default function ConfigFormPage() {
               </Select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">{t('config.endStatus')}</label>
+              <FieldLabel label={t('config.endStatus')} helpKey="help.cycleEndStatus" />
               <Select value={cycleEnd} onValueChange={setCycleEnd} required>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="— select —" />
@@ -462,9 +479,7 @@ export default function ConfigFormPage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">
-                {t('config.startStatus')} <span className="text-gray-400 font-normal">{t('config.leadTimeStartHint')}</span>
-              </label>
+              <FieldLabel label={t('config.startStatus')} helpKey="help.leadStartStatus" optional={t('config.leadTimeStartHint')} />
               <Select value={leadStart || '__created__'} onValueChange={(v) => setLeadStart(v === '__created__' ? '' : v)}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -476,9 +491,7 @@ export default function ConfigFormPage() {
               </Select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">
-                {t('config.endStatus')} <span className="text-gray-400 font-normal">{t('config.leadTimeEndHint')}</span>
-              </label>
+              <FieldLabel label={t('config.endStatus')} helpKey="help.leadEndStatus" optional={t('config.leadTimeEndHint')} />
               <Select value={leadEnd || '__cycle_end__'} onValueChange={(v) => setLeadEnd(v === '__cycle_end__' ? '' : v)}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
