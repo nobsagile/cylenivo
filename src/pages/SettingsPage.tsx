@@ -21,16 +21,10 @@ type ExpertSubSection = 'data-sources' | 'configs' | 'datasets' | null
 function resolveInitialSection(state: unknown): Section {
   const s = state as { tab?: string; section?: string } | null
   const raw = s?.section ?? s?.tab ?? 'overview'
-  const valid: Section[] = ['overview', 'manage-data', 'plugins', 'ai', 'language', 'data-management']
+  const valid: Section[] = ['overview', 'data-sources', 'configs', 'datasets', 'plugins', 'ai', 'language', 'data-management']
   return valid.includes(raw as Section) ? (raw as Section) : 'overview'
 }
 
-function resolveInitialExpert(state: unknown): ExpertSubSection {
-  const s = state as { section?: string } | null
-  const raw = s?.section
-  if (raw === 'configs' || raw === 'datasets' || raw === 'data-sources') return raw
-  return 'data-sources'
-}
 
 // ── Expert accordion sub-section ─────────────────────────────────────────────
 function ExpertSection({ label, open, onToggle, children }: {
@@ -80,9 +74,6 @@ export default function SettingsPage() {
   const [connDatasets, setConnDatasets] = useState<Record<string, ImportSession[]>>({})
   const [llmConfigExists, setLlmConfigExists] = useState(false)
 
-  // Expert accordion state
-  const [expertOpen, setExpertOpen] = useState(() => resolveInitialExpert(location.state) !== null)
-  const [expertSection, setExpertSection] = useState<ExpertSubSection>(() => resolveInitialExpert(location.state))
 
   useEffect(() => {
     api.configs.list().then(setConfigs).catch(console.error)
@@ -513,40 +504,6 @@ export default function SettingsPage() {
     )
   }
 
-  function renderManageData() {
-    function toggleExpertSection(id: ExpertSubSection) {
-      setExpertSection((prev) => prev === id ? null : id)
-    }
-
-    return (
-      <>
-        <SectionHeader title={t('settings.manageData')} desc={t('settings.manageDataDesc')} />
-        <div className="rounded-xl border border-gray-200 overflow-hidden">
-          <ExpertSection
-            label={t('settings.navDataSources')}
-            open={expertSection === 'data-sources'}
-            onToggle={() => toggleExpertSection('data-sources')}
-          >
-            {renderDataSources()}
-          </ExpertSection>
-          <ExpertSection
-            label={t('settings.tabConfigs')}
-            open={expertSection === 'configs'}
-            onToggle={() => toggleExpertSection('configs')}
-          >
-            {renderConfigs()}
-          </ExpertSection>
-          <ExpertSection
-            label={t('settings.tabDatasets')}
-            open={expertSection === 'datasets'}
-            onToggle={() => toggleExpertSection('datasets')}
-          >
-            {renderDatasets()}
-          </ExpertSection>
-        </div>
-      </>
-    )
-  }
 
   function renderPlugins() {
     return (
@@ -647,7 +604,9 @@ export default function SettingsPage() {
 
   const contentMap: Record<Section, () => React.ReactNode> = {
     overview: renderOverview,
-    'manage-data': renderManageData,
+    'data-sources': renderDataSources,
+    configs: renderConfigs,
+    datasets: renderDatasets,
     plugins: renderPlugins,
     ai: () => <AISection onConfigChange={(cfg) => setLlmConfigExists(!!cfg)} />,
     language: renderLanguage,
@@ -666,7 +625,11 @@ export default function SettingsPage() {
         <nav className="w-44 shrink-0">
           <NavGroup label={t('settings.overview')}>
             <NavItem id="overview" active={section === 'overview'} icon={LayoutDashboard} label={t('settings.overview')} onClick={setSection} />
-            <NavItem id="manage-data" active={section === 'manage-data'} icon={Database} label={t('settings.manageData')} onClick={setSection} />
+          </NavGroup>
+          <NavGroup label={t('settings.manageData')}>
+            <NavItem id="data-sources" active={section === 'data-sources'} icon={Link2} label={t('settings.navDataSources')} count={connections.length} onClick={setSection} />
+            <NavItem id="configs" active={section === 'configs'} icon={Settings2} label={t('settings.tabConfigs')} count={configs.length} onClick={setSection} />
+            <NavItem id="datasets" active={section === 'datasets'} icon={Database} label={t('settings.tabDatasets')} count={imports.length} onClick={setSection} />
           </NavGroup>
           <NavGroup label="AI">
             <NavItem id="ai" active={section === 'ai'} icon={Bot} label={t('settings.tabAi')} dot={llmConfigExists} onClick={setSection} />
@@ -739,7 +702,7 @@ export default function SettingsPage() {
           cancelLabel="Close"
           confirmLabel={errorMsg.action === 'datasets' ? 'Go to Datasets' : undefined}
           destructive={false}
-          onConfirm={errorMsg.action === 'datasets' ? () => { setErrorMsg(null); setSection('overview'); setExpertOpen(true); setExpertSection('datasets') } : undefined}
+          onConfirm={errorMsg.action === 'datasets' ? () => { setErrorMsg(null); setSection('datasets') } : undefined}
           onCancel={() => setErrorMsg(null)}
         />
       )}
