@@ -121,6 +121,11 @@ export default function ImportPage() {
   const [cycleMode, setCycleMode] = useState<'first_last' | 'first_first'>('first_last')
   const [importing, setImporting] = useState(false)
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
+
   // ── Step: Source ──────────────────────────────────────────────────────────
   if (step === 'source') {
     async function handleJira() {
@@ -397,11 +402,6 @@ export default function ImportPage() {
       ? [t('wizard.stepImport'), t('wizard.stepStatuses'), t('wizard.stepSetup')]
       : [t('wizard.stepConnect'), t('wizard.stepImport'), t('wizard.stepStatuses'), t('wizard.stepSetup')]
     const statusCurrent = hadConnections ? 1 : 2
-
-    const sensors = useSensors(
-      useSensor(PointerSensor),
-      useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-    )
 
     function handleDragEnd(event: DragEndEvent) {
       const { active, over } = event
