@@ -77,7 +77,7 @@ llm.post('/analyze/:importId', async (c) => {
 
   const agg = computeAggregate(ctx)
   const { imp } = ctx
-  const { cycleTimes, leadTimes, completedAtDates, cycleTimePercentiles, throughput, dateRange, timeInStatus, completedTickets } = agg
+  const { cycleTimes, leadTimes, cycleTimePercentiles, throughput, dateRange, timeInStatus, completedTickets } = agg
 
   const dateFrom = dateRange.from ? dateRange.from.slice(0, 10) : 'N/A'
   const dateTo = dateRange.to ? dateRange.to.slice(0, 10) : 'N/A'

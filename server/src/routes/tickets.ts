@@ -4,7 +4,6 @@ import { db } from '../db/index.js'
 import { importSessions, tickets, ticketTransitions } from '../db/schema.js'
 import { ok } from '../lib/response.js'
 import { loadImportContext, buildEnrichedTicket } from '../lib/context.js'
-import type { ParsedConfig } from '../lib/context.js'
 import type { Transition } from '../analyzers/utils.js'
 
 const ticketsRouter = new Hono()

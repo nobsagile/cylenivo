@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { eq, inArray, sql } from 'drizzle-orm'
+import { eq, inArray } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { projectConfigs, importSessions, tickets, ticketTransitions, type ImportSessionRow } from '../db/schema.js'
 import { ok } from '../lib/response.js'

@@ -79,7 +79,7 @@ demo.post('/seed', async (c) => {
  * Deletes all project data: ticket_transitions, tickets, import_sessions, project_configs.
  * Does NOT touch source_connections or llm_config.
  */
-demo.delete('/reset', async (c) => {
+demo.delete('/reset', async () => {
   await db.delete(ticketTransitions).where(sql`1=1`)
   await db.delete(tickets).where(sql`1=1`)
   await db.delete(llmInsights).where(sql`1=1`)
@@ -93,7 +93,7 @@ demo.delete('/reset', async (c) => {
  * Deletes ALL app data: everything reset does, plus source_connections and llm_config.
  * Returns the app to a fresh-install state.
  */
-demo.delete('/full-reset', async (c) => {
+demo.delete('/full-reset', async () => {
   await db.delete(ticketTransitions).where(sql`1=1`)
   await db.delete(tickets).where(sql`1=1`)
   await db.delete(llmInsights).where(sql`1=1`)
