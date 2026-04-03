@@ -1,6 +1,6 @@
 [package]
 name = "cylenivo"
-version = "0.56.0"
+version = "0.57.0"
 description = "Flow metrics for software teams"
 authors = ["nobsagile"]
 license = ""
@@ -24,3 +24,5 @@ log = "0.4"
 tauri = { version = "2.10.3", features = [] }
 tauri-plugin-log = "2"
 tauri-plugin-shell = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-process = "2"

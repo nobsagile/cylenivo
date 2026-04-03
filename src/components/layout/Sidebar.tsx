@@ -26,6 +26,8 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
 import type { ImportHealthReport } from '@/types'
+import type { Update } from '@tauri-apps/plugin-updater'
+import { UpdateDialog } from '@/components/UpdateDialog'
 
 interface Issue {
   title: string
@@ -256,9 +258,17 @@ export function Sidebar() {
   const { data: imports, reload } = useImports()
   const [healthOpen, setHealthOpen] = useState(false)
   const [appVersion, setAppVersion] = useState<string>(__APP_VERSION__)
+  const [pendingUpdate, setPendingUpdate] = useState<Update | null>(null)
 
   useEffect(() => {
     import('@tauri-apps/api/app').then(({ getVersion }) => getVersion().then(setAppVersion)).catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    if (!window.__TAURI_INTERNALS__) return
+    import('@tauri-apps/plugin-updater').then(({ check }) =>
+      check().then((u) => { if (u?.available) setPendingUpdate(u) }).catch(() => {})
+    )
   }, [])
 
   const currentImport = imports.find(imp => imp.id === importId)
@@ -416,6 +426,9 @@ export function Sidebar() {
           v{appVersion}
         </button>
       </div>
+      {pendingUpdate && (
+        <UpdateDialog update={pendingUpdate} onClose={() => setPendingUpdate(null)} />
+      )}
     </aside>
   )
 }

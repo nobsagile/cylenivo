@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Cylenivo",
-  "version": "0.56.0",
+  "version": "0.57.0",
   "identifier": "com.cylenivo.app",
   "build": {
     "frontendDist": "../dist",
@@ -27,6 +27,7 @@
   },
   "bundle": {
     "active": true,
+    "createUpdaterArtifacts": true,
     "shortDescription": "Flow metrics for software teams",
     "longDescription": "Analyze cycle time, lead time, and throughput from Jira exports. Fully local, no cloud.",
     "targets": "all",
@@ -40,5 +41,13 @@
     "externalBin": [
       "binaries/cylenivo-server"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDc2NDFDQzVFNDA5NDgyNkIKUldScmdwUkFYc3hCZHR1L1NIYXB0ZzB2a2lzQ0FadXREMjAwN2tHTU9NbjVnT0NWSGQ4WEZsRCsK",
+      "endpoints": [
+        "https://github.com/nobsagile/cylenivo/releases/latest/download/latest.json"
+      ]
+    }
   }
 }
