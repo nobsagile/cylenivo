@@ -270,12 +270,12 @@ export function Sidebar() {
       .then(({ check }) =>
         check()
           .then((u) => {
-            console.log('[updater] result:', JSON.stringify(u))
+            alert('[updater] result: ' + JSON.stringify(u))
             if (u?.available) setPendingUpdate(u)
           })
-          .catch((e) => console.error('[updater] check error:', e))
+          .catch((e) => alert('[updater] check error: ' + String(e)))
       )
-      .catch((e) => console.error('[updater] import error:', e))
+      .catch((e) => alert('[updater] import error: ' + String(e)))
   }, [])
 
   const currentImport = imports.find(imp => imp.id === importId)
