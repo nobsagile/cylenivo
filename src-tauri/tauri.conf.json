@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Cylenivo",
-  "version": "0.54.2",
+  "version": "0.54.3",
   "identifier": "com.cylenivo.app",
   "build": {
     "frontendDist": "../dist",

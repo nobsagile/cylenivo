@@ -29,7 +29,8 @@
     "disconnect": "Disconnect",
     "connected": "Connected",
     "notReachable": "Not reachable",
-    "recommended": "Recommended"
+    "recommended": "Recommended",
+    "continue": "Continue"
   },
   "wizard": {
     "connectTitle": "Connect to Jira",
@@ -50,7 +51,11 @@
     "startAnalyzing": "Start analyzing",
     "stepConnect": "Connect",
     "stepImport": "Import",
-    "stepSetup": "Set up"
+    "stepStatuses": "Statuses",
+    "stepSetup": "Set up",
+    "statusesTitle": "Sort your statuses",
+    "statusesHint": "Drag to reorder, remove any you don't need. Only these will appear in the next step.",
+    "statusesEmpty": "No statuses left — go back and re-fetch."
   },
   "nav": {
     "overview": "Metrics",

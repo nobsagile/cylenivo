@@ -2,8 +2,17 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
-  Link2, Clock, ArrowRight, ArrowLeft, Loader2, ExternalLink,
+  Link2, Clock, ArrowRight, ArrowLeft, Loader2, ExternalLink, GripVertical, X,
 } from 'lucide-react'
+import {
+  DndContext, closestCenter, KeyboardSensor, PointerSensor,
+  useSensor, useSensors, type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  arrayMove, SortableContext, sortableKeyboardCoordinates,
+  useSortable, verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { api } from '@/services/api'
 import type { SourceConnection } from '@/types'
 import { Button } from '@/components/ui/button'
@@ -12,7 +21,26 @@ import { DatePicker } from '@/components/ui/date-picker'
 import { ErrorBanner } from '@/components/ui/ErrorBanner'
 import { notifyImportsChanged } from '@/hooks/useImports'
 
-type Step = 'source' | 'connect' | 'fetch' | 'measure'
+type Step = 'source' | 'connect' | 'fetch' | 'statuses' | 'measure'
+
+function SortableStatus({ id, onRemove }: { id: string; onRemove: () => void }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm bg-white ${isDragging ? 'shadow-md border-blue-300' : 'border-gray-200'}`}
+    >
+      <span {...attributes} {...listeners} className="cursor-grab text-gray-300 hover:text-gray-500">
+        <GripVertical className="w-4 h-4" />
+      </span>
+      <span className="flex-1 text-gray-700">{id}</span>
+      <button onClick={onRemove} className="text-gray-300 hover:text-red-400">
+        <X className="w-3.5 h-3.5" />
+      </button>
+    </div>
+  )
+}
 
 const ISSUE_TYPE_OPTIONS = ['Story', 'Task', 'Bug', 'Epic']
 
@@ -267,7 +295,7 @@ export default function ImportPage() {
         setFetchedProjectKey((result.project_key as string) ?? jiraProject.trim().toUpperCase())
         setCycleStart('')
         setCycleEnd('')
-        setStep('measure')
+        setStep('statuses')
       } catch (e) {
         setErrorMsg(e instanceof Error ? e.message : 'Fetch failed')
       } finally {
@@ -363,11 +391,76 @@ export default function ImportPage() {
     )
   }
 
+  // ── Step: Statuses ───────────────────────────────────────────────────────
+  if (step === 'statuses') {
+    const statusSteps = hadConnections
+      ? [t('wizard.stepImport'), t('wizard.stepStatuses'), t('wizard.stepSetup')]
+      : [t('wizard.stepConnect'), t('wizard.stepImport'), t('wizard.stepStatuses'), t('wizard.stepSetup')]
+    const statusCurrent = hadConnections ? 1 : 2
+
+    const sensors = useSensors(
+      useSensor(PointerSensor),
+      useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    )
+
+    function handleDragEnd(event: DragEndEvent) {
+      const { active, over } = event
+      if (over && active.id !== over.id) {
+        setStatuses((items) => {
+          const o = items.indexOf(active.id as string)
+          const n = items.indexOf(over.id as string)
+          return arrayMove(items, o, n)
+        })
+      }
+    }
+
+    return (
+      <div className="max-w-lg">
+        <WizardHeader steps={statusSteps} current={statusCurrent} />
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('wizard.statusesTitle')}</h2>
+          <p className="text-sm text-gray-400 mt-1">{t('wizard.statusesHint')}</p>
+        </div>
+
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={statuses} strategy={verticalListSortingStrategy}>
+            <div className="space-y-1.5">
+              {statuses.map((s) => (
+                <SortableStatus
+                  key={s}
+                  id={s}
+                  onRemove={() => setStatuses((prev) => prev.filter((x) => x !== s))}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+
+        {statuses.length === 0 && (
+          <p className="text-sm text-gray-400 text-center py-6">{t('wizard.statusesEmpty')}</p>
+        )}
+
+        <div className="flex gap-3 mt-6">
+          <Button variant="outline" onClick={() => setStep('fetch')} className="gap-1.5">
+            <ArrowLeft className="w-4 h-4" /> {t('common.back')}
+          </Button>
+          <Button
+            onClick={() => setStep('measure')}
+            disabled={statuses.length < 2}
+            className="flex-1 gap-2 h-11"
+          >
+            {t('common.continue')} <ArrowRight className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   // ── Step: Measure ─────────────────────────────────────────────────────────
   const measureSteps = hadConnections
-    ? [t('wizard.stepImport'), t('wizard.stepSetup')]
-    : [t('wizard.stepConnect'), t('wizard.stepImport'), t('wizard.stepSetup')]
-  const measureCurrent = hadConnections ? 1 : 2
+    ? [t('wizard.stepImport'), t('wizard.stepStatuses'), t('wizard.stepSetup')]
+    : [t('wizard.stepConnect'), t('wizard.stepImport'), t('wizard.stepStatuses'), t('wizard.stepSetup')]
+  const measureCurrent = hadConnections ? 2 : 3
   const canImport = Boolean(cycleStart && cycleEnd && cycleStart !== cycleEnd)
 
   async function handleStartAnalyzing() {
@@ -485,7 +578,7 @@ export default function ImportPage() {
       </div>
 
       <div className="flex gap-3 mt-6">
-        <Button variant="outline" onClick={() => setStep('fetch')} className="gap-1.5">
+        <Button variant="outline" onClick={() => setStep('statuses')} className="gap-1.5">
           <ArrowLeft className="w-4 h-4" /> {t('common.back')}
         </Button>
         <Button onClick={handleStartAnalyzing} disabled={!canImport || importing} className="flex-1 gap-2 h-11">
