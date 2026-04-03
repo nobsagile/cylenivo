@@ -281,23 +281,38 @@ export default function ImportPage() {
   if (step === 'connect') {
     const canConnect = Boolean(connName && connBaseUrl && connEmail && connApiToken)
 
+    function parseConnectError(msg: string): string {
+      if (msg.includes('401')) return t('connection.errUnauthorized')
+      if (msg.includes('403')) return t('connection.errForbidden')
+      if (msg.includes('404')) return t('connection.errNotFound')
+      if (/ECONNREFUSED|ENOTFOUND|fetch failed|NetworkError/i.test(msg)) return t('connection.errUnreachable')
+      if (/timeout|timed out/i.test(msg)) return t('connection.errTimeout')
+      return t('connection.errGeneric', { message: msg })
+    }
+
     async function handleConnect() {
       setConnecting(true)
       setErrorMsg(null)
+      let conn: SourceConnection | null = null
       try {
-        const conn = await api.connections.create({
+        conn = await api.connections.create({
           name: connName,
           source_type: 'jira' as const,
           base_url: connBaseUrl,
           email: connEmail,
           api_token: connApiToken,
         }) as SourceConnection
+        await api.connections.test(conn.id)
         setConnection(conn)
-        setAvailableConns((prev) => [...prev, conn])
+        setAvailableConns((prev) => [...prev, conn!])
         setSelectedConnId(conn.id)
         setStep('fetch')
       } catch (e) {
-        setErrorMsg(e instanceof Error ? e.message : 'Connection failed')
+        if (conn) {
+          api.connections.delete(conn.id).catch(() => {})
+        }
+        const msg = e instanceof Error ? e.message : 'Connection failed'
+        setErrorMsg(parseConnectError(msg))
       } finally {
         setConnecting(false)
       }

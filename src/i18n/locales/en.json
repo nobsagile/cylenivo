@@ -479,7 +479,13 @@
     "projectKey": "Project Key",
     "projectKeyPlaceholder": "e.g. PROJ",
     "issueTypes": "Issue Types",
-    "resolvedBetween": "Completed between"
+    "resolvedBetween": "Completed between",
+    "errUnauthorized": "Email or API token is incorrect. Double-check your Atlassian API token and the email address you use to log into Jira.",
+    "errForbidden": "Your API token doesn't have permission to access this Jira instance. Make sure the token belongs to a user with read access.",
+    "errNotFound": "Jira URL not found. Make sure it looks like https://yourcompany.atlassian.net.",
+    "errUnreachable": "Could not reach Jira. Check that the URL is correct and that you have an internet connection.",
+    "errTimeout": "Connection timed out. Jira took too long to respond — check the URL and try again.",
+    "errGeneric": "Could not connect to Jira: {{message}}"
   },
   "refresh": {
     "title": "Refresh Data",
