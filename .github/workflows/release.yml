@@ -26,6 +26,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Verify version matches tag
+        shell: bash
+        run: |
+          TAG_VERSION="${{ github.ref_name }}"
+          TAG_VERSION="${TAG_VERSION#v}"
+          CONF_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          if [ "$TAG_VERSION" != "$CONF_VERSION" ]; then
+            echo "::error::Tag $TAG_VERSION != tauri.conf.json $CONF_VERSION — run 'npm version' before tagging."
+            exit 1
+          fi
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -112,23 +123,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Wait for .deb asset to be available
+      - name: Wait for .deb asset
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION="${{ github.ref_name }}"
-          VERSION="${VERSION#v}"
-          DEB_URL="https://github.com/nobsagile/cylenivo/releases/download/${{ github.ref_name }}/Cylenivo_${VERSION}_amd64.deb"
-          for i in $(seq 1 12); do
-            if curl -fsL --head "$DEB_URL" > /dev/null 2>&1; then
-              echo "Asset available"; break
+          for i in $(seq 1 30); do
+            DEB_URL=$(gh release view "${{ github.ref_name }}" --json assets \
+              --jq '.assets[] | select(.name | endswith("_amd64.deb")) | .url' 2>/dev/null || true)
+            if [ -n "$DEB_URL" ]; then
+              echo "DEB_URL=$DEB_URL" >> $GITHUB_ENV
+              echo "Asset found: $DEB_URL"; break
             fi
-            echo "Waiting... ($i/12)"; sleep 10
+            echo "Waiting... ($i/30)"; sleep 10
           done
+          if [ -z "$DEB_URL" ]; then echo "::error::.deb not found after 5min"; exit 1; fi
 
       - name: Build Arch package
         run: |
-          VERSION="${{ github.ref_name }}"
-          VERSION="${VERSION#v}"
-          DEB_URL="https://github.com/nobsagile/cylenivo/releases/download/${{ github.ref_name }}/Cylenivo_${VERSION}_amd64.deb"
+          DEB_NAME=$(basename "$DEB_URL")
+          VERSION=$(echo "$DEB_NAME" | sed 's/Cylenivo_\(.*\)_amd64\.deb/\1/')
+          echo "Building Arch package for version $VERSION from $DEB_URL"
 
           docker run --rm -v "$PWD/packaging/aur:/work" archlinux:latest bash -c "
             pacman -Syu --noconfirm base-devel curl &&
@@ -136,8 +150,10 @@ jobs:
             chown -R builder /work &&
             cd /work &&
             sed -i 's/^pkgver=.*/pkgver=${VERSION}/' PKGBUILD &&
+            sed -i 's|^source_x86_64=.*|source_x86_64=(\"cylenivo.deb::${DEB_URL}\")|' PKGBUILD &&
             SHA256=\$(curl -sL '${DEB_URL}' | sha256sum | awk '{print \$1}') &&
             sed -i \"s/sha256sums_x86_64=('.*')/sha256sums_x86_64=('\${SHA256}')/\" PKGBUILD &&
+            sed -i 's/\\\${pkgname}-\\\${pkgver}/cylenivo/' PKGBUILD &&
             su -s /bin/bash builder -c 'cd /work && makepkg --nodeps --noconfirm --noprogressbar'
           "
 
