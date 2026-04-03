@@ -126,7 +126,7 @@ jobs:
             sed -i 's/^pkgver=.*/pkgver=${VERSION}/' PKGBUILD &&
             SHA256=\$(curl -sL '${DEB_URL}' | sha256sum | awk '{print \$1}') &&
             sed -i \"s/sha256sums_x86_64=('.*')/sha256sums_x86_64=('\${SHA256}')/\" PKGBUILD &&
-            su -s /bin/bash builder -c 'cd /work && makepkg -s --noconfirm --noprogressbar'
+            su -s /bin/bash builder -c 'cd /work && makepkg --nodeps --noconfirm --noprogressbar'
           "
 
       - name: Upload Arch package to release
