@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ExternalLink, CheckCircle2, XCircle, Loader2 } from 'lucide-react'
+import { ExternalLink, CheckCircle2, XCircle, Loader2, Info } from 'lucide-react'
 import { api } from '@/services/api'
 import type { SourceConnection } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import {
   Dialog,
   DialogContent,
@@ -12,6 +13,25 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
+
+function FieldLabel({ label, helpKey }: { label: string; helpKey: string }) {
+  const { t } = useTranslation()
+  return (
+    <div className="flex items-center gap-1 mb-1.5">
+      <span className="text-sm font-medium text-gray-700">{label}</span>
+      <Popover>
+        <PopoverTrigger asChild>
+          <button className="text-gray-300 hover:text-gray-500 transition-colors">
+            <Info className="w-3.5 h-3.5" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-64">
+          <p className="text-xs text-gray-600">{t(helpKey)}</p>
+        </PopoverContent>
+      </Popover>
+    </div>
+  )
+}
 
 interface Props {
   open: boolean
@@ -101,7 +121,7 @@ export default function ConnectionDialog({ open, connection, onClose, onSaved }:
 
         <div className="space-y-4 py-2">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('connection.name')}</label>
+            <FieldLabel label={t('connection.name')} helpKey="help.connName" />
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -109,7 +129,7 @@ export default function ConnectionDialog({ open, connection, onClose, onSaved }:
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('connection.jiraBaseUrl')}</label>
+            <FieldLabel label={t('connection.jiraBaseUrl')} helpKey="help.connBaseUrl" />
             <Input
               value={baseUrl}
               onChange={(e) => setBaseUrl(e.target.value)}
@@ -117,7 +137,7 @@ export default function ConnectionDialog({ open, connection, onClose, onSaved }:
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('connection.email')}</label>
+            <FieldLabel label={t('connection.email')} helpKey="help.connEmail" />
             <Input
               type="email"
               value={email}
@@ -126,10 +146,20 @@ export default function ConnectionDialog({ open, connection, onClose, onSaved }:
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-              {t('connection.apiToken')}
-              {isEdit && <span className="text-gray-400 font-normal ml-1">({t('connection.apiTokenKeepHint')})</span>}
-            </label>
+            <div className="flex items-center gap-1 mb-1.5">
+              <span className="text-sm font-medium text-gray-700">{t('connection.apiToken')}</span>
+              {isEdit && <span className="text-gray-400 font-normal text-sm">({t('connection.apiTokenKeepHint')})</span>}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64">
+                  <p className="text-xs text-gray-600">{t('help.connApiToken')}</p>
+                </PopoverContent>
+              </Popover>
+            </div>
             <Input
               type="password"
               value={apiToken}

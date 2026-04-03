@@ -50,7 +50,7 @@
     "measureModeFirstHint": "First entry into start → first entry into done. Ignores later rework.",
     "startAnalyzing": "Start analyzing",
     "pickConnTitle": "Which connection?",
-    "pickConnHint": "Choose an existing connection or add a new one.",
+    "pickConnHint": "A connection stores your credentials so Cylenivo can fetch ticket data. Choose an existing one or add a new one.",
     "addNewConn": "Add a new connection",
     "stepConnect": "Connect",
     "stepImport": "Import",
@@ -190,7 +190,7 @@
     "success": "Import successful",
     "invalidJson": "Invalid JSON file",
     "chooseSource": "Choose your source",
-    "chooseSourceHint": "How would you like to import ticket data?",
+    "chooseSourceHint": "Where does your ticket data come from?",
     "jira": "Jira",
     "connectLive": "Connect live",
     "uploadFileOption": "Upload file",
@@ -530,7 +530,11 @@
     "llmProvider": "Ollama runs locally on your machine (free, private). OpenAI uses the cloud API (requires API key). OpenAI compatible works with any API that follows the OpenAI format.",
     "llmBaseUrl": "The URL where the AI service is running. For Ollama, this is usually http://localhost:11434.",
     "llmSystemPrompt": "Instructions that shape how the AI analyzes your data. The default prompt is optimized for flow metrics — only change this if you know what you're doing.",
-    "perTicketBreakdown": "Time per status for each of the last 30 completed tickets, sorted by completion date. Shows how individual tickets flowed through your process."
+    "perTicketBreakdown": "Time per status for each of the last 30 completed tickets, sorted by completion date. Shows how individual tickets flowed through your process.",
+    "connName": "A friendly label for this connection — only shown inside Cylenivo.",
+    "connBaseUrl": "The root URL of your Jira instance, e.g. https://yourcompany.atlassian.net. Found in your browser's address bar when you open Jira.",
+    "connEmail": "The email address you use to log into Jira.",
+    "connApiToken": "A personal API token generated in your Atlassian account — not your login password. Cylenivo uses it to read tickets on your behalf."
   },
   "about": {
     "tagline": "Flow metrics for software teams — local, private, no accounts.",
