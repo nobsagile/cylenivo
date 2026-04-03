@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import {
   Plus, Pencil, Trash2, ArrowRight, Settings2, Copy, Zap,
   Database, FileJson, Calendar, Ticket, Link2, CheckCircle2, XCircle, Loader2,
-  X, Bot, RefreshCw, Puzzle, Globe,
+  X, Bot, RefreshCw, Puzzle, Globe, ChevronDown, LayoutDashboard,
 } from 'lucide-react'
 import { api } from '@/services/api'
 import type { ProjectConfig, ImportSession, SourceConnection } from '@/types'
@@ -16,11 +16,41 @@ import { notifyImportsChanged } from '@/hooks/useImports'
 import { EmptyState, SectionHeader, Card, IconBtn, NavGroup, NavItem, type Section, type PendingDelete } from './settings/shared'
 import { AISection } from './settings/AISection'
 
+type ExpertSubSection = 'data-sources' | 'configs' | 'datasets' | null
+
 function resolveInitialSection(state: unknown): Section {
   const s = state as { tab?: string; section?: string } | null
-  const raw = s?.section ?? s?.tab ?? 'configs'
-  const valid: Section[] = ['configs', 'datasets', 'data-sources', 'plugins', 'ai', 'language', 'data-management']
-  return valid.includes(raw as Section) ? (raw as Section) : 'configs'
+  const raw = s?.section ?? s?.tab ?? 'overview'
+  const valid: Section[] = ['overview', 'plugins', 'ai', 'language', 'data-management']
+  return valid.includes(raw as Section) ? (raw as Section) : 'overview'
+}
+
+function resolveInitialExpert(state: unknown): ExpertSubSection {
+  const s = state as { section?: string } | null
+  const raw = s?.section
+  if (raw === 'configs' || raw === 'datasets' || raw === 'data-sources') return raw
+  return null
+}
+
+// ── Expert accordion sub-section ─────────────────────────────────────────────
+function ExpertSection({ label, open, onToggle, children }: {
+  label: string
+  open: boolean
+  onToggle: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <div className="border-b border-gray-100 last:border-b-0">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors text-left"
+      >
+        <span className="text-sm font-medium text-gray-600">{label}</span>
+        <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && <div className="px-4 pb-5 pt-1">{children}</div>}
+    </div>
+  )
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -41,11 +71,18 @@ export default function SettingsPage() {
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null)
   const [pendingReset, setPendingReset] = useState(false)
   const [resetting, setResetting] = useState(false)
+  const [pendingFullReset, setPendingFullReset] = useState(false)
+  const [fullResetting, setFullResetting] = useState(false)
+  const [fullResetDone, setFullResetDone] = useState(false)
   const [seeding, setSeeding] = useState(false)
   const [errorMsg, setErrorMsg] = useState<{ title: string; description: string; action?: string } | null>(null)
   const [showConnBanner, setShowConnBanner] = useState(false)
   const [connDatasets, setConnDatasets] = useState<Record<string, ImportSession[]>>({})
   const [llmConfigExists, setLlmConfigExists] = useState(false)
+
+  // Expert accordion state
+  const [expertOpen, setExpertOpen] = useState(() => resolveInitialExpert(location.state) !== null)
+  const [expertSection, setExpertSection] = useState<ExpertSubSection>(() => resolveInitialExpert(location.state))
 
   useEffect(() => {
     api.configs.list().then(setConfigs).catch(console.error)
@@ -88,6 +125,19 @@ export default function SettingsPage() {
         setErrorMsg({ title: 'Could not delete', description: msg })
       }
     }
+  }
+
+  async function handleFullReset() {
+    setFullResetting(true)
+    setPendingFullReset(false)
+    try {
+      await api.demo.fullReset()
+      localStorage.clear()
+      setFullResetDone(true)
+    } catch (e) {
+      setErrorMsg({ title: 'Could not reset', description: e instanceof Error ? e.message : 'Error' })
+    }
+    setFullResetting(false)
   }
 
   async function handleReset() {
@@ -216,9 +266,7 @@ export default function SettingsPage() {
                       <span
                         key={s}
                         className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${
-                          s === config.cycle_time_start_status
-                            ? 'bg-teal-50 border-teal-200 text-teal-700'
-                            : s === config.cycle_time_end_status
+                          s === config.cycle_time_start_status || s === config.cycle_time_end_status
                             ? 'bg-teal-50 border-teal-200 text-teal-700'
                             : 'bg-gray-50 border-gray-200 text-gray-500'
                         }`}
@@ -407,6 +455,100 @@ export default function SettingsPage() {
     )
   }
 
+  function renderOverview() {
+    const hasSetup = connections.length > 0 || configs.length > 0 || imports.length > 0
+
+    function toggleExpertSection(id: ExpertSubSection) {
+      setExpertSection((prev) => prev === id ? null : id)
+    }
+
+    return (
+      <>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-base font-semibold text-gray-900">{t('settings.overview')}</h2>
+            <p className="text-xs text-gray-400 mt-0.5">{t('settings.overviewDesc')}</p>
+          </div>
+          <Button onClick={() => navigate('/import')} size="sm" className="gap-1.5 shrink-0">
+            <Plus className="w-3.5 h-3.5" />
+            {t('settings.addNewData')}
+          </Button>
+        </div>
+
+        {/* Your setup summary */}
+        <div className="rounded-xl border border-gray-200 bg-white p-4 mb-4">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">{t('settings.yourSetup')}</p>
+          {!hasSetup ? (
+            <p className="text-sm text-gray-400">{t('settings.noSetup')}</p>
+          ) : (
+            <div className="space-y-2.5">
+              {connections.length > 0 && (
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <span className="font-medium text-gray-700">{t('settings.navDataSources')}</span>
+                  <span className="text-gray-400">{connections.map((c) => c.name).join(', ')}</span>
+                </div>
+              )}
+              {configs.length > 0 && (
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <span className="font-medium text-gray-700">{t('settings.tabConfigs')}</span>
+                  <span className="text-gray-400">{configs.map((c) => c.name).join(', ')}</span>
+                </div>
+              )}
+              {imports.length > 0 && (
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <span className="font-medium text-gray-700">{t('settings.tabDatasets')}</span>
+                  <span className="text-gray-400">
+                    {imports.length} {imports.length === 1 ? 'dataset' : 'datasets'}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Expert Settings accordion */}
+        <div className="rounded-xl border border-gray-200 overflow-hidden">
+          <button
+            onClick={() => setExpertOpen((o) => !o)}
+            className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+          >
+            <span className="text-sm font-semibold text-gray-700">{t('settings.expertSettings')}</span>
+            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${expertOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {expertOpen && (
+            <div className="border-t border-gray-200">
+              <ExpertSection
+                label={t('settings.navDataSources')}
+                open={expertSection === 'data-sources'}
+                onToggle={() => toggleExpertSection('data-sources')}
+              >
+                {renderDataSources()}
+              </ExpertSection>
+              <ExpertSection
+                label={t('settings.tabConfigs')}
+                open={expertSection === 'configs'}
+                onToggle={() => toggleExpertSection('configs')}
+              >
+                {renderConfigs()}
+              </ExpertSection>
+              <ExpertSection
+                label={t('settings.tabDatasets')}
+                open={expertSection === 'datasets'}
+                onToggle={() => toggleExpertSection('datasets')}
+              >
+                {renderDatasets()}
+              </ExpertSection>
+            </div>
+          )}
+        </div>
+      </>
+    )
+  }
+
   function renderPlugins() {
     return (
       <>
@@ -479,14 +621,33 @@ export default function SettingsPage() {
             </div>
           )}
         </div>
+
+        <div className="rounded-xl border border-red-200 bg-red-50 p-5 mt-4">
+          <p className="text-sm font-semibold text-red-700 mb-1">{t('settings.completeReset')}</p>
+          <p className="text-xs text-red-500 mb-3">{t('settings.completeResetDesc')}</p>
+          {fullResetDone ? (
+            <div className="flex items-center gap-3">
+              <p className="text-xs text-red-600 font-medium">{t('settings.completeResetDone')}</p>
+              <Button size="sm" variant="outline" onClick={() => { window.location.href = '/' }} className="gap-1.5 border-red-300 text-red-700 hover:bg-red-100">
+                <RefreshCw className="w-3.5 h-3.5" />
+                {t('settings.reload')}
+              </Button>
+            </div>
+          ) : (
+            <Button variant="outline" size="sm" disabled={fullResetting}
+              onClick={() => setPendingFullReset(true)}
+              className="gap-1.5 text-red-600 hover:text-red-800 border-red-300 hover:border-red-400 hover:bg-red-100">
+              {fullResetting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+              {t('settings.completeReset')}
+            </Button>
+          )}
+        </div>
       </>
     )
   }
 
   const contentMap: Record<Section, () => React.ReactNode> = {
-    configs: renderConfigs,
-    datasets: renderDatasets,
-    'data-sources': renderDataSources,
+    overview: renderOverview,
     plugins: renderPlugins,
     ai: () => <AISection onConfigChange={(cfg) => setLlmConfigExists(!!cfg)} />,
     language: renderLanguage,
@@ -503,13 +664,8 @@ export default function SettingsPage() {
       <div className="flex gap-8">
         {/* Left nav */}
         <nav className="w-44 shrink-0">
-          <NavGroup label={t('settings.navData')}>
-            <NavItem id="configs" active={section === 'configs'} icon={Settings2} label={t('settings.tabConfigs')} count={configs.length} onClick={setSection} />
-            <NavItem id="datasets" active={section === 'datasets'} icon={Database} label={t('settings.tabDatasets')} count={imports.length} onClick={setSection} />
-          </NavGroup>
-          <NavGroup label={t('settings.navIntegrations')}>
-            <NavItem id="data-sources" active={section === 'data-sources'} icon={Link2} label={t('settings.navDataSources')} count={connections.length} onClick={setSection} />
-            <NavItem id="plugins" active={section === 'plugins'} icon={Puzzle} label={t('settings.tabPlugins')} soon onClick={setSection} />
+          <NavGroup label={t('settings.overview')}>
+            <NavItem id="overview" active={section === 'overview'} icon={LayoutDashboard} label={t('settings.overview')} onClick={setSection} />
           </NavGroup>
           <NavGroup label="AI">
             <NavItem id="ai" active={section === 'ai'} icon={Bot} label={t('settings.tabAi')} dot={llmConfigExists} onClick={setSection} />
@@ -563,6 +719,17 @@ export default function SettingsPage() {
         />
       )}
 
+      {pendingFullReset && (
+        <ConfirmDialog
+          open
+          title={t('settings.completeResetConfirm')}
+          description={t('settings.completeResetConfirmDesc')}
+          confirmLabel={t('settings.completeReset')}
+          onConfirm={handleFullReset}
+          onCancel={() => setPendingFullReset(false)}
+        />
+      )}
+
       {errorMsg && (
         <ConfirmDialog
           open
@@ -571,7 +738,7 @@ export default function SettingsPage() {
           cancelLabel="Close"
           confirmLabel={errorMsg.action === 'datasets' ? 'Go to Datasets' : undefined}
           destructive={false}
-          onConfirm={errorMsg.action === 'datasets' ? () => { setErrorMsg(null); setSection('datasets') } : undefined}
+          onConfirm={errorMsg.action === 'datasets' ? () => { setErrorMsg(null); setSection('overview'); setExpertOpen(true); setExpertSection('datasets') } : undefined}
           onCancel={() => setErrorMsg(null)}
         />
       )}

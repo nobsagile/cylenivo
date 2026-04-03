@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { inArray, sql } from 'drizzle-orm'
 import { db } from '../db/index.js'
-import { projectConfigs, importSessions, tickets, ticketTransitions, llmInsights } from '../db/schema.js'
+import { projectConfigs, importSessions, tickets, ticketTransitions, llmInsights, sourceConnections, llmConfig } from '../db/schema.js'
 import { ok } from '../lib/response.js'
 import { seedDemoProject, DEMO_CONFIG_NAMES, ALPHA_CONFIG, BETA_CONFIG, GAMMA_CONFIG } from '../lib/seedDemo.js'
 import { DEMO_IMPROVING, DEMO_DECLINING, DEMO_REALWORLD } from '../lib/demoData.js'
@@ -85,6 +85,22 @@ demo.delete('/reset', async (c) => {
   await db.delete(llmInsights).where(sql`1=1`)
   await db.delete(importSessions).where(sql`1=1`)
   await db.delete(projectConfigs).where(sql`1=1`)
+  return new Response(null, { status: 204 })
+})
+
+/**
+ * DELETE /api/v1/demo/full-reset
+ * Deletes ALL app data: everything reset does, plus source_connections and llm_config.
+ * Returns the app to a fresh-install state.
+ */
+demo.delete('/full-reset', async (c) => {
+  await db.delete(ticketTransitions).where(sql`1=1`)
+  await db.delete(tickets).where(sql`1=1`)
+  await db.delete(llmInsights).where(sql`1=1`)
+  await db.delete(importSessions).where(sql`1=1`)
+  await db.delete(projectConfigs).where(sql`1=1`)
+  await db.delete(sourceConnections).where(sql`1=1`)
+  await db.delete(llmConfig).where(sql`1=1`)
   return new Response(null, { status: 204 })
 })
 

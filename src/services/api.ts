@@ -201,6 +201,7 @@ export const api = {
         { method: 'POST' },
       ),
     reset: () => request<null>('/api/v1/demo/reset', { method: 'DELETE' }),
+    fullReset: () => request<null>('/api/v1/demo/full-reset', { method: 'DELETE' }),
   },
   llm: {
     status: () => request<LLMStatus>('/api/v1/llm/status'),
