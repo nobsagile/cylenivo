@@ -265,7 +265,7 @@ export function Sidebar() {
   }, [])
 
   useEffect(() => {
-    alert('[updater] TAURI_INTERNALS: ' + String(window.__TAURI_INTERNALS__) + ' | isTauri: ' + String(!!(window as Record<string, unknown>).__TAURI__))
+    alert('[updater] TAURI_INTERNALS: ' + String(window.__TAURI_INTERNALS__) + ' | isTauri: ' + String(!!(window as unknown as Record<string, unknown>).__TAURI__))
     if (!window.__TAURI_INTERNALS__) return
     import('@tauri-apps/plugin-updater')
       .then(({ check }) =>
