@@ -265,18 +265,14 @@ export function Sidebar() {
   }, [])
 
   useEffect(() => {
-    alert('[updater] TAURI_INTERNALS: ' + String(window.__TAURI_INTERNALS__) + ' | isTauri: ' + String(!!(window as unknown as Record<string, unknown>).__TAURI__))
-    if (!window.__TAURI_INTERNALS__) return
+    if (!('isTauri' in window)) return
     import('@tauri-apps/plugin-updater')
       .then(({ check }) =>
         check()
-          .then((u) => {
-            alert('[updater] result: ' + JSON.stringify(u))
-            if (u?.available) setPendingUpdate(u)
-          })
-          .catch((e) => alert('[updater] check error: ' + String(e)))
+          .then((u) => { if (u) setPendingUpdate(u) })
+          .catch(() => {})
       )
-      .catch((e) => alert('[updater] import error: ' + String(e)))
+      .catch(() => {})
   }, [])
 
   const currentImport = imports.find(imp => imp.id === importId)
