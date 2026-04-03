@@ -104,8 +104,13 @@ export async function seedDemoProject(
 
   const { ticketRows, transitionRows } = buildTicketRows(importId, fixture.tickets)
 
-  if (ticketRows.length) await db.insert(tickets).values(ticketRows)
-  if (transitionRows.length) await db.insert(ticketTransitions).values(transitionRows)
+  const CHUNK = 500
+  for (let i = 0; i < ticketRows.length; i += CHUNK) {
+    await db.insert(tickets).values(ticketRows.slice(i, i + CHUNK))
+  }
+  for (let i = 0; i < transitionRows.length; i += CHUNK) {
+    await db.insert(ticketTransitions).values(transitionRows.slice(i, i + CHUNK))
+  }
 
   return { config_id: configId, import_id: importId }
 }

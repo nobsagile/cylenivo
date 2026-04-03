@@ -172,9 +172,14 @@ imports.post('/', async (c) => {
 
   const { ticketRows, transitionRows } = buildTicketRows(importId, data.tickets)
 
+  const CHUNK = 500
   await db.insert(importSessions).values(sessionRow)
-  if (ticketRows.length) await db.insert(tickets).values(ticketRows)
-  if (transitionRows.length) await db.insert(ticketTransitions).values(transitionRows)
+  for (let i = 0; i < ticketRows.length; i += CHUNK) {
+    await db.insert(tickets).values(ticketRows.slice(i, i + CHUNK))
+  }
+  for (let i = 0; i < transitionRows.length; i += CHUNK) {
+    await db.insert(ticketTransitions).values(transitionRows.slice(i, i + CHUNK))
+  }
 
   return c.json(ok(serializeSession(sessionRow, cfgRows[0])), 201)
 })
