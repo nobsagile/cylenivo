@@ -65,6 +65,20 @@ jobs:
         working-directory: server
         run: bun test
 
+      - name: Generate release notes
+        id: notes
+        shell: bash
+        run: |
+          PREV=$(git tag --sort=-version:refname | grep -v "^${{ github.ref_name }}$" | head -1)
+          if [ -n "$PREV" ]; then
+            BODY=$(git log --pretty=format:"- %s" "$PREV".."${{ github.ref_name }}" | grep -v "^- ${{ github.ref_name }}")
+          else
+            BODY=$(git log --pretty=format:"- %s" | grep -v "^- ${{ github.ref_name }}")
+          fi
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Build server binary (Mac/Linux)
         if: matrix.os != 'windows-latest'
         working-directory: server
@@ -86,7 +100,7 @@ jobs:
         with:
           tagName: ${{ github.ref_name }}
           releaseName: 'Cylenivo ${{ github.ref_name }}'
-          releaseBody: ''
+          releaseBody: ${{ steps.notes.outputs.body }}
           releaseDraft: false
           prerelease: false
           args: --target ${{ matrix.target }}${{ matrix.os == 'ubuntu-22.04' && ' --bundles deb,rpm' || '' }}
