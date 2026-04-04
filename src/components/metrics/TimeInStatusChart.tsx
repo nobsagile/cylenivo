@@ -35,23 +35,27 @@ function buildStatusColors(statuses: string[], config: ConfigContext | null | un
   }))
 }
 
-function AvgTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value?: number; name?: string; color?: string; fill?: string; dataKey?: string }>; label?: string }) {
+function AvgTooltip({ active, payload, label, medians }: { active?: boolean; payload?: Array<{ value?: number; name?: string; color?: string; fill?: string; dataKey?: string }>; label?: string; medians?: Record<string, number> }) {
   if (!active || !payload?.length) return null
   const color = (payload[0].fill ?? payload[0].color) as string
+  const median = label ? medians?.[label] : undefined
   return (
     <ChartTooltip>
       <p className="font-semibold text-gray-800 mb-1">{label}</p>
-      <p className="font-medium" style={{ color }}>{Number(payload[0].value).toFixed(1)} days</p>
+      <p className="font-medium" style={{ color }}>{Number(payload[0].value).toFixed(1)} d avg</p>
+      {median !== undefined && <p className="text-gray-500 text-xs">{median.toFixed(1)} d median</p>}
     </ChartTooltip>
   )
 }
 
-function StackedTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value?: number; name?: string; color?: string; fill?: string; dataKey?: string }>; label?: string }) {
+function StackedTooltip({ active, payload, label, titles }: { active?: boolean; payload?: Array<{ value?: number; name?: string; color?: string; fill?: string; dataKey?: string }>; label?: string; titles?: Record<string, string> }) {
   if (!active || !payload?.length) return null
   const entries = payload.filter((p) => (p.value as number) > 0)
+  const title = label ? titles?.[label] : undefined
   return (
     <ChartTooltip>
-      <p className="font-semibold text-gray-800 mb-1.5">{label}</p>
+      <p className="font-semibold text-gray-800 mb-0.5">{label}</p>
+      {title && <p className="text-gray-400 text-xs mb-1.5 max-w-[200px] truncate">{title}</p>}
       {entries.map((p) => (
         <div key={p.dataKey} className="flex justify-between gap-4">
           <span style={{ color: p.color }}>{p.dataKey}</span>
@@ -76,6 +80,7 @@ export function AvgTimeInStatusChart({ timeInStatusData, summary }: AvgProps) {
     status,
     days: summary.time_in_status[status]?.mean_days ?? 0,
   }))
+  const medianByStatus = Object.fromEntries(statuses.map(s => [s, summary.time_in_status[s]?.median_days ?? 0]))
 
   return (
     <div>
@@ -107,7 +112,7 @@ export function AvgTimeInStatusChart({ timeInStatusData, summary }: AvgProps) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" tick={{ fontSize: 11 }} unit=" d" />
           <YAxis dataKey="status" type="category" tick={{ fontSize: 11 }} width={150} />
-          <Tooltip content={<AvgTooltip />} wrapperStyle={{ zIndex: 100 }} cursor={false} />
+          <Tooltip content={<AvgTooltip medians={medianByStatus} />} wrapperStyle={{ zIndex: 100 }} cursor={false} />
           <Bar dataKey="days">
             {avgData.map((entry) => (
               <Cell key={entry.status} fill={colors[entry.status]} />
@@ -134,6 +139,7 @@ export function PerTicketBreakdownChart({ timeInStatusData, config, onTicketClic
   if (!last30.length) return null
 
   const idByExternalId = Object.fromEntries(last30.map(t => [t.external_id, t.id]))
+  const titleByExternalId = Object.fromEntries(last30.map(t => [t.external_id, t.title]))
   const stackedData = last30.map((ticket) => ({
     name: ticket.external_id,
     ...Object.fromEntries(statuses.map((s) => [s, ticket.status_durations[s] ?? 0])),
@@ -162,7 +168,7 @@ export function PerTicketBreakdownChart({ timeInStatusData, config, onTicketClic
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={60} />
           <YAxis tick={{ fontSize: 11 }} unit=" d" />
-          <Tooltip content={<StackedTooltip />} wrapperStyle={{ zIndex: 100 }} cursor={false} />
+          <Tooltip content={<StackedTooltip titles={titleByExternalId} />} wrapperStyle={{ zIndex: 100 }} cursor={false} />
           {statuses.map((status) => (
             <Bar key={status} dataKey={status} stackId="a" fill={colors[status]} />
           ))}
