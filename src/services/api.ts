@@ -118,13 +118,13 @@ export const api = {
   },
   connections: {
     list: () => request<SourceConnection[]>('/api/v1/connections'),
-    create: (body: Omit<SourceConnection, 'id' | 'created_at'> & { api_token: string }) =>
+    create: (body: { name: string; source_type: string; base_url?: string; email?: string; api_token?: string; credentials?: Record<string, string> }) =>
       request<SourceConnection>('/api/v1/connections', {
         method: 'POST',
         body: JSON.stringify(body),
         headers: { 'Content-Type': 'application/json' },
       }),
-    update: (id: string, body: Partial<Omit<SourceConnection, 'id' | 'created_at'> & { api_token?: string }>) =>
+    update: (id: string, body: Partial<Omit<SourceConnection, 'id' | 'created_at'> & { api_token?: string; credentials?: Record<string, string> }>) =>
       request<SourceConnection>(`/api/v1/connections/${id}`, {
         method: 'PUT',
         body: JSON.stringify(body),

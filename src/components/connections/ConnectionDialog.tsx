@@ -57,7 +57,6 @@ export default function ConnectionDialog({ open, manifest, connection, onClose, 
   const [error, setError] = useState('')
   const [pendingId, setPendingId] = useState<string | null>(connection?.id ?? null)
 
-  const requiredFields = manifest.credentials.filter((f) => f.required !== false || !isEdit)
   const canSave = Boolean(name) && manifest.credentials.every((f) => {
     if (f.type === 'password' && isEdit) return true // keep existing
     return Boolean(credentials[f.key])
