@@ -17,6 +17,6 @@ export function calculateCycleTime(
     : lastTransitionTo(transitions, endStatus)
 
   if (startTs === null || endTs === null) return null
-  if (endTs <= startTs) return null
+  if (endTs < startTs) return null
   return (endTs.getTime() - startTs.getTime()) / (1000 * 86400)
 }

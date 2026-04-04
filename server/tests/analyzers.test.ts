@@ -690,15 +690,15 @@ describe('sortTransitions: equal timestamps are deterministic', () => {
     expect(r1.map(x => x.to_status)).toEqual(r2.map(x => x.to_status))
   })
 
-  it('calculateCycleTime returns null (not NaN) when start and end share a timestamp', () => {
-    // endTs <= startTs → null by design (not a crash or NaN)
+  it('calculateCycleTime returns 0 (not NaN or null) when start and end share a timestamp', () => {
+    // endTs === startTs → cycle time of 0, not null (ticket resolved instantly)
     const ts = '2024-01-10T09:00:00Z'
     const transitions = [
       t('In Progress', ts, 'Backlog'),
       t('Done', ts, 'In Progress'),
     ]
     const result = calculateCycleTime(transitions, 'In Progress', 'Done', 'first_last')
-    expect(result).toBeNull()
+    expect(result).toBe(0)
   })
 })
 

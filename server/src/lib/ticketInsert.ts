@@ -14,6 +14,16 @@ interface TicketInput {
   metadata?: Record<string, unknown> | null
 }
 
+function parseDate(value: string): string | null {
+  try {
+    const d = new Date(value)
+    if (isNaN(d.getTime())) return null
+    return d.toISOString()
+  } catch {
+    return null
+  }
+}
+
 /**
  * Builds ticket + transition insert rows from raw ticket input.
  * Used by both file import and demo seeding.
@@ -29,6 +39,12 @@ export function buildTicketRows(
   const transitionRows: (TransitionInsert)[] = []
 
   for (const t of inputTickets) {
+    const createdAt = parseDate(t.created_at)
+    if (!createdAt) {
+      console.warn(`[ticketInsert] skipping ${t.external_id}: invalid created_at "${t.created_at}"`)
+      continue
+    }
+
     const ticketId = crypto.randomUUID()
     ticketRows.push({
       id: ticketId,
@@ -36,7 +52,7 @@ export function buildTicketRows(
       external_id: t.external_id,
       title: t.title,
       ticket_type: t.ticket_type,
-      created_at: new Date(t.created_at).toISOString(),
+      created_at: createdAt,
       external_link: t.external_link ?? null,
       extra_metadata: t.metadata ? JSON.stringify(t.metadata) : null,
     })
@@ -45,12 +61,17 @@ export function buildTicketRows(
       (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime(),
     )
     for (const tr of sorted) {
+      const transitionedAt = parseDate(tr.transitioned_at)
+      if (!transitionedAt) {
+        console.warn(`[ticketInsert] skipping transition for ${t.external_id}: invalid transitioned_at "${tr.transitioned_at}"`)
+        continue
+      }
       transitionRows.push({
         id: crypto.randomUUID(),
         ticket_id: ticketId,
         from_status: tr.from_status ?? null,
         to_status: tr.to_status,
-        transitioned_at: new Date(tr.transitioned_at).toISOString(),
+        transitioned_at: transitionedAt,
       })
     }
   }
