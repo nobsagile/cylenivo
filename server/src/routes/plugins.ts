@@ -10,8 +10,10 @@ import { ok } from '../lib/response.js'
 const REGISTRY_URL = 'https://raw.githubusercontent.com/nobsagile/cylenivo-plugins/main/registry.json'
 const RAW_BASE = 'https://raw.githubusercontent.com/nobsagile/cylenivo-plugins/main'
 
+const GITHUB_HEADERS = { 'User-Agent': 'cylenivo-app' }
+
 async function downloadText(url: string): Promise<string> {
-  const res = await fetch(url)
+  const res = await fetch(url, { headers: GITHUB_HEADERS })
   if (!res.ok) throw new Error(`Download failed: ${url} (${res.status})`)
   return res.text()
 }
@@ -46,15 +48,14 @@ plugins.get('/', async (c) => {
 })
 
 plugins.get('/registry', async (c) => {
-  let raw: Response
+  let entries: Array<{ id: string; name: string; description: string; path: string; sha256: string }>
   try {
-    raw = await fetch(REGISTRY_URL)
+    const raw = await fetch(REGISTRY_URL, { headers: GITHUB_HEADERS })
     if (!raw.ok) throw new Error(`GitHub returned ${raw.status}`)
+    entries = await raw.json()
   } catch (e) {
     return c.json({ data: null, error: e instanceof Error ? e.message : 'Failed to fetch registry' }, 502)
   }
-
-  const entries = await raw.json() as Array<{ id: string; name: string; description: string; path: string; sha256: string }>
   const pluginsDir = getPluginsDir()
 
   const result = await Promise.all(entries.map(async (entry) => {
