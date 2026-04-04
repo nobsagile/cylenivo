@@ -507,6 +507,11 @@
   "connection": {
     "editTitle": "Edit Connection",
     "addTitle": "Add Jira Connection",
+    "addTitleFor": "Add {{name}} Connection",
+    "fillRequired": "Fill all required fields first",
+    "testOk": "Connection successful",
+    "pickSourceType": "Choose data source",
+    "jiraDesc": "Atlassian Jira Cloud or Server",
     "name": "Name",
     "namePlaceholder": "e.g. Acme Jira",
     "jiraBaseUrl": "Jira Base URL",

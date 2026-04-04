@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Loader2, AlertCircle } from 'lucide-react'
 import { api } from '@/services/api'
 import { notifyImportsChanged } from '@/hooks/useImports'
-import type { SourceConnection, JiraFetchOptions } from '@/types'
+import type { SourceConnection, JiraFetchOptions, PluginManifest } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DatePicker } from '@/components/ui/date-picker'
@@ -24,6 +24,7 @@ const ISSUE_TYPE_OPTIONS = ['Story', 'Task', 'Bug', 'Epic']
 interface Props {
   open: boolean
   connection: SourceConnection
+  pluginManifest?: PluginManifest | null
   onClose: () => void
 }
 
@@ -40,7 +41,7 @@ function extractStatuses(data: Record<string, unknown>): string[] {
   return [...statuses].sort()
 }
 
-export default function RefreshDialog({ open, connection, onClose }: Props) {
+export default function RefreshDialog({ open, connection, pluginManifest, onClose }: Props) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [step, setStep] = useState<RefreshStep>('preflight')
@@ -51,6 +52,15 @@ export default function RefreshDialog({ open, connection, onClose }: Props) {
   const [limit, setLimit] = useState(50)
   const [resolvedFrom, setResolvedFrom] = useState(connection.resolved_from ?? '')
   const [resolvedTo, setResolvedTo] = useState(connection.resolved_to ?? '')
+
+  // Plugin fetch options state
+  const [pluginOptions, setPluginOptions] = useState<Record<string, string>>(() => {
+    const fetchOptions = pluginManifest?.fetch_options ?? []
+    return fetchOptions.reduce<Record<string, string>>((acc, f) => {
+      acc[f.key] = String(f.default ?? '')
+      return acc
+    }, {})
+  })
 
   // Fetch state
   const [fetchMsg, setFetchMsg] = useState('')
@@ -118,7 +128,82 @@ export default function RefreshDialog({ open, connection, onClose }: Props) {
     if (!isOpen) onClose()
   }
 
-  // ── Pre-flight ──────────────────────────────────────────────────────────
+  // ── Plugin pre-flight ───────────────────────────────────────────────────
+
+  async function handlePluginRefresh() {
+    setStep('fetching')
+    setFetchMsg(t('refresh.fetching'))
+    setFetchError('')
+    try {
+      const result = await api.connections.fetchStream(connection.id, pluginOptions as unknown as JiraFetchOptions, (current, total, key) => {
+        setFetchMsg(t('refresh.fetchingTicket', { current, total, key }))
+      }) as Record<string, unknown>
+
+      const statuses = extractStatuses(result)
+      const count = (result.tickets as unknown[])?.length ?? 0
+      setFetchResult(result)
+      setFetchedStatuses(statuses)
+      setTicketCount(count)
+
+      const [datasets, configs] = await Promise.all([
+        api.connections.datasets(connection.id).catch(() => []),
+        api.configs.list().catch(() => []),
+      ])
+      const lastConfigId = datasets[0]?.config_id
+      const configId = (lastConfigId && configs.find(c => c.id === lastConfigId)) ? lastConfigId : configs[0]?.id
+
+      if (configId) {
+        const blob = new Blob([JSON.stringify(result)], { type: 'application/json' })
+        const file = new File([blob], `${connection.name}-refresh.json`, { type: 'application/json' })
+        const session = await api.imports.upload(file, configId, connection.name || undefined, connection.id)
+        notifyImportsChanged()
+        onClose()
+        navigate(`/projects/${session.id}`)
+      } else {
+        setStep('configure')
+      }
+    } catch (e) {
+      setFetchError(e instanceof Error ? e.message : 'Fetch failed')
+    }
+  }
+
+  if (step === 'preflight' && connection.source_type !== 'jira' && pluginManifest) {
+    const fetchOptions = pluginManifest.fetch_options
+    const canFetch = fetchOptions.filter((f) => f.required).every((f) => Boolean(pluginOptions[f.key]))
+
+    return (
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('refresh.title')}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-gray-400">{t('refresh.preflight')}</p>
+          <div className="space-y-3 py-2">
+            {fetchOptions.map((field) => (
+              <div key={field.key}>
+                <label className="block text-xs font-medium text-gray-600 mb-1">{field.label}</label>
+                <Input
+                  type={field.type === 'number' ? 'number' : 'text'}
+                  value={pluginOptions[field.key] ?? ''}
+                  onChange={(e) => setPluginOptions((prev) => ({ ...prev, [field.key]: e.target.value }))}
+                  placeholder={field.placeholder ?? ''}
+                  className="h-8 text-sm"
+                />
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={onClose}>{t('common.cancel')}</Button>
+            <Button onClick={handlePluginRefresh} disabled={!canFetch}>
+              {t('refresh.confirm')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
+  // ── Jira pre-flight ─────────────────────────────────────────────────────
 
   if (step === 'preflight') {
     return (

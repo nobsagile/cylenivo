@@ -49,10 +49,11 @@ export const ticketTransitions = sqliteTable('ticket_transitions', {
 export const sourceConnections = sqliteTable('source_connections', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
-  source_type: text('source_type').notNull(), // "jira"
-  base_url: text('base_url').notNull(),
-  email: text('email').notNull(),
-  api_token: text('api_token').notNull(),
+  source_type: text('source_type').notNull(),
+  base_url: text('base_url').notNull().default(''),
+  email: text('email').notNull().default(''),
+  api_token: text('api_token').notNull().default(''),
+  credentials_json: text('credentials_json'), // for plugins: JSON credentials
   created_at: text('created_at').notNull(),
   project_key: text('project_key'),
   issue_types: text('issue_types'),       // JSON array string

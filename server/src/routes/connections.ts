@@ -6,6 +6,7 @@ import { sourceConnections, importSessions, type ConnectionRow, type ConnectionI
 import { ok } from '../lib/response.js'
 import { testConnection, buildImportFile } from '../connectors/jira.js'
 import type { JiraCredentials } from '../connectors/jira.js'
+import { loadPlugin } from '../lib/pluginRunner.js'
 
 const connections = new Hono()
 
@@ -25,25 +26,37 @@ connections.get('/', async (c) => {
 
 connections.post('/', async (c) => {
   const body = await c.req.json()
-  const required = ['name', 'source_type', 'base_url', 'email', 'api_token']
-  for (const field of required) {
-    if (!body[field]) return c.json({ data: null, error: `Missing required field: ${field}` }, 422)
-  }
+  if (!body.name) return c.json({ data: null, error: 'Missing required field: name' }, 422)
+  if (!body.source_type) return c.json({ data: null, error: 'Missing required field: source_type' }, 422)
+
   const id = crypto.randomUUID()
   const now = new Date().toISOString()
-  const row = {
-    id,
-    name: body.name,
-    source_type: body.source_type,
-    base_url: (body.base_url ?? '').replace(/\/$/, ''),
-    email: body.email,
-    api_token: body.api_token,
-    created_at: now,
-    project_key: body.project_key ?? null,
-    issue_types: body.issue_types ? JSON.stringify(body.issue_types) : null,
-    resolved_from: body.resolved_from ?? null,
-    resolved_to: body.resolved_to ?? null,
+  let row: ConnectionInsert
+
+  if (body.source_type === 'jira') {
+    for (const field of ['base_url', 'email', 'api_token']) {
+      if (!body[field]) return c.json({ data: null, error: `Missing required field: ${field}` }, 422)
+    }
+    row = {
+      id, name: body.name, source_type: 'jira',
+      base_url: (body.base_url ?? '').replace(/\/$/, ''),
+      email: body.email, api_token: body.api_token,
+      credentials_json: null,
+      created_at: now,
+      project_key: body.project_key ?? null,
+      issue_types: body.issue_types ? JSON.stringify(body.issue_types) : null,
+      resolved_from: body.resolved_from ?? null, resolved_to: body.resolved_to ?? null,
+    }
+  } else {
+    row = {
+      id, name: body.name, source_type: body.source_type,
+      base_url: '', email: '', api_token: '',
+      credentials_json: JSON.stringify(body.credentials ?? {}),
+      created_at: now,
+      project_key: null, issue_types: null, resolved_from: null, resolved_to: null,
+    }
   }
+
   await db.insert(sourceConnections).values(row)
   return c.json(ok(serialize(row)), 201)
 })
@@ -56,13 +69,17 @@ connections.put('/:id', async (c) => {
   const body = await c.req.json()
   const updates: Partial<ConnectionInsert> = {}
   if (body.name !== undefined) updates.name = body.name
-  if (body.base_url !== undefined) updates.base_url = (body.base_url ?? '').replace(/\/$/, '')
-  if (body.email !== undefined) updates.email = body.email
-  if (body.api_token !== undefined) updates.api_token = body.api_token
-  if (body.project_key !== undefined) updates.project_key = body.project_key || null
-  if (body.issue_types !== undefined) updates.issue_types = body.issue_types ? JSON.stringify(body.issue_types) : null
-  if (body.resolved_from !== undefined) updates.resolved_from = body.resolved_from || null
-  if (body.resolved_to !== undefined) updates.resolved_to = body.resolved_to || null
+  if (existing[0].source_type === 'jira') {
+    if (body.base_url !== undefined) updates.base_url = (body.base_url ?? '').replace(/\/$/, '')
+    if (body.email !== undefined) updates.email = body.email
+    if (body.api_token !== undefined) updates.api_token = body.api_token
+    if (body.project_key !== undefined) updates.project_key = body.project_key || null
+    if (body.issue_types !== undefined) updates.issue_types = body.issue_types ? JSON.stringify(body.issue_types) : null
+    if (body.resolved_from !== undefined) updates.resolved_from = body.resolved_from || null
+    if (body.resolved_to !== undefined) updates.resolved_to = body.resolved_to || null
+  } else {
+    if (body.credentials !== undefined) updates.credentials_json = JSON.stringify(body.credentials)
+  }
 
   await db.update(sourceConnections).set(updates).where(eq(sourceConnections.id, id))
   const updated = await db.select().from(sourceConnections).where(eq(sourceConnections.id, id))
@@ -83,10 +100,17 @@ connections.post('/:id/test', async (c) => {
   if (!rows.length) return c.json({ data: null, error: 'Connection not found' }, 404)
 
   const conn = rows[0]
-  const creds: JiraCredentials = { base_url: conn.base_url, email: conn.email, api_token: conn.api_token }
   try {
-    const result = await testConnection(creds)
-    return c.json(ok(result))
+    if (conn.source_type === 'jira') {
+      const creds: JiraCredentials = { base_url: conn.base_url, email: conn.email, api_token: conn.api_token }
+      const result = await testConnection(creds)
+      return c.json(ok(result))
+    } else {
+      const plugin = await loadPlugin(conn.source_type)
+      const credentials = JSON.parse(conn.credentials_json ?? '{}')
+      const result = await plugin.test(credentials)
+      return c.json(ok(result))
+    }
   } catch (e) {
     return c.json({ data: null, error: e instanceof Error ? e.message : 'Connection failed' }, 400)
   }
@@ -99,26 +123,38 @@ connections.post('/:id/fetch', async (c) => {
 
   const conn = rows[0]
   const body = await c.req.json()
-  const project = body.project || conn.project_key
-  if (!project) return c.json({ data: null, error: 'Missing required field: project' }, 422)
 
-  const creds: JiraCredentials = { base_url: conn.base_url, email: conn.email, api_token: conn.api_token }
-  const requestedLimit = typeof body.limit === 'number' ? body.limit : 50
-  const storedTypes = conn.issue_types ? JSON.parse(conn.issue_types) : null
-  const options = {
-    project,
-    limit: Math.min(Math.max(1, requestedLimit), 2000),
-    issue_types: body.issue_types ?? storedTypes ?? ['Story', 'Task', 'Bug'],
-    resolved_from: body.resolved_from ?? conn.resolved_from ?? undefined,
-    resolved_to: body.resolved_to ?? conn.resolved_to ?? undefined,
+  if (conn.source_type === 'jira') {
+    const project = body.project || conn.project_key
+    if (!project) return c.json({ data: null, error: 'Missing required field: project' }, 422)
   }
 
   return streamSSE(c, async (stream) => {
     try {
-      const importFile = await buildImportFile(creds, options, async (current, total, key) => {
-        await stream.writeSSE({ data: JSON.stringify({ type: 'progress', current, total, key }) })
-      })
-      await stream.writeSSE({ data: JSON.stringify({ type: 'done', result: importFile }) })
+      if (conn.source_type === 'jira') {
+        const project = body.project || conn.project_key
+        const creds: JiraCredentials = { base_url: conn.base_url, email: conn.email, api_token: conn.api_token }
+        const requestedLimit = typeof body.limit === 'number' ? body.limit : 50
+        const storedTypes = conn.issue_types ? JSON.parse(conn.issue_types) : null
+        const options = {
+          project,
+          limit: Math.min(Math.max(1, requestedLimit), 2000),
+          issue_types: body.issue_types ?? storedTypes ?? ['Story', 'Task', 'Bug'],
+          resolved_from: body.resolved_from ?? conn.resolved_from ?? undefined,
+          resolved_to: body.resolved_to ?? conn.resolved_to ?? undefined,
+        }
+        const importFile = await buildImportFile(creds, options, async (current, total, key) => {
+          await stream.writeSSE({ data: JSON.stringify({ type: 'progress', current, total, key }) })
+        })
+        await stream.writeSSE({ data: JSON.stringify({ type: 'done', result: importFile }) })
+      } else {
+        const plugin = await loadPlugin(conn.source_type)
+        const credentials = JSON.parse(conn.credentials_json ?? '{}')
+        const result = await plugin.fetch(credentials, body.options ?? {}, async (current: number, total: number, key: string) => {
+          await stream.writeSSE({ data: JSON.stringify({ type: 'progress', current, total, key }) })
+        })
+        await stream.writeSSE({ data: JSON.stringify({ type: 'done', result }) })
+      }
     } catch (e) {
       await stream.writeSSE({ data: JSON.stringify({ type: 'error', message: e instanceof Error ? e.message : 'Fetch failed' }) })
     }

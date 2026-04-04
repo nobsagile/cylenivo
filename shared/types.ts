@@ -169,7 +169,7 @@ export interface PaginatedTickets {
 export interface SourceConnection {
   id: string
   name: string
-  source_type: 'jira'
+  source_type: string
   base_url: string
   email: string
   created_at: string
@@ -177,6 +177,7 @@ export interface SourceConnection {
   issue_types?: string[]
   resolved_from?: string
   resolved_to?: string
+  credentials_json?: string | null
 }
 
 export interface JiraFetchOptions {
@@ -197,6 +198,7 @@ export interface PluginField {
   default?: string | number
   placeholder?: string
   help?: string
+  link?: { url: string; label: string }
 }
 
 export interface PluginManifest {

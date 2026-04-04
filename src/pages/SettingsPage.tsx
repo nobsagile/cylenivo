@@ -11,6 +11,7 @@ import type { ProjectConfig, ImportSession, SourceConnection, PluginManifest, Pl
 import { Button } from '@/components/ui/button'
 import ConnectionDialog from '@/components/connections/ConnectionDialog'
 import RefreshDialog from '@/components/connections/RefreshDialog'
+import { JIRA_MANIFEST } from '@/lib/jiraManifest'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { notifyImportsChanged } from '@/hooks/useImports'
 import { EmptyState, SectionHeader, Card, IconBtn, NavGroup, NavItem, type Section, type PendingDelete } from './settings/shared'
@@ -35,7 +36,9 @@ export default function SettingsPage() {
   const [imports, setImports] = useState<ImportSession[]>([])
   const [connections, setConnections] = useState<SourceConnection[]>([])
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogManifest, setDialogManifest] = useState<PluginManifest>(JIRA_MANIFEST)
   const [editConn, setEditConn] = useState<SourceConnection | null>(null)
+  const [showSourcePicker, setShowSourcePicker] = useState(false)
   const [testingId, setTestingId] = useState<string | null>(null)
   const [refreshConn, setRefreshConn] = useState<SourceConnection | null>(null)
   const [testResults, setTestResults] = useState<Record<string, 'ok' | 'error'>>({})
@@ -145,6 +148,24 @@ export default function SettingsPage() {
       setErrorMsg({ title: t('settings.couldNotGenerateDemo'), description: e instanceof Error ? e.message : 'Error' })
     }
     setSeeding(false)
+  }
+
+  function manifestForConn(conn: SourceConnection): PluginManifest {
+    if (conn.source_type === 'jira') return JIRA_MANIFEST
+    return plugins.find((p) => p.source_type === conn.source_type) ?? JIRA_MANIFEST
+  }
+
+  function openAddDialog(manifest: PluginManifest) {
+    setEditConn(null)
+    setDialogManifest(manifest)
+    setShowSourcePicker(false)
+    setDialogOpen(true)
+  }
+
+  function openEditDialog(conn: SourceConnection) {
+    setEditConn(conn)
+    setDialogManifest(manifestForConn(conn))
+    setDialogOpen(true)
   }
 
   async function handleDuplicate(id: string) {
@@ -347,7 +368,7 @@ export default function SettingsPage() {
           title={t('settings.navDataSources')}
           desc={t('settings.dataSourcesDesc')}
           action={
-            <Button onClick={() => { setEditConn(null); setDialogOpen(true) }} variant="outline" size="sm" className="gap-1.5 shrink-0">
+            <Button onClick={() => setShowSourcePicker(true)} variant="outline" size="sm" className="gap-1.5 shrink-0">
               <Plus className="w-3.5 h-3.5" />
               {t('settings.addDataSource')}
             </Button>
@@ -376,7 +397,7 @@ export default function SettingsPage() {
             title={t('settings.noDataSources')}
             hint={t('settings.noDataSourcesHint')}
             ctaLabel={t('settings.addDataSource')}
-            onCta={() => { setEditConn(null); setDialogOpen(true) }}
+            onCta={() => setShowSourcePicker(true)}
           />
         ) : (
           <div className="space-y-2">
@@ -398,7 +419,7 @@ export default function SettingsPage() {
                     <IconBtn onClick={() => handleDuplicate(conn.id)} title={t('common.duplicate')}>
                       <Copy className="w-3.5 h-3.5" />
                     </IconBtn>
-                    <IconBtn onClick={() => { setEditConn(conn); setDialogOpen(true) }} title={t('common.edit')}>
+                    <IconBtn onClick={() => openEditDialog(conn)} title={t('common.edit')}>
                       <Pencil className="w-3.5 h-3.5" />
                     </IconBtn>
                     <IconBtn danger onClick={() => setPendingDelete({ type: 'connection', id: conn.id, label: conn.name })} title={t('common.delete')}>
@@ -804,6 +825,7 @@ export default function SettingsPage() {
       <ConnectionDialog
         key={editConn?.id ?? 'new'}
         open={dialogOpen}
+        manifest={dialogManifest}
         connection={editConn}
         onClose={() => setDialogOpen(false)}
         onSaved={(conn) => { handleSaved(conn) }}
@@ -813,8 +835,46 @@ export default function SettingsPage() {
         <RefreshDialog
           open
           connection={refreshConn}
+          pluginManifest={refreshConn.source_type !== 'jira' ? manifestForConn(refreshConn) : null}
           onClose={() => setRefreshConn(null)}
         />
+      )}
+
+      {/* Source type picker */}
+      {showSourcePicker && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setShowSourcePicker(false)}>
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-80 space-y-3" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-base font-semibold text-gray-900">{t('connection.pickSourceType')}</h3>
+            <button
+              onClick={() => openAddDialog(JIRA_MANIFEST)}
+              className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors text-left"
+            >
+              <div className="p-2 rounded-lg bg-blue-50 border border-blue-100">
+                <Link2 className="w-4 h-4 text-blue-500" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900">Jira</p>
+                <p className="text-xs text-gray-400">{t('connection.jiraDesc')}</p>
+              </div>
+            </button>
+            {plugins.map((plugin) => (
+              <button
+                key={plugin.source_type}
+                onClick={() => openAddDialog(plugin)}
+                className="w-full flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors text-left"
+              >
+                <div className="p-2 rounded-lg bg-gray-50 border border-gray-100">
+                  <Puzzle className="w-4 h-4 text-gray-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{plugin.name}</p>
+                  <p className="text-xs text-gray-400">{plugin.description ?? plugin.source_type}</p>
+                </div>
+              </button>
+            ))}
+            <Button variant="outline" size="sm" className="w-full" onClick={() => setShowSourcePicker(false)}>{t('common.cancel')}</Button>
+          </div>
+        </div>
       )}
 
       {pendingDelete && (
