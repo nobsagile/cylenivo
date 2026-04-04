@@ -45,6 +45,7 @@ pub fn run() {
                 let app_data_dir = app.path().app_data_dir()?;
                 std::fs::create_dir_all(&app_data_dir)?;
                 let db_path = app_data_dir.join("cylenivo.db");
+                let plugins_dir = app_data_dir.join("plugins");
 
                 let port = find_free_port(8765);
                 app.manage(ServerPort(port));
@@ -55,6 +56,7 @@ pub fn run() {
                     .expect("cylenivo-server sidecar not configured")
                     .env("DB_PATH", db_path.to_string_lossy().as_ref())
                     .env("SERVER_PORT", port.to_string())
+                    .env("PLUGINS_DIR", plugins_dir.to_string_lossy().as_ref())
                     .spawn()
                     .expect("failed to spawn server sidecar");
 

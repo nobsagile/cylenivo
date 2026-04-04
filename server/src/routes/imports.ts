@@ -39,9 +39,7 @@ function validateImportFile(raw: unknown): ImportFile {
   if (data.tickets.length === 0) {
     throw new Error('Import file contains no tickets')
   }
-  if (data.source_type !== 'jira') {
-    throw new Error(`Unsupported source_type: ${data.source_type}`)
-  }
+  // source_type validation removed — plugins can have any source_type
   return data as unknown as ImportFile
 }
 

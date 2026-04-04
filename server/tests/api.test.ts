@@ -236,14 +236,6 @@ describe('imports', () => {
     expect(res.status).toBe(422)
   })
 
-  it('returns 422 for unsupported source_type', async () => {
-    const cfg = await createConfig()
-    const form = new FormData()
-    form.append('file', new Blob([JSON.stringify({ source_type: 'linear', project_key: 'X', exported_at: '2026-01-01T00:00:00Z', tickets: [{ external_id: 'X-1', title: 't', ticket_type: 'story', created_at: '2026-01-01T00:00:00Z', transitions: [] }] })], { type: 'application/json' }), 'bad.json')
-    form.append('config_id', cfg.id)
-    const res = await app.request('/api/v1/imports', { method: 'POST', body: form })
-    expect(res.status).toBe(422)
-  })
 
   it('returns 422 for ticket missing external_id', async () => {
     const cfg = await createConfig()
