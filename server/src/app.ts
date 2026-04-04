@@ -13,7 +13,7 @@ import demo from './routes/demo.js'
 export const app = new Hono()
 
 app.use('*', cors())
-if (process.env.NODE_ENV === 'development') app.use('*', logger())
+app.use('*', logger())
 
 app.get('/health', (c) => c.json({ status: 'ok' }))
 
