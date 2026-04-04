@@ -112,7 +112,7 @@ export function AvgTimeInStatusChart({ timeInStatusData, summary }: AvgProps) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" tick={{ fontSize: 11 }} unit=" d" />
           <YAxis dataKey="status" type="category" tick={{ fontSize: 11 }} width={150} />
-          <Tooltip content={<AvgTooltip medians={medianByStatus} />} wrapperStyle={{ zIndex: 100 }} cursor={false} />
+          <Tooltip content={({ active, payload, label }) => <AvgTooltip active={active} payload={payload as unknown as Array<{ value?: number; color?: string; fill?: string; dataKey?: string }>} label={label as string} medians={medianByStatus} />} wrapperStyle={{ zIndex: 100 }} cursor={false} />
           <Bar dataKey="days">
             {avgData.map((entry) => (
               <Cell key={entry.status} fill={colors[entry.status]} />
@@ -168,7 +168,7 @@ export function PerTicketBreakdownChart({ timeInStatusData, config, onTicketClic
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={60} />
           <YAxis tick={{ fontSize: 11 }} unit=" d" />
-          <Tooltip content={<StackedTooltip titles={titleByExternalId} />} wrapperStyle={{ zIndex: 100 }} cursor={false} />
+          <Tooltip content={({ active, payload, label }) => <StackedTooltip active={active} payload={payload as unknown as Array<{ value?: number; color?: string; fill?: string; dataKey?: string }>} label={label as string} titles={titleByExternalId} />} wrapperStyle={{ zIndex: 100 }} cursor={false} />
           {statuses.map((status) => (
             <Bar key={status} dataKey={status} stackId="a" fill={colors[status]} />
           ))}
