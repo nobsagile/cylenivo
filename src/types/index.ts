@@ -27,6 +27,9 @@ export type {
   WeeklyThroughputPoint,
   ThroughputResponse,
   CfdResponse,
+  PluginFieldType,
+  PluginField,
+  PluginManifest,
 } from '../../shared/types'
 
 // Frontend-only types

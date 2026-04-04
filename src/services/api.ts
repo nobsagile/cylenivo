@@ -203,6 +203,11 @@ export const api = {
     reset: () => request<null>('/api/v1/demo/reset', { method: 'DELETE' }),
     fullReset: () => request<null>('/api/v1/demo/full-reset', { method: 'DELETE' }),
   },
+  plugins: {
+    list: () => request<import('@/types').PluginManifest[]>('/api/v1/plugins'),
+    uninstall: (sourceType: string) =>
+      request<null>(`/api/v1/plugins/${sourceType}`, { method: 'DELETE' }),
+  },
   llm: {
     status: () => request<LLMStatus>('/api/v1/llm/status'),
     analyze: (importId: string, model?: string) =>

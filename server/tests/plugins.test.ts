@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeAll } from 'bun:test'
+import { describe, it, expect, beforeAll, afterEach } from 'bun:test'
 import { join } from 'path'
+import { mkdir, writeFile, rm } from 'fs/promises'
 import { app } from '../src/index.js'
 
 const FIXTURE_PLUGINS_DIR = join(import.meta.dir, 'fixtures/plugins')
@@ -109,6 +110,31 @@ describe('POST /api/v1/plugins/:source_type/test', () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ credentials: {} }),
     })
+    expect(res.status).toBe(400)
+  })
+})
+
+describe('DELETE /api/v1/plugins/:source_type', () => {
+  const tmpPlugin = join(FIXTURE_PLUGINS_DIR, 'tmp-plugin')
+
+  afterEach(async () => {
+    await rm(tmpPlugin, { recursive: true, force: true })
+  })
+
+  it('removes plugin dir and returns 200', async () => {
+    await mkdir(tmpPlugin, { recursive: true })
+    await writeFile(join(tmpPlugin, 'manifest.json'), JSON.stringify({
+      source_type: 'tmp-plugin', name: 'Tmp Plugin', credentials: [], fetch_options: [],
+    }))
+
+    const res = await app.request('/api/v1/plugins/tmp-plugin', { method: 'DELETE' })
+    expect(res.status).toBe(200)
+    const body = await res.json() as Record<string, unknown>
+    expect(body.data).toBeNull()
+  })
+
+  it('returns 400 when plugin dir does not exist', async () => {
+    const res = await app.request('/api/v1/plugins/nonexistent-plugin', { method: 'DELETE' })
     expect(res.status).toBe(400)
   })
 })

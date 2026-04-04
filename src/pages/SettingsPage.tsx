@@ -7,7 +7,7 @@ import {
   X, Bot, RefreshCw, Puzzle, Globe, LayoutDashboard,
 } from 'lucide-react'
 import { api } from '@/services/api'
-import type { ProjectConfig, ImportSession, SourceConnection } from '@/types'
+import type { ProjectConfig, ImportSession, SourceConnection, PluginManifest } from '@/types'
 import { Button } from '@/components/ui/button'
 import ConnectionDialog from '@/components/connections/ConnectionDialog'
 import RefreshDialog from '@/components/connections/RefreshDialog'
@@ -50,6 +50,8 @@ export default function SettingsPage() {
   const [showConnBanner, setShowConnBanner] = useState(false)
   const [connDatasets, setConnDatasets] = useState<Record<string, ImportSession[]>>({})
   const [llmConfigExists, setLlmConfigExists] = useState(false)
+  const [plugins, setPlugins] = useState<PluginManifest[]>([])
+  const [pendingUninstall, setPendingUninstall] = useState<PluginManifest | null>(null)
 
   useEffect(() => {
     api.configs.list().then(setConfigs).catch(console.error)
@@ -63,6 +65,7 @@ export default function SettingsPage() {
       }
     }).catch(console.error)
     api.llmConfig.get().then((cfg) => setLlmConfigExists(!!cfg)).catch(console.error)
+    api.plugins.list().then(setPlugins).catch(console.error)
   }, [])
 
   async function executeDelete() {
@@ -475,6 +478,12 @@ export default function SettingsPage() {
   }
 
 
+  async function handleUninstall(plugin: PluginManifest) {
+    setPendingUninstall(null)
+    await api.plugins.uninstall(plugin.source_type)
+    setPlugins((prev) => prev.filter((p) => p.source_type !== plugin.source_type))
+  }
+
   function renderPlugins() {
     return (
       <>
@@ -482,21 +491,47 @@ export default function SettingsPage() {
           title={t('settings.tabPlugins')}
           desc={t('settings.pluginsDesc')}
         />
-        <div className="rounded-xl border border-gray-200 bg-gray-50 p-6 text-center">
-          <div className="flex items-center justify-center mb-3">
-            <div className="p-3 rounded-xl bg-white border border-gray-200 shadow-sm">
-              <Puzzle className="w-6 h-6 text-gray-400" />
-            </div>
+        {plugins.length === 0 ? (
+          <EmptyState
+            icon={Puzzle}
+            title={t('settings.pluginsEmpty')}
+            hint={t('settings.pluginsEmptyDesc')}
+          />
+        ) : (
+          <div className="space-y-2">
+            {plugins.map((plugin) => (
+              <Card
+                key={plugin.source_type}
+                icon={Puzzle}
+                actions={
+                  <IconBtn danger title={t('settings.pluginUninstall')} onClick={() => setPendingUninstall(plugin)}>
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </IconBtn>
+                }
+              >
+                <p className="font-medium text-sm text-gray-900">{plugin.name}</p>
+                <p className="text-xs text-gray-400">{plugin.source_type}{plugin.version ? ` · v${plugin.version}` : ''}</p>
+              </Card>
+            ))}
           </div>
-          <p className="font-semibold text-gray-700 mb-1">{t('settings.pluginsComingSoon')}</p>
-          <p className="text-xs text-gray-400 leading-relaxed max-w-xs mx-auto">
-            {t('settings.pluginsComingSoonDesc')}
-          </p>
-          <Button variant="outline" size="sm" disabled className="mt-4 gap-1.5 opacity-40">
+        )}
+        <div className="mt-4">
+          <Button variant="outline" size="sm" disabled className="gap-1.5 opacity-40">
             <Plus className="w-3.5 h-3.5" />
             {t('settings.browsePlugins')}
           </Button>
         </div>
+        {pendingUninstall && (
+          <ConfirmDialog
+            open
+            title={t('settings.pluginUninstallConfirm', { name: pendingUninstall.name })}
+            description={t('settings.pluginUninstallDesc')}
+            confirmLabel={t('settings.pluginUninstall')}
+            destructive
+            onConfirm={() => handleUninstall(pendingUninstall)}
+            onCancel={() => setPendingUninstall(null)}
+          />
+        )}
       </>
     )
   }
@@ -603,6 +638,9 @@ export default function SettingsPage() {
           </NavGroup>
           <NavGroup label="AI">
             <NavItem id="ai" active={section === 'ai'} icon={Bot} label={t('settings.tabAi')} dot={llmConfigExists} onClick={setSection} />
+          </NavGroup>
+          <NavGroup label={t('settings.tabPlugins')}>
+            <NavItem id="plugins" active={section === 'plugins'} icon={Puzzle} label={t('settings.tabPlugins')} count={plugins.length} onClick={setSection} />
           </NavGroup>
           <NavGroup label={t('settings.navGeneral')}>
             <NavItem id="language" active={section === 'language'} icon={Globe} label={t('settings.tabLanguage')} soon onClick={setSection} />
