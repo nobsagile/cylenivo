@@ -155,7 +155,8 @@ export default function ImportPage() {
   if (step === 'source') {
     async function handleJira() {
       setErrorMsg(null)
-      const conns = await api.connections.list().catch(() => [] as SourceConnection[])
+      const all = await api.connections.list().catch(() => [] as SourceConnection[])
+      const conns = all.filter((c) => c.source_type === 'jira')
       if (conns.length > 0) {
         setAvailableConns(conns)
         setSelectedConnId(conns[0].id)
@@ -247,7 +248,9 @@ export default function ImportPage() {
                 <p className={`font-semibold text-sm ${selectedConnId === conn.id ? 'text-blue-800' : 'text-gray-900'}`}>
                   {conn.name}
                 </p>
-                <p className="text-xs text-gray-400 mt-0.5 truncate">{conn.base_url} · {conn.email}</p>
+                <p className="text-xs text-gray-400 mt-0.5 truncate">
+                  {conn.base_url ? `${conn.base_url} · ${conn.email}` : conn.source_type}
+                </p>
               </div>
               {selectedConnId === conn.id && (
                 <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center shrink-0">
