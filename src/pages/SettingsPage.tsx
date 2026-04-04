@@ -100,6 +100,7 @@ export default function SettingsPage() {
     try {
       await api.demo.fullReset()
       localStorage.clear()
+      notifyImportsChanged()
       setFullResetDone(true)
     } catch (e) {
       setErrorMsg({ title: t('settings.couldNotReset'), description: e instanceof Error ? e.message : 'Error' })

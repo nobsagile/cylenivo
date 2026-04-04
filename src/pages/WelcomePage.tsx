@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { ArrowRight, TrendingUp, TrendingDown, Shuffle } from 'lucide-react'
 import { api } from '@/services/api'
+import { notifyImportsChanged } from '@/hooks/useImports'
 import { Button } from '@/components/ui/button'
 import type { ImportSession } from '@/types'
 
@@ -35,6 +36,7 @@ export default function WelcomePage() {
           let demoResult = imports
           if (imports.length === 0) {
             const seeded = await api.demo.seed()
+            notifyImportsChanged()
             demoResult = seeded.imports
               .filter(i => i.import_id)
               .map(i => ({ id: i.import_id!, config_name: i.name } as ImportSession))
