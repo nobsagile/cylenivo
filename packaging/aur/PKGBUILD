@@ -33,5 +33,5 @@ package() {
 
     # Fix permissions
     chmod 755 "$pkgdir/usr/bin/cylenivo"
-    find "$pkgdir/usr/lib/com.cylenivo.app" -type f -exec chmod 755 {} \;
+    find "$pkgdir" -name "cylenivo-server-*" -type f -exec chmod 755 {} \;
 }
