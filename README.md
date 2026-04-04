@@ -38,11 +38,11 @@ To analyze your Jira data:
 
 ## Development
 
-**Requirements:** Node 20+, Rust (for Tauri)
+**Requirements:** Node 20+, [Bun](https://bun.sh), Rust (for Tauri)
 
 ```bash
 npm install
-cd server && npm install && cd ..
+cd server && bun install && cd ..
 npm run tauri dev
 ```
 
