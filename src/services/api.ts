@@ -140,7 +140,7 @@ export const api = {
       request<{ display_name: string; email: string }>(`/api/v1/connections/${id}/test`, { method: 'POST' }),
     fetchStream: async (
       id: string,
-      options: JiraFetchOptions,
+      options: JiraFetchOptions | Record<string, unknown>,
       onProgress: (current: number, total: number, key: string) => void,
     ): Promise<unknown> => {
       const res = await fetch(`${BASE_URL}/api/v1/connections/${id}/fetch`, {

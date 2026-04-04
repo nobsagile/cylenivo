@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
-  Link2, Clock, ArrowRight, ArrowLeft, Loader2, ExternalLink, GripVertical, X, Plus, Info,
+  Link2, Clock, ArrowRight, ArrowLeft, Loader2, ExternalLink, GripVertical, X, Plus, Info, Puzzle,
 } from 'lucide-react'
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor,
@@ -14,7 +14,8 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { api } from '@/services/api'
-import type { SourceConnection } from '@/types'
+import type { SourceConnection, PluginManifest } from '@/types'
+import ConnectionDialog from '@/components/connections/ConnectionDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
@@ -128,6 +129,16 @@ export default function ImportPage() {
   // active connection
   const [connection, setConnection] = useState<SourceConnection | null>(null)
 
+  // plugin support
+  const [installedPlugins, setInstalledPlugins] = useState<PluginManifest[]>([])
+  const [selectedManifest, setSelectedManifest] = useState<PluginManifest | null>(null)
+  const [pluginOptions, setPluginOptions] = useState<Record<string, string>>({})
+  const [pluginConnDialog, setPluginConnDialog] = useState(false)
+
+  useEffect(() => {
+    api.plugins.list().then(setInstalledPlugins).catch(() => {})
+  }, [])
+
   // fetch step
   const [jiraProject, setJiraProject] = useState('')
   const [jiraLimit, setJiraLimit] = useState(200)
@@ -155,6 +166,7 @@ export default function ImportPage() {
   if (step === 'source') {
     async function handleJira() {
       setErrorMsg(null)
+      setSelectedManifest(null)
       const all = await api.connections.list().catch(() => [] as SourceConnection[])
       const conns = all.filter((c) => c.source_type === 'jira')
       if (conns.length > 0) {
@@ -165,6 +177,26 @@ export default function ImportPage() {
       } else {
         setHadConnections(false)
         setStep('connect')
+      }
+    }
+
+    async function handlePlugin(manifest: PluginManifest) {
+      setErrorMsg(null)
+      setSelectedManifest(manifest)
+      setPluginOptions(manifest.fetch_options.reduce<Record<string, string>>((acc, f) => {
+        acc[f.key] = String(f.default ?? '')
+        return acc
+      }, {}))
+      const all = await api.connections.list().catch(() => [] as SourceConnection[])
+      const conns = all.filter((c) => c.source_type === manifest.source_type)
+      if (conns.length > 0) {
+        setAvailableConns(conns)
+        setSelectedConnId(conns[0].id)
+        setHadConnections(true)
+        setStep('pick-connection')
+      } else {
+        setHadConnections(false)
+        setPluginConnDialog(true)
       }
     }
 
@@ -189,6 +221,22 @@ export default function ImportPage() {
             </div>
           </button>
 
+          {installedPlugins.map((plugin) => (
+            <button
+              key={plugin.source_type}
+              onClick={() => handlePlugin(plugin)}
+              className="flex flex-col items-start gap-2 p-4 rounded-xl border-2 border-gray-200 bg-white text-left hover:border-purple-300 hover:bg-purple-50 transition-colors group"
+            >
+              <div className="p-2 rounded-lg bg-gray-100 group-hover:bg-purple-100 transition-colors">
+                <Puzzle className="w-5 h-5 text-gray-500 group-hover:text-purple-600 transition-colors" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900 text-sm">{plugin.name}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{t('import.connectLive')}</p>
+              </div>
+            </button>
+          ))}
+
           {([
             { key: 'import.uploadFileOption', icon: <Clock className="w-5 h-5 text-gray-400" /> },
             { key: 'import.trello', icon: <Clock className="w-5 h-5 text-gray-400" /> },
@@ -204,6 +252,24 @@ export default function ImportPage() {
           ))}
         </div>
       </div>
+    )
+  }
+
+  // ── Plugin: inline ConnectionDialog when no existing connection ──────────
+  if (pluginConnDialog && selectedManifest) {
+    return (
+      <ConnectionDialog
+        open
+        manifest={selectedManifest}
+        onClose={() => { setPluginConnDialog(false); setSelectedManifest(null) }}
+        onSaved={(conn) => {
+          setConnection(conn)
+          setAvailableConns([conn])
+          setSelectedConnId(conn.id)
+          setPluginConnDialog(false)
+          setStep('fetch')
+        }}
+      />
     )
   }
 
@@ -384,7 +450,79 @@ export default function ImportPage() {
     )
   }
 
-  // ── Step: Fetch ───────────────────────────────────────────────────────────
+  // ── Step: Fetch (plugin) ──────────────────────────────────────────────────
+  if (step === 'fetch' && connection && connection.source_type !== 'jira' && selectedManifest) {
+    const fetchOptions = selectedManifest.fetch_options
+    const canFetch = !fetching && fetchOptions.filter((f) => f.required).every((f) => Boolean(pluginOptions[f.key]))
+
+    async function handlePluginFetch() {
+      if (!connection) return
+      setFetching(true)
+      setFetchMsg(t('refresh.fetching'))
+      setErrorMsg(null)
+      try {
+        const result = await api.connections.fetchStream(connection.id, pluginOptions, (current, total, key) => {
+          setFetchMsg(t('import.fetchingTicket', { current, total, key }))
+        }) as Record<string, unknown>
+        const s = extractStatuses(result)
+        setStatuses(s)
+        setFetchedData(result)
+        setFetchedProjectKey((result.project_key as string) ?? '')
+        setCycleStart('')
+        setCycleEnd('')
+        setStep('statuses')
+      } catch (e) {
+        setErrorMsg(e instanceof Error ? e.message : 'Fetch failed')
+      } finally {
+        setFetching(false)
+        setFetchMsg('')
+      }
+    }
+
+    return (
+      <div className="max-w-lg">
+        <WizardHeader steps={[t('wizard.stepImport'), t('wizard.stepSetup')]} current={0} />
+        <ErrorBanner message={errorMsg} onDismiss={() => setErrorMsg(null)} />
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('wizard.fetchTitle')}</h2>
+          {connection && (
+            <p className="text-sm text-gray-400 mt-1 flex items-center gap-1.5">
+              {t('wizard.fetchVia')}
+              <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 bg-purple-50 border border-purple-200 text-purple-700 rounded-full font-medium">
+                <Puzzle className="w-3 h-3" /> {connection.name}
+              </span>
+            </p>
+          )}
+        </div>
+        <div className="space-y-4">
+          {fetchOptions.map((field) => (
+            <div key={field.key}>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">{field.label}</label>
+              <Input
+                type={field.type === 'number' ? 'number' : 'text'}
+                value={pluginOptions[field.key] ?? ''}
+                onChange={(e) => setPluginOptions((prev) => ({ ...prev, [field.key]: e.target.value }))}
+                placeholder={field.placeholder ?? ''}
+              />
+            </div>
+          ))}
+        </div>
+        {fetching && <p className="text-sm text-gray-500 mt-4 flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" />{fetchMsg}</p>}
+        <div className="flex gap-3 mt-6">
+          <Button variant="outline" onClick={() => setStep(hadConnections ? 'pick-connection' : 'source')} className="gap-1.5">
+            <ArrowLeft className="w-4 h-4" /> {t('common.back')}
+          </Button>
+          <Button onClick={handlePluginFetch} disabled={!canFetch} className="flex-1 gap-2 h-11">
+            {fetching
+              ? <><Loader2 className="w-4 h-4 animate-spin" />{fetchMsg}</>
+              : <>{t('wizard.fetchTitle')} <ArrowRight className="w-4 h-4" /></>}
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Step: Fetch (Jira) ────────────────────────────────────────────────────
   if (step === 'fetch') {
     const steps = hadConnections
       ? [t('wizard.stepImport'), t('wizard.stepSetup')]

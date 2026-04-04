@@ -113,7 +113,7 @@ describe('Plugin E2E: install → connect → fetch → import → metrics', () 
     const fetchRes = await app.request(`/api/v1/connections/${conn.id}/fetch`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ options: { project: 'MYPROJ' } }),
+      body: JSON.stringify({ project: 'MYPROJ' }),
     })
     expect(fetchRes.status).toBe(200)
 

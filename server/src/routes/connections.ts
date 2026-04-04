@@ -150,7 +150,7 @@ connections.post('/:id/fetch', async (c) => {
       } else {
         const plugin = await loadPlugin(conn.source_type)
         const credentials = JSON.parse(conn.credentials_json ?? '{}')
-        const result = await plugin.fetch(credentials, body.options ?? {}, async (current: number, total: number, key: string) => {
+        const result = await plugin.fetch(credentials, body, async (current: number, total: number, key: string) => {
           await stream.writeSSE({ data: JSON.stringify({ type: 'progress', current, total, key }) })
         })
         await stream.writeSSE({ data: JSON.stringify({ type: 'done', result }) })
