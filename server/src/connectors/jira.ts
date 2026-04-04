@@ -167,10 +167,18 @@ export async function buildImportFile(
   const issues = await fetchIssues(creds, options)
   const tickets: ImportTicket[] = []
 
+  const skipped: string[] = []
   for (let i = 0; i < issues.length; i++) {
     const issue = issues[i]
     onProgress?.(i + 1, issues.length, issue.key)
-    const histories = await fetchChangelog(creds, issue.key)
+    let histories: JiraChangelogHistory[]
+    try {
+      histories = await fetchChangelog(creds, issue.key)
+    } catch (e) {
+      console.warn(`[jira] skipping ${issue.key}: ${e instanceof Error ? e.message : e}`)
+      skipped.push(issue.key)
+      continue
+    }
     tickets.push({
       external_id: issue.key,
       title: issue.fields.summary,
@@ -179,6 +187,9 @@ export async function buildImportFile(
       external_link: `${creds.base_url}/browse/${issue.key}`,
       transitions: extractTransitions(histories),
     })
+  }
+  if (skipped.length > 0) {
+    console.warn(`[jira] import completed with ${skipped.length} skipped ticket(s): ${skipped.join(', ')}`)
   }
 
   return {
