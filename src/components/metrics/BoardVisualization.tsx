@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Info } from 'lucide-react'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { TooltipProvider, TooltipRoot, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import type { ConfigContext, StatusDuration, TimeInStatusResponse } from '@/types'
 import { getConfigIndices, isInCycle, isInLead, pickShade, CYCLE_STYLE_SHADES, LEAD_STYLE_SHADES } from '@/lib/statusColors'
 
@@ -11,29 +12,50 @@ interface Props {
   ticketData?: TimeInStatusResponse | null
 }
 
-function MiniHistogram({ values }: { values: number[] }) {
+interface TicketValue {
+  value: number
+  externalId: string
+}
+
+function MiniHistogram({ values }: { values: TicketValue[] }) {
   if (values.length === 0) return null
 
-  const maxVal = Math.max(...values, 0.1)
+  const maxVal = Math.max(...values.map(v => v.value), 0.1)
   const bucketCount = 5
-  const buckets = Array(bucketCount).fill(0) as number[]
+  const bucketSize = maxVal / bucketCount
+  const buckets: { tickets: string[]; min: number; max: number }[] = Array.from({ length: bucketCount }, (_, i) => ({
+    tickets: [],
+    min: i * bucketSize,
+    max: (i + 1) * bucketSize,
+  }))
 
-  for (const v of values) {
-    const idx = Math.min(Math.floor((v / maxVal) * bucketCount), bucketCount - 1)
-    buckets[idx]++
+  for (const { value, externalId } of values) {
+    const idx = Math.min(Math.floor((value / maxVal) * bucketCount), bucketCount - 1)
+    buckets[idx].tickets.push(externalId)
   }
 
-  const maxBucket = Math.max(...buckets, 1)
+  const maxCount = Math.max(...buckets.map(b => b.tickets.length), 1)
 
   return (
     <div className="flex items-end gap-px h-4 mt-1">
-      {buckets.map((count, i) => (
-        <div
-          key={i}
-          className="flex-1 bg-current opacity-30 rounded-sm"
-          style={{ height: `${Math.max((count / maxBucket) * 100, 4)}%` }}
-        />
-      ))}
+      {buckets.map((bucket, i) => {
+        if (bucket.tickets.length === 0) return <div key={i} className="flex-1" />
+        return (
+          <TooltipRoot key={i} delayDuration={100}>
+            <TooltipTrigger asChild>
+              <div
+                className="flex-1 bg-current opacity-40 hover:opacity-70 rounded-sm cursor-default transition-opacity"
+                style={{ height: `${Math.max((bucket.tickets.length / maxCount) * 100, 8)}%` }}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="font-semibold text-gray-700 mb-1">{bucket.min.toFixed(1)}–{bucket.max.toFixed(1)} d</p>
+              <p className="text-gray-500 mb-1">{bucket.tickets.length} ticket{bucket.tickets.length !== 1 ? 's' : ''}</p>
+              <p className="text-gray-600 max-w-[180px] break-words">{bucket.tickets.join(', ')}</p>
+            </TooltipContent>
+          </TooltipRoot>
+        )
+      })}
     </div>
   )
 }
@@ -53,12 +75,12 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
   const totalMean = meanDays.reduce((a, b) => a + b, 0) || 1
 
   // Collect per-ticket values per status for histograms
-  const statusValues: Record<string, number[]> = {}
+  const statusValues: Record<string, TicketValue[]> = {}
   if (ticketData) {
     for (const s of relevantStatuses) {
       statusValues[s] = ticketData.tickets
-        .map(t => t.status_durations[s] ?? 0)
-        .filter(v => v > 0)
+        .filter(t => (t.status_durations[s] ?? 0) > 0)
+        .map(t => ({ value: t.status_durations[s], externalId: t.external_id }))
     }
   }
 
@@ -74,6 +96,7 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
   const [hovered, setHovered] = useState<string | null>(null)
 
   return (
+    <TooltipProvider>
     <div className="rounded-xl border border-gray-200 bg-white p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-gray-700">{t('board.title')}</h3>
@@ -123,5 +146,6 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
       </div>
       <p className="text-[10px] text-gray-400 mt-2">{t('board.footer')}</p>
     </div>
+    </TooltipProvider>
   )
 }
