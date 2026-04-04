@@ -49,9 +49,8 @@ function MiniHistogram({ values }: { values: TicketValue[] }) {
               />
             </TooltipTrigger>
             <TooltipContent>
-              <p className="font-semibold text-gray-700 mb-1">{bucket.min.toFixed(1)}–{bucket.max.toFixed(1)} d</p>
-              <p className="text-gray-500 mb-1">{bucket.tickets.length} ticket{bucket.tickets.length !== 1 ? 's' : ''}</p>
-              <p className="text-gray-600 max-w-[180px] break-words">{bucket.tickets.join(', ')}</p>
+              <p className="font-semibold text-gray-700">{bucket.min.toFixed(1)}–{bucket.max.toFixed(1)} d</p>
+              <p className="text-gray-500">{bucket.tickets.length} ticket{bucket.tickets.length !== 1 ? 's' : ''}</p>
             </TooltipContent>
           </TooltipRoot>
         )
