@@ -9,6 +9,7 @@ import llm from './routes/llm.js'
 import llmConfigRoute from './routes/llm-config.js'
 import connections from './routes/connections.js'
 import demo from './routes/demo.js'
+import plugins from './routes/plugins.js'
 
 export const app = new Hono()
 
@@ -25,3 +26,4 @@ app.route('/api/v1/llm', llm)
 app.route('/api/v1/llm-config', llmConfigRoute)
 app.route('/api/v1/connections', connections)
 app.route('/api/v1/demo', demo)
+app.route('/api/v1/plugins', plugins)
