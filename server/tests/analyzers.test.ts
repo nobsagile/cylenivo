@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'bun:test'
+import { computeCFD } from '../src/analyzers/cfd.js'
 import { computeWeeklyBuckets, simulateHowMany, simulateWhen, percentileFromSorted, buildHistogram } from '../src/analyzers/monteCarlo.js'
 import { firstTransitionTo, lastTransitionTo, sortTransitions, trimTransitionsToCycleWindow, type Transition } from '../src/analyzers/utils.js'
 import { buildHealthReport } from '../src/analyzers/healthReport.js'
@@ -730,5 +731,30 @@ describe('Monte Carlo: degenerate throughput inputs', () => {
   it('computeWeeklyBuckets with single date returns [1]', () => {
     const buckets = computeWeeklyBuckets([new Date('2024-06-01T00:00:00Z')])
     expect(buckets).toEqual([1])
+  })
+})
+
+// ── CFD ───────────────────────────────────────────────────────────────────────
+describe('computeCFD', () => {
+  const base = { id: '', external_id: '', title: '', ticket_type: 'story' as const, created_at: '', external_link: null, cycle_time_days: null, lead_time_days: null, completed_at: null }
+
+  it('includes tickets with no transitions via current_status', () => {
+    const tickets = [
+      { ...base, created_at: '2024-01-01T12:00:00Z', current_status: 'Todo', transitions: [] },
+      { ...base, created_at: '2024-01-02T12:00:00Z', current_status: 'Done', transitions: [
+        { from_status: 'Todo', to_status: 'Done', transitioned_at: '2024-01-03T12:00:00Z' },
+      ]},
+    ]
+    const result = computeCFD(tickets as any, ['Todo', 'Done'])
+    expect(result.statuses).toContain('Todo')
+    // On 2024-01-01, the no-transition ticket should appear in Todo
+    const day1 = result.data.find(d => d.date === '2024-01-01')
+    expect(day1?.['Todo']).toBe(1)
+  })
+
+  it('returns empty for tickets with no transitions and no current_status', () => {
+    const tickets = [{ ...base, created_at: '2024-01-01T12:00:00Z', current_status: null, transitions: [] }]
+    const result = computeCFD(tickets as any, ['Todo'])
+    expect(result.data).toEqual([])
   })
 })

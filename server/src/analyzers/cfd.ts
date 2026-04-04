@@ -9,12 +9,15 @@ export interface CfdResult {
 }
 
 export function computeCFD(tickets: EnrichedTicket[], statusOrder: string[]): CfdResult {
-  // Collect all statuses that appear in transitions
+  // Collect all statuses that appear in transitions or as current_status
   const statusSet = new Set<string>()
   for (const ticket of tickets) {
     for (const t of ticket.transitions) {
       if (t.from_status) statusSet.add(t.from_status)
       statusSet.add(t.to_status)
+    }
+    if (ticket.transitions.length === 0 && ticket.current_status) {
+      statusSet.add(ticket.current_status)
     }
   }
 
@@ -39,9 +42,16 @@ export function computeCFD(tickets: EnrichedTicket[], statusOrder: string[]): Cf
   const ticketData: TicketEntry[] = []
   for (const ticket of tickets) {
     const sorted = sortTransitions(ticket.transitions)
-    if (sorted.length === 0) continue
-
     const createdMs = new Date(ticket.created_at).getTime()
+
+    if (sorted.length === 0) {
+      // Ticket has no transitions — place it in current_status from created_at onwards
+      if (!ticket.current_status || !statusSet.has(ticket.current_status)) continue
+      if (createdMs < minMs) minMs = createdMs
+      ticketData.push({ createdMs, firstFromStatus: ticket.current_status, transitions: [] })
+      continue
+    }
+
     if (createdMs < minMs) minMs = createdMs
 
     const transitions = sorted.map(t => {
@@ -53,7 +63,9 @@ export function computeCFD(tickets: EnrichedTicket[], statusOrder: string[]): Cf
     ticketData.push({ createdMs, firstFromStatus: sorted[0].from_status, transitions })
   }
 
-  if (ticketData.length === 0 || maxTransitionMs === -Infinity) return { statuses: [], data: [] }
+  if (ticketData.length === 0) return { statuses: [], data: [] }
+  // If all tickets have no transitions, use today as the end date
+  if (maxTransitionMs === -Infinity) maxTransitionMs = Date.now()
 
   // Date range: UTC midnight of first created_at → UTC midnight of last transition
   const MS_PER_DAY = 86_400_000
