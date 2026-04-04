@@ -84,28 +84,28 @@ export function AvgTimeInStatusChart({ timeInStatusData, summary }: AvgProps) {
 
   return (
     <div>
-      <div className="flex items-start justify-between mb-2">
-        <div>
+      <div className="mb-2">
+        <div className="flex items-center gap-1.5">
           <h3 className="text-sm font-semibold text-gray-700">{t('metrics.cycleTime')} – {t('timeInStatus.avgTitle')}</h3>
-          <p className="text-xs text-gray-400 mt-0.5">
-            {t('timeInStatus.avgSubtitle', { start: statuses[0], end: statuses[statuses.length - 1] })}
-          </p>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="text-gray-300 hover:text-gray-500 transition-colors shrink-0">
+                <Info className="w-3.5 h-3.5" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-72">
+              <p className="font-semibold text-gray-800 mb-2">{t('timeInStatus.howToRead')}</p>
+              <div className="space-y-2 text-xs text-gray-600">
+                <p>{t('timeInStatus.howToReadDesc', { start: statuses[0], end: statuses[statuses.length - 1] })}</p>
+                <p>{t('timeInStatus.howToReadExclude')}</p>
+                <p>{t('timeInStatus.howToReadRework', { status: statuses[statuses.length - 1] })}</p>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
-        <Popover>
-          <PopoverTrigger asChild>
-            <button className="text-gray-300 hover:text-gray-500 transition-colors mt-0.5 shrink-0">
-              <Info className="w-4 h-4" />
-            </button>
-          </PopoverTrigger>
-          <PopoverContent className="w-72">
-            <p className="font-semibold text-gray-800 mb-2">{t('timeInStatus.howToRead')}</p>
-            <div className="space-y-2 text-xs text-gray-600">
-              <p>{t('timeInStatus.howToReadDesc', { start: statuses[0], end: statuses[statuses.length - 1] })}</p>
-              <p>{t('timeInStatus.howToReadExclude')}</p>
-              <p>{t('timeInStatus.howToReadRework', { status: statuses[statuses.length - 1] })}</p>
-            </div>
-          </PopoverContent>
-        </Popover>
+        <p className="text-xs text-gray-400 mt-0.5">
+          {t('timeInStatus.avgSubtitle', { start: statuses[0], end: statuses[statuses.length - 1] })}
+        </p>
       </div>
       <ResponsiveContainer width="100%" height={240}>
         <BarChart data={avgData} layout="vertical">

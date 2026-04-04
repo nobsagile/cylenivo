@@ -97,12 +97,12 @@ export function BoardVisualization({ config, timeInStatus, ticketData }: Props) 
   return (
     <TooltipProvider>
     <div className="rounded-xl border border-gray-200 bg-white p-4">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center gap-1.5 mb-3">
         <h3 className="text-sm font-semibold text-gray-700">{t('board.title')}</h3>
         <Popover>
           <PopoverTrigger asChild>
             <button className="text-gray-300 hover:text-gray-500 transition-colors shrink-0">
-              <Info className="w-4 h-4" />
+              <Info className="w-3.5 h-3.5" />
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-72">
