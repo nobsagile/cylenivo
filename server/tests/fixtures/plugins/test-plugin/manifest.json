@@ -1,0 +1,12 @@
+{
+  "source_type": "test-plugin",
+  "name": "Test Plugin",
+  "version": "1.0.0",
+  "description": "Fixture plugin for automated tests",
+  "credentials": [
+    { "key": "api_key", "label": "API Key", "type": "password" }
+  ],
+  "fetch_options": [
+    { "key": "project", "label": "Project", "type": "string", "required": true }
+  ]
+}

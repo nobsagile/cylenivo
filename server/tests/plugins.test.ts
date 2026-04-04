@@ -48,6 +48,38 @@ describe('pluginRunner', () => {
   })
 })
 
+describe('scanPlugins', () => {
+  it('returns installed plugins with manifest data', async () => {
+    const { scanPlugins } = await import('../src/lib/pluginScanner.js')
+    const result = await scanPlugins()
+    expect(result.length).toBe(1)
+    expect(result[0].source_type).toBe('test-plugin')
+    expect(result[0].name).toBe('Test Plugin')
+    expect(result[0].credentials).toHaveLength(1)
+    expect(result[0].fetch_options).toHaveLength(1)
+  })
+
+  it('returns empty array when plugins dir does not exist', async () => {
+    const original = process.env.PLUGINS_DIR
+    process.env.PLUGINS_DIR = '/nonexistent/path'
+    const { scanPlugins } = await import('../src/lib/pluginScanner.js')
+    const result = await scanPlugins()
+    expect(result).toEqual([])
+    process.env.PLUGINS_DIR = original
+  })
+})
+
+describe('GET /api/v1/plugins', () => {
+  it('returns installed plugins', async () => {
+    const res = await app.request('/api/v1/plugins')
+    expect(res.status).toBe(200)
+    const body = await res.json() as Record<string, unknown>
+    const data = body.data as Record<string, unknown>[]
+    expect(data.length).toBe(1)
+    expect(data[0].source_type).toBe('test-plugin')
+  })
+})
+
 describe('POST /api/v1/plugins/:source_type/test', () => {
   it('returns ok for valid credentials', async () => {
     const res = await app.request('/api/v1/plugins/test-plugin/test', {

@@ -1,9 +1,15 @@
 import { Hono } from 'hono'
 import { streamSSE } from 'hono/streaming'
 import { loadPlugin } from '../lib/pluginRunner.js'
+import { scanPlugins } from '../lib/pluginScanner.js'
 import { ok } from '../lib/response.js'
 
 const plugins = new Hono()
+
+plugins.get('/', async (c) => {
+  const manifests = await scanPlugins()
+  return c.json(ok(manifests))
+})
 
 plugins.post('/:source_type/test', async (c) => {
   const sourceType = c.req.param('source_type')

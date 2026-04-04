@@ -187,6 +187,28 @@ export interface JiraFetchOptions {
   resolved_to?: string
 }
 
+export type PluginFieldType = 'string' | 'password' | 'url' | 'number'
+
+export interface PluginField {
+  key: string
+  label: string
+  type: PluginFieldType
+  required?: boolean
+  default?: string | number
+  placeholder?: string
+  help?: string
+}
+
+export interface PluginManifest {
+  source_type: string
+  name: string
+  version?: string
+  description?: string
+  author?: string
+  credentials: PluginField[]
+  fetch_options: PluginField[]
+}
+
 export interface ForecastResponse {
   mode: 'how_many' | 'when'
   value: number
