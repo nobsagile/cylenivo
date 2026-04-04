@@ -206,6 +206,14 @@ export const api = {
   plugins: {
     list: () => request<import('@/types').PluginManifest[]>('/api/v1/plugins'),
     registry: () => request<import('@/types').PluginRegistryEntry[]>('/api/v1/plugins/registry'),
+    installFromRegistry: (id: string) =>
+      request<import('@/types').PluginManifest>(`/api/v1/plugins/registry/${id}/install`, { method: 'POST' }),
+    installFromUrl: (github_url: string) =>
+      request<import('@/types').PluginManifest>('/api/v1/plugins/install-url', {
+        method: 'POST',
+        body: JSON.stringify({ github_url }),
+        headers: { 'Content-Type': 'application/json' },
+      }),
     uninstall: (sourceType: string) =>
       request<null>(`/api/v1/plugins/${sourceType}`, { method: 'DELETE' }),
   },

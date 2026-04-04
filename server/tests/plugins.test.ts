@@ -139,19 +139,30 @@ describe('DELETE /api/v1/plugins/:source_type', () => {
   })
 })
 
+// sha256 of server/tests/fixtures/plugins/test-plugin/index.js
+const TEST_PLUGIN_SHA256 = 'bd997638cfe9ea576ac27d3d2b8b9bda98793f0ea4969bfddc696a2708a3d07d'
+
+const fixtureManifest = await Bun.file(join(FIXTURE_PLUGINS_DIR, 'test-plugin/manifest.json')).text()
+const fixtureIndex = await Bun.file(join(FIXTURE_PLUGINS_DIR, 'test-plugin/index.js')).text()
+
+function makeFetch(registry: unknown[]) {
+  return async (url: string | URL | Request): Promise<Response> => {
+    const u = String(url)
+    if (u.includes('registry.json')) return new Response(JSON.stringify(registry), { status: 200 })
+    if (u.includes('manifest.json')) return new Response(fixtureManifest, { status: 200 })
+    if (u.includes('index.js')) return new Response(fixtureIndex, { status: 200 })
+    return new Response('not found', { status: 404 })
+  }
+}
+
 describe('GET /api/v1/plugins/registry', () => {
   const fakeRegistry = [
-    { id: 'test-plugin', name: 'Test Plugin', description: 'A test plugin', path: 'plugins/test-plugin', sha256: 'abc123' },
+    { id: 'test-plugin', name: 'Test Plugin', description: 'A test plugin', path: 'plugins/test-plugin', sha256: TEST_PLUGIN_SHA256 },
     { id: 'other-plugin', name: 'Other Plugin', description: 'Another plugin', path: 'plugins/other-plugin', sha256: 'def456' },
   ]
 
   beforeAll(() => {
-    globalThis.fetch = async (url: string | URL | Request) => {
-      if (String(url).includes('registry.json')) {
-        return new Response(JSON.stringify(fakeRegistry), { status: 200 })
-      }
-      return new Response('not found', { status: 404 })
-    }
+    globalThis.fetch = makeFetch(fakeRegistry)
   })
 
   it('returns registry with installed flag for known plugin', async () => {
@@ -173,5 +184,67 @@ describe('GET /api/v1/plugins/registry', () => {
     const res = await app.request('/api/v1/plugins/registry')
     expect(res.status).toBe(502)
     globalThis.fetch = original
+  })
+})
+
+describe('POST /api/v1/plugins/registry/:id/install', () => {
+  const installDir = join(FIXTURE_PLUGINS_DIR, 'installed-test-plugin')
+  const fakeRegistry = [
+    { id: 'installed-test-plugin', name: 'Test Plugin', description: 'A test plugin', path: 'plugins/test-plugin', sha256: TEST_PLUGIN_SHA256 },
+  ]
+
+  afterEach(async () => {
+    await rm(installDir, { recursive: true, force: true })
+  })
+
+  it('downloads and saves plugin files', async () => {
+    globalThis.fetch = makeFetch(fakeRegistry)
+    const res = await app.request('/api/v1/plugins/registry/installed-test-plugin/install', { method: 'POST' })
+    expect(res.status).toBe(200)
+    const body = await res.json() as Record<string, unknown>
+    expect((body.data as Record<string, unknown>).source_type).toBe('test-plugin')
+    // files written to PLUGINS_DIR/test-plugin (source_type from manifest)
+    const savedIndex = await Bun.file(join(FIXTURE_PLUGINS_DIR, 'test-plugin/index.js')).text()
+    expect(savedIndex).toBeTruthy()
+  })
+
+  it('returns 400 when sha256 does not match', async () => {
+    const badRegistry = [{ ...fakeRegistry[0], sha256: 'badhash' }]
+    globalThis.fetch = makeFetch(badRegistry)
+    const res = await app.request('/api/v1/plugins/registry/installed-test-plugin/install', { method: 'POST' })
+    expect(res.status).toBe(400)
+    const body = await res.json() as Record<string, unknown>
+    expect(String(body.error)).toContain('SHA256')
+  })
+
+  it('returns 400 for unknown plugin id', async () => {
+    globalThis.fetch = makeFetch(fakeRegistry)
+    const res = await app.request('/api/v1/plugins/registry/nonexistent/install', { method: 'POST' })
+    expect(res.status).toBe(400)
+  })
+})
+
+describe('POST /api/v1/plugins/install-url', () => {
+  const urlInstallDir = join(FIXTURE_PLUGINS_DIR, 'test-plugin')
+
+  it('installs plugin from GitHub URL', async () => {
+    globalThis.fetch = makeFetch([])
+    const res = await app.request('/api/v1/plugins/install-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ github_url: 'https://github.com/nobsagile/cylenivo-plugins' }),
+    })
+    expect(res.status).toBe(200)
+    const body = await res.json() as Record<string, unknown>
+    expect((body.data as Record<string, unknown>).source_type).toBe('test-plugin')
+  })
+
+  it('returns 400 for invalid GitHub URL', async () => {
+    const res = await app.request('/api/v1/plugins/install-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ github_url: 'not-a-url' }),
+    })
+    expect(res.status).toBe(400)
   })
 })

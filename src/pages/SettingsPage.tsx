@@ -55,6 +55,12 @@ export default function SettingsPage() {
   const [registry, setRegistry] = useState<PluginRegistryEntry[] | null>(null)
   const [registryLoading, setRegistryLoading] = useState(false)
   const [registryError, setRegistryError] = useState<string | null>(null)
+  const [installingId, setInstallingId] = useState<string | null>(null)
+  const [installError, setInstallError] = useState<string | null>(null)
+  const [githubUrl, setGithubUrl] = useState('')
+  const [urlInstalling, setUrlInstalling] = useState(false)
+  const [urlInstallError, setUrlInstallError] = useState<string | null>(null)
+  const [showUrlInstall, setShowUrlInstall] = useState(false)
 
   useEffect(() => {
     api.configs.list().then(setConfigs).catch(console.error)
@@ -494,6 +500,35 @@ export default function SettingsPage() {
     }
   }
 
+  async function handleInstall(entry: PluginRegistryEntry) {
+    setInstallingId(entry.id)
+    setInstallError(null)
+    try {
+      const manifest = await api.plugins.installFromRegistry(entry.id)
+      setPlugins((prev) => [...prev.filter((p) => p.source_type !== manifest.source_type), manifest])
+      setRegistry((prev) => prev?.map((e) => e.id === entry.id ? { ...e, installed: true, update_available: false } : e) ?? prev)
+    } catch (e) {
+      setInstallError(e instanceof Error ? e.message : 'Install failed')
+    } finally {
+      setInstallingId(null)
+    }
+  }
+
+  async function handleInstallUrl() {
+    setUrlInstalling(true)
+    setUrlInstallError(null)
+    try {
+      const manifest = await api.plugins.installFromUrl(githubUrl)
+      setPlugins((prev) => [...prev.filter((p) => p.source_type !== manifest.source_type), manifest])
+      setGithubUrl('')
+      setShowUrlInstall(false)
+    } catch (e) {
+      setUrlInstallError(e instanceof Error ? e.message : 'Install failed')
+    } finally {
+      setUrlInstalling(false)
+    }
+  }
+
   async function handleUninstall(plugin: PluginManifest) {
     setPendingUninstall(null)
     await api.plugins.uninstall(plugin.source_type)
@@ -567,22 +602,71 @@ export default function SettingsPage() {
                   key={entry.id}
                   icon={Puzzle}
                   actions={
-                    entry.installed
-                      ? entry.update_available
-                        ? <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">{t('settings.registryUpdate')}</span>
-                        : <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">{t('settings.registryInstalled')}</span>
-                      : <Button variant="outline" size="sm" disabled className="gap-1 opacity-40 h-7 text-xs">
-                          <Plus className="w-3 h-3" />
-                          {t('settings.registryInstall')}
-                        </Button>
+                    installingId === entry.id
+                      ? <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+                      : entry.installed && !entry.update_available
+                        ? <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">{t('settings.registryInstalled')}</span>
+                        : <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-1 h-7 text-xs"
+                            onClick={() => handleInstall(entry)}
+                            disabled={installingId !== null}
+                          >
+                            {entry.update_available
+                              ? <RefreshCw className="w-3 h-3" />
+                              : <Plus className="w-3 h-3" />}
+                            {entry.update_available ? t('settings.registryUpdate') : t('settings.registryInstall')}
+                          </Button>
                   }
                 >
                   <p className="font-medium text-sm text-gray-900">{entry.name}</p>
                   <p className="text-xs text-gray-400 leading-relaxed">{entry.description}</p>
                 </Card>
               ))}
+              {installError && (
+                <p className="text-xs text-red-500 flex items-center gap-1.5">
+                  <XCircle className="w-3.5 h-3.5" />{installError}
+                </p>
+              )}
             </div>
           )}
+          <div className="mt-4">
+            {!showUrlInstall ? (
+              <button
+                onClick={() => setShowUrlInstall(true)}
+                className="text-xs text-gray-400 hover:text-gray-600 underline underline-offset-2"
+              >
+                {t('settings.installFromUrl')}
+              </button>
+            ) : (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 space-y-3">
+                <p className="text-xs font-semibold text-amber-800">{t('settings.installFromUrlWarning')}</p>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={githubUrl}
+                    onChange={(e) => setGithubUrl(e.target.value)}
+                    placeholder="https://github.com/user/my-plugin"
+                    className="flex-1 text-sm px-3 py-1.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  />
+                  <Button
+                    size="sm"
+                    onClick={handleInstallUrl}
+                    disabled={!githubUrl.trim() || urlInstalling}
+                    className="gap-1 h-8"
+                  >
+                    {urlInstalling ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+                    {t('settings.registryInstall')}
+                  </Button>
+                  <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => { setShowUrlInstall(false); setUrlInstallError(null) }}>
+                    <X className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+                {urlInstallError && <p className="text-xs text-red-600">{urlInstallError}</p>}
+              </div>
+            )}
+          </div>
         </div>
         {pendingUninstall && (
           <ConfirmDialog

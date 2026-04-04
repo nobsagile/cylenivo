@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { streamSSE } from 'hono/streaming'
-import { rm, readFile } from 'fs/promises'
+import { rm, readFile, mkdir, writeFile } from 'fs/promises'
 import { join } from 'path'
 import { createHash } from 'crypto'
 import { loadPlugin, getPluginsDir } from '../lib/pluginRunner.js'
@@ -8,6 +8,35 @@ import { scanPlugins } from '../lib/pluginScanner.js'
 import { ok } from '../lib/response.js'
 
 const REGISTRY_URL = 'https://raw.githubusercontent.com/nobsagile/cylenivo-plugins/main/registry.json'
+const RAW_BASE = 'https://raw.githubusercontent.com/nobsagile/cylenivo-plugins/main'
+
+async function downloadText(url: string): Promise<string> {
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`Download failed: ${url} (${res.status})`)
+  return res.text()
+}
+
+async function installPlugin(pluginPath: string, expectedSha256: string | null): Promise<{ source_type: string; name: string }> {
+  const manifestText = await downloadText(`${RAW_BASE}/${pluginPath}/manifest.json`)
+  const indexText = await downloadText(`${RAW_BASE}/${pluginPath}/index.js`)
+
+  if (expectedSha256 !== null) {
+    const hash = createHash('sha256').update(indexText).digest('hex')
+    if (hash !== expectedSha256) {
+      throw new Error(`SHA256 mismatch — expected ${expectedSha256}, got ${hash}`)
+    }
+  }
+
+  const manifest = JSON.parse(manifestText) as { source_type: string; name: string }
+  if (!manifest.source_type) throw new Error('manifest.json missing source_type')
+
+  const destDir = join(getPluginsDir(), manifest.source_type)
+  await mkdir(destDir, { recursive: true })
+  await writeFile(join(destDir, 'manifest.json'), manifestText)
+  await writeFile(join(destDir, 'index.js'), indexText)
+
+  return manifest
+}
 
 const plugins = new Hono()
 
@@ -44,6 +73,52 @@ plugins.get('/registry', async (c) => {
   }))
 
   return c.json(ok(result))
+})
+
+plugins.post('/registry/:id/install', async (c) => {
+  const id = c.req.param('id')
+  try {
+    // fetch registry to get path + sha256
+    const regRes = await fetch(REGISTRY_URL)
+    if (!regRes.ok) throw new Error(`Registry unavailable (${regRes.status})`)
+    const entries = await regRes.json() as Array<{ id: string; path: string; sha256: string }>
+    const entry = entries.find((e) => e.id === id)
+    if (!entry) throw new Error(`Plugin '${id}' not found in registry`)
+
+    const manifest = await installPlugin(entry.path, entry.sha256)
+    return c.json(ok(manifest))
+  } catch (e) {
+    return c.json({ data: null, error: e instanceof Error ? e.message : 'Install failed' }, 400)
+  }
+})
+
+plugins.post('/install-url', async (c) => {
+  const body = await c.req.json() as { github_url: string }
+  try {
+    const url = body.github_url?.trim()
+    if (!url) throw new Error('github_url is required')
+
+    // Normalise: https://github.com/user/repo → user/repo/main
+    const match = url.match(/github\.com\/([^/]+\/[^/]+?)(?:\.git)?(?:\/|$)/)
+    if (!match) throw new Error('Invalid GitHub URL — expected github.com/user/repo')
+    const repoPath = match[1]
+
+    // Override RAW_BASE for this third-party repo
+    const rawBase = `https://raw.githubusercontent.com/${repoPath}/main`
+    const manifestText = await downloadText(`${rawBase}/manifest.json`)
+    const indexText = await downloadText(`${rawBase}/index.js`)
+    const manifest = JSON.parse(manifestText) as { source_type: string; name: string }
+    if (!manifest.source_type) throw new Error('manifest.json missing source_type')
+
+    const destDir = join(getPluginsDir(), manifest.source_type)
+    await mkdir(destDir, { recursive: true })
+    await writeFile(join(destDir, 'manifest.json'), manifestText)
+    await writeFile(join(destDir, 'index.js'), indexText)
+
+    return c.json(ok(manifest))
+  } catch (e) {
+    return c.json({ data: null, error: e instanceof Error ? e.message : 'Install failed' }, 400)
+  }
 })
 
 plugins.post('/:source_type/test', async (c) => {
