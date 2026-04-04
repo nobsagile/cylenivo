@@ -30,6 +30,7 @@ export type {
   PluginFieldType,
   PluginField,
   PluginManifest,
+  PluginRegistryEntry,
 } from '../../shared/types'
 
 // Frontend-only types

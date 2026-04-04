@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterEach } from 'bun:test'
+import { describe, it, expect, beforeAll, afterEach, mock, spyOn } from 'bun:test'
 import { join } from 'path'
 import { mkdir, writeFile, rm } from 'fs/promises'
 import { app } from '../src/index.js'
@@ -136,5 +136,42 @@ describe('DELETE /api/v1/plugins/:source_type', () => {
   it('returns 400 when plugin dir does not exist', async () => {
     const res = await app.request('/api/v1/plugins/nonexistent-plugin', { method: 'DELETE' })
     expect(res.status).toBe(400)
+  })
+})
+
+describe('GET /api/v1/plugins/registry', () => {
+  const fakeRegistry = [
+    { id: 'test-plugin', name: 'Test Plugin', description: 'A test plugin', path: 'plugins/test-plugin', sha256: 'abc123' },
+    { id: 'other-plugin', name: 'Other Plugin', description: 'Another plugin', path: 'plugins/other-plugin', sha256: 'def456' },
+  ]
+
+  beforeAll(() => {
+    globalThis.fetch = async (url: string | URL | Request) => {
+      if (String(url).includes('registry.json')) {
+        return new Response(JSON.stringify(fakeRegistry), { status: 200 })
+      }
+      return new Response('not found', { status: 404 })
+    }
+  })
+
+  it('returns registry with installed flag for known plugin', async () => {
+    const res = await app.request('/api/v1/plugins/registry')
+    expect(res.status).toBe(200)
+    const body = await res.json() as Record<string, unknown>
+    const data = body.data as Array<Record<string, unknown>>
+    expect(data).toHaveLength(2)
+    const testPlugin = data.find((e) => e.id === 'test-plugin')
+    expect(testPlugin?.installed).toBe(true)
+    const otherPlugin = data.find((e) => e.id === 'other-plugin')
+    expect(otherPlugin?.installed).toBe(false)
+    expect(otherPlugin?.update_available).toBe(false)
+  })
+
+  it('returns 502 when GitHub is unreachable', async () => {
+    const original = globalThis.fetch
+    globalThis.fetch = async () => { throw new Error('Network error') }
+    const res = await app.request('/api/v1/plugins/registry')
+    expect(res.status).toBe(502)
+    globalThis.fetch = original
   })
 })

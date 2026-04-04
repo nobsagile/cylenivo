@@ -209,6 +209,16 @@ export interface PluginManifest {
   fetch_options: PluginField[]
 }
 
+export interface PluginRegistryEntry {
+  id: string
+  name: string
+  description: string
+  path: string
+  sha256: string
+  installed: boolean
+  update_available: boolean
+}
+
 export interface ForecastResponse {
   mode: 'how_many' | 'when'
   value: number

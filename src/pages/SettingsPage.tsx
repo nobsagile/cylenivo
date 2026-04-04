@@ -7,7 +7,7 @@ import {
   X, Bot, RefreshCw, Puzzle, Globe, LayoutDashboard,
 } from 'lucide-react'
 import { api } from '@/services/api'
-import type { ProjectConfig, ImportSession, SourceConnection, PluginManifest } from '@/types'
+import type { ProjectConfig, ImportSession, SourceConnection, PluginManifest, PluginRegistryEntry } from '@/types'
 import { Button } from '@/components/ui/button'
 import ConnectionDialog from '@/components/connections/ConnectionDialog'
 import RefreshDialog from '@/components/connections/RefreshDialog'
@@ -52,6 +52,9 @@ export default function SettingsPage() {
   const [llmConfigExists, setLlmConfigExists] = useState(false)
   const [plugins, setPlugins] = useState<PluginManifest[]>([])
   const [pendingUninstall, setPendingUninstall] = useState<PluginManifest | null>(null)
+  const [registry, setRegistry] = useState<PluginRegistryEntry[] | null>(null)
+  const [registryLoading, setRegistryLoading] = useState(false)
+  const [registryError, setRegistryError] = useState<string | null>(null)
 
   useEffect(() => {
     api.configs.list().then(setConfigs).catch(console.error)
@@ -478,6 +481,19 @@ export default function SettingsPage() {
   }
 
 
+  async function loadRegistry() {
+    setRegistryLoading(true)
+    setRegistryError(null)
+    try {
+      const entries = await api.plugins.registry()
+      setRegistry(entries)
+    } catch (e) {
+      setRegistryError(e instanceof Error ? e.message : 'Failed to load registry')
+    } finally {
+      setRegistryLoading(false)
+    }
+  }
+
   async function handleUninstall(plugin: PluginManifest) {
     setPendingUninstall(null)
     await api.plugins.uninstall(plugin.source_type)
@@ -515,11 +531,58 @@ export default function SettingsPage() {
             ))}
           </div>
         )}
-        <div className="mt-4">
-          <Button variant="outline" size="sm" disabled className="gap-1.5 opacity-40">
-            <Plus className="w-3.5 h-3.5" />
-            {t('settings.browsePlugins')}
-          </Button>
+        <div className="mt-6">
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">{t('settings.browsePlugins')}</p>
+          {registry === null && !registryLoading && (
+            <button
+              onClick={loadRegistry}
+              className="w-full flex items-center gap-3 p-4 rounded-xl border border-dashed border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-white transition-colors text-left"
+            >
+              <div className="p-2 rounded-lg bg-white border border-gray-200">
+                <Plus className="w-4 h-4 text-gray-400" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-700">{t('settings.registryLoad')}</p>
+                <p className="text-xs text-gray-400">{t('settings.registryLoadDesc')}</p>
+              </div>
+            </button>
+          )}
+          {registryLoading && (
+            <div className="flex items-center gap-2 py-6 justify-center text-gray-400">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-sm">{t('settings.registryLoading')}</span>
+            </div>
+          )}
+          {registryError && (
+            <div className="flex items-center gap-2 p-4 rounded-xl border border-red-100 bg-red-50 text-sm text-red-600">
+              <XCircle className="w-4 h-4 shrink-0" />
+              {registryError}
+              <button onClick={loadRegistry} className="ml-auto text-xs underline">{t('settings.registryRetry')}</button>
+            </div>
+          )}
+          {registry !== null && !registryLoading && (
+            <div className="space-y-2">
+              {registry.map((entry) => (
+                <Card
+                  key={entry.id}
+                  icon={Puzzle}
+                  actions={
+                    entry.installed
+                      ? entry.update_available
+                        ? <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">{t('settings.registryUpdate')}</span>
+                        : <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">{t('settings.registryInstalled')}</span>
+                      : <Button variant="outline" size="sm" disabled className="gap-1 opacity-40 h-7 text-xs">
+                          <Plus className="w-3 h-3" />
+                          {t('settings.registryInstall')}
+                        </Button>
+                  }
+                >
+                  <p className="font-medium text-sm text-gray-900">{entry.name}</p>
+                  <p className="text-xs text-gray-400 leading-relaxed">{entry.description}</p>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
         {pendingUninstall && (
           <ConfirmDialog

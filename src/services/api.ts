@@ -205,6 +205,7 @@ export const api = {
   },
   plugins: {
     list: () => request<import('@/types').PluginManifest[]>('/api/v1/plugins'),
+    registry: () => request<import('@/types').PluginRegistryEntry[]>('/api/v1/plugins/registry'),
     uninstall: (sourceType: string) =>
       request<null>(`/api/v1/plugins/${sourceType}`, { method: 'DELETE' }),
   },
