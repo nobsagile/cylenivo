@@ -28,7 +28,6 @@ export default function WelcomePage() {
   useEffect(() => {
     Promise.all([api.imports.list(), api.configs.list()])
       .then(async ([imports, configs]) => {
-        const onlyDemos = imports.length > 0 && imports.every(i => i.config_name?.startsWith('Demo:'))
         const seen = !!localStorage.getItem(ONBOARDING_KEY)
 
         if (!seen) {
