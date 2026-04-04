@@ -26,14 +26,22 @@ export default function WelcomePage() {
 
   useEffect(() => {
     Promise.all([api.imports.list(), api.configs.list()])
-      .then(([imports, configs]) => {
+      .then(async ([imports, configs]) => {
         const onlyDemos = imports.length > 0 && imports.every(i => i.config_name?.startsWith('Demo:'))
         const seen = !!localStorage.getItem(ONBOARDING_KEY)
 
         if (!seen) {
-          // New user (or after complete reset) → always show welcome page
-          if (imports.length > 0 && onlyDemos) {
-            const sorted = [...imports].sort((a, b) => {
+          // New user → seed demo data if not already present, then show welcome page
+          let demoResult = imports
+          if (imports.length === 0) {
+            const seeded = await api.demo.seed()
+            demoResult = seeded.imports
+              .filter(i => i.import_id)
+              .map(i => ({ id: i.import_id!, config_name: i.name } as ImportSession))
+          }
+          const onlyDemosNow = demoResult.length > 0 && demoResult.every(i => i.config_name?.startsWith('Demo:'))
+          if (onlyDemosNow) {
+            const sorted = [...demoResult].sort((a, b) => {
               const aImproving = a.config_name?.includes('Improving') ? 0 : 1
               const bImproving = b.config_name?.includes('Improving') ? 0 : 1
               return aImproving - bImproving
