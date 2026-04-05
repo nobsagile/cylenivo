@@ -8,12 +8,12 @@ const ALPHA_STATUS_ORDER = ['Backlog', 'In Progress', 'In Review', 'Done']
 const ALPHA_CYCLE_START = 'In Progress'
 const ALPHA_CYCLE_END = 'Done'
 
-const BETA_STATUS_ORDER = ['Backlog', 'Up Next', 'Preparation', 'Ready For Development', 'Development', 'Customer Feedback', 'Ready for Release', 'Done']
-const BETA_CYCLE_START = 'Preparation'
-const BETA_CYCLE_END = 'Customer Feedback'
+const BETA_STATUS_ORDER = ['Backlog', 'In Progress', 'In Review', 'Done']
+const BETA_CYCLE_START = 'In Progress'
+const BETA_CYCLE_END = 'Done'
 const BETA_CYCLE_MODE = 'last_last'
-const BETA_LEAD_START = 'Up Next'
-const BETA_LEAD_END = 'Done'
+const BETA_LEAD_START = null
+const BETA_LEAD_END = null
 
 interface DemoProjectConfig {
   statusOrder: string[]
