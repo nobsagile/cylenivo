@@ -21,6 +21,16 @@ Import your Jira export and instantly see **Cycle Time**, **Lead Time**, **Throu
 
 Cylenivo calculates metrics from **status transition timestamps**, not ticket fields. You configure which statuses mark the start and end of Cycle Time and Lead Time per project — no assumptions about your workflow.
 
+## Data sources
+
+| Source | Type | Notes |
+|---|---|---|
+| Jira | Built-in | CSV export or direct API connection |
+| OpenProject | Community plugin | Via [cylenivo-plugins](https://github.com/nobsagile/cylenivo-plugins) |
+| Any tool | Community plugin | [Build your own](https://github.com/nobsagile/cylenivo-plugins/blob/main/CONTRIBUTING.md) in ~50 lines of JS |
+
+Plugins are installed directly inside Cylenivo — no manual file management.
+
 ## Getting started
 
 Download the latest release for macOS or Windows from the [Releases](https://github.com/nobsagile/cylenivo/releases) page.
