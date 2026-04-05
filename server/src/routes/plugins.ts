@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { streamSSE } from 'hono/streaming'
-import { rm, readFile, mkdir, writeFile } from 'fs/promises'
+import { rm, readFile, mkdir, writeFile, access } from 'fs/promises'
 import { join } from 'path'
 import { createHash } from 'crypto'
 import { loadPlugin, getPluginsDir } from '../lib/pluginRunner.js'
@@ -165,7 +165,12 @@ plugins.delete('/:source_type', async (c) => {
   const sourceType = c.req.param('source_type')
   const pluginDir = join(getPluginsDir(), sourceType)
   try {
-    await rm(pluginDir, { recursive: true, force: true })
+    await access(pluginDir)
+  } catch {
+    return c.json({ data: null, error: `Plugin '${sourceType}' is not installed` }, 400)
+  }
+  try {
+    await rm(pluginDir, { recursive: true })
     return c.json(ok(null))
   } catch (e) {
     return c.json({ data: null, error: e instanceof Error ? e.message : 'Failed to remove plugin' }, 400)
