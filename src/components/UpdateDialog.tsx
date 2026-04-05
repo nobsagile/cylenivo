@@ -45,7 +45,7 @@ export function UpdateDialog({ update, onClose }: Props) {
           <pre className="text-xs text-gray-500 mt-2 max-h-32 overflow-y-auto whitespace-pre-wrap font-sans">{update.body}</pre>
         )}
         <button
-          className="text-xs text-violet-600 hover:underline text-left mt-1"
+          className="text-xs text-violet-600 hover:underline text-left mt-1 outline-none"
           onClick={() => openExternal(changelogUrl)}
         >
           {t('update.viewChangelog')} →
