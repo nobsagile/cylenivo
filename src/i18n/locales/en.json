@@ -608,6 +608,7 @@
     "description": "Version {{version}} is ready to install.",
     "install": "Install & Restart",
     "later": "Later",
-    "downloading": "Downloading…"
+    "downloading": "Downloading…",
+    "viewChangelog": "View changelog on GitHub"
   }
 }

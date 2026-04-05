@@ -3,6 +3,12 @@ import { useTranslation } from 'react-i18next'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import type { Update } from '@tauri-apps/plugin-updater'
+import { open as tauriOpen } from '@tauri-apps/plugin-shell'
+
+function openExternal(url: string) {
+  if (window.__TAURI_INTERNALS__) tauriOpen(url)
+  else window.open(url, '_blank', 'noopener,noreferrer')
+}
 
 interface Props {
   update: Update
@@ -24,6 +30,8 @@ export function UpdateDialog({ update, onClose }: Props) {
     }
   }
 
+  const changelogUrl = `https://github.com/nobsagile/cylenivo/releases/tag/v${update.version}`
+
   return (
     <Dialog open onOpenChange={(o) => { if (!o && !installing) onClose() }}>
       <DialogContent className="max-w-sm bg-white">
@@ -34,8 +42,14 @@ export function UpdateDialog({ update, onClose }: Props) {
           {t('update.description', { version: update.version })}
         </p>
         {update.body && (
-          <p className="text-xs text-gray-400 mt-2 whitespace-pre-wrap line-clamp-6">{update.body}</p>
+          <pre className="text-xs text-gray-500 mt-2 max-h-32 overflow-y-auto whitespace-pre-wrap font-sans">{update.body}</pre>
         )}
+        <button
+          className="text-xs text-violet-600 hover:underline text-left mt-1"
+          onClick={() => openExternal(changelogUrl)}
+        >
+          {t('update.viewChangelog')} →
+        </button>
         <div className="flex justify-end gap-2 mt-4">
           <Button variant="ghost" onClick={onClose} disabled={installing}>
             {t('update.later')}
