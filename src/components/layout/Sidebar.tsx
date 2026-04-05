@@ -7,7 +7,7 @@ function openUrl(url: string) {
 }
 import { useTranslation } from 'react-i18next'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
-import { LayoutDashboard, Ticket, Workflow, Sparkles, Settings, Plus, AlertTriangle, MoreHorizontal, SlidersHorizontal, Trash2, Pencil, TrendingUp, Bug, Info } from 'lucide-react'
+import { LayoutDashboard, Ticket, Workflow, Sparkles, Settings, Plus, AlertTriangle, MoreHorizontal, Pencil, TrendingUp, Bug, Info, RefreshCw } from 'lucide-react'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import { api } from '@/services/api'
 import { Input } from '@/components/ui/input'
@@ -26,9 +26,10 @@ import { usePluginUpdates } from '@/hooks/usePluginUpdates'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
-import type { ImportHealthReport } from '@/types'
+import type { ImportHealthReport, SourceConnection, PluginManifest } from '@/types'
 import type { Update } from '@tauri-apps/plugin-updater'
 import { UpdateDialog } from '@/components/UpdateDialog'
+import RefreshDialog from '@/components/connections/RefreshDialog'
 
 interface Issue {
   title: string
@@ -127,18 +128,17 @@ function HealthReportDialog({
   )
 }
 
-function ProjectMenu({ imp, onRenamed, onDeleted }: {
+function ProjectMenu({ imp, connection, pluginManifest, onRenamed }: {
   imp: { id: string; config_id: string; name?: string | null; project_key: string; config_name?: string }
+  connection?: SourceConnection | null
+  pluginManifest?: PluginManifest | null
   onRenamed: () => void
-  onDeleted: () => void
 }) {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const [renameOpen, setRenameOpen] = useState(false)
   const [renameValue, setRenameValue] = useState('')
   const [renaming, setRenaming] = useState(false)
-  const [confirmOpen, setConfirmOpen] = useState(false)
-  const [deleting, setDeleting] = useState(false)
+  const [refreshOpen, setRefreshOpen] = useState(false)
 
   function handleRename() {
     setRenaming(true)
@@ -146,14 +146,6 @@ function ProjectMenu({ imp, onRenamed, onDeleted }: {
       .then(() => { setRenameOpen(false); onRenamed() })
       .catch(console.error)
       .finally(() => setRenaming(false))
-  }
-
-  function handleDelete() {
-    setDeleting(true)
-    api.imports.delete(imp.id)
-      .then(() => { setConfirmOpen(false); onDeleted() })
-      .catch(console.error)
-      .finally(() => setDeleting(false))
   }
 
   return (
@@ -181,21 +173,15 @@ function ProjectMenu({ imp, onRenamed, onDeleted }: {
               <Pencil className="w-3.5 h-3.5 text-gray-400" />
               {t('sidebar.rename')}
             </DropdownMenuPrimitive.Item>
-            <DropdownMenuPrimitive.Item
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-gray-700 cursor-pointer hover:bg-gray-50 outline-none"
-              onSelect={() => navigate(`/settings/configs/${imp.config_id}`)}
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5 text-gray-400" />
-              {t('sidebar.changeConfig')}
-            </DropdownMenuPrimitive.Item>
-            <DropdownMenuPrimitive.Separator className="my-1 h-px bg-gray-100" />
-            <DropdownMenuPrimitive.Item
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-rose-600 cursor-pointer hover:bg-rose-50 outline-none"
-              onSelect={() => setConfirmOpen(true)}
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              {t('sidebar.deleteProject')}
-            </DropdownMenuPrimitive.Item>
+            {connection && (
+              <DropdownMenuPrimitive.Item
+                className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-gray-700 cursor-pointer hover:bg-gray-50 outline-none"
+                onSelect={() => setRefreshOpen(true)}
+              >
+                <RefreshCw className="w-3.5 h-3.5 text-gray-400" />
+                {t('sidebar.refresh')}
+              </DropdownMenuPrimitive.Item>
+            )}
           </DropdownMenuPrimitive.Content>
         </DropdownMenuPrimitive.Portal>
       </DropdownMenuPrimitive.Root>
@@ -223,31 +209,15 @@ function ProjectMenu({ imp, onRenamed, onDeleted }: {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={confirmOpen} onOpenChange={(o) => { if (!o) setConfirmOpen(false) }}>
-        <DialogContent className="max-w-sm bg-white">
-          <DialogHeader>
-            <DialogTitle>{t('sidebar.deleteConfirmTitle')}</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-gray-500 mt-1">
-            {t('sidebar.deleteConfirmDesc', { name: imp.config_name ?? imp.id })}
-          </p>
-          <div className="flex justify-end gap-2 mt-4">
-            <button
-              onClick={() => setConfirmOpen(false)}
-              className="px-3 py-1.5 text-sm rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50"
-            >
-              {t('common.cancel')}
-            </button>
-            <button
-              onClick={handleDelete}
-              disabled={deleting}
-              className="px-3 py-1.5 text-sm rounded-md bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-50"
-            >
-              {deleting ? t('common.loading') : t('common.delete')}
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {connection && refreshOpen && (
+        <RefreshDialog
+          open={refreshOpen}
+          connection={connection}
+          pluginManifest={pluginManifest}
+          importSession={{ id: imp.id, project_key: imp.project_key, config_id: imp.config_id }}
+          onClose={() => setRefreshOpen(false)}
+        />
+      )}
     </>
   )
 }
@@ -258,12 +228,16 @@ export function Sidebar() {
   const navigate = useNavigate()
   const { data: imports, reload } = useImports()
   const { hasUpdates: hasPluginUpdates } = usePluginUpdates()
+  const [connections, setConnections] = useState<SourceConnection[]>([])
+  const [installedPlugins, setInstalledPlugins] = useState<PluginManifest[]>([])
   const [healthOpen, setHealthOpen] = useState(false)
   const [appVersion, setAppVersion] = useState<string>(__APP_VERSION__)
   const [pendingUpdate, setPendingUpdate] = useState<Update | null>(null)
 
   useEffect(() => {
     import('@tauri-apps/api/app').then(({ getVersion }) => getVersion().then(setAppVersion)).catch(() => {})
+    api.connections.list().then(setConnections).catch(() => {})
+    api.plugins.list().then(setInstalledPlugins).catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -338,11 +312,13 @@ export function Sidebar() {
               <div className="shrink-0 pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <ProjectMenu
                   imp={imp}
+                  connection={imp.connection_id ? connections.find(c => c.id === imp.connection_id) ?? null : null}
+                  pluginManifest={(() => {
+                    const conn = imp.connection_id ? connections.find(c => c.id === imp.connection_id) : null
+                    if (!conn || conn.source_type === 'jira') return null
+                    return installedPlugins.find(p => p.source_type === conn.source_type) ?? null
+                  })()}
                   onRenamed={reload}
-                  onDeleted={() => {
-                    reload()
-                    if (imp.id === importId) navigate('/')
-                  }}
                 />
               </div>
             </div>

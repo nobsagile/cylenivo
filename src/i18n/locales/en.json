@@ -422,6 +422,7 @@
     "selectProject": "— select dataset —",
     "rename": "Rename",
     "renameTitle": "Rename dataset",
+    "refresh": "Refresh data",
     "changeConfig": "Change config",
     "deleteProject": "Delete dataset",
     "deleteConfirmTitle": "Delete dataset?",
