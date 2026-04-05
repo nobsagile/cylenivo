@@ -25,7 +25,7 @@ Cylenivo calculates metrics from **status transition timestamps**, not ticket fi
 
 | Source | Type | Notes |
 |---|---|---|
-| Jira | Built-in | CSV export or direct API connection |
+| Jira | Built-in | Direct API connection (URL + API token) |
 | OpenProject | Community plugin | Via [cylenivo-plugins](https://github.com/nobsagile/cylenivo-plugins) |
 | Any tool | Community plugin | [Build your own](https://github.com/nobsagile/cylenivo-plugins/blob/main/CONTRIBUTING.md) in ~50 lines of JS |
 
@@ -42,7 +42,7 @@ Download the latest release for macOS or Windows from the [Releases](https://git
 > **Windows:** Click "More info" → "Run anyway" when SmartScreen appears.
 
 To analyze your Jira data:
-1. Export issues from Jira (CSV export with transitions, or connect via Jira API)
+1. Connect to Jira via API (URL + personal API token)
 2. Create a configuration matching your workflow statuses
 3. Import and explore
 
