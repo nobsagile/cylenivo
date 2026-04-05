@@ -180,29 +180,36 @@ export async function buildImportFile(
   onProgress?: (current: number, total: number, key: string) => void,
 ): Promise<ImportFile> {
   const issues = await fetchIssues(creds, options)
-  const tickets: ImportTicket[] = []
-
+  const results: (ImportTicket | null)[] = new Array(issues.length).fill(null)
   const skipped: string[] = []
-  for (let i = 0; i < issues.length; i++) {
-    const issue = issues[i]
-    onProgress?.(i + 1, issues.length, issue.key)
-    let histories: JiraChangelogHistory[]
-    try {
-      histories = await fetchChangelog(creds, issue.key)
-    } catch (e) {
-      console.warn(`[jira] skipping ${issue.key}: ${e instanceof Error ? e.message : e}`)
-      skipped.push(issue.key)
-      continue
+  let completed = 0
+
+  const CONCURRENCY = 10
+  const queue = issues.map((_, i) => i)
+  const workers = Array.from({ length: Math.min(CONCURRENCY, issues.length) }, async () => {
+    while (queue.length > 0) {
+      const i = queue.shift()!
+      const issue = issues[i]
+      try {
+        const histories = await fetchChangelog(creds, issue.key)
+        results[i] = {
+          external_id: issue.key,
+          title: issue.fields.summary,
+          ticket_type: mapIssueType(issue.fields.issuetype.name),
+          created_at: issue.fields.created,
+          external_link: `${creds.base_url}/browse/${issue.key}`,
+          transitions: extractTransitions(histories),
+        }
+      } catch (e) {
+        console.warn(`[jira] skipping ${issue.key}: ${e instanceof Error ? e.message : e}`)
+        skipped.push(issue.key)
+      }
+      completed++
+      onProgress?.(completed, issues.length, issue.key)
     }
-    tickets.push({
-      external_id: issue.key,
-      title: issue.fields.summary,
-      ticket_type: mapIssueType(issue.fields.issuetype.name),
-      created_at: issue.fields.created,
-      external_link: `${creds.base_url}/browse/${issue.key}`,
-      transitions: extractTransitions(histories),
-    })
-  }
+  })
+  await Promise.all(workers)
+  const tickets = results.filter((t): t is ImportTicket => t !== null)
   if (skipped.length > 0) {
     console.warn(`[jira] import completed with ${skipped.length} skipped ticket(s): ${skipped.join(', ')}`)
   }
