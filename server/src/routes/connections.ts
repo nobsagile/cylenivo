@@ -11,11 +11,17 @@ import { loadPlugin } from '../lib/pluginRunner.js'
 const connections = new Hono()
 
 function serialize(row: ConnectionRow) {
-  // Never expose api_token to frontend
-  const { api_token: _, issue_types, ...rest } = row
   return {
-    ...rest,
-    issue_types: issue_types ? JSON.parse(issue_types) : null,
+    id: row.id,
+    name: row.name,
+    source_type: row.source_type,
+    base_url: row.base_url,
+    email: row.email,
+    created_at: row.created_at,
+    project_key: row.project_key,
+    issue_types: row.issue_types ? JSON.parse(row.issue_types) : null,
+    resolved_from: row.resolved_from,
+    resolved_to: row.resolved_to,
   }
 }
 
