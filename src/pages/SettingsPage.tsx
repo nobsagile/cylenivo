@@ -14,6 +14,7 @@ import RefreshDialog from '@/components/connections/RefreshDialog'
 import { JIRA_MANIFEST } from '@/lib/jiraManifest'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { notifyImportsChanged } from '@/hooks/useImports'
+import { notifyPluginUpdatesChanged } from '@/hooks/usePluginUpdates'
 import { EmptyState, SectionHeader, Card, IconBtn, NavGroup, NavItem, type Section, type PendingDelete } from './settings/shared'
 import { AISection } from './settings/AISection'
 
@@ -542,6 +543,7 @@ export default function SettingsPage() {
       const manifest = await api.plugins.installFromRegistry(entry.id)
       setPlugins((prev) => [...prev.filter((p) => p.source_type !== manifest.source_type), manifest])
       setRegistry((prev) => prev?.map((e) => e.id === entry.id ? { ...e, installed: true, update_available: false } : e) ?? prev)
+      notifyPluginUpdatesChanged()
     } catch (e) {
       setInstallError(e instanceof Error ? e.message : 'Install failed')
     } finally {
@@ -568,6 +570,7 @@ export default function SettingsPage() {
     setPendingUninstall(null)
     await api.plugins.uninstall(plugin.source_type)
     setPlugins((prev) => prev.filter((p) => p.source_type !== plugin.source_type))
+    notifyPluginUpdatesChanged()
   }
 
   function renderPlugins() {

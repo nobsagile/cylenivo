@@ -22,6 +22,7 @@ function LogoIcon({ className }: { className?: string }) {
   )
 }
 import { useImports } from '@/hooks/useImports'
+import { usePluginUpdates } from '@/hooks/usePluginUpdates'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
@@ -256,6 +257,7 @@ export function Sidebar() {
   const { importId } = useParams<{ importId?: string }>()
   const navigate = useNavigate()
   const { data: imports, reload } = useImports()
+  const { hasUpdates: hasPluginUpdates } = usePluginUpdates()
   const [healthOpen, setHealthOpen] = useState(false)
   const [appVersion, setAppVersion] = useState<string>(__APP_VERSION__)
   const [pendingUpdate, setPendingUpdate] = useState<Update | null>(null)
@@ -406,7 +408,10 @@ export function Sidebar() {
       {/* Bottom */}
       <div className="px-3 py-3 border-t border-gray-100 space-y-0.5">
         <NavLink to="/settings" className={navClass}>
-          <Settings className="w-4 h-4 shrink-0" />
+          <span className="relative shrink-0">
+            <Settings className="w-4 h-4" />
+            {hasPluginUpdates && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-violet-500 rounded-full" />}
+          </span>
           {t('nav.settings')}
         </NavLink>
         <NavLink to="/about" className={navClass}>
