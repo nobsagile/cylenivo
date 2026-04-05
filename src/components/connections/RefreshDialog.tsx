@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Loader2, AlertCircle } from 'lucide-react'
@@ -25,6 +25,8 @@ interface Props {
   open: boolean
   connection: SourceConnection
   pluginManifest?: PluginManifest | null
+  /** When refreshing an existing dataset, pass it so we can skip preflight */
+  importSession?: { project_key: string; config_id: string } | null
   onClose: () => void
 }
 
@@ -41,29 +43,46 @@ function extractStatuses(data: Record<string, unknown>): string[] {
   return [...statuses].sort()
 }
 
-export default function RefreshDialog({ open, connection, pluginManifest, onClose }: Props) {
+/** Pre-fill plugin options from a known project_key (e.g. from a previous import) */
+function buildInitialPluginOptions(
+  pluginManifest: PluginManifest | null | undefined,
+  projectKey: string | undefined,
+): Record<string, string> {
+  const fetchOptions = pluginManifest?.fetch_options ?? []
+  const opts = fetchOptions.reduce<Record<string, string>>((acc, f) => {
+    acc[f.key] = String(f.default ?? '')
+    return acc
+  }, {})
+  if (projectKey) {
+    const projectField = fetchOptions.find(f => f.key.toLowerCase().includes('project'))
+    if (projectField) opts[projectField.key] = projectKey
+  }
+  return opts
+}
+
+export default function RefreshDialog({ open, connection, pluginManifest, importSession, onClose }: Props) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const [step, setStep] = useState<RefreshStep>('preflight')
 
-  // Pre-flight state
+  const initialPluginOpts = buildInitialPluginOptions(pluginManifest, importSession?.project_key)
+
+  // Skip preflight when we already have all required data
+  const canAutoStart = connection.source_type === 'jira'
+    ? Boolean(connection.project_key)
+    : (pluginManifest?.fetch_options ?? []).filter(f => f.required).every(f => Boolean(initialPluginOpts[f.key]))
+
+  const [step, setStep] = useState<RefreshStep>(canAutoStart ? 'fetching' : 'preflight')
+
+  // Pre-flight state (initialized from stored connection settings)
   const [projectKey, setProjectKey] = useState(connection.project_key ?? '')
   const [issueTypes, setIssueTypes] = useState<string[]>(connection.issue_types ?? ['Story', 'Task', 'Bug'])
-  const [limit, setLimit] = useState(50)
+  const [limit, setLimit] = useState(200)
   const [resolvedFrom, setResolvedFrom] = useState(connection.resolved_from ?? '')
   const [resolvedTo, setResolvedTo] = useState(connection.resolved_to ?? '')
-
-  // Plugin fetch options state
-  const [pluginOptions, setPluginOptions] = useState<Record<string, string>>(() => {
-    const fetchOptions = pluginManifest?.fetch_options ?? []
-    return fetchOptions.reduce<Record<string, string>>((acc, f) => {
-      acc[f.key] = String(f.default ?? '')
-      return acc
-    }, {})
-  })
+  const [pluginOptions, setPluginOptions] = useState<Record<string, string>>(initialPluginOpts)
 
   // Fetch state
-  const [fetchMsg, setFetchMsg] = useState('')
+  const [fetchMsg, setFetchMsg] = useState(canAutoStart ? t('refresh.fetching') : '')
   const [fetchError, setFetchError] = useState('')
   const [fetchResult, setFetchResult] = useState<Record<string, unknown> | null>(null)
   const [fetchedStatuses, setFetchedStatuses] = useState<string[]>([])
@@ -75,12 +94,25 @@ export default function RefreshDialog({ open, connection, pluginManifest, onClos
     )
   }
 
+  async function resolveConfigId(): Promise<string | undefined> {
+    // If refreshing an existing dataset, use its config directly
+    if (importSession?.config_id) return importSession.config_id
+    // Otherwise fall back to most recent config for this connection
+    const [datasets, configs] = await Promise.all([
+      api.connections.datasets(connection.id).catch(() => []),
+      api.configs.list().catch(() => []),
+    ])
+    const lastConfigId = datasets[0]?.config_id
+    return (lastConfigId && configs.find(c => c.id === lastConfigId))
+      ? lastConfigId
+      : configs[0]?.id
+  }
+
   async function handleRefresh() {
     if (!projectKey) return
     setStep('fetching')
     setFetchMsg(t('refresh.fetching'))
     setFetchError('')
-
     try {
       const options: JiraFetchOptions = {
         project: projectKey.trim().toUpperCase(),
@@ -94,41 +126,34 @@ export default function RefreshDialog({ open, connection, pluginManifest, onClos
       }) as Record<string, unknown>
 
       const statuses = extractStatuses(result)
-      const count = (result.tickets as unknown[])?.length ?? 0
       setFetchResult(result)
       setFetchedStatuses(statuses)
-      setTicketCount(count)
+      setTicketCount((result.tickets as unknown[])?.length ?? 0)
 
-      // Smart config selection: use last import's config, or first available, or show setup
-      const [datasets, configs] = await Promise.all([
-        api.connections.datasets(connection.id).catch(() => []),
-        api.configs.list().catch(() => []),
-      ])
-      const lastConfigId = datasets[0]?.config_id
-      const configId = (lastConfigId && configs.find(c => c.id === lastConfigId))
-        ? lastConfigId
-        : configs[0]?.id
+      const blob = new Blob([JSON.stringify(result)], { type: 'application/json' })
+      const file = new File([blob], `${projectKey}-refresh.json`, { type: 'application/json' })
 
-      if (configId) {
-        const blob = new Blob([JSON.stringify(result)], { type: 'application/json' })
-        const file = new File([blob], `${projectKey}-refresh.json`, { type: 'application/json' })
-        const session = await api.imports.upload(file, configId, projectKey || undefined, connection.id)
+      if (importSession) {
+        // Replace existing dataset in-place (same ID → same project in sidebar)
+        await api.imports.replace(importSession.id, file)
         notifyImportsChanged()
         onClose()
-        navigate(`/projects/${session.id}`)
+        navigate(`/projects/${importSession.id}`)
       } else {
-        setStep('configure')
+        const configId = await resolveConfigId()
+        if (configId) {
+          const session = await api.imports.upload(file, configId, projectKey || undefined, connection.id)
+          notifyImportsChanged()
+          onClose()
+          navigate(`/projects/${session.id}`)
+        } else {
+          setStep('configure')
+        }
       }
     } catch (e) {
       setFetchError(e instanceof Error ? e.message : 'Fetch failed')
     }
   }
-
-  function handleOpenChange(isOpen: boolean) {
-    if (!isOpen) onClose()
-  }
-
-  // ── Plugin pre-flight ───────────────────────────────────────────────────
 
   async function handlePluginRefresh() {
     setStep('fetching')
@@ -140,35 +165,54 @@ export default function RefreshDialog({ open, connection, pluginManifest, onClos
       }) as Record<string, unknown>
 
       const statuses = extractStatuses(result)
-      const count = (result.tickets as unknown[])?.length ?? 0
       setFetchResult(result)
       setFetchedStatuses(statuses)
-      setTicketCount(count)
+      setTicketCount((result.tickets as unknown[])?.length ?? 0)
 
-      const [datasets, configs] = await Promise.all([
-        api.connections.datasets(connection.id).catch(() => []),
-        api.configs.list().catch(() => []),
-      ])
-      const lastConfigId = datasets[0]?.config_id
-      const configId = (lastConfigId && configs.find(c => c.id === lastConfigId)) ? lastConfigId : configs[0]?.id
+      const blob = new Blob([JSON.stringify(result)], { type: 'application/json' })
+      const file = new File([blob], `${connection.name}-refresh.json`, { type: 'application/json' })
 
-      if (configId) {
-        const blob = new Blob([JSON.stringify(result)], { type: 'application/json' })
-        const file = new File([blob], `${connection.name}-refresh.json`, { type: 'application/json' })
-        const session = await api.imports.upload(file, configId, connection.name || undefined, connection.id)
+      if (importSession) {
+        await api.imports.replace(importSession.id, file)
         notifyImportsChanged()
         onClose()
-        navigate(`/projects/${session.id}`)
+        navigate(`/projects/${importSession.id}`)
       } else {
-        setStep('configure')
+        const configId = await resolveConfigId()
+        if (configId) {
+          const session = await api.imports.upload(file, configId, connection.name || undefined, connection.id)
+          notifyImportsChanged()
+          onClose()
+          navigate(`/projects/${session.id}`)
+        } else {
+          setStep('configure')
+        }
       }
     } catch (e) {
       setFetchError(e instanceof Error ? e.message : 'Fetch failed')
     }
   }
 
+  // Auto-start fetch when we have all required data
+  const autoStarted = useRef(false)
+  useEffect(() => {
+    if (!canAutoStart || autoStarted.current) return
+    autoStarted.current = true
+    if (connection.source_type === 'jira') {
+      handleRefresh()
+    } else {
+      handlePluginRefresh()
+    }
+  }, [])
+
+  function handleOpenChange(isOpen: boolean) {
+    if (!isOpen) onClose()
+  }
+
+  // ── Plugin pre-flight (only shown when auto-start not possible) ──────────
+
   if (step === 'preflight' && connection.source_type !== 'jira' && pluginManifest) {
-    const fetchOptions = pluginManifest.fetch_options
+    const fetchOptions = pluginManifest.fetch_options ?? []
     const canFetch = fetchOptions.filter((f) => f.required).every((f) => Boolean(pluginOptions[f.key]))
 
     return (
@@ -203,7 +247,7 @@ export default function RefreshDialog({ open, connection, pluginManifest, onClos
     )
   }
 
-  // ── Jira pre-flight ─────────────────────────────────────────────────────
+  // ── Jira pre-flight (only shown when no project_key stored) ─────────────
 
   if (step === 'preflight') {
     return (
@@ -254,7 +298,7 @@ export default function RefreshDialog({ open, connection, pluginManifest, onClos
                 onChange={(e) => setLimit(Number(e.target.value))}
                 className="w-20 h-8 text-sm"
                 min={1}
-                max={500}
+                max={2000}
               />
             </div>
 
@@ -321,12 +365,13 @@ export default function RefreshDialog({ open, connection, pluginManifest, onClos
 
         <ConfigureStep
           compact
-          projectKey={projectKey}
+          projectKey={connection.source_type === 'jira' ? projectKey : connection.name}
           ticketCount={ticketCount}
           statuses={fetchedStatuses}
           onComplete={async (configId, datasetName) => {
+            const filePrefix = connection.source_type === 'jira' ? projectKey : connection.name
             const blob = new Blob([JSON.stringify(fetchResult)], { type: 'application/json' })
-            const file = new File([blob], `${projectKey}-refresh.json`, { type: 'application/json' })
+            const file = new File([blob], `${filePrefix}-refresh.json`, { type: 'application/json' })
             const session = await api.imports.upload(file, configId, datasetName || undefined, connection.id)
             notifyImportsChanged()
             onClose()

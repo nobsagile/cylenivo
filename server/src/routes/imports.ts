@@ -182,6 +182,74 @@ imports.post('/', async (c) => {
   return c.json(ok(serializeSession(sessionRow, cfgRows[0])), 201)
 })
 
+// Replace ticket data for an existing import (Refresh — keeps the same session ID)
+imports.put('/:id/data', async (c) => {
+  const id = c.req.param('id')
+  const rows = await db.select().from(importSessions).where(eq(importSessions.id, id))
+  if (!rows.length) return c.json({ data: null, error: 'Import not found' }, 404)
+
+  const body = await c.req.parseBody()
+  const file = body['file']
+  if (!file || typeof file === 'string') {
+    return c.json({ data: null, error: 'No file provided' }, 400)
+  }
+
+  let raw: unknown
+  try {
+    const text = await (file as File).text()
+    raw = JSON.parse(text)
+  } catch {
+    return c.json({ data: null, error: 'Invalid JSON file' }, 400)
+  }
+
+  let data: ImportFile
+  try {
+    data = validateImportFile(raw)
+  } catch (e) {
+    return c.json({ data: null, error: (e as Error).message }, 422)
+  }
+
+  const configId = rows[0].config_id
+  const cfgRows = await db.select().from(projectConfigs).where(eq(projectConfigs.id, configId))
+  if (!cfgRows.length) return c.json({ data: null, error: 'Config not found' }, 404)
+
+  const cfg = cfgRows[0]
+  const statusOrder = JSON.parse(cfg.status_order) as string[]
+  const healthReport = buildHealthReport(data.tickets, statusOrder, cfg.cycle_time_start_status, cfg.cycle_time_end_status)
+  const now = new Date().toISOString()
+
+  // Delete old ticket data, keep the session row
+  const ticketRows = await db.select({ id: tickets.id }).from(tickets).where(eq(tickets.import_id, id))
+  if (ticketRows.length) {
+    const ticketIds = ticketRows.map(t => t.id)
+    await db.delete(ticketTransitions).where(inArray(ticketTransitions.ticket_id, ticketIds))
+    await db.delete(tickets).where(inArray(tickets.id, ticketIds))
+  }
+
+  // Insert fresh ticket data
+  const { ticketRows: newTicketRows, transitionRows } = buildTicketRows(id, data.tickets)
+  const CHUNK = 500
+  for (let i = 0; i < newTicketRows.length; i += CHUNK) {
+    await db.insert(tickets).values(newTicketRows.slice(i, i + CHUNK))
+  }
+  for (let i = 0; i < transitionRows.length; i += CHUNK) {
+    await db.insert(ticketTransitions).values(transitionRows.slice(i, i + CHUNK))
+  }
+
+  // Update session metadata
+  await db.update(importSessions).set({
+    source_type: data.source_type,
+    project_key: data.project_key,
+    file_name: (file as File).name || 'upload.json',
+    ticket_count: data.tickets.length,
+    imported_at: now,
+    health_report: JSON.stringify(healthReport),
+  }).where(eq(importSessions.id, id))
+
+  const updated = await db.select().from(importSessions).where(eq(importSessions.id, id))
+  return c.json(ok(serializeSession(updated[0], cfg)))
+})
+
 imports.delete('/:id', async (c) => {
   const id = c.req.param('id')
   const rows = await db.select().from(importSessions).where(eq(importSessions.id, id))

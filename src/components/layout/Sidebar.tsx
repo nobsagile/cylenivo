@@ -423,12 +423,7 @@ export function Sidebar() {
           <Bug className="w-4 h-4 shrink-0" />
           {t('sidebar.reportBug')}
         </button>
-        <button
-          onClick={() => navigate('/about')}
-          className="text-[10px] text-gray-300 hover:text-gray-500 px-3 pt-1 text-left transition-colors"
-        >
-          v{appVersion}
-        </button>
+
       </div>
       {pendingUpdate && (
         <UpdateDialog update={pendingUpdate} onClose={() => setPendingUpdate(null)} />

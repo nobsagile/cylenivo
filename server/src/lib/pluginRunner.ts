@@ -17,15 +17,21 @@ export interface PluginModule {
 
 export async function loadPlugin(sourceType: string): Promise<PluginModule> {
   const pluginPath = join(getPluginsDir(), sourceType, 'index.js')
+  console.log(`[pluginRunner] loading ${pluginPath}`)
   let mod: unknown
   try {
     mod = await import(pathToFileURL(pluginPath).href)
   } catch (e) {
-    throw new Error(`Plugin '${sourceType}' not found or failed to load: ${e instanceof Error ? e.message : e}`)
+    const msg = `Plugin '${sourceType}' not found or failed to load: ${e instanceof Error ? e.message : e}`
+    console.error(`[pluginRunner] ${msg}`)
+    throw new Error(msg)
   }
   const m = mod as Record<string, unknown>
   if (typeof m.test !== 'function' || typeof m.fetch !== 'function') {
-    throw new Error(`Plugin '${sourceType}' must export test() and fetch()`)
+    const msg = `Plugin '${sourceType}' must export test() and fetch()`
+    console.error(`[pluginRunner] ${msg}`)
+    throw new Error(msg)
   }
+  console.log(`[pluginRunner] loaded ok — exports: ${Object.keys(m).join(', ')}`)
   return m as unknown as PluginModule
 }

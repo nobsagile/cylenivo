@@ -80,7 +80,7 @@ plugins.post('/registry/:id/install', async (c) => {
   const id = c.req.param('id')
   try {
     // fetch registry to get path + sha256
-    const regRes = await fetch(REGISTRY_URL)
+    const regRes = await fetch(REGISTRY_URL, { headers: GITHUB_HEADERS })
     if (!regRes.ok) throw new Error(`Registry unavailable (${regRes.status})`)
     const entries = await regRes.json() as Array<{ id: string; path: string; sha256: string }>
     const entry = entries.find((e) => e.id === id)
@@ -125,11 +125,14 @@ plugins.post('/install-url', async (c) => {
 plugins.post('/:source_type/test', async (c) => {
   const sourceType = c.req.param('source_type')
   const body = await c.req.json()
+  console.log(`[plugin:test] source_type=${sourceType}`)
   try {
     const plugin = await loadPlugin(sourceType)
     const result = await plugin.test(body.credentials ?? {})
+    console.log(`[plugin:test] ok — display_name=${(result as Record<string, unknown>).display_name}`)
     return c.json(ok(result))
   } catch (e) {
+    console.error(`[plugin:test] error — ${e instanceof Error ? e.message : e}`)
     return c.json({ data: null, error: e instanceof Error ? e.message : 'Plugin error' }, 400)
   }
 })
@@ -137,6 +140,7 @@ plugins.post('/:source_type/test', async (c) => {
 plugins.post('/:source_type/fetch', async (c) => {
   const sourceType = c.req.param('source_type')
   const body = await c.req.json()
+  console.log(`[plugin:fetch] source_type=${sourceType} options=${JSON.stringify(body.options ?? body)}`)
   return streamSSE(c, async (stream) => {
     try {
       const plugin = await loadPlugin(sourceType)
@@ -147,8 +151,11 @@ plugins.post('/:source_type/fetch', async (c) => {
           await stream.writeSSE({ data: JSON.stringify({ type: 'progress', current, total, key }) })
         },
       )
+      const tickets = (result as Record<string, unknown>).tickets
+      console.log(`[plugin:fetch] done — ${Array.isArray(tickets) ? tickets.length : '?'} tickets`)
       await stream.writeSSE({ data: JSON.stringify({ type: 'done', result }) })
     } catch (e) {
+      console.error(`[plugin:fetch] error — ${e instanceof Error ? e.message : e}`)
       await stream.writeSSE({ data: JSON.stringify({ type: 'error', message: e instanceof Error ? e.message : 'Plugin error' }) })
     }
   })
@@ -158,7 +165,7 @@ plugins.delete('/:source_type', async (c) => {
   const sourceType = c.req.param('source_type')
   const pluginDir = join(getPluginsDir(), sourceType)
   try {
-    await rm(pluginDir, { recursive: true, force: false })
+    await rm(pluginDir, { recursive: true, force: true })
     return c.json(ok(null))
   } catch (e) {
     return c.json({ data: null, error: e instanceof Error ? e.message : 'Failed to remove plugin' }, 400)

@@ -41,6 +41,7 @@ export default function SettingsPage() {
   const [showSourcePicker, setShowSourcePicker] = useState(false)
   const [testingId, setTestingId] = useState<string | null>(null)
   const [refreshConn, setRefreshConn] = useState<SourceConnection | null>(null)
+  const [refreshImport, setRefreshImport] = useState<{ project_key: string; config_id: string } | null>(null)
   const [testResults, setTestResults] = useState<Record<string, 'ok' | 'error'>>({})
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null)
   const [pendingReset, setPendingReset] = useState(false)
@@ -201,10 +202,20 @@ export default function SettingsPage() {
     if (isNew && connections.length === 0) setShowConnBanner(true)
   }
 
+  function connectionDeleteDesc(connId: string) {
+    const count = connDatasets[connId]?.length ?? 0
+    return count > 0
+      ? t('settings.deleteConnectionDescWithDatasets', { count })
+      : t('settings.deleteConnectionDesc')
+  }
+
   const confirmMeta: Record<PendingDelete['type'], { title: string; description: string }> = {
     config: { title: t('settings.deleteConfigConfirm'), description: t('settings.deleteConfigDesc') },
     import: { title: t('settings.deleteDatasetConfirm'), description: t('settings.deleteDatasetDesc') },
-    connection: { title: t('settings.deleteConnectionConfirm'), description: t('settings.deleteConnectionDesc') },
+    connection: {
+      title: t('settings.deleteConnectionConfirm'),
+      description: pendingDelete?.type === 'connection' ? connectionDeleteDesc(pendingDelete.id) : t('settings.deleteConnectionDesc'),
+    },
   }
 
   // ── Section renderers ──────────────────────────────────────────────────────
@@ -316,7 +327,10 @@ export default function SettingsPage() {
                   <>
                     {imp.connection_id && connections.find((c) => c.id === imp.connection_id) && (
                       <IconBtn
-                        onClick={() => setRefreshConn(connections.find((c) => c.id === imp.connection_id)!)}
+                        onClick={() => {
+                          setRefreshConn(connections.find((c) => c.id === imp.connection_id)!)
+                          setRefreshImport({ project_key: imp.project_key, config_id: imp.config_id })
+                        }}
                         title={t('refresh.confirm')}
                       >
                         <RefreshCw className="w-3.5 h-3.5" />
@@ -836,7 +850,8 @@ export default function SettingsPage() {
           open
           connection={refreshConn}
           pluginManifest={refreshConn.source_type !== 'jira' ? manifestForConn(refreshConn) : null}
-          onClose={() => setRefreshConn(null)}
+          importSession={refreshImport}
+          onClose={() => { setRefreshConn(null); setRefreshImport(null) }}
         />
       )}
 
@@ -853,7 +868,7 @@ export default function SettingsPage() {
                 <Link2 className="w-4 h-4 text-blue-500" />
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900">Jira</p>
+                <p className="text-sm font-medium text-gray-900">{JIRA_MANIFEST.name}</p>
                 <p className="text-xs text-gray-400">{t('connection.jiraDesc')}</p>
               </div>
             </button>

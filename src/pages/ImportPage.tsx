@@ -183,7 +183,7 @@ export default function ImportPage() {
     async function handlePlugin(manifest: PluginManifest) {
       setErrorMsg(null)
       setSelectedManifest(manifest)
-      setPluginOptions(manifest.fetch_options.reduce<Record<string, string>>((acc, f) => {
+      setPluginOptions((manifest.fetch_options ?? []).reduce<Record<string, string>>((acc, f) => {
         acc[f.key] = String(f.default ?? '')
         return acc
       }, {}))
@@ -285,7 +285,11 @@ export default function ImportPage() {
     }
 
     function handleAddNew() {
-      setStep('connect')
+      if (selectedManifest) {
+        setPluginConnDialog(true)
+      } else {
+        setStep('connect')
+      }
     }
 
     return (
@@ -393,7 +397,7 @@ export default function ImportPage() {
         <WizardHeader steps={[t('wizard.stepConnect'), t('wizard.stepImport'), t('wizard.stepSetup')]} current={0} />
         <ErrorBanner message={errorMsg} onDismiss={() => setErrorMsg(null)} />
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('wizard.connectTitle')}</h2>
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('wizard.connectTitle', { source: 'Jira' })}</h2>
           <p className="text-sm text-gray-400 mt-1">
             {t('wizard.connectHint')}{' '}
             <a
@@ -756,7 +760,7 @@ export default function ImportPage() {
     try {
       const config = await api.configs.create({
         name: `${fetchedProjectKey} Team`,
-        source_type: 'jira',
+        source_type: connection!.source_type,
         status_order: statuses,
         cycle_time_start_status: cycleStart,
         cycle_time_end_status: cycleEnd,
@@ -766,6 +770,15 @@ export default function ImportPage() {
       const file = new File([blob], `${fetchedProjectKey}-export.json`, { type: 'application/json' })
       const autoName = `${fetchedProjectKey} – ${new Date().toLocaleDateString()}`
       const session = await api.imports.upload(file, config.id, autoName, connection.id)
+      // Save project defaults to connection so next Refresh auto-starts (no preflight)
+      if (connection.source_type === 'jira' && !connection.project_key) {
+        api.connections.update(connection.id, {
+          project_key: fetchedProjectKey,
+          issue_types: jiraIssueTypes,
+          resolved_from: resolvedFrom || undefined,
+          resolved_to: resolvedTo || undefined,
+        }).catch(() => {})
+      }
       notifyImportsChanged()
       navigate(`/projects/${session.id}`)
     } catch (e) {

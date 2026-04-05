@@ -77,6 +77,11 @@ export const api = {
       if (connectionId) form.append('connection_id', connectionId)
       return request<ImportSession>('/api/v1/imports', { method: 'POST', body: form })
     },
+    replace: (id: string, file: File) => {
+      const form = new FormData()
+      form.append('file', file)
+      return request<ImportSession>(`/api/v1/imports/${id}/data`, { method: 'PUT', body: form })
+    },
     update: (id: string, body: { name?: string; config_id?: string }) =>
       request<ImportSession>(`/api/v1/imports/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }),
     delete: (id: string) =>

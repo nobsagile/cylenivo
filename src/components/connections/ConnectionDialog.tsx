@@ -38,7 +38,7 @@ function initialCredentials(manifest: PluginManifest, connection?: SourceConnect
       }
     }
   }
-  return manifest.credentials.reduce<Record<string, string>>((acc, f) => {
+  return (manifest.credentials ?? []).reduce<Record<string, string>>((acc, f) => {
     acc[f.key] = existing[f.key] ?? String(f.default ?? '')
     return acc
   }, {})
@@ -57,7 +57,7 @@ export default function ConnectionDialog({ open, manifest, connection, onClose, 
   const [error, setError] = useState('')
   const [pendingId, setPendingId] = useState<string | null>(connection?.id ?? null)
 
-  const canSave = Boolean(name) && manifest.credentials.every((f) => {
+  const canSave = Boolean(name) && (manifest.credentials ?? []).every((f) => {
     if (f.type === 'password' && isEdit) return true // keep existing
     return Boolean(credentials[f.key])
   })
@@ -90,7 +90,7 @@ export default function ConnectionDialog({ open, manifest, connection, onClose, 
       }
     } else {
       const creds: Record<string, string> = {}
-      for (const f of manifest.credentials) {
+      for (const f of (manifest.credentials ?? [])) {
         if (f.type === 'password' && isEdit && !credentials[f.key]) continue
         if (credentials[f.key]) creds[f.key] = credentials[f.key]
       }
@@ -167,7 +167,7 @@ export default function ConnectionDialog({ open, manifest, connection, onClose, 
           </div>
 
           {/* Dynamic credential fields */}
-          {manifest.credentials.map((field) => (
+          {(manifest.credentials ?? []).map((field) => (
             <div key={field.key}>
               <div className="flex items-center gap-1 mb-1.5">
                 <span className="text-sm font-medium text-gray-700">{field.label}</span>
