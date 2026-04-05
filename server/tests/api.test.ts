@@ -285,6 +285,127 @@ describe('imports', () => {
     const { data: statuses } = await res.json() as { data: string[] }
     expect(statuses).toEqual([])
   })
+
+  // ── PUT /:id/data (in-place refresh) ────────────────────────────────────────
+
+  const V1 = {
+    source_type: 'jira',
+    project_key: 'PROJ',
+    exported_at: '2026-01-01T00:00:00Z',
+    tickets: [{
+      external_id: 'PROJ-1',
+      title: 'First version',
+      ticket_type: 'story',
+      created_at: '2026-01-01T00:00:00Z',
+      transitions: [{ from_status: null, to_status: 'Done', transitioned_at: '2026-01-05T00:00:00Z' }],
+    }],
+  }
+
+  const V2 = {
+    source_type: 'jira',
+    project_key: 'PROJ',
+    exported_at: '2026-02-01T00:00:00Z',
+    tickets: [
+      {
+        external_id: 'PROJ-1',
+        title: 'First version updated',
+        ticket_type: 'story',
+        created_at: '2026-01-01T00:00:00Z',
+        transitions: [{ from_status: null, to_status: 'Done', transitioned_at: '2026-01-05T00:00:00Z' }],
+      },
+      {
+        external_id: 'PROJ-2',
+        title: 'New ticket',
+        ticket_type: 'story',
+        created_at: '2026-01-10T00:00:00Z',
+        transitions: [{ from_status: null, to_status: 'Done', transitioned_at: '2026-01-15T00:00:00Z' }],
+      },
+    ],
+  }
+
+  async function putData(importId: string, data: unknown) {
+    const form = new FormData()
+    form.append('file', new Blob([JSON.stringify(data)], { type: 'application/json' }), 'refresh.json')
+    return app.request(`/api/v1/imports/${importId}/data`, { method: 'PUT', body: form })
+  }
+
+  it('PUT /data replaces ticket data and keeps the same session ID', async () => {
+    const cfg = await createConfig()
+    const importId = await doImport(cfg.id, V1)
+
+    const res = await putData(importId, V2)
+    expect(res.status).toBe(200)
+    const { data } = await res.json() as { data: { id: string; ticket_count: number } }
+    expect(data.id).toBe(importId)
+    expect(data.ticket_count).toBe(2)
+  })
+
+  it('PUT /data replaces old tickets — old external_ids are gone', async () => {
+    const cfg = await createConfig()
+    const importId = await doImport(cfg.id, V1)
+    await putData(importId, {
+      source_type: 'jira',
+      project_key: 'PROJ',
+      exported_at: '2026-02-01T00:00:00Z',
+      tickets: [{
+        external_id: 'PROJ-NEW',
+        title: 'Replacement ticket',
+        ticket_type: 'story',
+        created_at: '2026-01-01T00:00:00Z',
+        transitions: [],
+      }],
+    })
+
+    // Tickets endpoint should only have the new ticket
+    const listRes = await app.request(`/api/v1/tickets?import_id=${importId}&limit=100`)
+    expect(listRes.status).toBe(200)
+    const { data } = await listRes.json() as { data: { tickets: Array<{ external_id: string }> } }
+    const ids = data.tickets.map(t => t.external_id)
+    expect(ids).toContain('PROJ-NEW')
+    expect(ids).not.toContain('PROJ-1')
+  })
+
+  it('PUT /data returns 404 for unknown import', async () => {
+    const res = await putData('nonexistent', V1)
+    expect(res.status).toBe(404)
+  })
+
+  it('PUT /data returns 400 for invalid JSON', async () => {
+    const cfg = await createConfig()
+    const importId = await doImport(cfg.id, V1)
+    const form = new FormData()
+    form.append('file', new Blob([Buffer.from('not json')], { type: 'application/json' }), 'bad.json')
+    const res = await app.request(`/api/v1/imports/${importId}/data`, { method: 'PUT', body: form })
+    expect(res.status).toBe(400)
+  })
+
+  it('PUT /data returns 422 for empty tickets array', async () => {
+    const cfg = await createConfig()
+    const importId = await doImport(cfg.id, V1)
+    const res = await putData(importId, { source_type: 'jira', project_key: 'PROJ', exported_at: '2026-02-01T00:00:00Z', tickets: [] })
+    expect(res.status).toBe(422)
+  })
+
+  it('PUT /data returns 400 when no file provided', async () => {
+    const cfg = await createConfig()
+    const importId = await doImport(cfg.id, V1)
+    const form = new FormData()
+    const res = await app.request(`/api/v1/imports/${importId}/data`, { method: 'PUT', body: form })
+    expect(res.status).toBe(400)
+  })
+
+  it('PUT /data updates ticket_count on the session', async () => {
+    const cfg = await createConfig()
+    const importId = await doImport(cfg.id, V1)
+
+    const before = await (await app.request(`/api/v1/imports/${importId}`)).json() as { data: { ticket_count: number } }
+    expect(before.data.ticket_count).toBe(1)
+
+    await putData(importId, V2)
+
+    const after = await (await app.request(`/api/v1/imports/${importId}`)).json() as { data: { ticket_count: number } }
+    expect(after.data.ticket_count).toBe(2)
+  })
 })
 
 // ─── metrics ──────────────────────────────────────────────────────────────────
