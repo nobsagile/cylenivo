@@ -162,6 +162,24 @@ export default function ImportPage() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
+  // ── Plugin: inline ConnectionDialog when no existing connection ──────────
+  if (pluginConnDialog && selectedManifest) {
+    return (
+      <ConnectionDialog
+        open
+        manifest={selectedManifest}
+        onClose={() => { setPluginConnDialog(false); setSelectedManifest(null) }}
+        onSaved={(conn) => {
+          setConnection(conn)
+          setAvailableConns([conn])
+          setSelectedConnId(conn.id)
+          setPluginConnDialog(false)
+          setStep('fetch')
+        }}
+      />
+    )
+  }
+
   // ── Step: Source ──────────────────────────────────────────────────────────
   if (step === 'source') {
     async function handleJira() {
@@ -239,7 +257,6 @@ export default function ImportPage() {
 
           {([
             { key: 'import.uploadFileOption', icon: <Clock className="w-5 h-5 text-gray-400" /> },
-            { key: 'import.trello', icon: <Clock className="w-5 h-5 text-gray-400" /> },
             { key: 'import.linear', icon: <Clock className="w-5 h-5 text-gray-400" /> },
           ] as const).map(({ key, icon }) => (
             <div key={key} className="flex flex-col items-start gap-2 p-4 rounded-xl border-2 border-dashed border-gray-100 bg-gray-50 opacity-60 cursor-not-allowed">
@@ -252,24 +269,6 @@ export default function ImportPage() {
           ))}
         </div>
       </div>
-    )
-  }
-
-  // ── Plugin: inline ConnectionDialog when no existing connection ──────────
-  if (pluginConnDialog && selectedManifest) {
-    return (
-      <ConnectionDialog
-        open
-        manifest={selectedManifest}
-        onClose={() => { setPluginConnDialog(false); setSelectedManifest(null) }}
-        onSaved={(conn) => {
-          setConnection(conn)
-          setAvailableConns([conn])
-          setSelectedConnId(conn.id)
-          setPluginConnDialog(false)
-          setStep('fetch')
-        }}
-      />
     )
   }
 
@@ -455,8 +454,11 @@ export default function ImportPage() {
   }
 
   // ── Step: Fetch (plugin) ──────────────────────────────────────────────────
-  if (step === 'fetch' && connection && connection.source_type !== 'jira' && selectedManifest) {
-    const fetchOptions = selectedManifest.fetch_options
+  const activeManifest = selectedManifest ?? (connection && connection.source_type !== 'jira'
+    ? installedPlugins.find(p => p.source_type === connection.source_type) ?? null
+    : null)
+  if (step === 'fetch' && connection && connection.source_type !== 'jira' && activeManifest) {
+    const fetchOptions = activeManifest.fetch_options
     const canFetch = !fetching && fetchOptions.filter((f) => f.required).every((f) => Boolean(pluginOptions[f.key]))
 
     async function handlePluginFetch() {

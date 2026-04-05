@@ -54,8 +54,10 @@ function buildInitialPluginOptions(
     return acc
   }, {})
   if (projectKey) {
-    const projectField = fetchOptions.find(f => f.key.toLowerCase().includes('project'))
-    if (projectField) opts[projectField.key] = projectKey
+    const idField = fetchOptions.find(f =>
+      ['project', 'board', 'workspace', 'repo'].some(k => f.key.toLowerCase().includes(k))
+    ) ?? fetchOptions.find(f => f.required)
+    if (idField) opts[idField.key] = projectKey
   }
   return opts
 }

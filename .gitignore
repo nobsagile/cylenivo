@@ -31,3 +31,5 @@ DESIGN.md
 _marketing/
 test-export.json
 *.export.json
+reset-app-state.sh
+seed-trello.js
