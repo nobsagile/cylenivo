@@ -339,16 +339,48 @@
   </div>
 </section>
 
+<!-- CONNECTORS -->
+<section class="section">
+  <div class="section-label">Data sources</div>
+  <h2 class="section-title">Works with your tools</h2>
+  <p class="section-sub">Jira is built in. Community plugins add more — or build your own in ~50 lines of JavaScript.</p>
+  <div class="feature-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr));margin-top:2rem">
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#fff7ed">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </div>
+      <h3>Jira</h3>
+      <p>Built in. Connect with a URL + API token, or import a CSV export. No plugin needed.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#eff6ff">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <h3>OpenProject</h3>
+      <p>Community plugin. Import work packages from OpenProject — cloud or self-hosted.</p>
+      <a href="https://github.com/nobsagile/cylenivo-plugins" target="_blank" rel="noopener" style="font-size:.8125rem;color:var(--violet);font-weight:600;margin-top:.5rem;display:inline-block">Install via plugin browser →</a>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#f0fdf4">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2" stroke-linecap="round"><path d="M16 18l2-2-2-2M8 18l-2-2 2-2M12 2v20"/></svg>
+      </div>
+      <h3>Any tool</h3>
+      <p>Build a connector in plain JavaScript. Implement two functions — Cylenivo handles the rest.</p>
+      <a href="https://github.com/nobsagile/cylenivo-plugins/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="font-size:.8125rem;color:var(--violet);font-weight:600;margin-top:.5rem;display:inline-block">Plugin development guide →</a>
+    </div>
+  </div>
+</section>
+
 <!-- HOW IT WORKS -->
 <div class="how-section">
   <div class="how-inner">
     <div class="section-label">How it works</div>
-    <h2 class="section-title">From Jira to insight in three steps</h2>
+    <h2 class="section-title">From data to insight in three steps</h2>
     <div class="steps">
       <div class="step">
         <div class="step-num">1</div>
-        <h3>Connect to Jira</h3>
-        <p>Enter your Jira URL and a personal API token. Cylenivo fetches your tickets directly — no CSV export needed.</p>
+        <h3>Connect your tool</h3>
+        <p>Jira is built in. OpenProject and other tools are available via <a href="https://github.com/nobsagile/cylenivo-plugins" target="_blank" rel="noopener" style="color:var(--violet);font-weight:600">community plugins</a>. Install them directly inside Cylenivo.</p>
       </div>
       <div class="step">
         <div class="step-num">2</div>
@@ -398,6 +430,7 @@
   </a>
   <div class="footer-links">
     <a href="https://github.com/nobsagile/cylenivo" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/nobsagile/cylenivo-plugins" target="_blank" rel="noopener">Plugins</a>
     <a href="https://mastodon.social/@cylenivo" target="_blank" rel="noopener me">Mastodon</a>
     <a href="https://github.com/nobsagile/cylenivo/issues" target="_blank" rel="noopener">Issues</a>
     <a href="https://github.com/nobsagile/cylenivo/blob/master/LICENSE" target="_blank" rel="noopener">License</a>
