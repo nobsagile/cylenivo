@@ -26,7 +26,7 @@ interface Props {
   connection: SourceConnection
   pluginManifest?: PluginManifest | null
   /** When refreshing an existing dataset, pass it so we can skip preflight */
-  importSession?: { project_key: string; config_id: string } | null
+  importSession?: { id: string; project_key: string; config_id: string } | null
   onClose: () => void
 }
 

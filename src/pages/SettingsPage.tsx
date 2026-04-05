@@ -41,7 +41,7 @@ export default function SettingsPage() {
   const [showSourcePicker, setShowSourcePicker] = useState(false)
   const [testingId, setTestingId] = useState<string | null>(null)
   const [refreshConn, setRefreshConn] = useState<SourceConnection | null>(null)
-  const [refreshImport, setRefreshImport] = useState<{ project_key: string; config_id: string } | null>(null)
+  const [refreshImport, setRefreshImport] = useState<{ id: string; project_key: string; config_id: string } | null>(null)
   const [testResults, setTestResults] = useState<Record<string, 'ok' | 'error'>>({})
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null)
   const [pendingReset, setPendingReset] = useState(false)
@@ -329,7 +329,7 @@ export default function SettingsPage() {
                       <IconBtn
                         onClick={() => {
                           setRefreshConn(connections.find((c) => c.id === imp.connection_id)!)
-                          setRefreshImport({ project_key: imp.project_key, config_id: imp.config_id })
+                          setRefreshImport({ id: imp.id, project_key: imp.project_key, config_id: imp.config_id })
                         }}
                         title={t('refresh.confirm')}
                       >
