@@ -101,7 +101,8 @@
   },
   "onboarding": {
     "title": "Welcome to Cylenivo",
-    "subtitle": "Understand your team's delivery speed — cycle time, lead time and throughput, all from your Jira data.",
+    "subtitle": "Understand your team's delivery speed — cycle time, lead time and throughput.",
+    "pluginHint": "Using OpenProject or another tool? Install a connector under Settings → Plugins.",
     "demosReady": "Three demo projects are ready to explore",
     "improvingTitle": "Demo: Improving Team",
     "improvingDesc": "Simple 4-status workflow. Metrics improve steadily over time — a clean baseline for getting familiar with the tool.",

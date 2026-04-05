@@ -77,12 +77,27 @@ function authHeader(creds: JiraCredentials): string {
   return 'Basic ' + Buffer.from(`${creds.email}:${creds.api_token}`).toString('base64')
 }
 
-async function jiraGet<T>(creds: JiraCredentials, path: string): Promise<T> {
+const MAX_RETRIES = 3
+
+async function jiraGet<T>(creds: JiraCredentials, path: string, attempt = 0): Promise<T> {
   const url = `${creds.base_url}/rest/api/3${path}`
   const res = await fetch(url, {
     headers: { Authorization: authHeader(creds), Accept: 'application/json' },
     signal: AbortSignal.timeout(15000),
   })
+
+  // Retry on rate limit (429) or transient server errors (5xx)
+  if (res.status === 429 || (res.status >= 500 && res.status < 600)) {
+    if (attempt >= MAX_RETRIES) {
+      throw new Error(`Jira API error: ${res.status} ${res.statusText} (gave up after ${MAX_RETRIES} retries)`)
+    }
+    const retryAfter = res.headers.get('Retry-After')
+    const delay = retryAfter ? parseInt(retryAfter, 10) * 1000 : 1000 * Math.pow(2, attempt)
+    console.warn(`[jira] ${res.status} on ${path}, retrying in ${delay}ms (attempt ${attempt + 1}/${MAX_RETRIES})`)
+    await new Promise(r => setTimeout(r, delay))
+    return jiraGet(creds, path, attempt + 1)
+  }
+
   if (!res.ok) {
     const body = await res.text().catch(() => '')
     console.error(`Jira API error ${res.status} on ${path}: ${body}`)

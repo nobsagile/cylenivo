@@ -88,6 +88,9 @@ export default function WelcomePage() {
         <p className="text-gray-400 mt-2 max-w-sm text-sm leading-relaxed">
           {t('onboarding.subtitle')}
         </p>
+        <p className="text-gray-300 mt-1 max-w-sm text-xs leading-relaxed">
+          {t('onboarding.pluginHint')}
+        </p>
       </div>
 
       {/* Demo section */}
