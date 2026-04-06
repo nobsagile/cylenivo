@@ -218,33 +218,34 @@ imports.put('/:id/data', async (c) => {
   const healthReport = buildHealthReport(data.tickets, statusOrder, cfg.cycle_time_start_status, cfg.cycle_time_end_status)
   const now = new Date().toISOString()
 
-  // Delete old ticket data, keep the session row
-  const ticketRows = await db.select({ id: tickets.id }).from(tickets).where(eq(tickets.import_id, id))
-  if (ticketRows.length) {
-    const ticketIds = ticketRows.map(t => t.id)
-    await db.delete(ticketTransitions).where(inArray(ticketTransitions.ticket_id, ticketIds))
-    await db.delete(tickets).where(inArray(tickets.id, ticketIds))
-  }
-
-  // Insert fresh ticket data
   const { ticketRows: newTicketRows, transitionRows } = buildTicketRows(id, data.tickets)
   const CHUNK = 500
-  for (let i = 0; i < newTicketRows.length; i += CHUNK) {
-    await db.insert(tickets).values(newTicketRows.slice(i, i + CHUNK))
-  }
-  for (let i = 0; i < transitionRows.length; i += CHUNK) {
-    await db.insert(ticketTransitions).values(transitionRows.slice(i, i + CHUNK))
-  }
 
-  // Update session metadata
-  await db.update(importSessions).set({
-    source_type: data.source_type,
-    project_key: data.project_key,
-    file_name: (file as File).name || 'upload.json',
-    ticket_count: data.tickets.length,
-    imported_at: now,
-    health_report: JSON.stringify(healthReport),
-  }).where(eq(importSessions.id, id))
+  await db.transaction(async (tx) => {
+    // Delete old ticket data atomically — prevents double-insert if two requests race
+    const existing = await tx.select({ id: tickets.id }).from(tickets).where(eq(tickets.import_id, id))
+    if (existing.length) {
+      const existingIds = existing.map(t => t.id)
+      await tx.delete(ticketTransitions).where(inArray(ticketTransitions.ticket_id, existingIds))
+      await tx.delete(tickets).where(inArray(tickets.id, existingIds))
+    }
+
+    for (let i = 0; i < newTicketRows.length; i += CHUNK) {
+      await tx.insert(tickets).values(newTicketRows.slice(i, i + CHUNK))
+    }
+    for (let i = 0; i < transitionRows.length; i += CHUNK) {
+      await tx.insert(ticketTransitions).values(transitionRows.slice(i, i + CHUNK))
+    }
+
+    await tx.update(importSessions).set({
+      source_type: data.source_type,
+      project_key: data.project_key,
+      file_name: (file as File).name || 'upload.json',
+      ticket_count: data.tickets.length,
+      imported_at: now,
+      health_report: JSON.stringify(healthReport),
+    }).where(eq(importSessions.id, id))
+  })
 
   const updated = await db.select().from(importSessions).where(eq(importSessions.id, id))
   return c.json(ok(serializeSession(updated[0], cfg)))

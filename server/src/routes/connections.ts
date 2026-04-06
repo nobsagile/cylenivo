@@ -64,7 +64,7 @@ connections.post('/', async (c) => {
   }
 
   await db.insert(sourceConnections).values(row)
-  return c.json(ok(serialize(row)), 201)
+  return c.json(ok(serialize(row as ConnectionRow)), 201)
 })
 
 connections.put('/:id', async (c) => {
@@ -181,7 +181,7 @@ connections.post('/:id/duplicate', async (c) => {
     created_at: new Date().toISOString(),
   }
   await db.insert(sourceConnections).values(row)
-  return c.json(ok(serialize(row)), 201)
+  return c.json(ok(serialize(row as ConnectionRow)), 201)
 })
 
 connections.get('/:id/datasets', async (c) => {

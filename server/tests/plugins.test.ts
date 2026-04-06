@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterEach, mock, spyOn } from 'bun:test'
 import { join } from 'path'
 import { mkdir, writeFile, rm } from 'fs/promises'
-import { app } from '../src/index.js'
+import { app } from '../src/app.js'
 
 const FIXTURE_PLUGINS_DIR = join(import.meta.dir, 'fixtures/plugins')
 

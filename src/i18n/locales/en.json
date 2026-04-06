@@ -62,7 +62,11 @@
     "stepSetup": "Set up",
     "statusesTitle": "Sort your statuses",
     "statusesHint": "These are the statuses found in your project. Drag to reorder, remove any you don't need — only the ones you keep will appear in the next step.",
-    "statusesEmpty": "No statuses left — go back and re-fetch."
+    "statusesEmpty": "No statuses left — go back and re-fetch.",
+    "existingConfig": "Configuration",
+    "existingConfigHint": "Apply an existing configuration to skip the status and measurement setup.",
+    "existingConfigNew": "Create new configuration",
+    "importing": "Importing…"
   },
   "nav": {
     "overview": "Metrics",

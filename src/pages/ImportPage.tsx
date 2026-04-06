@@ -14,7 +14,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { api } from '@/services/api'
-import type { SourceConnection, PluginManifest } from '@/types'
+import type { SourceConnection, PluginManifest, ProjectConfig } from '@/types'
 import ConnectionDialog from '@/components/connections/ConnectionDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -139,6 +139,12 @@ export default function ImportPage() {
     api.plugins.list().then(setInstalledPlugins).catch(() => {})
   }, [])
 
+  useEffect(() => {
+    if (step === 'fetch') {
+      api.configs.list().then(setAvailableConfigs).catch(() => {})
+    }
+  }, [step])
+
   // fetch step
   const [jiraProject, setJiraProject] = useState('')
   const [jiraLimit, setJiraLimit] = useState(200)
@@ -147,6 +153,10 @@ export default function ImportPage() {
   const [resolvedTo, setResolvedTo] = useState('')
   const [fetching, setFetching] = useState(false)
   const [fetchMsg, setFetchMsg] = useState('')
+
+  // config selection (fetch step)
+  const [availableConfigs, setAvailableConfigs] = useState<ProjectConfig[]>([])
+  const [selectedConfigId, setSelectedConfigId] = useState('')
 
   // measure step
   const [statuses, setStatuses] = useState<string[]>([])
@@ -470,10 +480,15 @@ export default function ImportPage() {
         const result = await api.connections.fetchStream(connection.id, pluginOptions, (current, total, key) => {
           setFetchMsg(t('import.fetchingTicket', { current, total, key }))
         }) as Record<string, unknown>
+        const projectKey = (result.project_key as string) ?? ''
+        if (selectedConfigId && selectedConfigId !== '__new__') {
+          await importWithExistingConfig(result, projectKey)
+          return
+        }
         const s = extractStatuses(result)
         setStatuses(s)
         setFetchedData(result)
-        setFetchedProjectKey((result.project_key as string) ?? '')
+        setFetchedProjectKey(projectKey)
         setCycleStart('')
         setCycleEnd('')
         setStep('statuses')
@@ -501,6 +516,22 @@ export default function ImportPage() {
           )}
         </div>
         <div className="space-y-4">
+          {availableConfigs.length > 0 && (
+            <div>
+              <ConnFieldLabel label={t('wizard.existingConfig')} helpKey="wizard.existingConfigHint" />
+              <Select value={selectedConfigId} onValueChange={setSelectedConfigId}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={t('wizard.existingConfigNew')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__new__">{t('wizard.existingConfigNew')}</SelectItem>
+                  {availableConfigs.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           {fetchOptions.map((field) => (
             <div key={field.key}>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">{field.label}</label>
@@ -518,8 +549,10 @@ export default function ImportPage() {
           <Button variant="outline" onClick={() => setStep(hadConnections ? 'pick-connection' : 'source')} className="gap-1.5">
             <ArrowLeft className="w-4 h-4" /> {t('common.back')}
           </Button>
-          <Button onClick={handlePluginFetch} disabled={!canFetch} className="flex-1 gap-2 h-11">
-            {fetching
+          <Button onClick={handlePluginFetch} disabled={!canFetch || importing} className="flex-1 gap-2 h-11">
+            {importing
+              ? <><Loader2 className="w-4 h-4 animate-spin" />{t('wizard.importing')}</>
+              : fetching
               ? <><Loader2 className="w-4 h-4 animate-spin" />{fetchMsg}</>
               : <>{t('wizard.fetchTitle')} <ArrowRight className="w-4 h-4" /></>}
           </Button>
@@ -561,10 +594,15 @@ export default function ImportPage() {
           },
         ) as Record<string, unknown>
 
+        const projectKey = (result.project_key as string) ?? jiraProject.trim().toUpperCase()
+        if (selectedConfigId && selectedConfigId !== '__new__') {
+          await importWithExistingConfig(result, projectKey)
+          return
+        }
         const s = extractStatuses(result)
         setStatuses(s)
         setFetchedData(result)
-        setFetchedProjectKey((result.project_key as string) ?? jiraProject.trim().toUpperCase())
+        setFetchedProjectKey(projectKey)
         setCycleStart('')
         setCycleEnd('')
         setStep('statuses')
@@ -592,6 +630,22 @@ export default function ImportPage() {
           )}
         </div>
         <div className="space-y-4">
+          {availableConfigs.length > 0 && (
+            <div>
+              <ConnFieldLabel label={t('wizard.existingConfig')} helpKey="wizard.existingConfigHint" />
+              <Select value={selectedConfigId} onValueChange={setSelectedConfigId}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={t('wizard.existingConfigNew')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__new__">{t('wizard.existingConfigNew')}</SelectItem>
+                  {availableConfigs.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <div>
             <ConnFieldLabel label={t('import.projectKey')} helpKey="help.projectKey" />
             <Input
@@ -675,10 +729,12 @@ export default function ImportPage() {
           </Button>
           <Button
             onClick={handleFetch}
-            disabled={fetching || !jiraProject || jiraIssueTypes.length === 0}
+            disabled={fetching || importing || !jiraProject || jiraIssueTypes.length === 0}
             className="flex-1 gap-2 h-11"
           >
-            {fetching
+            {importing
+              ? <><Loader2 className="w-4 h-4 animate-spin" /> {t('wizard.importing')}</>
+              : fetching
               ? <><Loader2 className="w-4 h-4 animate-spin" /> {t('import.importing')}</>
               : <>{t('wizard.fetchData')} <ArrowRight className="w-4 h-4" /></>
             }
@@ -746,6 +802,32 @@ export default function ImportPage() {
         </div>
       </div>
     )
+  }
+
+  // ── Direct import with existing config ───────────────────────────────────
+  async function importWithExistingConfig(data: unknown, projectKey: string) {
+    if (!connection || !selectedConfigId || selectedConfigId === '__new__') return
+    setImporting(true)
+    setErrorMsg(null)
+    try {
+      const blob = new Blob([JSON.stringify(data)], { type: 'application/json' })
+      const file = new File([blob], `${projectKey}-export.json`, { type: 'application/json' })
+      const autoName = `${projectKey} – ${new Date().toLocaleDateString()}`
+      const session = await api.imports.upload(file, selectedConfigId, autoName, connection.id)
+      if (connection.source_type === 'jira' && !connection.project_key) {
+        api.connections.update(connection.id, {
+          project_key: projectKey,
+          issue_types: jiraIssueTypes,
+          resolved_from: resolvedFrom || undefined,
+          resolved_to: resolvedTo || undefined,
+        }).catch(() => {})
+      }
+      notifyImportsChanged()
+      navigate(`/projects/${session.id}`)
+    } catch (e) {
+      setErrorMsg(e instanceof Error ? e.message : 'Import failed')
+      setImporting(false)
+    }
   }
 
   // ── Step: Measure ─────────────────────────────────────────────────────────
