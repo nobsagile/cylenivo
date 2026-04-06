@@ -13,6 +13,7 @@ import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 import { BoardVisualization } from '@/components/metrics/BoardVisualization'
 import { ReworkCard } from '@/components/metrics/ReworkCard'
 import { CycleTimeByTypeChart } from '@/components/metrics/CycleTimeByTypeChart'
+import { PageHeader } from '@/components/layout/PageHeader'
 
 export default function FlowPage() {
   const { t } = useTranslation()
@@ -48,10 +49,14 @@ export default function FlowPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('nav.flow')}</h2>
-        <p className="text-sm text-gray-400 mt-0.5">{t('flow.subtitle')}</p>
-      </div>
+      <PageHeader
+        view={t('nav.flow')}
+        name={metrics.project_key}
+        subtitle={t('flow.subtitle')}
+        completed={metrics.completed_ticket_count}
+        total={metrics.ticket_count}
+        excluded={metrics.excluded_ticket_count}
+      />
 
       {metrics.config_context && (
         <ConfigContextBar config={metrics.config_context} />

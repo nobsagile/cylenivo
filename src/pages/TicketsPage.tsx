@@ -10,6 +10,7 @@ import { TicketTable, sortTickets, type SortKey, type SortDir } from '@/componen
 import { TicketDetailDrawer } from '@/components/tickets/TicketDetailDrawer'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { PageHeader } from '@/components/layout/PageHeader'
 
 const TYPE_FILTERS = ['', 'story', 'task', 'bug']
 
@@ -66,15 +67,14 @@ export default function TicketsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('nav.tickets')}</h2>
-          <p className="text-sm text-gray-400 mt-0.5">{t('tickets.count', { count: total })}</p>
-          {tickets.filter(t => t.excluded).length > 0 && (
-            <p className="text-xs text-amber-600 mt-0.5">
-              {t('tickets.excludedCount', { count: tickets.filter(t => t.excluded).length })}
-            </p>
-          )}
-        </div>
+        <PageHeader
+          view={t('nav.tickets')}
+          name={metrics?.project_key ?? '…'}
+          subtitle={t('tickets.subtitle')}
+          completed={metrics?.completed_ticket_count}
+          total={metrics?.ticket_count}
+          excluded={metrics?.excluded_ticket_count}
+        />
 
         <div className="flex items-center gap-2">
           <div className="relative">

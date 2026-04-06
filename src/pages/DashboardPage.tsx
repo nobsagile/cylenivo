@@ -17,6 +17,7 @@ import { LeadTimeScatterChart } from '@/components/metrics/LeadTimeScatterChart'
 import { ThroughputChart } from '@/components/metrics/ThroughputChart'
 import { CfdChart } from '@/components/metrics/CfdChart'
 import { TicketDetailDrawer } from '@/components/tickets/TicketDetailDrawer'
+import { PageHeader } from '@/components/layout/PageHeader'
 
 interface MetricCardProps {
   title: string
@@ -186,10 +187,14 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{data.project_key}</h2>
-        <p className="text-sm text-gray-400 mt-0.5">{t('dashboard.ticketsAnalyzed', { completed: data.completed_ticket_count, total: data.ticket_count })}</p>
-      </div>
+      <PageHeader
+        view={t('nav.overview')}
+        name={data.project_key}
+        subtitle={t('dashboard.subtitle')}
+        completed={data.completed_ticket_count}
+        total={data.ticket_count}
+        excluded={data.excluded_ticket_count}
+      />
 
       {data.config_context && (
         <ConfigContextBar config={data.config_context} />

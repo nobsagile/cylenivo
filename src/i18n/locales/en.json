@@ -30,7 +30,10 @@
     "connected": "Connected",
     "notReachable": "Not reachable",
     "recommended": "Recommended",
-    "continue": "Continue"
+    "continue": "Continue",
+    "ticketsAnalyzed": "{{completed}} of {{total}} tickets analyzed",
+    "excludedNote_one": "({{count}} ticket excluded)",
+    "excludedNote_other": "({{count}} tickets excluded)"
   },
   "wizard": {
     "connectTitle": "Connect to {{source}}",
@@ -135,6 +138,7 @@
     "noDataset": "No dataset selected",
     "noDatasetHint": "Upload a Jira export to start analyzing",
     "uploadExport": "Upload export",
+    "subtitle": "Cycle time, lead time, throughput and delivery trends.",
     "ticketsAnalyzed": "{{completed}} of {{total}} tickets analyzed",
     "cycleTimeTrend": "Cycle Time Trend",
     "leadTimeTrend": "Lead Time Trend",
@@ -166,7 +170,11 @@
       "sampleSize": "Based on {{count}} completed tickets"
     }
   },
+  "analytics": {
+    "subtitle": "Cycle time distribution, lead time and time in status."
+  },
   "tickets": {
+    "subtitle": "All tickets in this dataset with their individual metrics.",
     "table": {
       "id": "ID",
       "title": "Title",

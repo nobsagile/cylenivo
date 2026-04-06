@@ -7,9 +7,11 @@ import {
   ReferenceLine, Cell,
 } from 'recharts'
 import { api } from '@/services/api'
+import { useMetrics } from '@/hooks/useMetrics'
 import type { ForecastResponse } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { PageHeader } from '@/components/layout/PageHeader'
 
 type Mode = 'how_many' | 'when'
 
@@ -28,6 +30,7 @@ function PercentileResult({ label, value, unit, color }: {
 export default function ForecastPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
+  const { data: metrics } = useMetrics(importId)
 
   const [mode, setMode] = useState<Mode>('how_many')
   const [value, setValue] = useState(4)
@@ -78,8 +81,21 @@ export default function ForecastPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('forecast.title')}</h2>
-          <p className="text-sm text-gray-400 mt-0.5">{t('forecast.subtitle')}</p>
+          {metrics ? (
+            <PageHeader
+              view={t('forecast.title')}
+              name={metrics.project_key}
+              subtitle={t('forecast.subtitle')}
+              completed={metrics.completed_ticket_count}
+              total={metrics.ticket_count}
+              excluded={metrics.excluded_ticket_count}
+            />
+          ) : (
+            <>
+              <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('forecast.title')}</h2>
+              <p className="text-sm text-gray-400 mt-0.5">{t('forecast.subtitle')}</p>
+            </>
+          )}
         </div>
 
         <div className="flex items-center gap-2">

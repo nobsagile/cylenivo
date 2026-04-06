@@ -91,6 +91,7 @@ export interface MetricsSummary {
   project_key: string
   ticket_count: number
   completed_ticket_count: number
+  excluded_ticket_count: number
   date_range: { from: string | null; to: string | null }
   cycle_time: PercentileStats
   lead_time: PercentileStats

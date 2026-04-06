@@ -44,6 +44,7 @@ metrics.get('/:importId/summary', async (c) => {
     project_key: ctx.imp.project_key,
     ticket_count: ctx.tickets.length,
     completed_ticket_count: agg.cycleTimes.length,
+    excluded_ticket_count: ctx.tickets.filter(t => t.excluded).length,
     date_range: agg.dateRange,
     cycle_time: buildStatsResponse(agg.cycleTimes, agg.cycleTimePercentiles),
     lead_time: buildStatsResponse(agg.leadTimes, agg.leadTimePercentiles),

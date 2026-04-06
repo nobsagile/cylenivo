@@ -10,6 +10,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { CycleTimeChart } from '@/components/metrics/CycleTimeChart'
 import { LeadTimeChart } from '@/components/metrics/LeadTimeChart'
 import { AvgTimeInStatusChart, PerTicketBreakdownChart } from '@/components/metrics/TimeInStatusChart'
+import { PageHeader } from '@/components/layout/PageHeader'
 
 export default function AnalyticsPage() {
   const { t } = useTranslation()
@@ -43,10 +44,14 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('nav.analytics')}</h2>
-        <p className="text-sm text-gray-400 mt-0.5">Detailed flow metrics</p>
-      </div>
+      <PageHeader
+        view={t('nav.analytics')}
+        name={metrics.project_key}
+        subtitle={t('analytics.subtitle')}
+        completed={metrics.completed_ticket_count}
+        total={metrics.ticket_count}
+        excluded={metrics.excluded_ticket_count}
+      />
 
       <Tabs defaultValue="cycle">
         <TabsList className="bg-gray-100 p-1 h-auto">
