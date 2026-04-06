@@ -33,8 +33,8 @@ function FieldLabel({ label, helpKey, optional }: { label: string; helpKey: stri
   const { t } = useTranslation()
   return (
     <div className="flex items-center gap-1 mb-1.5">
-      <span className="text-sm font-medium text-gray-700">{label}</span>
-      {optional && <span className="text-gray-400 font-normal text-sm">{optional}</span>}
+      <span className="text-sm font-medium text-gray-700 whitespace-nowrap">{label}</span>
+      {optional && <span className="text-gray-400 font-normal text-sm whitespace-nowrap">{optional}</span>}
       <Popover>
         <PopoverTrigger asChild>
           <button className="text-gray-300 hover:text-gray-500 transition-colors">
