@@ -97,7 +97,7 @@ export default function HelpPage() {
   const { t } = useTranslation()
 
   return (
-    <div className="max-w-2xl space-y-10">
+    <div className="max-w-4xl space-y-10">
       <div>
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('nav.help')}</h2>
         <p className="text-sm text-gray-400 mt-0.5">{t('help.subtitle')}</p>
@@ -105,14 +105,17 @@ export default function HelpPage() {
 
       {SECTIONS.map((section) => (
         <div key={section.headingKey}>
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">
             {t(section.headingKey)}
           </h3>
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {section.entries.map((entry) => (
-              <div key={entry.bodyKey} className="border-l-2 border-gray-100 pl-4">
-                <p className="text-sm font-semibold text-gray-800 mb-0.5">{t(entry.titleKey)}</p>
-                <p className="text-sm text-gray-500 leading-relaxed">{t(entry.bodyKey)}</p>
+              <div
+                key={entry.bodyKey}
+                className="rounded-lg border border-gray-100 bg-gray-50 px-4 py-3 hover:border-gray-200 hover:bg-white transition-colors"
+              >
+                <p className="text-sm font-semibold text-gray-800 mb-1">{t(entry.titleKey)}</p>
+                <p className="text-xs text-gray-500 leading-relaxed">{t(entry.bodyKey)}</p>
               </div>
             ))}
           </div>
