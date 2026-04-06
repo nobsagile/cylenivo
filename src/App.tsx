@@ -14,6 +14,7 @@ import DatasetEditPage from '@/pages/DatasetEditPage'
 import ForecastPage from '@/pages/ForecastPage'
 import WelcomePage from '@/pages/WelcomePage'
 import AboutPage from '@/pages/AboutPage'
+import HelpPage from '@/pages/HelpPage'
 
 function App() {
   const { t } = useTranslation()
@@ -50,6 +51,7 @@ function App() {
             <Route path="/projects/:importId/insights" element={<InsightsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/help" element={<HelpPage />} />
             <Route path="/settings/configs/new" element={<ConfigFormPage />} />
             <Route path="/settings/configs/:configId" element={<ConfigFormPage />} />
             <Route path="/settings/datasets/:datasetId" element={<DatasetEditPage />} />

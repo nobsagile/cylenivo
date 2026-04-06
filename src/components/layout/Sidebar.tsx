@@ -7,7 +7,7 @@ function openUrl(url: string) {
 }
 import { useTranslation } from 'react-i18next'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
-import { LayoutDashboard, Ticket, Workflow, Sparkles, Settings, Plus, AlertTriangle, MoreHorizontal, Pencil, TrendingUp, Bug, Info, RefreshCw } from 'lucide-react'
+import { LayoutDashboard, Ticket, Workflow, Sparkles, Settings, Plus, AlertTriangle, MoreHorizontal, Pencil, TrendingUp, Bug, Info, RefreshCw, HelpCircle } from 'lucide-react'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import { api } from '@/services/api'
 import { Input } from '@/components/ui/input'
@@ -389,6 +389,10 @@ export function Sidebar() {
             {hasPluginUpdates && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-violet-500 rounded-full" />}
           </span>
           {t('nav.settings')}
+        </NavLink>
+        <NavLink to="/help" className={navClass}>
+          <HelpCircle className="w-4 h-4 shrink-0" />
+          {t('nav.help')}
         </NavLink>
         <NavLink to="/about" className={navClass}>
           <Info className="w-4 h-4 shrink-0" />
