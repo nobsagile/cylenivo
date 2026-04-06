@@ -23,6 +23,7 @@ export default function TicketsPage() {
   const [page, setPage] = useState(1)
   const [typeFilter, setTypeFilter] = useState('')
   const [analyzedOnly, setAnalyzedOnly] = useState(true)
+  const [excludedOnly, setExcludedOnly] = useState(false)
   const [search, setSearch] = useState('')
   const [searchDebounced, setSearchDebounced] = useState('')
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
@@ -43,6 +44,7 @@ export default function TicketsPage() {
         page,
         limit,
         completed_only: analyzedOnly || undefined,
+        excluded_only: excludedOnly || undefined,
         search: searchDebounced || undefined,
       })
       .then((res) => {
@@ -50,13 +52,16 @@ export default function TicketsPage() {
         setTotal(res.total)
       })
       .catch(console.error)
-  }, [importId, page, typeFilter, analyzedOnly, searchDebounced])
+  }, [importId, page, typeFilter, analyzedOnly, excludedOnly, searchDebounced])
 
   const totalPages = Math.ceil(total / limit)
 
   const handleExclusionToggle = useCallback((ticketId: string, excluded: boolean) => {
-    setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, excluded, exclusion_reason: excluded ? t.exclusion_reason : null } : t))
-  }, [])
+    setTickets(prev => {
+      if (excludedOnly && !excluded) return prev.filter(t => t.id !== ticketId)
+      return prev.map(t => t.id === ticketId ? { ...t, excluded, exclusion_reason: excluded ? t.exclusion_reason : null } : t)
+    })
+  }, [excludedOnly])
 
   return (
     <div className="space-y-4">
@@ -83,14 +88,24 @@ export default function TicketsPage() {
           </div>
           <div className="flex items-center gap-1">
             <button
-              onClick={() => { setAnalyzedOnly(!analyzedOnly); setPage(1) }}
+              onClick={() => { setAnalyzedOnly(!analyzedOnly); setExcludedOnly(false); setPage(1) }}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
-                analyzedOnly
+                analyzedOnly && !excludedOnly
                   ? 'bg-blue-50 text-blue-700 border-blue-200'
                   : 'bg-white text-gray-500 border-gray-200 hover:text-gray-700'
               }`}
             >
               {t('tickets.analyzedOnly')}
+            </button>
+            <button
+              onClick={() => { setExcludedOnly(!excludedOnly); setAnalyzedOnly(false); setPage(1) }}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                excludedOnly
+                  ? 'bg-amber-50 text-amber-700 border-amber-200'
+                  : 'bg-white text-gray-500 border-gray-200 hover:text-gray-700'
+              }`}
+            >
+              {t('tickets.excludedOnly')}
             </button>
             <Popover>
               <PopoverTrigger asChild>

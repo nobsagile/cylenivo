@@ -184,6 +184,7 @@
     "count": "{{count}} tickets",
     "searchPlaceholder": "Search ID or title…",
     "analyzedOnly": "Analyzed only",
+    "excludedOnly": "Excluded only",
     "colorCoding": "Color coding",
     "noTickets": "No tickets found",
     "loadingTransitions": "Loading transitions…",

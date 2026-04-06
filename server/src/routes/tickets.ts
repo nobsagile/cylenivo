@@ -19,12 +19,14 @@ ticketsRouter.get('/', async (c) => {
   const limit = Math.min(200, Math.max(1, Number(c.req.query('limit') ?? 50)))
   const type = c.req.query('type')
   const completedOnly = c.req.query('completed_only') === '1'
+  const excludedOnly = c.req.query('excluded_only') === '1'
   const search = c.req.query('search')?.toLowerCase()
   const offset = (page - 1) * limit
 
   let filtered = ctx.tickets
   if (type) filtered = filtered.filter(t => t.ticket_type === type)
   if (completedOnly) filtered = filtered.filter(t => t.cycle_time_days !== null)
+  if (excludedOnly) filtered = filtered.filter(t => t.excluded)
   if (search) filtered = filtered.filter(t =>
     t.external_id.toLowerCase().includes(search) || t.title.toLowerCase().includes(search)
   )
