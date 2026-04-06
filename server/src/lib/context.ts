@@ -33,6 +33,8 @@ export interface EnrichedTicket {
   completed_at: Date | null   // mode-aware completion timestamp
   current_status: string | null
   completed: boolean
+  excluded: boolean
+  exclusion_reason: string | null
 }
 
 export interface ImportContext {
@@ -77,6 +79,8 @@ export function buildEnrichedTicket(
     completed_at: completedAt,
     current_status: sorted.length ? sorted[sorted.length - 1].to_status : null,
     completed: completedAt !== null,
+    excluded: ticket.excluded === 1,
+    exclusion_reason: ticket.exclusion_reason ?? null,
   }
 }
 

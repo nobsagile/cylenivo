@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, Search, Info } from 'lucide-react'
@@ -54,12 +54,21 @@ export default function TicketsPage() {
 
   const totalPages = Math.ceil(total / limit)
 
+  const handleExclusionToggle = useCallback((ticketId: string, excluded: boolean) => {
+    setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, excluded, exclusion_reason: excluded ? t.exclusion_reason : null } : t))
+  }, [])
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('nav.tickets')}</h2>
           <p className="text-sm text-gray-400 mt-0.5">{t('tickets.count', { count: total })}</p>
+          {tickets.filter(t => t.excluded).length > 0 && (
+            <p className="text-xs text-amber-600 mt-0.5">
+              {t('tickets.excludedCount', { count: tickets.filter(t => t.excluded).length })}
+            </p>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
@@ -128,6 +137,7 @@ export default function TicketsPage() {
               p85={metrics?.cycle_time.p85}
               config={metrics?.config_context}
               onTicketClick={setSelectedTicketId}
+              onExclusionToggle={handleExclusionToggle}
               sortKey={sortKey}
               sortDir={sortDir}
               onSortChange={(k, d) => { setSortKey(k); setSortDir(d) }}
@@ -140,6 +150,7 @@ export default function TicketsPage() {
               onNext={() => idx < sorted.length - 1 && setSelectedTicketId(sorted[idx + 1].id)}
               hasPrev={idx > 0}
               hasNext={idx < sorted.length - 1}
+              onExclusionToggle={handleExclusionToggle}
             />
           </>
         )

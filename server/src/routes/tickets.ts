@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { eq } from 'drizzle-orm'
 import { db } from '../db/index.js'
-import { importSessions, tickets, ticketTransitions } from '../db/schema.js'
+import { importSessions, tickets, ticketTransitions, type TicketRow } from '../db/schema.js'
 import { ok } from '../lib/response.js'
 import { loadImportContext, buildEnrichedTicket } from '../lib/context.js'
 import type { Transition } from '../analyzers/utils.js'
@@ -41,6 +41,8 @@ ticketsRouter.get('/', async (c) => {
     lead_time_days: t.lead_time_days !== null ? Math.round(t.lead_time_days * 100) / 100 : null,
     current_status: t.current_status,
     completed: t.completed,
+    excluded: t.excluded,
+    exclusion_reason: t.exclusion_reason,
   }))
 
   return c.json(ok({ tickets: paginated, total, page, limit }))
@@ -82,6 +84,61 @@ ticketsRouter.get('/:id', async (c) => {
     lead_time_days: enriched.lead_time_days !== null ? Math.round(enriched.lead_time_days * 100) / 100 : null,
     current_status: enriched.current_status,
     completed: enriched.completed,
+    excluded: enriched.excluded,
+    exclusion_reason: enriched.exclusion_reason,
+    transitions: sorted.map(t => ({
+      id: t.id,
+      from_status: t.from_status,
+      to_status: t.to_status,
+      transitioned_at: t.transitioned_at,
+    })),
+  }))
+})
+
+ticketsRouter.patch('/:id', async (c) => {
+  const ticketId = c.req.param('id')
+  const body = await c.req.json<{ excluded: boolean; exclusion_reason?: string }>()
+
+  const ticketRows = await db.select().from(tickets).where(eq(tickets.id, ticketId))
+  if (!ticketRows.length) return c.json({ data: null, error: 'Ticket not found' }, 404)
+  const ticket = ticketRows[0]
+
+  await db.update(tickets)
+    .set({
+      excluded: body.excluded ? 1 : 0,
+      exclusion_reason: body.excluded ? (body.exclusion_reason ?? null) : null,
+    })
+    .where(eq(tickets.id, ticketId))
+
+  const ctx = await loadImportContext(ticket.import_id)
+  if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
+
+  const transRows = await db.select().from(ticketTransitions).where(eq(ticketTransitions.ticket_id, ticketId))
+  const transitions: Transition[] = transRows.map(tr => ({
+    from_status: tr.from_status,
+    to_status: tr.to_status,
+    transitioned_at: tr.transitioned_at,
+  }))
+
+  const updatedTicket: TicketRow = { ...ticket, excluded: body.excluded ? 1 : 0, exclusion_reason: body.excluded ? (body.exclusion_reason ?? null) : null }
+  const enriched = buildEnrichedTicket(updatedTicket, transitions, ctx.config)
+  const sorted = [...transRows].sort(
+    (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime(),
+  )
+
+  return c.json(ok({
+    id: enriched.id,
+    external_id: enriched.external_id,
+    title: enriched.title,
+    ticket_type: enriched.ticket_type,
+    created_at: enriched.created_at,
+    external_link: enriched.external_link,
+    cycle_time_days: enriched.cycle_time_days !== null ? Math.round(enriched.cycle_time_days * 100) / 100 : null,
+    lead_time_days: enriched.lead_time_days !== null ? Math.round(enriched.lead_time_days * 100) / 100 : null,
+    current_status: enriched.current_status,
+    completed: enriched.completed,
+    excluded: enriched.excluded,
+    exclusion_reason: enriched.exclusion_reason,
     transitions: sorted.map(t => ({
       id: t.id,
       from_status: t.from_status,

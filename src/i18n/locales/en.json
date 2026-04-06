@@ -187,7 +187,14 @@
     "colorCoding": "Color coding",
     "noTickets": "No tickets found",
     "loadingTransitions": "Loading transitions…",
-    "page": "Page {{page}} of {{total}}"
+    "page": "Page {{page}} of {{total}}",
+    "exclude": "Exclude from analysis",
+    "reinclude": "Re-include in analysis",
+    "excluded": "Excluded",
+    "excludedBanner": "This ticket is excluded from all metric calculations.",
+    "exclusionReason": "Reason (optional)",
+    "excludedCount_one": "{{count}} ticket excluded from analysis",
+    "excludedCount_other": "{{count}} tickets excluded from analysis"
   },
   "import": {
     "title": "Import Data",

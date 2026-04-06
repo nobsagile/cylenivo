@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { api } from '@/services/api'
 import {
   Table,
   TableBody,
@@ -10,7 +11,7 @@ import {
 } from '@/components/ui/table'
 import type { Ticket, ConfigContext } from '@/types'
 import { TYPE_COLORS } from '@/lib/statusColors'
-import { ExternalLink, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
+import { ExternalLink, ArrowUpDown, ArrowUp, ArrowDown, Ban, Undo2 } from 'lucide-react'
 
 interface Props {
   tickets: Ticket[]
@@ -18,6 +19,7 @@ interface Props {
   p85?: number | null
   config?: ConfigContext | null
   onTicketClick?: (id: string) => void
+  onExclusionToggle?: (ticketId: string, excluded: boolean) => void
   sortKey?: SortKey
   sortDir?: SortDir
   onSortChange?: (key: SortKey, dir: SortDir) => void
@@ -53,10 +55,19 @@ function SortIcon({ col, sortKey, sortDir }: { col: SortKey; sortKey: SortKey; s
     : <ArrowDown className="w-3.5 h-3.5 ml-1 inline text-violet-600" />
 }
 
-export function TicketTable({ tickets, p50, p85, config: _config, onTicketClick, sortKey: sortKeyProp, sortDir: sortDirProp, onSortChange }: Props) {
+export function TicketTable({ tickets, p50, p85, config: _config, onTicketClick, onExclusionToggle, sortKey: sortKeyProp, sortDir: sortDirProp, onSortChange }: Props) {
   const { t } = useTranslation()
   const [sortKeyLocal, setSortKeyLocal] = useState<SortKey>('external_id')
   const [sortDirLocal, setSortDirLocal] = useState<SortDir>('asc')
+
+  const handleExclusionClick = useCallback(async (ticketId: string, excluded: boolean) => {
+    try {
+      await api.tickets.update(ticketId, { excluded })
+      onExclusionToggle?.(ticketId, excluded)
+    } catch (e) {
+      console.error(e)
+    }
+  }, [onExclusionToggle])
   const sortKey = sortKeyProp ?? sortKeyLocal
   const sortDir = sortDirProp ?? sortDirLocal
 
@@ -93,13 +104,14 @@ export function TicketTable({ tickets, p50, p85, config: _config, onTicketClick,
             {th('cycle_time_days', t('tickets.table.cycleTime'), 'text-right w-28')}
             {th('lead_time_days', t('tickets.table.leadTime'), 'text-right w-28')}
             {th('current_status', t('common.status'), 'w-36')}
+            <TableHead className="w-10" />
           </TableRow>
         </TableHeader>
         <TableBody>
           {sorted.map((ticket) => (
             <TableRow
               key={ticket.id}
-              className="hover:bg-gray-50/50 cursor-pointer"
+              className={`cursor-pointer ${ticket.excluded ? 'opacity-50 hover:opacity-70' : 'hover:bg-gray-50/50'}`}
               onClick={() => onTicketClick?.(ticket.id)}
             >
               <TableCell>
@@ -119,7 +131,12 @@ export function TicketTable({ tickets, p50, p85, config: _config, onTicketClick,
                 )}
               </TableCell>
               <TableCell className="text-sm text-gray-800 max-w-xs">
-                <span className="line-clamp-1">{ticket.title}</span>
+                <span className={`line-clamp-1 ${ticket.excluded ? 'line-through text-gray-400' : ''}`}>{ticket.title}</span>
+                {ticket.excluded && (
+                  <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                    {t('tickets.excluded')}
+                  </span>
+                )}
               </TableCell>
               <TableCell>
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border ${
@@ -128,7 +145,7 @@ export function TicketTable({ tickets, p50, p85, config: _config, onTicketClick,
                   {t(`tickets.types.${ticket.ticket_type}`, { defaultValue: ticket.ticket_type })}
                 </span>
               </TableCell>
-              <TableCell className={`text-right text-sm tabular-nums ${cycleTimeColor(ticket.cycle_time_days, p50, p85)}`}>
+              <TableCell className={`text-right text-sm tabular-nums ${ticket.excluded ? 'text-gray-300' : cycleTimeColor(ticket.cycle_time_days, p50, p85)}`}>
                 {ticket.cycle_time_days != null ? `${ticket.cycle_time_days}d` : '—'}
               </TableCell>
               <TableCell className="text-right text-sm text-gray-500 tabular-nums">
@@ -147,11 +164,22 @@ export function TicketTable({ tickets, p50, p85, config: _config, onTicketClick,
                   <span className="text-gray-300">—</span>
                 )}
               </TableCell>
+              <TableCell>
+                {onExclusionToggle && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleExclusionClick(ticket.id, !ticket.excluded) }}
+                    title={ticket.excluded ? t('tickets.reinclude') : t('tickets.exclude')}
+                    className="text-gray-300 hover:text-gray-600 transition-colors"
+                  >
+                    {ticket.excluded ? <Undo2 className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
+                  </button>
+                )}
+              </TableCell>
             </TableRow>
           ))}
           {tickets.length === 0 && (
             <TableRow>
-              <TableCell colSpan={6} className="text-center text-gray-400 py-12 text-sm">
+              <TableCell colSpan={7} className="text-center text-gray-400 py-12 text-sm">
                 {t('tickets.noTickets')}
               </TableCell>
             </TableRow>

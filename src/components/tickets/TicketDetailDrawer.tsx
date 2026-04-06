@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { X, ExternalLink, ChevronUp, ChevronDown } from 'lucide-react'
+import { X, ExternalLink, ChevronUp, ChevronDown, Ban, Undo2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '@/services/api'
 import type { TicketDetail, ConfigContext } from '@/types'
@@ -15,12 +15,14 @@ interface Props {
   onNext?: () => void
   hasPrev?: boolean
   hasNext?: boolean
+  onExclusionToggle?: (ticketId: string, excluded: boolean) => void
 }
 
-export function TicketDetailDrawer({ ticketId, config, onClose, onPrev, onNext, hasPrev, hasNext }: Props) {
+export function TicketDetailDrawer({ ticketId, config, onClose, onPrev, onNext, hasPrev, hasNext, onExclusionToggle }: Props) {
   const { t } = useTranslation()
   const [detail, setDetail] = useState<TicketDetail | null>(null)
   const [loading, setLoading] = useState(false)
+  const [excludeLoading, setExcludeLoading] = useState(false)
   const [slideDir, setSlideDir] = useState<'up' | 'down' | null>(null)
   const [animKey, setAnimKey] = useState(0)
   const prevTicketId = useRef<string | null>(null)
@@ -35,6 +37,20 @@ export function TicketDetailDrawer({ ticketId, config, onClose, onPrev, onNext, 
       .finally(() => setLoading(false))
     prevTicketId.current = ticketId
   }, [ticketId])
+
+  async function handleExclusionToggle() {
+    if (!detail || excludeLoading) return
+    setExcludeLoading(true)
+    try {
+      const updated = await api.tickets.update(detail.id, { excluded: !detail.excluded })
+      setDetail(updated)
+      onExclusionToggle?.(detail.id, updated.excluded)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setExcludeLoading(false)
+    }
+  }
 
   function navigate(dir: 'up' | 'down', fn?: () => void) {
     if (!fn) return
@@ -107,6 +123,20 @@ export function TicketDetailDrawer({ ticketId, config, onClose, onPrev, onNext, 
               )}
             </div>
             <div className="flex items-center gap-1 shrink-0">
+              {detail && (
+                <button
+                  onClick={handleExclusionToggle}
+                  disabled={excludeLoading}
+                  title={detail.excluded ? t('tickets.reinclude') : t('tickets.exclude')}
+                  className={`p-1.5 rounded transition-colors disabled:opacity-40 ${
+                    detail.excluded
+                      ? 'text-amber-600 hover:text-amber-800 hover:bg-amber-50'
+                      : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  {detail.excluded ? <Undo2 className="w-4 h-4" /> : <Ban className="w-4 h-4" />}
+                </button>
+              )}
               {onPrev && onNext && (
                 <div className="flex flex-col">
                   <button
@@ -152,6 +182,17 @@ export function TicketDetailDrawer({ ticketId, config, onClose, onPrev, onNext, 
                 <div className="space-y-3">
                   <div className="h-8 bg-gray-100 rounded animate-pulse" />
                   <div className="h-24 bg-gray-50 rounded animate-pulse" />
+                </div>
+              )}
+              {detail?.excluded && (
+                <div className="mb-4 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-amber-800">
+                  <Ban className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-medium">{t('tickets.excludedBanner')}</p>
+                    {detail.exclusion_reason && (
+                      <p className="mt-0.5 text-amber-700">{detail.exclusion_reason}</p>
+                    )}
+                  </div>
                 </div>
               )}
               {detail && config && (

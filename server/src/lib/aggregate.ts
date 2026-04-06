@@ -21,9 +21,9 @@ export interface MetricsAggregate {
 export function computeAggregate(ctx: ImportContext): MetricsAggregate {
   const { config, tickets, cycleStatuses } = ctx
 
-  const completedTickets = tickets.filter(t => t.cycle_time_days !== null)
+  const completedTickets = tickets.filter(t => t.cycle_time_days !== null && !t.excluded)
   const cycleTimes = completedTickets.map(t => t.cycle_time_days!)
-  const leadTimes = tickets.filter(t => t.lead_time_days !== null).map(t => t.lead_time_days!)
+  const leadTimes = tickets.filter(t => t.lead_time_days !== null && !t.excluded).map(t => t.lead_time_days!)
   const completedAtDates = completedTickets
     .filter(t => t.completed_at !== null)
     .map(t => t.completed_at!)

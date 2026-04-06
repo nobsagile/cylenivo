@@ -36,6 +36,8 @@ export const tickets = sqliteTable('tickets', {
   created_at: text('created_at').notNull(),
   external_link: text('external_link'),
   extra_metadata: text('extra_metadata'), // JSON
+  excluded: integer('excluded').notNull().default(0),
+  exclusion_reason: text('exclusion_reason'),
 })
 
 export const ticketTransitions = sqliteTable('ticket_transitions', {

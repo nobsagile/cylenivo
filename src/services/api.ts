@@ -120,6 +120,12 @@ export const api = {
       return request<PaginatedTickets>(`/api/v1/tickets?${p}`)
     },
     get: (id: string) => request<TicketDetail>(`/api/v1/tickets/${id}`),
+    update: (id: string, body: { excluded: boolean; exclusion_reason?: string }) =>
+      request<TicketDetail>(`/api/v1/tickets/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+      }),
   },
   connections: {
     list: () => request<SourceConnection[]>('/api/v1/connections'),
