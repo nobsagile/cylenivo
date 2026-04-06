@@ -12,7 +12,7 @@ function pingMatomo(): void {
     apiv: '1',
     rand: Math.random().toString(36).slice(2),
     _id: crypto.randomUUID().replace(/-/g, '').slice(0, 16),
-    url: 'app://cylenivo/start',
+    url: `app://cylenivo/start/${process.platform === 'darwin' ? 'macos' : process.platform === 'win32' ? 'windows' : 'linux'}`,
     send_image: '0',
   })
   fetch(`https://matomo.thomorrow.de/matomo.php?${params}`).catch(() => {})
