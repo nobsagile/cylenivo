@@ -17,6 +17,7 @@ const mockSummary: MetricsSummary = {
   project_key: 'ROAD',
   ticket_count: 15,
   completed_ticket_count: 13,
+  excluded_ticket_count: 0,
   date_range: { from: '2026-01-01T00:00:00Z', to: '2026-03-01T00:00:00Z' },
   cycle_time: {
     mean_days: 8.0,

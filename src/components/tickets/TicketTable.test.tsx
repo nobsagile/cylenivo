@@ -17,6 +17,8 @@ const tickets: Ticket[] = [
     lead_time_days: 13.0,
     current_status: 'Customer Feedback',
     completed: true,
+    excluded: false,
+    exclusion_reason: null,
   },
   {
     id: '2',
@@ -29,6 +31,8 @@ const tickets: Ticket[] = [
     lead_time_days: null,
     current_status: 'Development',
     completed: false,
+    excluded: false,
+    exclusion_reason: null,
   },
 ]
 
@@ -59,6 +63,7 @@ describe('TicketTable', () => {
       id: '3', external_id: 'ROAD-3', title: 'No cycle time', ticket_type: 'task',
       created_at: '2026-01-07T09:00:00Z', external_link: null,
       cycle_time_days: null, lead_time_days: null, current_status: 'Development', completed: false,
+      excluded: false, exclusion_reason: null,
     }]
     renderWith(nullCt)
     // Both cycle and lead time columns show "—"
