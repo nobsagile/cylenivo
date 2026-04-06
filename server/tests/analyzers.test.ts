@@ -8,6 +8,7 @@ import { calculateLeadTime } from '../src/analyzers/leadTime.js'
 import { calculatePercentiles, calculateThroughputPerWeek } from '../src/analyzers/percentiles.js'
 import { calculateTimeInStatus } from '../src/analyzers/timeInStatus.js'
 import { detectRework, aggregateRework } from '../src/analyzers/rework.js'
+import { inferStatusOrder } from '../src/analyzers/statusOrder.js'
 
 // ── Monte Carlo ───────────────────────────────────────────────────────────────
 describe('computeWeeklyBuckets', () => {
@@ -756,5 +757,108 @@ describe('computeCFD', () => {
     const tickets = [{ ...base, created_at: '2024-01-01T12:00:00Z', current_status: null, transitions: [] }]
     const result = computeCFD(tickets as any, ['Todo'])
     expect(result.data).toEqual([])
+  })
+})
+
+// ── inferStatusOrder ──────────────────────────────────────────────────────────
+describe('inferStatusOrder', () => {
+  function t(from: string | null, to: string, at: string): Transition {
+    return { from_status: from, to_status: to, transitioned_at: at }
+  }
+
+  it('returns empty array for empty input', () => {
+    expect(inferStatusOrder([])).toEqual([])
+  })
+
+  it('skips tickets with zero transitions', () => {
+    expect(inferStatusOrder([{ transitions: [] }])).toEqual([])
+  })
+
+  it('orders statuses by median first-occurrence position', () => {
+    const ticket = {
+      transitions: [
+        t('Backlog', 'In Progress', '2024-01-01T10:00:00Z'),
+        t('In Progress', 'Review', '2024-01-02T10:00:00Z'),
+        t('Review', 'Done', '2024-01-03T10:00:00Z'),
+      ],
+    }
+    expect(inferStatusOrder([ticket])).toEqual(['Backlog', 'In Progress', 'Review', 'Done'])
+  })
+
+  it('handles multiple tickets agreeing on same order', () => {
+    const make = () => ({
+      transitions: [
+        t('Backlog', 'In Progress', '2024-01-01T10:00:00Z'),
+        t('In Progress', 'Done', '2024-01-02T10:00:00Z'),
+      ],
+    })
+    expect(inferStatusOrder([make(), make(), make()])).toEqual(['Backlog', 'In Progress', 'Done'])
+  })
+
+  it('handles rework — only first occurrence counts', () => {
+    const ticket = {
+      transitions: [
+        t('Backlog', 'In Progress', '2024-01-01T10:00:00Z'),
+        t('In Progress', 'Review', '2024-01-02T10:00:00Z'),
+        t('Review', 'Done', '2024-01-03T10:00:00Z'),
+        t('Done', 'In Progress', '2024-01-04T10:00:00Z'), // rework
+        t('In Progress', 'Done', '2024-01-05T10:00:00Z'), // second Done occurrence
+      ],
+    }
+    // In Progress and Done must not swap — first occurrences are [Backlog, In Progress, Review, Done]
+    expect(inferStatusOrder([ticket])).toEqual(['Backlog', 'In Progress', 'Review', 'Done'])
+  })
+
+  it('infers position of a status skipped by some tickets', () => {
+    // T1: Backlog → Done (skips In Progress)
+    // T2: Backlog → In Progress → Done
+    // In Progress should land between Backlog and Done
+    const t1 = {
+      transitions: [
+        t('Backlog', 'Done', '2024-01-01T10:00:00Z'),
+      ],
+    }
+    const t2 = {
+      transitions: [
+        t('Backlog', 'In Progress', '2024-01-01T10:00:00Z'),
+        t('In Progress', 'Done', '2024-01-02T10:00:00Z'),
+      ],
+    }
+    const result = inferStatusOrder([t1, t2])
+    const backlogIdx = result.indexOf('Backlog')
+    const inProgressIdx = result.indexOf('In Progress')
+    const doneIdx = result.indexOf('Done')
+    expect(backlogIdx).toBeLessThan(inProgressIdx)
+    expect(inProgressIdx).toBeLessThan(doneIdx)
+  })
+
+  it('includes from_status of first transition as initial status', () => {
+    const ticket = {
+      transitions: [
+        t('Backlog', 'In Progress', '2024-01-01T10:00:00Z'),
+        t('In Progress', 'Done', '2024-01-02T10:00:00Z'),
+      ],
+    }
+    const result = inferStatusOrder([ticket])
+    expect(result[0]).toBe('Backlog')
+  })
+
+  it('handles null from_status on first transition', () => {
+    const ticket = {
+      transitions: [
+        t(null, 'In Progress', '2024-01-01T10:00:00Z'),
+        t('In Progress', 'Done', '2024-01-02T10:00:00Z'),
+      ],
+    }
+    const result = inferStatusOrder([ticket])
+    expect(result).toEqual(['In Progress', 'Done'])
+  })
+
+  it('breaks ties alphabetically', () => {
+    // Single ticket with just one status → position 0.5
+    const t1 = { transitions: [t(null, 'Zebra', '2024-01-01T10:00:00Z')] }
+    const t2 = { transitions: [t(null, 'Alpha', '2024-01-01T10:00:00Z')] }
+    const result = inferStatusOrder([t1, t2])
+    expect(result).toEqual(['Alpha', 'Zebra'])
   })
 })

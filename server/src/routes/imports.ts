@@ -4,6 +4,7 @@ import { db } from '../db/index.js'
 import { projectConfigs, importSessions, tickets, ticketTransitions, type ImportSessionRow } from '../db/schema.js'
 import { ok } from '../lib/response.js'
 import { buildHealthReport } from '../analyzers/healthReport.js'
+import { inferStatusOrder } from '../analyzers/statusOrder.js'
 import { buildTicketRows } from '../lib/ticketInsert.js'
 
 const imports = new Hono()
@@ -83,11 +84,21 @@ imports.get('/:id/statuses', async (c) => {
 
   const ticketIds = ticketRows.map(t => t.id)
   const transRows = await db
-    .select({ to_status: ticketTransitions.to_status })
+    .select({
+      ticket_id: ticketTransitions.ticket_id,
+      from_status: ticketTransitions.from_status,
+      to_status: ticketTransitions.to_status,
+      transitioned_at: ticketTransitions.transitioned_at,
+    })
     .from(ticketTransitions)
     .where(inArray(ticketTransitions.ticket_id, ticketIds))
 
-  const statuses = [...new Set(transRows.map(r => r.to_status).filter(Boolean))].sort()
+  const byTicket = new Map<string, typeof transRows>()
+  for (const row of transRows) {
+    if (!byTicket.has(row.ticket_id)) byTicket.set(row.ticket_id, [])
+    byTicket.get(row.ticket_id)!.push(row)
+  }
+  const statuses = inferStatusOrder([...byTicket.values()].map(transitions => ({ transitions })))
   return c.json(ok(statuses))
 })
 

@@ -22,6 +22,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/date-picker'
 import { ErrorBanner } from '@/components/ui/ErrorBanner'
+import { inferStatusOrder } from '@/lib/inferStatusOrder'
 import { notifyImportsChanged } from '@/hooks/useImports'
 
 type Step = 'source' | 'pick-connection' | 'connect' | 'fetch' | 'statuses' | 'measure'
@@ -66,18 +67,6 @@ function SortableStatus({ id, onRemove }: { id: string; onRemove: () => void }) 
 
 const ISSUE_TYPE_OPTIONS = ['Story', 'Task', 'Bug', 'Epic']
 
-function extractStatuses(data: Record<string, unknown>): string[] {
-  const statuses = new Set<string>()
-  const tickets = (data.tickets as Array<Record<string, unknown>>) ?? []
-  for (const ticket of tickets) {
-    const transitions = (ticket.transitions as Array<Record<string, unknown>>) ?? []
-    for (const t of transitions) {
-      if (t.to_status) statuses.add(t.to_status as string)
-      if (t.from_status) statuses.add(t.from_status as string)
-    }
-  }
-  return [...statuses].sort()
-}
 
 // ── Wizard step header ────────────────────────────────────────────────────────
 function WizardHeader({ steps, current }: { steps: string[]; current: number }) {
@@ -485,7 +474,8 @@ export default function ImportPage() {
           await importWithExistingConfig(result, projectKey)
           return
         }
-        const s = extractStatuses(result)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const s = inferStatusOrder(((result as any).tickets ?? []) as Parameters<typeof inferStatusOrder>[0])
         setStatuses(s)
         setFetchedData(result)
         setFetchedProjectKey(projectKey)
@@ -599,7 +589,8 @@ export default function ImportPage() {
           await importWithExistingConfig(result, projectKey)
           return
         }
-        const s = extractStatuses(result)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const s = inferStatusOrder(((result as any).tickets ?? []) as Parameters<typeof inferStatusOrder>[0])
         setStatuses(s)
         setFetchedData(result)
         setFetchedProjectKey(projectKey)
