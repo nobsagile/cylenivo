@@ -14,18 +14,24 @@ import { AvgTimeInStatusChart, PerTicketBreakdownChart } from '@/components/metr
 export default function AnalyticsPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
-  const { data: metrics } = useMetrics(importId)
+  const { data: metrics, refetch: refetchMetrics } = useMetrics(importId)
   const [cycleData, setCycleData] = useState<CycleTimesResponse | null>(null)
   const [leadTimeValues, setLeadTimeValues] = useState<number[]>([])
   const [statusData, setStatusData] = useState<TimeInStatusResponse | null>(null)
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
+  const [rev, setRev] = useState(0)
 
   useEffect(() => {
     if (!importId) return
     api.metrics.cycleTimes(importId).then(setCycleData).catch(console.error)
     api.metrics.leadTimes(importId).then((r) => setLeadTimeValues(r.values)).catch(console.error)
     api.metrics.timeInStatus(importId).then(setStatusData).catch(console.error)
-  }, [importId])
+  }, [importId, rev])
+
+  function handleExclusionToggle() {
+    refetchMetrics()
+    setRev(r => r + 1)
+  }
 
   if (!metrics) return (
     <div className="space-y-6">
@@ -98,6 +104,7 @@ export default function AnalyticsPage() {
         ticketId={selectedTicketId}
         config={metrics.config_context ?? null}
         onClose={() => setSelectedTicketId(null)}
+        onExclusionToggle={handleExclusionToggle}
       />
     </div>
   )

@@ -134,17 +134,23 @@ export default function DashboardPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
   const { fromDate, toDate } = useDateFilter()
-  const { data } = useMetrics(importId, fromDate || undefined, toDate || undefined)
+  const { data, refetch: refetchMetrics } = useMetrics(importId, fromDate || undefined, toDate || undefined)
   const { data: imports } = useImports()
   const navigate = useNavigate()
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
+  const [chartRev, setChartRev] = useState(0)
 
   const currentImport = imports.find(imp => imp.id === importId)
 
-  const cycleTimesData = useCycleTimes(importId, fromDate, toDate)
-  const leadTimesData = useLeadTimes(importId, fromDate, toDate)
-  const throughputData = useThroughput(importId, fromDate, toDate)
-  const cfdData = useCfd(importId, fromDate, toDate)
+  const cycleTimesData = useCycleTimes(importId, fromDate, toDate, chartRev)
+  const leadTimesData = useLeadTimes(importId, fromDate, toDate, chartRev)
+  const throughputData = useThroughput(importId, fromDate, toDate, chartRev)
+  const cfdData = useCfd(importId, fromDate, toDate, chartRev)
+
+  function handleExclusionToggle() {
+    refetchMetrics()
+    setChartRev(r => r + 1)
+  }
 
   if (!importId) {
     return (
@@ -363,6 +369,7 @@ export default function DashboardPage() {
         ticketId={selectedTicketId}
         config={data.config_context ?? null}
         onClose={() => setSelectedTicketId(null)}
+        onExclusionToggle={handleExclusionToggle}
       />
     </div>
   )

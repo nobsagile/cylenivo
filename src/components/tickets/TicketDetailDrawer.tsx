@@ -40,13 +40,17 @@ export function TicketDetailDrawer({ ticketId, config, onClose, onPrev, onNext, 
 
   async function handleExclusionToggle() {
     if (!detail || excludeLoading) return
+    const newExcluded = !detail.excluded
+    setDetail(prev => prev ? { ...prev, excluded: newExcluded, exclusion_reason: newExcluded ? prev.exclusion_reason : null } : prev)
+    onExclusionToggle?.(detail.id, newExcluded)
     setExcludeLoading(true)
     try {
-      const updated = await api.tickets.update(detail.id, { excluded: !detail.excluded })
+      const updated = await api.tickets.update(detail.id, { excluded: newExcluded })
       setDetail(updated)
-      onExclusionToggle?.(detail.id, updated.excluded)
     } catch (e) {
       console.error(e)
+      setDetail(prev => prev ? { ...prev, excluded: detail.excluded, exclusion_reason: detail.exclusion_reason } : prev)
+      onExclusionToggle?.(detail.id, detail.excluded)
     } finally {
       setExcludeLoading(false)
     }

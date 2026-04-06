@@ -61,11 +61,12 @@ export function TicketTable({ tickets, p50, p85, config: _config, onTicketClick,
   const [sortDirLocal, setSortDirLocal] = useState<SortDir>('asc')
 
   const handleExclusionClick = useCallback(async (ticketId: string, excluded: boolean) => {
+    onExclusionToggle?.(ticketId, excluded)
     try {
       await api.tickets.update(ticketId, { excluded })
-      onExclusionToggle?.(ticketId, excluded)
     } catch (e) {
       console.error(e)
+      onExclusionToggle?.(ticketId, !excluded)
     }
   }, [onExclusionToggle])
   const sortKey = sortKeyProp ?? sortKeyLocal

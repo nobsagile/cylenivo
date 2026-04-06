@@ -19,18 +19,24 @@ export default function FlowPage() {
   const { importId } = useParams<{ importId: string }>()
   const { fromDate, toDate } = useDateFilter()
   const dates = { from: fromDate || undefined, to: toDate || undefined }
-  const { data: metrics } = useMetrics(importId, fromDate || undefined, toDate || undefined)
+  const { data: metrics, refetch: refetchMetrics } = useMetrics(importId, fromDate || undefined, toDate || undefined)
   const [statusData, setStatusData] = useState<TimeInStatusResponse | null>(null)
   const [reworkData, setReworkData] = useState<ReworkResponse | null>(null)
   const [typeData, setTypeData] = useState<CycleTimeByTypeResponse | null>(null)
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
+  const [rev, setRev] = useState(0)
 
   useEffect(() => {
     if (!importId) return
     api.metrics.timeInStatus(importId, dates).then(setStatusData).catch(console.error)
     api.metrics.rework(importId, dates).then(setReworkData).catch(console.error)
     api.metrics.cycleTimeByType(importId, dates).then(setTypeData).catch(console.error)
-  }, [importId, fromDate, toDate])
+  }, [importId, fromDate, toDate, rev])
+
+  function handleExclusionToggle() {
+    refetchMetrics()
+    setRev(r => r + 1)
+  }
 
   if (!metrics) return (
     <div className="space-y-6">
@@ -92,6 +98,7 @@ export default function FlowPage() {
         ticketId={selectedTicketId}
         config={metrics.config_context ?? null}
         onClose={() => setSelectedTicketId(null)}
+        onExclusionToggle={handleExclusionToggle}
       />
     </div>
   )
