@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Zap, Settings } from 'lucide-react'
+import { Zap, Settings, Info } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { Card, CardContent } from '@/components/ui/card'
@@ -49,7 +49,7 @@ export function FlowEfficiencyCard({ data, activeStatuses, configId }: FlowEffic
           <Popover>
             <PopoverTrigger asChild>
               <button className="text-gray-300 hover:text-gray-500 transition-colors">
-                <Zap className="w-3.5 h-3.5" />
+                <Info className="w-3.5 h-3.5" />
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-72">
