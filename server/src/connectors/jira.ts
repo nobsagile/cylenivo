@@ -52,7 +52,9 @@ interface JiraIssue {
 
 interface JiraSearchResponse {
   issues: JiraIssue[]
-  total: number
+  total?: number
+  nextPageToken?: string
+  isLast?: boolean
 }
 
 interface JiraChangelogItem {
@@ -129,17 +131,19 @@ export async function fetchIssues(creds: JiraCredentials, options: JiraFetchOpti
   const jql = `project = ${project} AND issuetype in (${typeList}) AND statusCategory = Done${fromFilter}${toFilter} ORDER BY resolved DESC`
 
   const all: JiraIssue[] = []
-  let startAt = 0
+  let nextPageToken: string | undefined
   while (all.length < limit) {
     const pageSize = Math.min(JIRA_PAGE_SIZE, limit - all.length)
+    const tokenParam = nextPageToken ? `&nextPageToken=${encodeURIComponent(nextPageToken)}` : ''
     const data = await jiraGet<JiraSearchResponse>(
       creds,
-      `/search/jql?jql=${encodeURIComponent(jql)}&startAt=${startAt}&maxResults=${pageSize}&fields=summary,issuetype,created`
+      `/search/jql?jql=${encodeURIComponent(jql)}&maxResults=${pageSize}&fields=summary,issuetype,created${tokenParam}`
     )
     const issues = data.issues ?? []
+    if (issues.length === 0) break
     all.push(...issues)
-    if (issues.length < pageSize || all.length >= limit || (data.total != null && startAt + issues.length >= data.total)) break
-    startAt += issues.length
+    if (data.isLast || !data.nextPageToken || all.length >= limit) break
+    nextPageToken = data.nextPageToken
   }
   return all.slice(0, limit)
 }
