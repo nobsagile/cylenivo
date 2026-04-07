@@ -5,12 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- CCM19 Consent Manager -->
   <script src="https://cloud.ccm19.de/app.js?apiKey=38ae5d7d031a986429321a2604cb6db7faa7760590010937&amp;domain=69cfa736af099e7822049bb2" referrerpolicy="origin"></script>
-  <title>Cylenivo — Flow metrics for software teams</title>
-  <meta name="description" content="Jira's built-in reports don't give you cycle time or delivery forecasts. Cylenivo does — free, open source, runs entirely on your machine." />
-  <meta property="og:title" content="Cylenivo — Flow metrics for software teams" />
-  <meta property="og:description" content="Jira's reports don't tell you how fast your team ships. Cylenivo does — cycle time, throughput, forecasts. Free &amp; local." />
+  <title>Cycle Time &amp; Lead Time Tool for Jira and Trello — Cylenivo (Free)</title>
+  <meta name="description" content="Analyze cycle time, lead time, throughput and flow metrics from Jira, Trello or OpenProject. Free desktop app for Mac, Windows and Linux — your data stays local, no cloud, no account." />
+  <meta property="og:title" content="Cycle Time &amp; Lead Time Tool for Jira and Trello — Cylenivo" />
+  <meta property="og:description" content="Free desktop app to analyze cycle time, lead time and throughput from Jira, Trello or OpenProject. Runs on Mac, Windows and Linux — no cloud, no subscription." />
   <meta property="og:image" content="https://cylenivo.org/assets/screenshot.png" />
+  <link rel="canonical" href="https://cylenivo.org/" />
   <link rel="icon" type="image/png" href="assets/logo.png" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Cylenivo",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "macOS, Windows, Linux",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "Free desktop app to analyze cycle time, lead time, throughput and flow metrics from Jira, Trello or OpenProject. Runs entirely on your machine — no cloud, no account.",
+    "url": "https://cylenivo.org",
+    "downloadUrl": "https://github.com/nobsagile/cylenivo/releases/latest",
+    "softwareVersion": "latest",
+    "author": {
+      "@type": "Person",
+      "name": "Thomas Esders"
+    }
+  }
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -236,10 +259,10 @@
 <section class="hero">
   <div class="hero-badge">
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-    Free &amp; open source — runs locally
+    Free · Mac, Windows &amp; Linux
   </div>
-  <h1><em>Jira's reports</em> don't tell you<br />how fast your team ships.</h1>
-  <p>Cylenivo fills the gap. Cycle time, lead time, throughput, and delivery forecasts — pulled straight from your Jira data. No cloud, no accounts, no subscription.</p>
+  <h1><em>Cycle time &amp; lead time</em> analysis<br />for Jira and Trello</h1>
+  <p>Jira's reports don't tell you how fast your team ships. Cylenivo does — cycle time, lead time, throughput, and delivery forecasts from your Jira or Trello data. No cloud, no accounts, no subscription.</p>
 
   <div id="download" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:.5rem">
     <div class="hero-actions">
@@ -343,7 +366,7 @@
 <section class="section">
   <div class="section-label">Data sources</div>
   <h2 class="section-title">Works with your tools</h2>
-  <p class="section-sub">Jira is built in. Community plugins add more — or build your own in ~50 lines of JavaScript.</p>
+  <p class="section-sub">Jira is built in. Trello and OpenProject via community plugins — or build your own connector in ~50 lines of JavaScript.</p>
   <div class="feature-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr));margin-top:2rem">
     <div class="feature-card">
       <div class="feature-icon" style="background:#fff7ed">
@@ -351,6 +374,14 @@
       </div>
       <h3>Jira</h3>
       <p>Built in. Connect with a URL + API token, or import a CSV export. No plugin needed.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#e0f2fe">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="11" rx="1"/></svg>
+      </div>
+      <h3>Trello</h3>
+      <p>Community plugin. Analyze cycle time and lead time directly from your Trello boards.</p>
+      <a href="https://github.com/nobsagile/cylenivo-plugins" target="_blank" rel="noopener" style="font-size:.8125rem;color:var(--violet);font-weight:600;margin-top:.5rem;display:inline-block">Install via plugin browser →</a>
     </div>
     <div class="feature-card">
       <div class="feature-icon" style="background:#eff6ff">
@@ -380,7 +411,7 @@
       <div class="step">
         <div class="step-num">1</div>
         <h3>Connect your tool</h3>
-        <p>Jira is built in. OpenProject and other tools are available via <a href="https://github.com/nobsagile/cylenivo-plugins" target="_blank" rel="noopener" style="color:var(--violet);font-weight:600">community plugins</a>. Install them directly inside Cylenivo.</p>
+        <p>Jira is built in. Trello, OpenProject and other tools are available via <a href="https://github.com/nobsagile/cylenivo-plugins" target="_blank" rel="noopener" style="color:var(--violet);font-weight:600">community plugins</a>. Install them directly inside Cylenivo.</p>
       </div>
       <div class="step">
         <div class="step-num">2</div>
