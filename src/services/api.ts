@@ -230,12 +230,33 @@ export const api = {
   },
   llm: {
     status: () => request<LLMStatus>('/api/v1/llm/status'),
-    analyze: (importId: string, model?: string) =>
-      request<LLMInsight>(`/api/v1/llm/analyze/${importId}`, {
-        method: 'POST',
-        body: JSON.stringify({ model }),
-        headers: { 'Content-Type': 'application/json' },
-      }),
+    analyze: async (importId: string, onToken?: (token: string) => void): Promise<LLMInsight> => {
+      const res = await fetch(`${BASE_URL}/api/v1/llm/analyze/${importId}`, { method: 'POST' })
+      if (!res.ok) {
+        const json = await res.json() as { error?: string }
+        throw new Error(json.error ?? 'Analysis failed')
+      }
+      const reader = res.body!.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() ?? ''
+        for (const line of lines) {
+          if (!line.startsWith('data:')) continue
+          const raw = line.slice(5).trim()
+          if (!raw) continue
+          const msg = JSON.parse(raw) as { type: string; content?: string; insight_text?: string; model_used?: string; generated_at?: string; message?: string }
+          if (msg.type === 'token' && msg.content) onToken?.(msg.content)
+          else if (msg.type === 'done') return { insight_text: msg.insight_text!, model_used: msg.model_used!, generated_at: msg.generated_at! }
+          else if (msg.type === 'error') throw new Error(msg.message)
+        }
+      }
+      throw new Error('Stream ended without result')
+    },
     getInsight: (importId: string) =>
       request<LLMInsight>(`/api/v1/llm/insights/${importId}`),
     chat: (importId: string, messages: { role: string; content: string }[]) =>

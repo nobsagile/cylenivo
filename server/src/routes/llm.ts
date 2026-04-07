@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { streamSSE } from 'hono/streaming'
 import { eq } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { llmInsights, llmConfig, type LlmConfigRow } from '../db/schema.js'
@@ -63,6 +64,69 @@ async function callLLM(
     if (!resp.ok) throw new Error('LLM not available')
     const data = await resp.json() as { choices?: { message?: { content?: string } }[] }
     return data.choices?.[0]?.message?.content ?? ''
+  }
+}
+
+async function* callLLMStream(
+  config: LlmConfigRow,
+  messages: { role: string; content: string }[],
+): AsyncGenerator<string> {
+  if (config.provider === 'ollama') {
+    const baseUrl = config.base_url ?? 'http://localhost:11434'
+    const resp = await fetch(`${baseUrl}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: config.model, messages, stream: true }),
+      signal: AbortSignal.timeout(600000),
+    })
+    if (!resp.ok) throw new Error('LLM not available')
+    const reader = resp.body!.getReader()
+    const decoder = new TextDecoder()
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      for (const line of decoder.decode(value).split('\n')) {
+        if (!line.trim()) continue
+        try {
+          const chunk = JSON.parse(line) as { message?: { content?: string }; done?: boolean }
+          if (chunk.message?.content) yield chunk.message.content
+          if (chunk.done) return
+        } catch { /* incomplete line */ }
+      }
+    }
+  } else {
+    const baseUrl = config.provider === 'openai'
+      ? 'https://api.openai.com'
+      : (config.base_url ?? '')
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    if (config.api_key) headers['Authorization'] = `Bearer ${config.api_key}`
+    const resp = await fetch(`${baseUrl}/v1/chat/completions`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ model: config.model, messages, stream: true }),
+      signal: AbortSignal.timeout(600000),
+    })
+    if (!resp.ok) throw new Error('LLM not available')
+    const reader = resp.body!.getReader()
+    const decoder = new TextDecoder()
+    let buffer = ''
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() ?? ''
+      for (const line of lines) {
+        if (!line.startsWith('data:')) continue
+        const raw = line.slice(5).trim()
+        if (raw === '[DONE]') return
+        try {
+          const chunk = JSON.parse(raw) as { choices?: { delta?: { content?: string } }[] }
+          const content = chunk.choices?.[0]?.delta?.content
+          if (content) yield content
+        } catch { /* skip */ }
+      }
+    }
   }
 }
 
@@ -177,33 +241,38 @@ Provide your analysis in clear sections. Identify the most significant flow prob
     { role: 'user', content: userContent },
   ]
 
-  let insightText: string
-  try {
-    insightText = await callLLM(cfg, messages)
-  } catch (e) {
-    return c.json({ data: null, error: e instanceof Error ? e.message : 'LLM not available' }, 503)
-  }
-
   const model = cfg.model
-  const now = new Date().toISOString()
-  await db.transaction(async (tx) => {
-    const existing = await tx.select().from(llmInsights).where(eq(llmInsights.import_id, imp.id))
-    if (existing.length) {
-      await tx.update(llmInsights)
-        .set({ insight_text: insightText, model_used: model, generated_at: now })
-        .where(eq(llmInsights.import_id, imp.id))
-    } else {
-      await tx.insert(llmInsights).values({
-        id: crypto.randomUUID(),
-        import_id: imp.id,
-        model_used: model,
-        insight_text: insightText,
-        generated_at: now,
+  const importId = imp.id
+
+  return streamSSE(c, async (stream) => {
+    let insightText = ''
+    try {
+      for await (const token of callLLMStream(cfg, messages)) {
+        insightText += token
+        await stream.writeSSE({ data: JSON.stringify({ type: 'token', content: token }) })
+      }
+      const now = new Date().toISOString()
+      await db.transaction(async (tx) => {
+        const existing = await tx.select().from(llmInsights).where(eq(llmInsights.import_id, importId))
+        if (existing.length) {
+          await tx.update(llmInsights)
+            .set({ insight_text: insightText, model_used: model, generated_at: now })
+            .where(eq(llmInsights.import_id, importId))
+        } else {
+          await tx.insert(llmInsights).values({
+            id: crypto.randomUUID(),
+            import_id: importId,
+            model_used: model,
+            insight_text: insightText,
+            generated_at: now,
+          })
+        }
       })
+      await stream.writeSSE({ data: JSON.stringify({ type: 'done', insight_text: insightText, model_used: model, generated_at: now }) })
+    } catch (e) {
+      await stream.writeSSE({ data: JSON.stringify({ type: 'error', message: e instanceof Error ? e.message : 'LLM not available' }) })
     }
   })
-
-  return c.json(ok({ insight_text: insightText, model_used: model, generated_at: now }))
 })
 
 llm.post('/chat/:importId', async (c) => {

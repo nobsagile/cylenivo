@@ -41,6 +41,7 @@ export default function InsightsPage() {
   const [llmStatusLoaded, setLlmStatusLoaded] = useState(false)
   const [insight, setInsight] = useState<LLMInsight | null>(null)
   const [analyzing, setAnalyzing] = useState(false)
+  const [streamingText, setStreamingText] = useState('')
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [debugLog, setDebugLog] = useState<string[]>([])
 
@@ -58,6 +59,7 @@ export default function InsightsPage() {
   async function runAnalysis() {
     if (!importId) return
     setAnalyzing(true)
+    setStreamingText('')
     setErrorMsg(null)
     setDebugLog([])
     const log = (msg: string) => {
@@ -67,10 +69,16 @@ export default function InsightsPage() {
     const start = Date.now()
     log(`Starting analysis for import ${importId}`)
     log(`LLM: ${llmStatus?.provider} / ${llmStatus?.model}`)
+    let tokenCount = 0
     try {
       log('Sending request to server…')
-      const result = await api.llm.analyze(importId)
-      log(`✓ Response received after ${((Date.now() - start) / 1000).toFixed(1)}s`)
+      const result = await api.llm.analyze(importId, (token) => {
+        setStreamingText(prev => prev + token)
+        tokenCount++
+        if (tokenCount === 1) log(`✓ First token received after ${((Date.now() - start) / 1000).toFixed(1)}s`)
+      })
+      log(`✓ Done after ${((Date.now() - start) / 1000).toFixed(1)}s (${tokenCount} tokens)`)
+      setStreamingText('')
       setInsight(result)
     } catch (e) {
       const elapsed = ((Date.now() - start) / 1000).toFixed(1)
@@ -190,8 +198,17 @@ export default function InsightsPage() {
         {analyzing && <p className="text-sm text-gray-400">{t('insights.takesAMinute')}</p>}
       </div>
 
+      {/* Streaming preview */}
+      {analyzing && streamingText && (
+        <Card className="shadow-sm opacity-80">
+          <CardContent className="pt-5">
+            <MarkdownContent text={streamingText} />
+          </CardContent>
+        </Card>
+      )}
+
       {/* Analysis result */}
-      {insight && (
+      {!analyzing && insight && (
         <Card className="shadow-sm">
           <CardHeader className="pb-3 border-b border-gray-100">
             <div className="flex items-center justify-between">
@@ -212,7 +229,7 @@ export default function InsightsPage() {
       )}
 
       {/* Empty state */}
-      {!insight && !analyzing && available && (
+      {!insight && !analyzing && !streamingText && available && (
         <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-gray-200 rounded-xl">
           <div className="p-3 rounded-xl bg-gray-100 mb-3">
             <Sparkles className="w-6 h-6 text-gray-400" />
