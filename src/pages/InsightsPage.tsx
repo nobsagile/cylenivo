@@ -43,7 +43,6 @@ export default function InsightsPage() {
   const [analyzing, setAnalyzing] = useState(false)
   const [streamingText, setStreamingText] = useState('')
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
-  const [debugLog, setDebugLog] = useState<string[]>([])
 
   useEffect(() => {
     api.llm.status()
@@ -61,31 +60,14 @@ export default function InsightsPage() {
     setAnalyzing(true)
     setStreamingText('')
     setErrorMsg(null)
-    setDebugLog([])
-    const log = (msg: string) => {
-      const ts = new Date().toLocaleTimeString()
-      setDebugLog(prev => [...prev, `[${ts}] ${msg}`])
-    }
-    const start = Date.now()
-    log(`Starting analysis for import ${importId}`)
-    log(`LLM: ${llmStatus?.provider} / ${llmStatus?.model}`)
-    let tokenCount = 0
     try {
-      log('Sending request to server…')
       const result = await api.llm.analyze(importId, (token) => {
         setStreamingText(prev => prev + token)
-        tokenCount++
-        if (tokenCount === 1) log(`✓ First token received after ${((Date.now() - start) / 1000).toFixed(1)}s`)
       })
-      log(`✓ Done after ${((Date.now() - start) / 1000).toFixed(1)}s (${tokenCount} tokens)`)
       setStreamingText('')
       setInsight(result)
     } catch (e) {
-      const elapsed = ((Date.now() - start) / 1000).toFixed(1)
-      const msg = e instanceof Error ? e.message : String(e)
-      log(`✗ Error after ${elapsed}s: ${msg}`)
-      if (e instanceof Error && e.stack) log(`Stack: ${e.stack.split('\n')[1]?.trim() ?? ''}`)
-      setErrorMsg(msg)
+      setErrorMsg(e instanceof Error ? e.message : String(e))
     } finally {
       setAnalyzing(false)
     }
@@ -139,15 +121,6 @@ export default function InsightsPage() {
       )}
 
       <ErrorBanner message={errorMsg} onDismiss={() => setErrorMsg(null)} />
-
-      {/* Debug log */}
-      {debugLog.length > 0 && (
-        <div className="rounded-lg border border-gray-200 bg-gray-950 p-3 font-mono text-xs text-gray-300 space-y-0.5">
-          {debugLog.map((line, i) => (
-            <div key={i} className={line.includes('✗') ? 'text-red-400' : line.includes('✓') ? 'text-green-400' : ''}>{line}</div>
-          ))}
-        </div>
-      )}
 
       {/* LLM status */}
       {llmStatusLoaded && (
