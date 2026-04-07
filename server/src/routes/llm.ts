@@ -27,12 +27,27 @@ async function callLLM(
     const resp = await fetch(`${baseUrl}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: config.model, messages, stream: false }),
+      body: JSON.stringify({ model: config.model, messages, stream: true }),
       signal: AbortSignal.timeout(600000),
     })
     if (!resp.ok) throw new Error('LLM not available')
-    const data = await resp.json() as { message?: { content?: string } }
-    return data.message?.content ?? ''
+    // Collect streamed chunks — keeps connection alive while model is thinking
+    const reader = resp.body!.getReader()
+    const decoder = new TextDecoder()
+    let content = ''
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      for (const line of decoder.decode(value).split('\n')) {
+        if (!line.trim()) continue
+        try {
+          const chunk = JSON.parse(line) as { message?: { content?: string }; done?: boolean }
+          content += chunk.message?.content ?? ''
+          if (chunk.done) break
+        } catch { /* incomplete JSON line, skip */ }
+      }
+    }
+    return content
   } else {
     const baseUrl = config.provider === 'openai'
       ? 'https://api.openai.com'
