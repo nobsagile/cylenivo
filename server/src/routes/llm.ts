@@ -28,7 +28,7 @@ async function callLLM(
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: config.model, messages, stream: false }),
-      signal: AbortSignal.timeout(120000),
+      signal: AbortSignal.timeout(600000),
     })
     if (!resp.ok) throw new Error('LLM not available')
     const data = await resp.json() as { message?: { content?: string } }
