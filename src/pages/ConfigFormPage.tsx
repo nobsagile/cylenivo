@@ -19,7 +19,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, X, Plus, ArrowLeft, Info } from 'lucide-react'
+import { GripVertical, X, Plus, ArrowLeft, Info, Zap } from 'lucide-react'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { api } from '@/services/api'
 import type { ProjectConfig, ImportSession } from '@/types'
@@ -55,14 +55,20 @@ function SortableStatus({
   isCycleEnd,
   isLeadStart,
   isLeadEnd,
+  isActive,
+  isWithinCycleWindow,
   onRemove,
+  onToggleActive,
 }: {
   id: string
   isCycleStart?: boolean
   isCycleEnd?: boolean
   isLeadStart?: boolean
   isLeadEnd?: boolean
+  isActive?: boolean
+  isWithinCycleWindow?: boolean
   onRemove: () => void
+  onToggleActive?: () => void
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
   const style = { transform: CSS.Transform.toString(transform), transition }
@@ -70,7 +76,9 @@ function SortableStatus({
   const hasCycle = isCycleStart || isCycleEnd
   const hasLead = isLeadStart || isLeadEnd
 
-  const rowColor = hasCycle && hasLead
+  const rowColor = isActive
+    ? 'border-teal-300 bg-teal-50 text-teal-900'
+    : hasCycle && hasLead
     ? 'border-indigo-300 bg-indigo-50 text-indigo-900'
     : hasCycle
     ? 'border-blue-300 bg-blue-50 text-blue-800'
@@ -106,6 +114,20 @@ function SortableStatus({
       {isLeadEnd && (
         <span className="text-[10px] font-semibold uppercase tracking-wide text-violet-600 opacity-70">lead end</span>
       )}
+      {isWithinCycleWindow && (
+        <button
+          type="button"
+          onClick={onToggleActive}
+          title={isActive ? 'Active work status' : 'Mark as active work'}
+          className={`h-5 w-5 flex items-center justify-center rounded transition-colors shrink-0 ${
+            isActive
+              ? 'text-teal-600 hover:text-teal-700'
+              : 'text-gray-300 hover:text-teal-500'
+          }`}
+        >
+          <Zap className="w-3.5 h-3.5" fill={isActive ? 'currentColor' : 'none'} />
+        </button>
+      )}
       <Button
         type="button"
         variant="ghost"
@@ -134,6 +156,7 @@ export default function ConfigFormPage() {
   const [cycleMode, setCycleMode] = useState<'first_last' | 'first_first' | 'last_last'>('first_last')
   const [leadStart, setLeadStart] = useState('')
   const [leadEnd, setLeadEnd] = useState('')
+  const [activeStatuses, setActiveStatuses] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(isEdit)
   const [formError, setFormError] = useState('')
@@ -156,6 +179,7 @@ export default function ConfigFormPage() {
         setCycleMode(c.cycle_time_mode ?? 'first_last')
         setLeadStart(c.lead_time_start_status ?? '')
         setLeadEnd(c.lead_time_end_status ?? '')
+        setActiveStatuses(c.active_statuses ?? [])
       }).catch(console.error).finally(() => setLoading(false))
     }
   }, [configId])
@@ -218,6 +242,7 @@ export default function ConfigFormPage() {
       cycle_time_mode: cycleMode,
       lead_time_start_status: leadStart || undefined,
       lead_time_end_status: leadEnd || undefined,
+      active_statuses: activeStatuses.length > 0 ? activeStatuses : undefined,
     }
     try {
       if (isEdit && configId) {
@@ -352,25 +377,41 @@ export default function ConfigFormPage() {
             </Popover>
           </div>
 
-          {statusOrder.length > 0 && (
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-              <SortableContext items={statusOrder} strategy={verticalListSortingStrategy}>
-                <div className="space-y-1.5 mb-2">
-                  {statusOrder.map((s) => (
-                    <SortableStatus
-                      key={s}
-                      id={s}
-                      isCycleStart={s === cycleStart}
-                      isCycleEnd={s === cycleEnd}
-                      isLeadStart={!!leadStart && s === leadStart}
-                      isLeadEnd={s === (leadEnd || cycleEnd)}
-                      onRemove={() => setStatusOrder((prev) => prev.filter((x) => x !== s))}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
-          )}
+          {statusOrder.length > 0 && (() => {
+            const startIdx = cycleStart ? statusOrder.indexOf(cycleStart) : -1
+            const endIdx = cycleEnd ? statusOrder.indexOf(cycleEnd) : -1
+            const inWindow = (s: string) => {
+              const i = statusOrder.indexOf(s)
+              return startIdx !== -1 && endIdx !== -1 && startIdx <= endIdx && i >= startIdx && i <= endIdx
+            }
+            return (
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                <SortableContext items={statusOrder} strategy={verticalListSortingStrategy}>
+                  <div className="space-y-1.5 mb-2">
+                    {statusOrder.map((s) => (
+                      <SortableStatus
+                        key={s}
+                        id={s}
+                        isCycleStart={s === cycleStart}
+                        isCycleEnd={s === cycleEnd}
+                        isLeadStart={!!leadStart && s === leadStart}
+                        isLeadEnd={s === (leadEnd || cycleEnd)}
+                        isActive={activeStatuses.includes(s)}
+                        isWithinCycleWindow={inWindow(s)}
+                        onRemove={() => {
+                          setStatusOrder((prev) => prev.filter((x) => x !== s))
+                          setActiveStatuses((prev) => prev.filter((x) => x !== s))
+                        }}
+                        onToggleActive={() => setActiveStatuses((prev) =>
+                          prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
+                        )}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            )
+          })()}
 
           <div className="flex gap-2 mt-2">
             <Input

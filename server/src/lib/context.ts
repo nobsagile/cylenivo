@@ -3,6 +3,7 @@ import { db } from '../db/index.js'
 import { projectConfigs, importSessions, tickets, ticketTransitions, type ImportSessionRow, type TicketRow } from '../db/schema.js'
 import { calculateCycleTime, type CycleTimeMode } from '../analyzers/cycleTime.js'
 import { calculateLeadTime } from '../analyzers/leadTime.js'
+import { calculateFlowEfficiency } from '../analyzers/flowEfficiency.js'
 import { firstTransitionTo, lastTransitionTo, sortTransitions, type Transition } from '../analyzers/utils.js'
 
 export interface ParsedConfig {
@@ -16,6 +17,7 @@ export interface ParsedConfig {
   cycle_time_mode: CycleTimeMode
   lead_time_start_status: string | null
   lead_time_end_status: string | null
+  active_statuses: string[] | null
   created_at: string
 }
 
@@ -32,6 +34,7 @@ export interface EnrichedTicket {
   lead_time_days: number | null
   completed_at: Date | null   // mode-aware completion timestamp
   current_status: string | null
+  flow_efficiency: number | null
   completed: boolean
   excluded: boolean
   exclusion_reason: string | null
@@ -49,7 +52,7 @@ export function buildEnrichedTicket(
   transitions: Transition[],
   config: ParsedConfig,
 ): EnrichedTicket {
-  const { cycle_time_start_status, cycle_time_end_status, cycle_time_mode, lead_time_start_status, lead_time_end_status } = config
+  const { cycle_time_start_status, cycle_time_end_status, cycle_time_mode, lead_time_start_status, lead_time_end_status, active_statuses } = config
 
   const ct = calculateCycleTime(transitions, cycle_time_start_status, cycle_time_end_status, cycle_time_mode)
   const lt = calculateLeadTime(
@@ -66,6 +69,10 @@ export function buildEnrichedTicket(
 
   const sorted = sortTransitions(transitions)
 
+  const fe = ct !== null && active_statuses?.length
+    ? calculateFlowEfficiency(transitions, active_statuses, cycle_time_start_status, cycle_time_end_status, cycle_time_mode, ct)
+    : null
+
   return {
     id: ticket.id,
     external_id: ticket.external_id,
@@ -78,6 +85,7 @@ export function buildEnrichedTicket(
     lead_time_days: lt,
     completed_at: completedAt,
     current_status: sorted.length ? sorted[sorted.length - 1].to_status : null,
+    flow_efficiency: fe,
     completed: completedAt !== null,
     excluded: ticket.excluded === 1,
     exclusion_reason: ticket.exclusion_reason ?? null,
@@ -99,6 +107,7 @@ export async function loadImportContext(importId: string): Promise<ImportContext
     cycle_time_mode: (raw.cycle_time_mode ?? 'first_last') as CycleTimeMode,
     lead_time_start_status: raw.lead_time_start_status ?? null,
     lead_time_end_status: raw.lead_time_end_status ?? null,
+    active_statuses: raw.active_statuses ? JSON.parse(raw.active_statuses) as string[] : null,
   }
 
   const startIdx = config.status_order.indexOf(config.cycle_time_start_status)

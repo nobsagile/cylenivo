@@ -141,6 +141,7 @@ export async function migrate() {
   addColumn(`ALTER TABLE source_connections ADD COLUMN credentials_json TEXT`)
   addColumn(`ALTER TABLE tickets ADD COLUMN excluded INTEGER NOT NULL DEFAULT 0`)
   addColumn(`ALTER TABLE tickets ADD COLUMN exclusion_reason TEXT`)
+  addColumn(`ALTER TABLE project_configs ADD COLUMN active_statuses TEXT`)
   // Indexes (safe to re-run — IF NOT EXISTS)
   sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_tickets_import_id ON tickets(import_id)`)
   sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_transitions_ticket_id ON ticket_transitions(ticket_id)`)

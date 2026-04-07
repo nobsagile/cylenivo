@@ -9,6 +9,7 @@ import { calculatePercentiles, calculateThroughputPerWeek } from '../src/analyze
 import { calculateTimeInStatus } from '../src/analyzers/timeInStatus.js'
 import { detectRework, aggregateRework } from '../src/analyzers/rework.js'
 import { inferStatusOrder } from '../src/analyzers/statusOrder.js'
+import { calculateFlowEfficiency } from '../src/analyzers/flowEfficiency.js'
 
 // ── Monte Carlo ───────────────────────────────────────────────────────────────
 describe('computeWeeklyBuckets', () => {
@@ -860,5 +861,71 @@ describe('inferStatusOrder', () => {
     const t2 = { transitions: [t(null, 'Alpha', '2024-01-01T10:00:00Z')] }
     const result = inferStatusOrder([t1, t2])
     expect(result).toEqual(['Alpha', 'Zebra'])
+  })
+})
+
+// ── calculateFlowEfficiency ───────────────────────────────────────────────────
+describe('calculateFlowEfficiency', () => {
+  function tr(from: string | null, to: string, at: string): Transition {
+    return { from_status: from, to_status: to, transitioned_at: at }
+  }
+
+  it('returns null for empty active statuses', () => {
+    const transitions = [
+      tr(null, 'In Progress', '2024-01-01T00:00:00Z'),
+      tr('In Progress', 'Done', '2024-01-03T00:00:00Z'),
+    ]
+    expect(calculateFlowEfficiency(transitions, [], 'In Progress', 'Done', 'first_last', 2)).toBeNull()
+  })
+
+  it('returns null for zero cycle days', () => {
+    const transitions = [tr(null, 'Done', '2024-01-01T00:00:00Z')]
+    expect(calculateFlowEfficiency(transitions, ['Done'], 'Done', 'Done', 'first_last', 0)).toBeNull()
+  })
+
+  it('returns 100% when all cycle time is in active status', () => {
+    // 2 days total, 2 days in In Progress (the only status in window)
+    const transitions = [
+      tr(null, 'In Progress', '2024-01-01T00:00:00Z'),
+      tr('In Progress', 'Done', '2024-01-03T00:00:00Z'),
+    ]
+    // cycle: In Progress → Done, 2 days. Active = [In Progress] = 2 days. Efficiency = 100%
+    const result = calculateFlowEfficiency(transitions, ['In Progress'], 'In Progress', 'Done', 'first_last', 2)
+    expect(result).toBeCloseTo(100, 0)
+  })
+
+  it('calculates partial efficiency correctly', () => {
+    // 4-day cycle: 1 day In Progress, 1 day In Review, 2 days in Review Queue (not active)
+    const transitions = [
+      tr(null, 'In Progress', '2024-01-01T00:00:00Z'),
+      tr('In Progress', 'Review Queue', '2024-01-02T00:00:00Z'),  // 1 day active
+      tr('Review Queue', 'In Review', '2024-01-04T00:00:00Z'),    // 2 days waiting
+      tr('In Review', 'Done', '2024-01-05T00:00:00Z'),            // 1 day active
+    ]
+    // cycle: In Progress → Done, 4 days
+    // active: In Progress (1d) + In Review (1d) = 2d
+    // efficiency = 2/4 = 50%
+    const result = calculateFlowEfficiency(
+      transitions,
+      ['In Progress', 'In Review'],
+      'In Progress', 'Done', 'first_last', 4
+    )
+    expect(result).toBeCloseTo(50, 0)
+  })
+
+  it('caps at 100% to handle floating point edge cases', () => {
+    const transitions = [
+      tr(null, 'In Progress', '2024-01-01T00:00:00Z'),
+      tr('In Progress', 'Done', '2024-01-02T00:00:00Z'),
+    ]
+    // cycleDays slightly less than actual due to rounding — should not exceed 100
+    const result = calculateFlowEfficiency(transitions, ['In Progress'], 'In Progress', 'Done', 'first_last', 0.99)
+    expect(result).toBeLessThanOrEqual(100)
+  })
+
+  it('returns null when ticket never entered cycle start', () => {
+    const transitions = [tr(null, 'Done', '2024-01-01T00:00:00Z')]
+    const result = calculateFlowEfficiency(transitions, ['In Progress'], 'In Progress', 'Done', 'first_last', 1)
+    expect(result).toBeNull()
   })
 })

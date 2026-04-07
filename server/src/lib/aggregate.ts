@@ -6,6 +6,12 @@ import type { ImportContext, EnrichedTicket } from './context.js'
 
 export type { PercentileResult }
 
+export interface FlowEfficiencyAggregate {
+  mean: number
+  median: number
+  histogram: Array<{ bucket: number; count: number }>
+}
+
 export interface MetricsAggregate {
   cycleTimes: number[]
   leadTimes: number[]
@@ -15,6 +21,7 @@ export interface MetricsAggregate {
   throughput: number | null
   dateRange: { from: string | null; to: string | null }
   timeInStatus: Record<string, { mean_days: number; median_days: number }>
+  flowEfficiency: FlowEfficiencyAggregate | null
   completedTickets: EnrichedTicket[]
 }
 
@@ -66,6 +73,25 @@ export function computeAggregate(ctx: ImportContext): MetricsAggregate {
     }
   }
 
+  // Flow efficiency aggregate
+  const efficiencyValues = completedTickets
+    .map(t => t.flow_efficiency)
+    .filter((v): v is number => v !== null)
+
+  let flowEfficiency: FlowEfficiencyAggregate | null = null
+  if (efficiencyValues.length > 0) {
+    const buckets = Array.from({ length: 10 }, (_, i) => ({ bucket: i * 10, count: 0 }))
+    for (const v of efficiencyValues) {
+      const idx = Math.min(9, Math.floor(v / 10))
+      buckets[idx].count++
+    }
+    flowEfficiency = {
+      mean: Math.round(mean(efficiencyValues) * 10) / 10,
+      median: Math.round(median(efficiencyValues) * 10) / 10,
+      histogram: buckets,
+    }
+  }
+
   return {
     cycleTimes,
     leadTimes,
@@ -75,6 +101,7 @@ export function computeAggregate(ctx: ImportContext): MetricsAggregate {
     throughput,
     dateRange,
     timeInStatus,
+    flowEfficiency,
     completedTickets,
   }
 }

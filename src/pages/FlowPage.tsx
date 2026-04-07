@@ -13,6 +13,7 @@ import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 import { BoardVisualization } from '@/components/metrics/BoardVisualization'
 import { ReworkCard } from '@/components/metrics/ReworkCard'
 import { CycleTimeByTypeChart } from '@/components/metrics/CycleTimeByTypeChart'
+import { FlowEfficiencyCard } from '@/components/metrics/FlowEfficiencyCard'
 import { PageHeader } from '@/components/layout/PageHeader'
 
 export default function FlowPage() {
@@ -92,6 +93,14 @@ export default function FlowPage() {
         </>
       ) : (
         <div className="text-gray-400 text-sm">{t('common.loading')}</div>
+      )}
+
+      {metrics.config_context && (
+        <FlowEfficiencyCard
+          data={metrics.flow_efficiency ?? null}
+          activeStatuses={metrics.config_context.active_statuses}
+          configId={metrics.config_context.config_id}
+        />
       )}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

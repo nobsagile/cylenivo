@@ -68,6 +68,7 @@ export default function ConfigureStep({ projectKey, ticketCount, statuses, onCom
   const [cycleMode, setCycleMode] = useState<'first_last' | 'first_first' | 'last_last'>('first_last')
   const [leadStart, setLeadStart] = useState('')
   const [leadEnd, setLeadEnd] = useState('')
+  const [activeStatuses, setActiveStatuses] = useState<string[]>([])
   const [importing, setImporting] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
@@ -128,6 +129,7 @@ export default function ConfigureStep({ projectKey, ticketCount, statuses, onCom
           cycle_time_mode: cycleMode,
           lead_time_start_status: leadStart || undefined,
           lead_time_end_status: leadEnd || undefined,
+          active_statuses: activeStatuses.length > 0 ? activeStatuses : undefined,
         })
         configId = newConfig.id
       }
@@ -310,6 +312,56 @@ export default function ConfigureStep({ projectKey, ticketCount, statuses, onCom
               </Select>
             </div>
           </div>
+
+          {/* Active work statuses */}
+          {(() => {
+            const startIdx = cycleStart ? statusOrder.indexOf(cycleStart) : -1
+            const endIdx = cycleEnd ? statusOrder.indexOf(cycleEnd) : -1
+            const cycleWindowStatuses = startIdx !== -1 && endIdx !== -1 && startIdx <= endIdx
+              ? statusOrder.slice(startIdx, endIdx + 1)
+              : []
+            if (!cycleWindowStatuses.length) return null
+            return (
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                <div className="flex items-center gap-1.5 mb-3">
+                  <p className="text-sm font-semibold text-gray-700">{t('config.activeStatuses')}</p>
+                  <span className="text-xs text-gray-400">{t('config.activeStatusesHint')}</span>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button className="text-gray-300 hover:text-gray-500 transition-colors"><Info className="w-3.5 h-3.5" /></button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64">
+                      <div className="text-xs text-gray-600"><p>{t('help.activeStatuses')}</p></div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {cycleWindowStatuses.map((s) => {
+                    const checked = activeStatuses.includes(s)
+                    return (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => setActiveStatuses((prev) =>
+                          checked ? prev.filter((x) => x !== s) : [...prev, s]
+                        )}
+                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium transition-colors ${
+                          checked
+                            ? 'border-teal-400 bg-teal-50 text-teal-700'
+                            : 'border-gray-200 bg-white text-gray-500 hover:border-teal-300 hover:text-teal-600'
+                        }`}
+                      >
+                        <span className={`w-3 h-3 rounded-sm border flex items-center justify-center shrink-0 ${checked ? 'bg-teal-500 border-teal-500' : 'border-gray-300'}`}>
+                          {checked && <span className="text-white text-[8px] font-bold">✓</span>}
+                        </span>
+                        {s}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })()}
 
           <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
             <div className="flex items-center gap-1.5 mb-3">

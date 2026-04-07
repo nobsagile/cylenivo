@@ -11,6 +11,7 @@ export const projectConfigs = sqliteTable('project_configs', {
   cycle_time_mode: text('cycle_time_mode').notNull().default('first_last'),
   lead_time_start_status: text('lead_time_start_status'),
   lead_time_end_status: text('lead_time_end_status'),
+  active_statuses: text('active_statuses'), // nullable JSON array
   created_at: text('created_at').notNull(),
 })
 

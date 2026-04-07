@@ -9,6 +9,7 @@ export interface ProjectConfig {
   cycle_time_mode: 'first_last' | 'first_first' | 'last_last'
   lead_time_start_status: string | null
   lead_time_end_status: string | null
+  active_statuses: string[] | null
   created_at: string
 }
 
@@ -78,12 +79,20 @@ export interface StatusDuration {
 }
 
 export interface ConfigContext {
+  config_id: string
   status_order: string[]
   cycle_time_start_status: string
   cycle_time_end_status: string
   cycle_time_mode: string
   lead_time_start_status: string | null
   lead_time_end_status: string | null
+  active_statuses: string[] | null
+}
+
+export interface FlowEfficiencyStats {
+  mean: number
+  median: number
+  histogram: Array<{ bucket: number; count: number }>
 }
 
 export interface MetricsSummary {
@@ -97,6 +106,7 @@ export interface MetricsSummary {
   lead_time: PercentileStats
   time_in_status: Record<string, StatusDuration>
   throughput_per_week: number | null
+  flow_efficiency: FlowEfficiencyStats | null
   config_context: ConfigContext
 }
 
@@ -260,4 +270,5 @@ export interface CreateConfigRequest {
   cycle_time_mode?: 'first_last' | 'first_first' | 'last_last'
   lead_time_start_status?: string
   lead_time_end_status?: string
+  active_statuses?: string[]
 }

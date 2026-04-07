@@ -157,6 +157,7 @@
     "cycleTime": "Cycle Time",
     "leadTime": "Lead Time",
     "throughput": "Throughput",
+    "flowEfficiency": "Flow Efficiency",
     "ticketsAnalyzed": "Tickets Analyzed",
     "days": "days",
     "perWeek": "per week",
@@ -435,7 +436,11 @@
     "leadTimeEndHint": "— empty = cycle end",
     "useCreationDate": "Use ticket creation date",
     "sameAsCycleEnd": "Same as cycle time end",
-    "saveConfig": "Save Configuration"
+    "saveConfig": "Save Configuration",
+    "activeStatuses": "Active Work Statuses",
+    "activeStatusesHint": "(optional)",
+    "activeStatusesEmpty": "No statuses in the cycle window yet.",
+    "activeStatusToggle": "Toggle active"
   },
   "sidebar": {
     "project": "Datasets",
@@ -634,7 +639,9 @@
       "configBaseUrl": "Base URL",
       "llmProvider": "Provider",
       "llmBaseUrl": "AI Base URL",
-      "llmSystemPrompt": "System Prompt"
+      "llmSystemPrompt": "System Prompt",
+      "flowEfficiency": "Flow Efficiency",
+      "activeStatuses": "Active Work Statuses"
     },
     "cycleTime": "Time from when work starts (cycle start status) to when it's done (cycle end status). Measures how long active work takes.",
     "leadTime": "Time from ticket creation (or lead time start status) to completion. Includes wait time before work begins — always ≥ cycle time.",
@@ -681,7 +688,11 @@
     "connName": "A friendly label for this connection — only shown inside Cylenivo.",
     "connBaseUrl": "The root URL of your Jira instance, e.g. https://yourcompany.atlassian.net. Found in your browser's address bar when you open Jira.",
     "connEmail": "The email address you use to log into Jira.",
-    "connApiToken": "A personal API token generated in your Atlassian account — not your login password. Cylenivo uses it to read tickets on your behalf."
+    "connApiToken": "A personal API token generated in your Atlassian account — not your login password. Cylenivo uses it to read tickets on your behalf.",
+    "flowEfficiency": "The percentage of total cycle time a ticket spent in active work statuses (e.g. In Progress, In Review) vs. waiting in queues. Industry benchmark: 5–15%. Higher is better.",
+    "activeStatuses": "Mark which statuses represent active work — typically the ones where someone is actually doing something (coding, reviewing). Statuses where tickets wait for attention are not active. Only statuses within the cycle window are eligible.",
+    "flowEfficiencyNotConfigured": "Select which statuses count as active work to unlock this metric.",
+    "configureActiveStatuses": "Configure in Settings"
   },
   "update": {
     "available": "Update available",

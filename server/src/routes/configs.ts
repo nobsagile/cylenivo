@@ -10,6 +10,7 @@ function serializeConfig(row: ProjectConfigRow) {
   return {
     ...row,
     status_order: JSON.parse(row.status_order) as string[],
+    active_statuses: row.active_statuses ? JSON.parse(row.active_statuses) as string[] : null,
   }
 }
 
@@ -47,6 +48,9 @@ configs.post('/', async (c) => {
     cycle_time_mode: body.cycle_time_mode ?? 'first_last',
     lead_time_start_status: body.lead_time_start_status ?? null,
     lead_time_end_status: body.lead_time_end_status ?? null,
+    active_statuses: Array.isArray(body.active_statuses) && body.active_statuses.length > 0
+      ? JSON.stringify(body.active_statuses)
+      : null,
     created_at: now,
   }
   await db.insert(projectConfigs).values(row)
@@ -78,6 +82,11 @@ configs.put('/:id', async (c) => {
   }
   if (body.lead_time_start_status !== undefined) updates.lead_time_start_status = body.lead_time_start_status
   if (body.lead_time_end_status !== undefined) updates.lead_time_end_status = body.lead_time_end_status
+  if (body.active_statuses !== undefined) {
+    updates.active_statuses = Array.isArray(body.active_statuses) && body.active_statuses.length > 0
+      ? JSON.stringify(body.active_statuses)
+      : null
+  }
 
   await db.update(projectConfigs).set(updates).where(eq(projectConfigs.id, id))
   const updated = await db.select().from(projectConfigs).where(eq(projectConfigs.id, id))
