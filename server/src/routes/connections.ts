@@ -22,7 +22,6 @@ function serialize(row: ConnectionRow) {
     issue_types: row.issue_types ? JSON.parse(row.issue_types) : null,
     resolved_from: row.resolved_from,
     resolved_to: row.resolved_to,
-    max_tickets: row.max_tickets ?? null,
   }
 }
 
@@ -53,7 +52,6 @@ connections.post('/', async (c) => {
       project_key: body.project_key ?? null,
       issue_types: body.issue_types ? JSON.stringify(body.issue_types) : null,
       resolved_from: body.resolved_from ?? null, resolved_to: body.resolved_to ?? null,
-      max_tickets: typeof body.max_tickets === 'number' ? body.max_tickets : null,
     }
   } else {
     row = {
@@ -85,7 +83,6 @@ connections.put('/:id', async (c) => {
     if (body.issue_types !== undefined) updates.issue_types = body.issue_types ? JSON.stringify(body.issue_types) : null
     if (body.resolved_from !== undefined) updates.resolved_from = body.resolved_from || null
     if (body.resolved_to !== undefined) updates.resolved_to = body.resolved_to || null
-    if (body.max_tickets !== undefined) updates.max_tickets = typeof body.max_tickets === 'number' ? body.max_tickets : null
   } else {
     if (body.credentials !== undefined) updates.credentials_json = JSON.stringify(body.credentials)
   }
@@ -143,11 +140,9 @@ connections.post('/:id/fetch', async (c) => {
       if (conn.source_type === 'jira') {
         const project = body.project || conn.project_key
         const creds: JiraCredentials = { base_url: conn.base_url, email: conn.email, api_token: conn.api_token }
-        const requestedLimit = typeof body.limit === 'number' ? body.limit : 50
         const storedTypes = conn.issue_types ? JSON.parse(conn.issue_types) : null
         const options = {
           project,
-          limit: Math.min(Math.max(1, requestedLimit), 2000),
           issue_types: body.issue_types ?? storedTypes ?? ['Story', 'Task', 'Bug'],
           resolved_from: body.resolved_from ?? conn.resolved_from ?? undefined,
           resolved_to: body.resolved_to ?? conn.resolved_to ?? undefined,

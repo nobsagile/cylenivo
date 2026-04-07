@@ -190,13 +190,11 @@ export interface SourceConnection {
   issue_types?: string[]
   resolved_from?: string
   resolved_to?: string
-  max_tickets?: number | null
   credentials_json?: string | null
 }
 
 export interface JiraFetchOptions {
   project: string
-  limit: number
   issue_types: string[]
   resolved_from?: string
   resolved_to?: string

@@ -173,7 +173,7 @@ function ProjectMenu({ imp, connection, pluginManifest, onRenamed }: {
               <Pencil className="w-3.5 h-3.5 text-gray-400" />
               {t('sidebar.rename')}
             </DropdownMenuPrimitive.Item>
-            {connection && (
+            {connection && !connection.resolved_to && (
               <DropdownMenuPrimitive.Item
                 className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-gray-700 cursor-pointer hover:bg-gray-50 outline-none"
                 onSelect={() => setRefreshOpen(true)}

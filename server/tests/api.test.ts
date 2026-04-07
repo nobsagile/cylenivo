@@ -828,38 +828,6 @@ describe('connections', () => {
     expect(data.connection_id).toBe(conn.id)
   })
 
-  it('stores max_tickets on POST', async () => {
-    const { data } = await createConnection({ max_tickets: 500 })
-    expect(data.max_tickets).toBe(500)
-  })
-
-  it('returns null for max_tickets when not set', async () => {
-    const { data } = await createConnection()
-    expect(data.max_tickets).toBeNull()
-  })
-
-  it('updates max_tickets via PUT', async () => {
-    const { data: created } = await createConnection({ max_tickets: 200 })
-    const res = await app.request(`/api/v1/connections/${created.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ max_tickets: 750 }),
-    })
-    const { data } = await res.json() as { data: Record<string, unknown> }
-    expect(data.max_tickets).toBe(750)
-  })
-
-  it('PUT without max_tickets does not clear existing value', async () => {
-    const { data: created } = await createConnection({ max_tickets: 300 })
-    const res = await app.request(`/api/v1/connections/${created.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ project_key: 'KEEP' }),
-    })
-    const { data } = await res.json() as { data: Record<string, unknown> }
-    expect(data.max_tickets).toBe(300)
-    expect(data.project_key).toBe('KEEP')
-  })
 
   it('GET /:id/datasets returns datasets for connection', async () => {
     const config = await createConfig()

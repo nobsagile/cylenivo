@@ -73,7 +73,6 @@ const SECTIONS: Section[] = [
     entries: [
       { titleKey: 'help.titles.projectKey',        bodyKey: 'help.projectKey' },
       { titleKey: 'help.titles.issueTypes',        bodyKey: 'help.issueTypes' },
-      { titleKey: 'help.titles.maxTickets',        bodyKey: 'help.maxTickets' },
       { titleKey: 'help.titles.completedBetween',  bodyKey: 'help.completedBetween' },
       { titleKey: 'help.titles.datasetName',       bodyKey: 'help.datasetName' },
       { titleKey: 'help.titles.datasetConfig',     bodyKey: 'help.datasetConfig' },

@@ -6,7 +6,6 @@ export interface JiraCredentials {
 
 export interface JiraFetchOptions {
   project: string
-  limit?: number
   issue_types?: string[]
   resolved_from?: string
   resolved_to?: string
@@ -124,7 +123,7 @@ export async function testConnection(creds: JiraCredentials): Promise<{ display_
 const JIRA_PAGE_SIZE = 100
 
 export async function fetchIssues(creds: JiraCredentials, options: JiraFetchOptions): Promise<JiraIssue[]> {
-  const { project, limit = 50, issue_types = ['Story', 'Task', 'Bug'], resolved_from, resolved_to } = options
+  const { project, issue_types = ['Story', 'Task', 'Bug'], resolved_from, resolved_to } = options
   const typeList = issue_types.map(t => `"${t}"`).join(', ')
   const fromFilter = resolved_from ? ` AND resolved >= "${resolved_from}"` : ''
   const toFilter = resolved_to ? ` AND resolved <= "${resolved_to}"` : ''
@@ -132,20 +131,19 @@ export async function fetchIssues(creds: JiraCredentials, options: JiraFetchOpti
 
   const all: JiraIssue[] = []
   let nextPageToken: string | undefined
-  while (all.length < limit) {
-    const pageSize = Math.min(JIRA_PAGE_SIZE, limit - all.length)
+  while (true) {
     const tokenParam = nextPageToken ? `&nextPageToken=${encodeURIComponent(nextPageToken)}` : ''
     const data = await jiraGet<JiraSearchResponse>(
       creds,
-      `/search/jql?jql=${encodeURIComponent(jql)}&maxResults=${pageSize}&fields=summary,issuetype,created${tokenParam}`
+      `/search/jql?jql=${encodeURIComponent(jql)}&maxResults=${JIRA_PAGE_SIZE}&fields=summary,issuetype,created${tokenParam}`
     )
     const issues = data.issues ?? []
     if (issues.length === 0) break
     all.push(...issues)
-    if (data.isLast || !data.nextPageToken || all.length >= limit) break
+    if (data.isLast || !data.nextPageToken) break
     nextPageToken = data.nextPageToken
   }
-  return all.slice(0, limit)
+  return all
 }
 
 export async function fetchChangelog(creds: JiraCredentials, issueKey: string): Promise<JiraChangelogHistory[]> {

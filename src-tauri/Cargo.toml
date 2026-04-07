@@ -1,6 +1,6 @@
 [package]
 name = "cylenivo"
-version = "0.74.11"
+version = "0.75.0"
 description = "Flow metrics for software teams"
 authors = ["nobsagile"]
 license = ""

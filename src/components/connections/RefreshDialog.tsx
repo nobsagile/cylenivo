@@ -78,7 +78,6 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
   // Pre-flight state (initialized from stored connection settings)
   const [projectKey, setProjectKey] = useState(connection.project_key ?? '')
   const [issueTypes, setIssueTypes] = useState<string[]>(connection.issue_types ?? ['Story', 'Task', 'Bug'])
-  const [limit, setLimit] = useState(connection.max_tickets ?? 200)
   const [resolvedFrom, setResolvedFrom] = useState(connection.resolved_from ?? '')
   const [resolvedTo, setResolvedTo] = useState(connection.resolved_to ?? '')
   const [pluginOptions, setPluginOptions] = useState<Record<string, string>>(initialPluginOpts)
@@ -118,7 +117,6 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
     try {
       const options: JiraFetchOptions = {
         project: projectKey.trim().toUpperCase(),
-        limit,
         issue_types: issueTypes,
         resolved_from: resolvedFrom || undefined,
         resolved_to: resolvedTo || undefined,
@@ -292,18 +290,6 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
               </div>
             </div>
 
-            <div className="flex items-center gap-2 text-sm text-gray-700">
-              <span>{t('import.maxTickets')}</span>
-              <Input
-                type="number"
-                value={limit}
-                onChange={(e) => setLimit(Number(e.target.value))}
-                className="w-20 h-8 text-sm"
-                min={1}
-                max={2000}
-              />
-            </div>
-
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">{t('connection.resolvedBetween')}</label>
               <div className="flex items-center gap-2">
@@ -311,6 +297,13 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
                 <span className="text-gray-400 text-xs">{t('common.to')}</span>
                 <DatePicker value={resolvedTo} onChange={setResolvedTo} placeholder={t('common.to')} />
               </div>
+              {resolvedTo ? (
+                <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-md px-2.5 py-1.5 mt-1.5">
+                  {t('import.fixedEndDateNoRefresh')}
+                </p>
+              ) : (
+                <p className="text-xs text-gray-400 mt-1">{t('import.untilToday')}</p>
+              )}
             </div>
           </div>
 

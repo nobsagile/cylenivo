@@ -136,7 +136,6 @@ export default function ImportPage() {
 
   // fetch step
   const [jiraProject, setJiraProject] = useState('')
-  const [jiraLimit, setJiraLimit] = useState(200)
   const [jiraIssueTypes, setJiraIssueTypes] = useState(['Story', 'Task', 'Bug'])
   const [resolvedFrom, setResolvedFrom] = useState('')
   const [resolvedTo, setResolvedTo] = useState('')
@@ -574,7 +573,6 @@ export default function ImportPage() {
           connection.id,
           {
             project: jiraProject.trim().toUpperCase(),
-            limit: jiraLimit,
             issue_types: jiraIssueTypes,
             resolved_from: resolvedFrom || undefined,
             resolved_to: resolvedTo || undefined,
@@ -665,29 +663,6 @@ export default function ImportPage() {
           </div>
           <div>
             <div className="flex items-center gap-1 mb-1.5">
-              <span className="text-sm font-medium text-gray-700">{t('import.maxTickets')}</span>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button className="text-gray-300 hover:text-gray-500 transition-colors">
-                    <Info className="w-3.5 h-3.5" />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-64">
-                  <p className="text-xs text-gray-600">{t('help.maxTickets')}</p>
-                </PopoverContent>
-              </Popover>
-              <Input
-                type="number"
-                value={jiraLimit}
-                onChange={(e) => setJiraLimit(Number(e.target.value))}
-                className="w-20 h-8 text-sm ml-1"
-                min={1}
-                max={500}
-              />
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-1 mb-1.5">
               <span className="text-sm font-medium text-gray-700">{t('import.completedBetween')}</span>
               <Popover>
                 <PopoverTrigger asChild>
@@ -705,7 +680,13 @@ export default function ImportPage() {
               <span className="text-gray-400 text-sm">{t('common.to')}</span>
               <DatePicker value={resolvedTo} onChange={setResolvedTo} placeholder={t('common.to')} />
             </div>
-            <p className="text-xs text-gray-400 mt-1">{t('import.completedBetweenHint')}</p>
+            {resolvedTo ? (
+              <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-md px-2.5 py-1.5 mt-2">
+                {t('import.fixedEndDateNoRefresh')}
+              </p>
+            ) : (
+              <p className="text-xs text-gray-400 mt-1">{t('import.untilToday')}</p>
+            )}
             {!resolvedFrom && !resolvedTo && (
               <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-md px-2.5 py-1.5 mt-2">
                 {t('import.noDateFilterWarning')}
@@ -816,7 +797,6 @@ export default function ImportPage() {
           issue_types: jiraIssueTypes,
           resolved_from: resolvedFrom || undefined,
           resolved_to: resolvedTo || undefined,
-          max_tickets: jiraLimit,
         }).catch(() => {})
       }
       notifyImportsChanged()
@@ -858,7 +838,6 @@ export default function ImportPage() {
           issue_types: jiraIssueTypes,
           resolved_from: resolvedFrom || undefined,
           resolved_to: resolvedTo || undefined,
-          max_tickets: jiraLimit,
         }).catch(() => {})
       }
       notifyImportsChanged()

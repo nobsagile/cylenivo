@@ -326,7 +326,7 @@ export default function SettingsPage() {
                 icon={FileJson}
                 actions={
                   <>
-                    {imp.connection_id && connections.find((c) => c.id === imp.connection_id) && (
+                    {imp.connection_id && connections.find((c) => c.id === imp.connection_id && !c.resolved_to) && (
                       <IconBtn
                         onClick={() => {
                           setRefreshConn(connections.find((c) => c.id === imp.connection_id)!)
