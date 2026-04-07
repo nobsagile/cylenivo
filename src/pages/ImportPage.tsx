@@ -791,12 +791,12 @@ export default function ImportPage() {
       const file = new File([blob], `${projectKey}-export.json`, { type: 'application/json' })
       const autoName = `${projectKey} – ${new Date().toLocaleDateString()}`
       const session = await api.imports.upload(file, selectedConfigId, autoName, connection.id)
-      if (connection.source_type === 'jira' && !connection.project_key) {
+      if (connection.source_type === 'jira') {
         api.connections.update(connection.id, {
           project_key: projectKey,
           issue_types: jiraIssueTypes,
-          resolved_from: resolvedFrom || undefined,
-          resolved_to: resolvedTo || undefined,
+          resolved_from: resolvedFrom || null,
+          resolved_to: resolvedTo || null,
         }).catch(() => {})
       }
       notifyImportsChanged()
@@ -832,12 +832,12 @@ export default function ImportPage() {
       const autoName = `${fetchedProjectKey} – ${new Date().toLocaleDateString()}`
       const session = await api.imports.upload(file, config.id, autoName, connection.id)
       // Save project defaults to connection so next Refresh auto-starts (no preflight)
-      if (connection.source_type === 'jira' && !connection.project_key) {
+      if (connection.source_type === 'jira') {
         api.connections.update(connection.id, {
           project_key: fetchedProjectKey,
           issue_types: jiraIssueTypes,
-          resolved_from: resolvedFrom || undefined,
-          resolved_to: resolvedTo || undefined,
+          resolved_from: resolvedFrom || null,
+          resolved_to: resolvedTo || null,
         }).catch(() => {})
       }
       notifyImportsChanged()
