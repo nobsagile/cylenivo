@@ -33,3 +33,4 @@ test-export.json
 *.export.json
 reset-app-state.sh
 seed-trello.js
+.vite/
