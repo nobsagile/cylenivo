@@ -21,7 +21,7 @@ function pingMatomo(): void {
 migrate()
   .then(() => seedDemoIfEmpty())
   .then(() => {
-    Bun.serve({ fetch: app.fetch, port: PORT })
+    Bun.serve({ fetch: app.fetch, port: PORT, idleTimeout: 0 })
     console.log(`Hono server running on port ${PORT}`)
     pingMatomo()
   })
