@@ -75,11 +75,16 @@ export function FlowEfficiencyCard({ data, activeStatuses, configId }: FlowEffic
           <div>
             <div className="flex items-end gap-1 h-20">
               {data.histogram.map((b: { bucket: number; count: number }) => (
-                <div key={b.bucket} className="flex-1 flex flex-col items-center gap-0.5 group">
+                <div key={b.bucket} className="relative flex-1 flex flex-col items-center gap-0.5 group">
+                  <div className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 hidden group-hover:block z-10 pointer-events-none">
+                    <div className="bg-white border border-gray-200 rounded-lg shadow-md px-2.5 py-1.5 text-xs whitespace-nowrap">
+                      <span className="font-medium text-gray-700">{b.bucket}–{b.bucket + 10}%</span>
+                      <span className="text-gray-400 ml-1.5">{b.count} tickets</span>
+                    </div>
+                  </div>
                   <div
                     className="w-full rounded-t bg-teal-400 group-hover:bg-teal-500 transition-colors min-h-[2px]"
                     style={{ height: `${(b.count / maxCount) * 72}px` }}
-                    title={`${b.bucket}–${b.bucket + 10}%: ${b.count} tickets`}
                   />
                 </div>
               ))}
