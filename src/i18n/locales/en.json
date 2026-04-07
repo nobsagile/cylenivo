@@ -237,6 +237,7 @@
     "maxTickets": "Max tickets:",
     "completedBetween": "Completed between",
     "completedBetweenHint": "— optional, only imports tickets resolved in this window",
+    "noDateFilterWarning": "Without a date filter, results depend on Jira's sort order — bulk-resolved tickets can dominate your import. Setting a start date gives you predictable results.",
     "connectingToJira": "Connecting to Jira…",
     "fetchingTickets": "Fetching tickets from {{project}}…",
     "fetchingTicket": "Fetching ticket {{current}}/{{total}} ({{key}})…",

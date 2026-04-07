@@ -706,6 +706,11 @@ export default function ImportPage() {
               <DatePicker value={resolvedTo} onChange={setResolvedTo} placeholder={t('common.to')} />
             </div>
             <p className="text-xs text-gray-400 mt-1">{t('import.completedBetweenHint')}</p>
+            {!resolvedFrom && !resolvedTo && (
+              <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-md px-2.5 py-1.5 mt-2">
+                {t('import.noDateFilterWarning')}
+              </p>
+            )}
           </div>
           {fetchMsg && (
             <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
