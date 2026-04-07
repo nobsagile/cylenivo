@@ -15,17 +15,17 @@ import { PageHeader } from '@/components/layout/PageHeader'
 function MarkdownContent({ text }: { text: string }) {
   return (
     <div className="prose prose-sm prose-gray max-w-none
-      [&_h1]:text-lg [&_h1]:font-bold [&_h1]:text-gray-900 [&_h1]:mt-5 [&_h1]:mb-2
-      [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-gray-800 [&_h2]:mt-4 [&_h2]:mb-2
-      [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-gray-700 [&_h3]:mt-3 [&_h3]:mb-1.5
-      [&_p]:text-sm [&_p]:text-gray-700 [&_p]:leading-relaxed [&_p]:mb-3 [&_p:last-child]:mb-0
-      [&_ul]:text-sm [&_ul]:text-gray-700 [&_ul]:space-y-1 [&_ul]:mb-3 [&_ul]:pl-4
-      [&_ol]:text-sm [&_ol]:text-gray-700 [&_ol]:space-y-1 [&_ol]:mb-3 [&_ol]:pl-4
+      [&_h1]:text-base [&_h1]:font-bold [&_h1]:text-gray-900 [&_h1]:mt-7 [&_h1]:mb-2 [&_h1]:pt-4 [&_h1]:border-t [&_h1]:border-gray-100 first:[&_h1]:mt-0 first:[&_h1]:pt-0 first:[&_h1]:border-0
+      [&_h2]:text-sm [&_h2]:font-bold [&_h2]:text-violet-700 [&_h2]:mt-4 [&_h2]:mb-1.5
+      [&_h3]:text-xs [&_h3]:font-semibold [&_h3]:uppercase [&_h3]:tracking-wide [&_h3]:text-gray-400 [&_h3]:mt-3 [&_h3]:mb-1
+      [&_p]:text-sm [&_p]:text-gray-700 [&_p]:leading-relaxed [&_p]:mb-2.5 [&_p:last-child]:mb-0
+      [&_ul]:text-sm [&_ul]:text-gray-700 [&_ul]:space-y-1 [&_ul]:mb-2.5 [&_ul]:pl-4
+      [&_ol]:text-sm [&_ol]:text-gray-700 [&_ol]:space-y-1 [&_ol]:mb-2.5 [&_ol]:pl-4
       [&_li]:leading-relaxed
       [&_strong]:font-semibold [&_strong]:text-gray-900
       [&_code]:text-xs [&_code]:bg-gray-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:font-mono [&_code]:text-gray-700
       [&_blockquote]:border-l-4 [&_blockquote]:border-violet-200 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-600
-      [&_hr]:border-gray-200 [&_hr]:my-4
+      [&_hr]:border-gray-100 [&_hr]:my-5
     ">
       <ReactMarkdown>{text}</ReactMarkdown>
     </div>
