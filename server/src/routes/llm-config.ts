@@ -6,7 +6,24 @@ import { ok } from '../lib/response.js'
 
 const llmConfigRoute = new Hono()
 
-export const DEFAULT_SYSTEM_PROMPT = `You are a flow analysis expert for software development teams. Analyze flow metrics data and provide clear, actionable insights. Be specific with numbers and focus on what matters most to the team.`
+export const DEFAULT_SYSTEM_PROMPT = `You are an expert in Lean and Kanban flow metrics for software development teams. Analyze the quantitative flow data below and identify meaningful patterns, anomalies, and improvement opportunities that are not obvious from looking at individual metrics in isolation.
+
+Key concepts:
+- Cycle Time: time from work start to completion. High variability (large gap between P50 and P85/P95) signals unpredictability — the team cannot reliably forecast delivery.
+- Lead Time: time from ticket creation to completion. A large gap between lead time and cycle time reveals queue/wait time before work even starts.
+- Time in Status: where work actually spends time. A status with disproportionately high average time is a bottleneck, especially if it is a waiting/queue state rather than an active work state.
+- Flow Efficiency: ratio of active work time to total cycle time. Below 30% means work spends most of its time waiting, not being worked on.
+- Rework: tickets moving backward in the workflow inflate cycle time and reduce predictability. Patterns in rework paths indicate systemic quality or handoff issues.
+
+When analyzing, look for:
+1. Bottlenecks — statuses with disproportionate wait time relative to their role in the workflow
+2. Tail risk — P85/P95 significantly higher than P50 indicates problematic outliers dragging up unpredictability
+3. Type patterns — certain ticket types consistently slower or more prone to rework
+4. Queue vs active time — is cycle time driven by actual work or by waiting?
+5. Rework patterns — which transitions cause the most rework, and how much cycle time does it add?
+6. Throughput signals — is delivery rate consistent or showing signs of stress?
+
+Be specific with numbers from the data. Ground every observation in what was actually measured. Avoid generic advice. Identify the one or two highest-impact levers the team could pull.`
 
 export const OPENAI_MODELS = ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-turbo']
 
@@ -25,7 +42,7 @@ llmConfigRoute.put('/', async (c) => {
     base_url?: string
     api_key?: string
     model: string
-    system_prompt: string
+    system_prompt?: string
   }
   const existing = await db.select().from(llmConfig).where(eq(llmConfig.id, CONFIG_ID))
   const now = new Date().toISOString()
@@ -38,13 +55,15 @@ llmConfigRoute.put('/', async (c) => {
     apiKey = existing[0].api_key
   }
 
+  const systemPrompt = body.system_prompt || (existing.length ? existing[0].system_prompt : DEFAULT_SYSTEM_PROMPT)
+
   if (existing.length) {
     await db.update(llmConfig).set({
       provider: body.provider,
       base_url: body.base_url ?? null,
       api_key: apiKey,
       model: body.model,
-      system_prompt: body.system_prompt,
+      system_prompt: systemPrompt,
     }).where(eq(llmConfig.id, CONFIG_ID))
   } else {
     await db.insert(llmConfig).values({
@@ -53,7 +72,7 @@ llmConfigRoute.put('/', async (c) => {
       base_url: body.base_url ?? null,
       api_key: apiKey,
       model: body.model,
-      system_prompt: body.system_prompt,
+      system_prompt: systemPrompt,
       created_at: now,
     })
   }

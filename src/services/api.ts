@@ -193,7 +193,6 @@ export const api = {
       base_url?: string
       api_key?: string
       model: string
-      system_prompt: string
     }) => request<LlmConfig>('/api/v1/llm-config', {
       method: 'PUT',
       body: JSON.stringify(body),

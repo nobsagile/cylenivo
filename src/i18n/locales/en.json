@@ -282,18 +282,14 @@
     "ollamaHint": "Start Ollama with: ollama serve",
     "subtitle": "AI-powered analysis of your flow metrics",
     "noLlm": "No AI model configured",
-    "noLlmHint": "Configure an LLM in Settings → AI to enable analysis and chat.",
+    "noLlmHint": "Configure an LLM in Settings → AI to enable AI analysis.",
     "goToSettings": "Go to Settings → AI",
     "llmNotReachable": "LLM not reachable",
     "checkConfig": "Check your configuration in Settings → AI",
     "takesAMinute": "This may take a minute…",
     "analysis": "Analysis",
     "noAnalysis": "No analysis yet",
-    "noAnalysisHint": "Click \"Run Analysis\" to generate AI insights",
-    "chatTitle": "Chat with AI",
-    "chatSubtitle": "Ask questions about your data",
-    "chatEmpty": "Ask anything about your flow metrics",
-    "chatPlaceholder": "Ask a question… (Enter to send)"
+    "noAnalysisHint": "Click \"Run AI Analysis\" to generate insights"
   },
   "settings": {
     "title": "Settings",
@@ -641,7 +637,8 @@
       "llmBaseUrl": "AI Base URL",
       "llmSystemPrompt": "System Prompt",
       "flowEfficiency": "Flow Efficiency",
-      "activeStatuses": "Active Work Statuses"
+      "activeStatuses": "Active Work Statuses",
+      "aiInsights": "AI Analysis"
     },
     "cycleTime": "Time from when work starts (cycle start status) to when it's done (cycle end status). Measures how long active work takes.",
     "leadTime": "Time from ticket creation (or lead time start status) to completion. Includes wait time before work begins — always ≥ cycle time.",
@@ -692,7 +689,8 @@
     "flowEfficiency": "The percentage of total cycle time a ticket spent in active work statuses (e.g. In Progress, In Review) vs. waiting in queues. Industry benchmark: 5–15%. Higher is better.",
     "activeStatuses": "Mark which statuses represent active work — typically the ones where someone is actually doing something (coding, reviewing). Statuses where tickets wait for attention are not active. Only statuses within the cycle window are eligible.",
     "flowEfficiencyNotConfigured": "Select which statuses count as active work to unlock this metric.",
-    "configureActiveStatuses": "Configure in Settings"
+    "configureActiveStatuses": "Configure in Settings",
+    "aiInsights": "Analyzes all tickets in this dataset — cycle time, lead time, time in status, rework, and flow efficiency. The analysis always uses the full dataset regardless of any date filter you have applied on other pages."
   },
   "update": {
     "available": "Update available",

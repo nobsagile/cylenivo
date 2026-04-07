@@ -88,9 +88,9 @@ const SECTIONS: Section[] = [
   {
     headingKey: 'help.sections.ai',
     entries: [
+      { titleKey: 'help.titles.aiInsights',      bodyKey: 'help.aiInsights' },
       { titleKey: 'help.titles.llmProvider',     bodyKey: 'help.llmProvider' },
       { titleKey: 'help.titles.llmBaseUrl',      bodyKey: 'help.llmBaseUrl' },
-      { titleKey: 'help.titles.llmSystemPrompt', bodyKey: 'help.llmSystemPrompt' },
     ],
   },
 ]

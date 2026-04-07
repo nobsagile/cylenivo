@@ -6,6 +6,7 @@ import { ok } from '../lib/response.js'
 import { mean, median } from '../lib/stats.js'
 import { loadImportContext } from '../lib/context.js'
 import { computeAggregate } from '../lib/aggregate.js'
+import { aggregateRework } from '../analyzers/rework.js'
 import { DEFAULT_SYSTEM_PROMPT } from './llm-config.js'
 
 const llm = new Hono()
@@ -77,10 +78,24 @@ llm.post('/analyze/:importId', async (c) => {
 
   const agg = computeAggregate(ctx)
   const { imp } = ctx
-  const { cycleTimes, leadTimes, cycleTimePercentiles, throughput, dateRange, timeInStatus, completedTickets } = agg
+  const { cycleTimes, leadTimes, cycleTimePercentiles, leadTimePercentiles, throughput, dateRange, timeInStatus, flowEfficiency, completedTickets } = agg
 
+  const excludedCount = ctx.tickets.filter(t => t.excluded).length
   const dateFrom = dateRange.from ? dateRange.from.slice(0, 10) : 'N/A'
   const dateTo = dateRange.to ? dateRange.to.slice(0, 10) : 'N/A'
+
+  // Rework
+  const rework = aggregateRework(completedTickets, ctx.config.status_order)
+  const reworkPct = completedTickets.length ? Math.round((rework.tickets_with_rework / completedTickets.length) * 100) : 0
+  const topReworkPaths = rework.rework_paths.slice(0, 3).map(p => `  ${p.from} → ${p.to}: ${p.count}x`).join('\n')
+  const reworkLine = rework.tickets_with_rework > 0
+    ? `${rework.tickets_with_rework} of ${completedTickets.length} completed tickets (${reworkPct}%) had rework\n  Avg cycle WITH rework: ${rework.avg_cycle_with_rework}d vs WITHOUT: ${rework.avg_cycle_without_rework}d\n  Top rework paths:\n${topReworkPaths}`
+    : `No rework detected`
+
+  // Flow efficiency
+  const feLine = flowEfficiency
+    ? `Mean: ${flowEfficiency.mean}% | Median: ${flowEfficiency.median}% (active work time / total cycle time)`
+    : `Not configured (no active statuses defined)`
 
   // Cycle time by ticket type
   const ctByType: Record<string, number[]> = {}
@@ -97,8 +112,9 @@ llm.post('/analyze/:importId', async (c) => {
     })
     .join('\n')
 
-  // Time in status summary lines
+  // Time in status — sorted by mean desc so bottlenecks are obvious
   const tisLines = Object.entries(timeInStatus)
+    .sort((a, b) => b[1].mean_days - a[1].mean_days)
     .map(([s, v]) => `  ${s}: avg ${v.mean_days}d, median ${v.median_days}d`)
     .join('\n')
 
@@ -110,32 +126,37 @@ llm.post('/analyze/:importId', async (c) => {
     .join('\n')
 
   const userContent = `PROJECT: ${imp.project_key}
-TICKETS ANALYZED: ${ctx.tickets.length} total, ${cycleTimes.length} completed
+DATASET: ${ctx.tickets.length} total tickets, ${completedTickets.length} completed, ${excludedCount} excluded
 DATE RANGE: ${dateFrom} to ${dateTo}
-THROUGHPUT: ${throughput != null ? `${throughput} tickets/week` : 'n/a (date range < 7 days)'}
+THROUGHPUT: ${throughput != null ? `${Math.round(throughput * 10) / 10} tickets/week` : 'n/a (date range < 7 days)'}
 
-CYCLE TIME (from ${ctx.config.cycle_time_start_status} to ${ctx.config.cycle_time_end_status}):
+CYCLE TIME (from "${ctx.config.cycle_time_start_status}" to "${ctx.config.cycle_time_end_status}", measurement mode: ${ctx.config.cycle_time_mode}):
   Mean: ${cycleTimes.length ? Math.round(mean(cycleTimes) * 10) / 10 : 'N/A'} days | Median: ${cycleTimes.length ? Math.round(median(cycleTimes) * 10) / 10 : 'N/A'} days
-  P50: ${cycleTimePercentiles.p50} days | P70: ${cycleTimePercentiles.p70} days | P85: ${cycleTimePercentiles.p85} days | P95: ${cycleTimePercentiles.p95} days
+  P50: ${cycleTimePercentiles.p50 ?? 'N/A'}d | P70: ${cycleTimePercentiles.p70 ?? 'N/A'}d | P85: ${cycleTimePercentiles.p85 ?? 'N/A'}d | P95: ${cycleTimePercentiles.p95 ?? 'N/A'}d
+  Sample size: ${cycleTimes.length}
 
-LEAD TIME (from ticket creation to ${ctx.config.cycle_time_end_status}):
+LEAD TIME (from ticket creation to "${ctx.config.cycle_time_end_status}"):
   Mean: ${leadTimes.length ? Math.round(mean(leadTimes) * 10) / 10 : 'N/A'} days | Median: ${leadTimes.length ? Math.round(median(leadTimes) * 10) / 10 : 'N/A'} days
+  P85: ${leadTimePercentiles.p85 ?? 'N/A'}d | P95: ${leadTimePercentiles.p95 ?? 'N/A'}d
 
-AVERAGE TIME IN STATUS (completed tickets only):
-${tisLines}
+FLOW EFFICIENCY:
+  ${feLine}
+
+REWORK:
+  ${reworkLine}
+
+AVERAGE TIME IN STATUS (completed tickets, cycle window only, sorted by avg desc):
+${tisLines || '  (no data)'}
 
 CYCLE TIME BY TICKET TYPE:
-${typeLines}
+${typeLines || '  (no data)'}
 
 TOP 5 SLOWEST TICKETS (by cycle time):
-${slowest}
+${slowest || '  (no data)'}
 
-Please provide:
-1. Key observations (max 3 bullet points, be specific with numbers)
-2. The main bottleneck you see and why
-3. One concrete, actionable suggestion for the team`
+Provide your analysis in clear sections. Identify the most significant flow problems and what is likely causing them. Be direct — use the numbers above.`
 
-  const systemPrompt = cfg.system_prompt || DEFAULT_SYSTEM_PROMPT
+  const systemPrompt = DEFAULT_SYSTEM_PROMPT
   const messages = [
     { role: 'system', content: systemPrompt },
     { role: 'user', content: userContent },
