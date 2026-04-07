@@ -811,6 +811,7 @@ export default function ImportPage() {
           issue_types: jiraIssueTypes,
           resolved_from: resolvedFrom || undefined,
           resolved_to: resolvedTo || undefined,
+          max_tickets: jiraLimit,
         }).catch(() => {})
       }
       notifyImportsChanged()
@@ -852,6 +853,7 @@ export default function ImportPage() {
           issue_types: jiraIssueTypes,
           resolved_from: resolvedFrom || undefined,
           resolved_to: resolvedTo || undefined,
+          max_tickets: jiraLimit,
         }).catch(() => {})
       }
       notifyImportsChanged()

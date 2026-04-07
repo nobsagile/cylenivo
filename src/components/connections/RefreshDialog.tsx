@@ -78,7 +78,7 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
   // Pre-flight state (initialized from stored connection settings)
   const [projectKey, setProjectKey] = useState(connection.project_key ?? '')
   const [issueTypes, setIssueTypes] = useState<string[]>(connection.issue_types ?? ['Story', 'Task', 'Bug'])
-  const [limit, setLimit] = useState(200)
+  const [limit, setLimit] = useState(connection.max_tickets ?? 200)
   const [resolvedFrom, setResolvedFrom] = useState(connection.resolved_from ?? '')
   const [resolvedTo, setResolvedTo] = useState(connection.resolved_to ?? '')
   const [pluginOptions, setPluginOptions] = useState<Record<string, string>>(initialPluginOpts)

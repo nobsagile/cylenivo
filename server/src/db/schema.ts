@@ -62,6 +62,7 @@ export const sourceConnections = sqliteTable('source_connections', {
   issue_types: text('issue_types'),       // JSON array string
   resolved_from: text('resolved_from'),
   resolved_to: text('resolved_to'),
+  max_tickets: integer('max_tickets'),
 })
 
 export const llmInsights = sqliteTable('llm_insights', {

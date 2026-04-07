@@ -22,6 +22,7 @@ function serialize(row: ConnectionRow) {
     issue_types: row.issue_types ? JSON.parse(row.issue_types) : null,
     resolved_from: row.resolved_from,
     resolved_to: row.resolved_to,
+    max_tickets: row.max_tickets ?? null,
   }
 }
 
@@ -52,6 +53,7 @@ connections.post('/', async (c) => {
       project_key: body.project_key ?? null,
       issue_types: body.issue_types ? JSON.stringify(body.issue_types) : null,
       resolved_from: body.resolved_from ?? null, resolved_to: body.resolved_to ?? null,
+      max_tickets: typeof body.max_tickets === 'number' ? body.max_tickets : null,
     }
   } else {
     row = {
@@ -83,6 +85,7 @@ connections.put('/:id', async (c) => {
     if (body.issue_types !== undefined) updates.issue_types = body.issue_types ? JSON.stringify(body.issue_types) : null
     if (body.resolved_from !== undefined) updates.resolved_from = body.resolved_from || null
     if (body.resolved_to !== undefined) updates.resolved_to = body.resolved_to || null
+    if (body.max_tickets !== undefined) updates.max_tickets = typeof body.max_tickets === 'number' ? body.max_tickets : null
   } else {
     if (body.credentials !== undefined) updates.credentials_json = JSON.stringify(body.credentials)
   }
