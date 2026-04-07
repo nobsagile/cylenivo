@@ -42,6 +42,7 @@ export default function InsightsPage() {
   const [insight, setInsight] = useState<LLMInsight | null>(null)
   const [analyzing, setAnalyzing] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [debugLog, setDebugLog] = useState<string[]>([])
 
   useEffect(() => {
     api.llm.status()
@@ -58,11 +59,25 @@ export default function InsightsPage() {
     if (!importId) return
     setAnalyzing(true)
     setErrorMsg(null)
+    setDebugLog([])
+    const log = (msg: string) => {
+      const ts = new Date().toLocaleTimeString()
+      setDebugLog(prev => [...prev, `[${ts}] ${msg}`])
+    }
+    const start = Date.now()
+    log(`Starting analysis for import ${importId}`)
+    log(`LLM: ${llmStatus?.provider} / ${llmStatus?.model}`)
     try {
+      log('Sending request to server…')
       const result = await api.llm.analyze(importId)
+      log(`✓ Response received after ${((Date.now() - start) / 1000).toFixed(1)}s`)
       setInsight(result)
     } catch (e) {
-      setErrorMsg(e instanceof Error ? e.message : t('common.error', 'Error'))
+      const elapsed = ((Date.now() - start) / 1000).toFixed(1)
+      const msg = e instanceof Error ? e.message : String(e)
+      log(`✗ Error after ${elapsed}s: ${msg}`)
+      if (e instanceof Error && e.stack) log(`Stack: ${e.stack.split('\n')[1]?.trim() ?? ''}`)
+      setErrorMsg(msg)
     } finally {
       setAnalyzing(false)
     }
@@ -116,6 +131,15 @@ export default function InsightsPage() {
       )}
 
       <ErrorBanner message={errorMsg} onDismiss={() => setErrorMsg(null)} />
+
+      {/* Debug log */}
+      {debugLog.length > 0 && (
+        <div className="rounded-lg border border-gray-200 bg-gray-950 p-3 font-mono text-xs text-gray-300 space-y-0.5">
+          {debugLog.map((line, i) => (
+            <div key={i} className={line.includes('✗') ? 'text-red-400' : line.includes('✓') ? 'text-green-400' : ''}>{line}</div>
+          ))}
+        </div>
+      )}
 
       {/* LLM status */}
       {llmStatusLoaded && (
