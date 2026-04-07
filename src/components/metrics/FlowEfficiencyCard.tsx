@@ -39,7 +39,7 @@ export function FlowEfficiencyCard({ data, activeStatuses, configId }: FlowEffic
     )
   }
 
-  const maxCount = Math.max(...data.histogram.map(b => b.count), 1)
+  const maxCount = Math.max(...data.histogram.map((b: { bucket: number; count: number }) => b.count), 1)
 
   return (
     <Card className="shadow-sm">
@@ -74,7 +74,7 @@ export function FlowEfficiencyCard({ data, activeStatuses, configId }: FlowEffic
           {/* Histogram */}
           <div>
             <div className="flex items-end gap-1 h-20">
-              {data.histogram.map((b) => (
+              {data.histogram.map((b: { bucket: number; count: number }) => (
                 <div key={b.bucket} className="flex-1 flex flex-col items-center gap-0.5 group">
                   <div
                     className="w-full rounded-t bg-teal-400 group-hover:bg-teal-500 transition-colors min-h-[2px]"

@@ -41,13 +41,16 @@ const mockSummary: MetricsSummary = {
   },
   time_in_status: {},
   throughput_per_week: 2.5,
+  flow_efficiency: null,
   config_context: {
+    config_id: 'test-config',
     status_order: ['Backlog', 'In Progress', 'Done'],
     cycle_time_start_status: 'In Progress',
     cycle_time_end_status: 'Done',
     cycle_time_mode: 'first_last',
     lead_time_start_status: null,
     lead_time_end_status: null,
+    active_statuses: null,
   },
 }
 

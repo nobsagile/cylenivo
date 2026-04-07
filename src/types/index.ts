@@ -31,6 +31,7 @@ export type {
   PluginField,
   PluginManifest,
   PluginRegistryEntry,
+  FlowEfficiencyStats,
 } from '../../shared/types'
 
 // Frontend-only types
