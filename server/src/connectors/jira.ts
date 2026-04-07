@@ -138,7 +138,7 @@ export async function fetchIssues(creds: JiraCredentials, options: JiraFetchOpti
     )
     const issues = data.issues ?? []
     all.push(...issues)
-    if (issues.length < pageSize || all.length >= limit || startAt + issues.length >= (data.total ?? 0)) break
+    if (issues.length < pageSize || all.length >= limit || (data.total != null && startAt + issues.length >= data.total)) break
     startAt += issues.length
   }
   return all.slice(0, limit)
