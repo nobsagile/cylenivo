@@ -84,10 +84,10 @@ describe('loadImportContext', () => {
     expect(ctx!.cycleStatuses).toEqual(['In Dev', 'Review', 'Done'])
   })
 
-  it('cycleStatuses: full status_order when cycle statuses not found in order', async () => {
+  it('cycleStatuses: empty when cycle statuses not found in order', async () => {
     const importId = await setup({ status_order: ['A', 'B', 'C'], cycle_time_start_status: 'X', cycle_time_end_status: 'Y' })
     const ctx = await loadImportContext(importId)
-    expect(ctx!.cycleStatuses).toEqual(['A', 'B', 'C'])
+    expect(ctx!.cycleStatuses).toEqual([])
   })
 })
 

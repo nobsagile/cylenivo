@@ -246,6 +246,34 @@ describe('imports', () => {
     expect(res.status).toBe(422)
   })
 
+  it('leaves no orphan data when import fails mid-way', async () => {
+    // Import a valid file first to get a baseline ticket count
+    const cfg = await createConfig()
+    await doImport(cfg.id)
+
+    // Now import a file where the second ticket has no external_id — this fails validation before inserts
+    // so no session or tickets should be written
+    const badData = {
+      source_type: 'jira',
+      project_key: 'BAD',
+      exported_at: '2026-01-01T00:00:00Z',
+      tickets: [
+        { external_id: 'BAD-1', title: 'ok', ticket_type: 'story', created_at: '2026-01-01T00:00:00Z', transitions: [] },
+        { title: 'missing id', ticket_type: 'story', created_at: '2026-01-01T00:00:00Z', transitions: [] },
+      ],
+    }
+    const form = new FormData()
+    form.append('file', new Blob([JSON.stringify(badData)], { type: 'application/json' }), 'bad.json')
+    form.append('config_id', cfg.id)
+    const res = await app.request('/api/v1/imports', { method: 'POST', body: form })
+    expect(res.status).toBe(422)
+
+    // List imports — only the first valid one should exist
+    const listRes = await app.request('/api/v1/imports')
+    const { data: sessions } = await listRes.json() as { data: unknown[] }
+    expect(sessions.length).toBe(1)
+  })
+
   it('returns 404 for PATCH on unknown import', async () => {
     const res = await app.request('/api/v1/imports/nonexistent', {
       method: 'PATCH',
@@ -798,6 +826,39 @@ describe('connections', () => {
     expect(res.status).toBe(201)
     const { data } = await res.json() as { data: Record<string, unknown> }
     expect(data.connection_id).toBe(conn.id)
+  })
+
+  it('stores max_tickets on POST', async () => {
+    const { data } = await createConnection({ max_tickets: 500 })
+    expect(data.max_tickets).toBe(500)
+  })
+
+  it('returns null for max_tickets when not set', async () => {
+    const { data } = await createConnection()
+    expect(data.max_tickets).toBeNull()
+  })
+
+  it('updates max_tickets via PUT', async () => {
+    const { data: created } = await createConnection({ max_tickets: 200 })
+    const res = await app.request(`/api/v1/connections/${created.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ max_tickets: 750 }),
+    })
+    const { data } = await res.json() as { data: Record<string, unknown> }
+    expect(data.max_tickets).toBe(750)
+  })
+
+  it('PUT without max_tickets does not clear existing value', async () => {
+    const { data: created } = await createConnection({ max_tickets: 300 })
+    const res = await app.request(`/api/v1/connections/${created.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ project_key: 'KEEP' }),
+    })
+    const { data } = await res.json() as { data: Record<string, unknown> }
+    expect(data.max_tickets).toBe(300)
+    expect(data.project_key).toBe('KEEP')
   })
 
   it('GET /:id/datasets returns datasets for connection', async () => {

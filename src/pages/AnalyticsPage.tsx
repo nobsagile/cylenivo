@@ -62,7 +62,7 @@ export default function AnalyticsPage() {
             {t('metrics.leadTime')}
           </TabsTrigger>
           <TabsTrigger value="status" className="text-sm px-4 py-1.5 rounded-md">
-            Time in Status
+            {t('metrics.timeInStatus')}
           </TabsTrigger>
         </TabsList>
 

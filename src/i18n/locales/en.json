@@ -156,6 +156,7 @@
   "metrics": {
     "cycleTime": "Cycle Time",
     "leadTime": "Lead Time",
+    "timeInStatus": "Time in Status",
     "throughput": "Throughput",
     "flowEfficiency": "Flow Efficiency",
     "ticketsAnalyzed": "Tickets Analyzed",

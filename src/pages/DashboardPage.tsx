@@ -18,6 +18,7 @@ import { ThroughputChart } from '@/components/metrics/ThroughputChart'
 import { CfdChart } from '@/components/metrics/CfdChart'
 import { TicketDetailDrawer } from '@/components/tickets/TicketDetailDrawer'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { ErrorBanner } from '@/components/ui/ErrorBanner'
 
 interface MetricCardProps {
   title: string
@@ -143,10 +144,11 @@ export default function DashboardPage() {
 
   const currentImport = imports.find(imp => imp.id === importId)
 
-  const cycleTimesData = useCycleTimes(importId, fromDate, toDate, chartRev)
-  const leadTimesData = useLeadTimes(importId, fromDate, toDate, chartRev)
-  const throughputData = useThroughput(importId, fromDate, toDate, chartRev)
-  const cfdData = useCfd(importId, fromDate, toDate, chartRev)
+  const { data: cycleTimesData, error: cycleError } = useCycleTimes(importId, fromDate, toDate, chartRev)
+  const { data: leadTimesData, error: leadError } = useLeadTimes(importId, fromDate, toDate, chartRev)
+  const { data: throughputData, error: throughputError } = useThroughput(importId, fromDate, toDate, chartRev)
+  const { data: cfdData, error: cfdError } = useCfd(importId, fromDate, toDate, chartRev)
+  const chartError = cycleError ?? leadError ?? throughputError ?? cfdError
 
   function handleExclusionToggle() {
     refetchMetrics()
@@ -195,6 +197,8 @@ export default function DashboardPage() {
         total={data.ticket_count}
         excluded={data.excluded_ticket_count}
       />
+
+      <ErrorBanner message={chartError} />
 
       {data.config_context && (
         <ConfigContextBar config={data.config_context} />

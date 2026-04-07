@@ -110,11 +110,14 @@ export async function loadImportContext(importId: string): Promise<ImportContext
     active_statuses: raw.active_statuses ? JSON.parse(raw.active_statuses) as string[] : null,
   }
 
+  if (config.status_order.length === 0) {
+    console.warn(`[context] import ${importId}: status_order is empty — time-in-status will have no data`)
+  }
   const startIdx = config.status_order.indexOf(config.cycle_time_start_status)
   const endIdx = config.status_order.indexOf(config.cycle_time_end_status)
   const cycleStatuses = startIdx !== -1 && endIdx !== -1 && startIdx <= endIdx
     ? config.status_order.slice(startIdx, endIdx + 1)
-    : config.status_order
+    : []
 
   const ticketRows = await db.select().from(tickets).where(eq(tickets.import_id, importId))
   const enrichedTickets: EnrichedTicket[] = []

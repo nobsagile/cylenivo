@@ -4,36 +4,44 @@ import type { CycleTimesResponse, LeadTimesResponse, ThroughputResponse, CfdResp
 
 export function useCycleTimes(importId: string | undefined, from?: string | null, to?: string | null, rev?: number) {
   const [data, setData] = useState<CycleTimesResponse | null>(null)
+  const [error, setError] = useState<string | null>(null)
   useEffect(() => {
     if (!importId) return
-    api.metrics.cycleTimes(importId, { from: from || undefined, to: to || undefined }).then(setData).catch(() => {})
+    setError(null)
+    api.metrics.cycleTimes(importId, { from: from || undefined, to: to || undefined }).then(setData).catch((e: unknown) => setError(e instanceof Error ? e.message : 'Error'))
   }, [importId, from, to, rev])
-  return data
+  return { data, error }
 }
 
 export function useLeadTimes(importId: string | undefined, from?: string | null, to?: string | null, rev?: number) {
   const [data, setData] = useState<LeadTimesResponse | null>(null)
+  const [error, setError] = useState<string | null>(null)
   useEffect(() => {
     if (!importId) return
-    api.metrics.leadTimes(importId, { from: from || undefined, to: to || undefined }).then(setData).catch(() => {})
+    setError(null)
+    api.metrics.leadTimes(importId, { from: from || undefined, to: to || undefined }).then(setData).catch((e: unknown) => setError(e instanceof Error ? e.message : 'Error'))
   }, [importId, from, to, rev])
-  return data
+  return { data, error }
 }
 
 export function useThroughput(importId: string | undefined, from?: string | null, to?: string | null, rev?: number) {
   const [data, setData] = useState<ThroughputResponse | null>(null)
+  const [error, setError] = useState<string | null>(null)
   useEffect(() => {
     if (!importId) return
-    api.metrics.throughput(importId, { from: from || undefined, to: to || undefined }).then(setData).catch(() => {})
+    setError(null)
+    api.metrics.throughput(importId, { from: from || undefined, to: to || undefined }).then(setData).catch((e: unknown) => setError(e instanceof Error ? e.message : 'Error'))
   }, [importId, from, to, rev])
-  return data
+  return { data, error }
 }
 
 export function useCfd(importId: string | undefined, from?: string | null, to?: string | null, rev?: number) {
   const [data, setCfdData] = useState<CfdResponse | null>(null)
+  const [error, setError] = useState<string | null>(null)
   useEffect(() => {
     if (!importId) return
-    api.metrics.cfd(importId, { from: from || undefined, to: to || undefined }).then(setCfdData).catch(() => {})
+    setError(null)
+    api.metrics.cfd(importId, { from: from || undefined, to: to || undefined }).then(setCfdData).catch((e: unknown) => setError(e instanceof Error ? e.message : 'Error'))
   }, [importId, from, to, rev])
-  return data
+  return { data, error }
 }
