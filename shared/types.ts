@@ -186,10 +186,10 @@ export interface SourceConnection {
   base_url: string
   email: string
   created_at: string
-  project_key?: string
-  issue_types?: string[]
-  resolved_from?: string
-  resolved_to?: string
+  project_key?: string | null
+  issue_types?: string[] | null
+  resolved_from?: string | null
+  resolved_to?: string | null
   credentials_json?: string | null
 }
 
