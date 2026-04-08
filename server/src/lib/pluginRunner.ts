@@ -6,6 +6,12 @@ export function getPluginsDir(): string {
   return process.env.PLUGINS_DIR ?? join(homedir(), '.cylenivo', 'plugins')
 }
 
+export function validateSourceType(sourceType: string): void {
+  if (!/^[a-zA-Z0-9_-]+$/.test(sourceType)) {
+    throw new Error(`Invalid source_type: '${sourceType}'`)
+  }
+}
+
 export interface PluginModule {
   test(credentials: Record<string, string>): Promise<{ ok: boolean; display_name?: string }>
   fetch(
@@ -16,6 +22,7 @@ export interface PluginModule {
 }
 
 export async function loadPlugin(sourceType: string): Promise<PluginModule> {
+  validateSourceType(sourceType)
   const pluginPath = join(getPluginsDir(), sourceType, 'index.js')
   console.log(`[pluginRunner] loading ${pluginPath}`)
   let mod: unknown

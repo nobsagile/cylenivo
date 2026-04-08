@@ -3,7 +3,7 @@ import { streamSSE } from 'hono/streaming'
 import { rm, readFile, mkdir, writeFile, access } from 'fs/promises'
 import { join } from 'path'
 import { createHash } from 'crypto'
-import { loadPlugin, getPluginsDir } from '../lib/pluginRunner.js'
+import { loadPlugin, getPluginsDir, validateSourceType } from '../lib/pluginRunner.js'
 import { scanPlugins } from '../lib/pluginScanner.js'
 import { ok } from '../lib/response.js'
 
@@ -31,6 +31,7 @@ async function installPlugin(pluginPath: string, expectedSha256: string | null):
 
   const manifest = JSON.parse(manifestText) as { source_type: string; name: string }
   if (!manifest.source_type) throw new Error('manifest.json missing source_type')
+  validateSourceType(manifest.source_type)
 
   const destDir = join(getPluginsDir(), manifest.source_type)
   await mkdir(destDir, { recursive: true })
@@ -110,6 +111,7 @@ plugins.post('/install-url', async (c) => {
     const indexText = await downloadText(`${rawBase}/index.js`)
     const manifest = JSON.parse(manifestText) as { source_type: string; name: string }
     if (!manifest.source_type) throw new Error('manifest.json missing source_type')
+    validateSourceType(manifest.source_type)
 
     const destDir = join(getPluginsDir(), manifest.source_type)
     await mkdir(destDir, { recursive: true })
@@ -163,6 +165,9 @@ plugins.post('/:source_type/fetch', async (c) => {
 
 plugins.delete('/:source_type', async (c) => {
   const sourceType = c.req.param('source_type')
+  try { validateSourceType(sourceType) } catch (e) {
+    return c.json({ data: null, error: e instanceof Error ? e.message : 'Invalid source_type' }, 400)
+  }
   const pluginDir = join(getPluginsDir(), sourceType)
   try {
     await access(pluginDir)
