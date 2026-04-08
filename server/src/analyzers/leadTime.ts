@@ -16,6 +16,7 @@ export function calculateLeadTime(
 
   let startTs: Date
   if (!leadTimeStartStatus) {
+    if (isNaN(ticketCreatedAt.getTime())) return null
     startTs = ticketCreatedAt
   } else {
     const found = mode === 'last_last'

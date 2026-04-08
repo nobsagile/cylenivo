@@ -13,10 +13,15 @@ export function sortTransitions(transitions: Transition[]): Transition[] {
   })
 }
 
+function parseDate(s: string): Date | null {
+  const d = new Date(s)
+  return isNaN(d.getTime()) ? null : d
+}
+
 export function firstTransitionTo(transitions: Transition[], status: string): Date | null {
   const sorted = sortTransitions(transitions)
   for (const t of sorted) {
-    if (t.to_status === status) return new Date(t.transitioned_at)
+    if (t.to_status === status) return parseDate(t.transitioned_at)
   }
   return null
 }
@@ -24,7 +29,7 @@ export function firstTransitionTo(transitions: Transition[], status: string): Da
 export function lastTransitionTo(transitions: Transition[], status: string): Date | null {
   const sorted = sortTransitions(transitions)
   for (let i = sorted.length - 1; i >= 0; i--) {
-    if (sorted[i].to_status === status) return new Date(sorted[i].transitioned_at)
+    if (sorted[i].to_status === status) return parseDate(sorted[i].transitioned_at)
   }
   return null
 }

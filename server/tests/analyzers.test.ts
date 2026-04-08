@@ -929,3 +929,34 @@ describe('calculateFlowEfficiency', () => {
     expect(result).toBeNull()
   })
 })
+
+describe('calculateCycleTime — invalid timestamps', () => {
+  it('returns null (not NaN) when transitioned_at is invalid', () => {
+    const transitions = [
+      { from_status: null, to_status: 'In Progress', transitioned_at: 'not-a-date' },
+      { from_status: 'In Progress', to_status: 'Done', transitioned_at: 'also-invalid' },
+    ]
+    const result = calculateCycleTime(transitions, 'In Progress', 'Done')
+    expect(result).toBeNull()
+  })
+})
+
+describe('calculateLeadTime — invalid timestamps', () => {
+  it('returns null (not NaN) when transitioned_at is invalid', () => {
+    const createdAt = new Date('2024-01-01T00:00:00Z')
+    const transitions = [
+      { from_status: null, to_status: 'Done', transitioned_at: 'not-a-date' },
+    ]
+    const result = calculateLeadTime(createdAt, transitions, 'Done')
+    expect(result).toBeNull()
+  })
+
+  it('returns null (not NaN) when ticketCreatedAt is invalid', () => {
+    const createdAt = new Date('invalid')
+    const transitions = [
+      { from_status: null, to_status: 'Done', transitioned_at: '2024-01-05T00:00:00Z' },
+    ]
+    const result = calculateLeadTime(createdAt, transitions, 'Done')
+    expect(result).toBeNull()
+  })
+})
