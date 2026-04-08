@@ -70,13 +70,13 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
 
   // Skip preflight when we already have all required data
   const canAutoStart = connection.source_type === 'jira'
-    ? Boolean(connection.project_key)
+    ? Boolean(importSession?.project_key ?? connection.project_key)
     : (pluginManifest?.fetch_options ?? []).filter(f => f.required).every(f => Boolean(initialPluginOpts[f.key]))
 
   const [step, setStep] = useState<RefreshStep>(canAutoStart ? 'fetching' : 'preflight')
 
-  // Pre-flight state (initialized from stored connection settings)
-  const [projectKey, setProjectKey] = useState(connection.project_key ?? '')
+  // Pre-flight state — prefer importSession.project_key over connection default
+  const [projectKey, setProjectKey] = useState(importSession?.project_key ?? connection.project_key ?? '')
   const [issueTypes, setIssueTypes] = useState<string[]>(connection.issue_types ?? ['Story', 'Task', 'Bug'])
   const [resolvedFrom, setResolvedFrom] = useState(connection.resolved_from ?? '')
   const [resolvedTo, setResolvedTo] = useState(connection.resolved_to ?? '')
