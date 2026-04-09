@@ -2,7 +2,7 @@
 # Usage: ./server/scripts/jira-export.sh
 # Or with overrides: PROJECT=TN LIMIT=20 ./server/scripts/jira-export.sh
 
-JIRA_BASE_URL="${JIRA_BASE_URL:-https://leuchtfeuer-com.atlassian.net}"
+JIRA_BASE_URL="${JIRA_BASE_URL:-https://yourcompany.atlassian.net}"
 JIRA_EMAIL="${JIRA_EMAIL:-}"
 JIRA_TOKEN="${JIRA_TOKEN:-}"
 PROJECT="${PROJECT:-TN}"
