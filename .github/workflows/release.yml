@@ -103,6 +103,32 @@ jobs:
         working-directory: server
         run: bun build --compile --target=${{ matrix.bun-target }} src/index.ts --outfile ../src-tauri/binaries/cylenivo-server-${{ matrix.target }}.exe
 
+      - name: Smoke-test server binary (Mac/Linux)
+        if: matrix.os != 'windows-latest'
+        working-directory: server
+        env:
+          DB_PATH: ":memory:"
+          SERVER_PORT: "9999"
+        run: |
+          timeout 3 ../src-tauri/binaries/cylenivo-server-${{ matrix.target }} || \
+          [ $? -eq 124 ] || (echo "::error::Server binary failed to start" && exit 1)
+
+      - name: Smoke-test server binary (Windows)
+        if: matrix.os == 'windows-latest'
+        working-directory: server
+        env:
+          DB_PATH: ":memory:"
+          SERVER_PORT: "9999"
+        shell: pwsh
+        run: |
+          $proc = Start-Process -FilePath "..\src-tauri\binaries\cylenivo-server-${{ matrix.target }}.exe" -PassThru -NoNewWindow
+          Start-Sleep -Seconds 3
+          if ($proc.HasExited -and $proc.ExitCode -ne 0) {
+            Write-Error "Server binary failed to start (exit $($proc.ExitCode))"
+            exit 1
+          }
+          $proc | Stop-Process -Force -ErrorAction SilentlyContinue
+
       - name: Build Tauri app
         uses: tauri-apps/tauri-action@v0
         env:

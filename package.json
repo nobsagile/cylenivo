@@ -1,7 +1,7 @@
 {
   "name": "cylenivo",
   "private": true,
-  "version": "0.75.6",
+  "version": "0.75.7",
   "type": "module",
   "scripts": {
     "dev": "vite",
