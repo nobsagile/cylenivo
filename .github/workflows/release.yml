@@ -110,8 +110,14 @@ jobs:
           DB_PATH: ":memory:"
           SERVER_PORT: "9999"
         run: |
-          timeout 3 ../src-tauri/binaries/cylenivo-server-${{ matrix.target }} || \
-          [ $? -eq 124 ] || (echo "::error::Server binary failed to start" && exit 1)
+          ../src-tauri/binaries/cylenivo-server-${{ matrix.target }} &
+          SERVER_PID=$!
+          sleep 3
+          if ! kill -0 $SERVER_PID 2>/dev/null; then
+            echo "::error::Server binary failed to start"
+            exit 1
+          fi
+          kill $SERVER_PID
 
       - name: Smoke-test server binary (Windows)
         if: matrix.os == 'windows-latest'
