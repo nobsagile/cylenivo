@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Loader2, AlertCircle } from 'lucide-react'
 import { api } from '@/services/api'
-import { notifyImportsChanged } from '@/hooks/useImports'
+import { notifyImportsChanged, notifyDataReplaced } from '@/hooks/useImports'
 import type { SourceConnection, JiraFetchOptions, PluginManifest } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -137,6 +137,7 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
         // Replace existing dataset in-place (same ID → same project in sidebar)
         await api.imports.replace(importSession.id, file)
         notifyImportsChanged()
+        notifyDataReplaced(importSession.id)
         onClose()
         navigate(`/projects/${importSession.id}`)
       } else {
@@ -175,6 +176,7 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
       if (importSession) {
         await api.imports.replace(importSession.id, file)
         notifyImportsChanged()
+        notifyDataReplaced(importSession.id)
         onClose()
         navigate(`/projects/${importSession.id}`)
       } else {

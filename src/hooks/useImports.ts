@@ -4,10 +4,16 @@ import { api } from '@/services/api'
 import type { ImportSession } from '@/types'
 
 const IMPORTS_CHANGED = 'cylenivo:imports-changed'
+export const DATA_REPLACED = 'cylenivo:data-replaced'
 
 /** Dispatch from anywhere to force useImports to reload. */
 export function notifyImportsChanged() {
   window.dispatchEvent(new Event(IMPORTS_CHANGED))
+}
+
+/** Dispatch after replacing an import's data to force metric hooks to refetch. */
+export function notifyDataReplaced(importId: string) {
+  window.dispatchEvent(new CustomEvent(DATA_REPLACED, { detail: { importId } }))
 }
 
 export function useImports() {
