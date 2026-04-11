@@ -147,11 +147,24 @@ export function PerTicketBreakdownChart({ timeInStatusData, config, onTicketClic
 
   return (
     <div>
-      <div className="flex items-start justify-between mb-1">
-        <div>
+      <div className="mb-2">
+        <div className="flex items-center gap-1.5">
           <h3 className="text-sm font-semibold text-gray-700">{t('timeInStatus.perTicketTitle')}</h3>
-          <p className="text-xs text-gray-400 mt-0.5 mb-3">{t('help.perTicketBreakdown')}</p>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="text-gray-300 hover:text-gray-500 transition-colors shrink-0">
+                <Info className="w-3.5 h-3.5" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-72">
+              <div className="text-xs text-gray-600 space-y-1.5">
+                <p className="font-semibold text-gray-800 mb-1">{t('timeInStatus.perTicketTitle')}</p>
+                <p>{t('help.perTicketBreakdown')}</p>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
+        <p className="text-xs text-gray-400 mt-0.5 leading-relaxed">{t('timeInStatus.perTicketSubtitle')}</p>
       </div>
       <ResponsiveContainer width="100%" height={320}>
         <BarChart

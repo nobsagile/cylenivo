@@ -1,17 +1,22 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useParams } from 'react-router-dom'
-import { AlertTriangle, TrendingUp } from 'lucide-react'
+import { useParams, useOutletContext } from 'react-router-dom'
+import { AlertTriangle, TrendingUp, Info } from 'lucide-react'
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   ReferenceLine, Cell,
 } from 'recharts'
 import { api } from '@/services/api'
 import { useMetrics } from '@/hooks/useMetrics'
+import { useDateFilter } from '@/contexts/DateFilterContext'
 import type { ForecastResponse } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { DateRangeSlider } from '@/components/metrics/DateRangeSlider'
+import type { ProjectLayoutContext } from '@/components/layout/ProjectLayout'
 
 type Mode = 'how_many' | 'when'
 
@@ -30,7 +35,9 @@ function PercentileResult({ label, value, unit, color }: {
 export default function ForecastPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
-  const { data: metrics } = useMetrics(importId)
+  const { fromDate, toDate } = useDateFilter()
+  const { data: metrics } = useMetrics(importId, fromDate || undefined, toDate || undefined)
+  const { dateRange } = useOutletContext<ProjectLayoutContext>()
 
   const [mode, setMode] = useState<Mode>('how_many')
   const [value, setValue] = useState(4)
@@ -43,7 +50,7 @@ export default function ForecastPage() {
     setLoading(true)
     setError(null)
     try {
-      const res = await api.metrics.forecast(importId, mode, value)
+      const res = await api.metrics.forecast(importId, mode, value, { from: fromDate || undefined, to: toDate || undefined })
       setResult(res)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Simulation failed')
@@ -69,65 +76,65 @@ export default function ForecastPage() {
       if (bucket <= p50) return '#f43f5e'   // rose  — 50% confident zone
       return '#e5e7eb'
     } else {
-      if (bucket <= p50) return '#0d9488'
-      if (bucket <= p85) return '#7c3aed'
-      if (bucket <= p95) return '#f43f5e'
+      // when: fewer weeks = faster = risky, more weeks = slower = safe
+      if (bucket <= p50) return '#f43f5e'   // rose  — only 50% confident zone
+      if (bucket <= p85) return '#7c3aed'   // violet — 85% confident zone
+      if (bucket <= p95) return '#0d9488'   // teal  — 95% confident zone
       return '#e5e7eb'
     }
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {metrics ? (
+        <PageHeader
+          view={t('forecast.title')}
+          name={metrics.project_key}
+          subtitle={t('forecast.subtitle')}
+          completed={metrics.completed_ticket_count}
+          total={metrics.ticket_count}
+          excluded={metrics.excluded_ticket_count}
+        />
+      ) : (
         <div>
-          {metrics ? (
-            <PageHeader
-              view={t('forecast.title')}
-              name={metrics.project_key}
-              subtitle={t('forecast.subtitle')}
-              completed={metrics.completed_ticket_count}
-              total={metrics.ticket_count}
-              excluded={metrics.excluded_ticket_count}
-            />
-          ) : (
-            <>
-              <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('forecast.title')}</h2>
-              <p className="text-sm text-gray-400 mt-0.5">{t('forecast.subtitle')}</p>
-            </>
-          )}
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('forecast.title')}</h2>
+          <p className="text-sm text-gray-400 mt-0.5">{t('forecast.subtitle')}</p>
+        </div>
+      )}
+
+      {dateRange?.from && dateRange?.to && (
+        <DateRangeSlider dataFrom={dateRange.from} dataTo={dateRange.to} />
+      )}
+
+      {/* Simulation controls */}
+      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+          {(['how_many', 'when'] as Mode[]).map((m) => (
+            <button
+              key={m}
+              onClick={() => { setMode(m); setResult(null) }}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                mode === m ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {m === 'how_many' ? t('forecast.howMany') : t('forecast.when')}
+            </button>
+          ))}
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Mode segmented control — same pattern as TicketsPage type filter */}
-          <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-            {(['how_many', 'when'] as Mode[]).map((m) => (
-              <button
-                key={m}
-                onClick={() => { setMode(m); setResult(null) }}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                  mode === m ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                {m === 'how_many' ? t('forecast.howMany') : t('forecast.when')}
-              </button>
-            ))}
-          </div>
-
-          <Input
-            type="number"
-            min={1}
-            max={mode === 'how_many' ? 52 : 500}
-            value={value}
-            onChange={e => setValue(Math.max(1, parseInt(e.target.value) || 1))}
-            onKeyDown={e => e.key === 'Enter' && simulate()}
-            className="w-20 text-center"
-          />
-          <span className="text-sm text-gray-500">{inputLabel}</span>
-          <Button onClick={simulate} disabled={loading}>
-            {loading ? t('forecast.simulating') : t('forecast.simulate')}
-          </Button>
-        </div>
+        <Input
+          type="number"
+          min={1}
+          max={mode === 'how_many' ? 52 : 500}
+          value={value}
+          onChange={e => setValue(Math.max(1, parseInt(e.target.value) || 1))}
+          onKeyDown={e => e.key === 'Enter' && simulate()}
+          className="w-20 text-center"
+        />
+        <span className="text-sm text-gray-500">{inputLabel}</span>
+        <Button onClick={simulate} disabled={loading}>
+          {loading ? t('forecast.simulating') : t('forecast.simulate')}
+        </Button>
       </div>
 
       {error && (
@@ -153,19 +160,35 @@ export default function ForecastPage() {
               <PercentileResult label={t('forecast.confidence50')} value={result.p50} unit={t('forecast.atLeastTicketsInN', { n: value })} color="border-rose-200 bg-rose-50 text-rose-900" />
             </div>
           ) : (
-            // when: higher percentile = more weeks (pessimistic scenario)
+            // when: more weeks = safer commitment (teal), fewer weeks = optimistic/risky (rose)
             <div className="flex gap-3">
-              <PercentileResult label={t('forecast.pct50')} value={result.p50} unit={t('forecast.weeksForN', { n: value })} color="border-teal-200 bg-teal-50 text-teal-900" />
-              <PercentileResult label={t('forecast.pct85')} value={result.p85} unit={t('forecast.weeksForN', { n: value })} color="border-violet-200 bg-violet-50 text-violet-900" />
-              <PercentileResult label={t('forecast.pct95')} value={result.p95} unit={t('forecast.weeksForN', { n: value })} color="border-rose-200 bg-rose-50 text-rose-900" />
+              <PercentileResult label={t('forecast.confidence95')} value={result.p95} unit={t('forecast.weeksForN', { n: value })} color="border-teal-200 bg-teal-50 text-teal-900" />
+              <PercentileResult label={t('forecast.confidence85')} value={result.p85} unit={t('forecast.weeksForN', { n: value })} color="border-violet-200 bg-violet-50 text-violet-900" />
+              <PercentileResult label={t('forecast.confidence50')} value={result.p50} unit={t('forecast.weeksForN', { n: value })} color="border-rose-200 bg-rose-50 text-rose-900" />
             </div>
           )}
 
           {/* Histogram */}
-          <div className="rounded-xl border border-gray-100 bg-white p-5">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">
-              {t('forecast.distribution')}
-            </p>
+          <Card className="shadow-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+                {t('forecast.distribution')}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                      <Info className="w-3.5 h-3.5" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-72">
+                    <div className="text-xs text-gray-600 space-y-1.5">
+                      <p className="font-semibold text-gray-800 mb-1">{t('forecast.distribution')}</p>
+                      <p>{t('help.forecastDistribution')}</p>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={result.histogram} barCategoryGap="10%">
                 <XAxis
@@ -179,15 +202,17 @@ export default function ForecastPage() {
                   formatter={(v) => [v as number, t('forecast.simulations')]}
                   labelFormatter={(l) => `${l} ${unitLabel}`}
                   contentStyle={{ fontSize: 12, borderRadius: 8 }}
+                  cursor={false}
+                  wrapperStyle={{ zIndex: 100 }}
                 />
                 {mode === 'how_many' ? <>
                   <ReferenceLine x={result.p95} stroke="#0d9488" strokeDasharray="3 3" label={{ value: '95%', fill: '#0d9488', fontSize: 10 }} />
                   <ReferenceLine x={result.p85} stroke="#7c3aed" strokeDasharray="3 3" label={{ value: '85%', fill: '#7c3aed', fontSize: 10 }} />
                   <ReferenceLine x={result.p50} stroke="#f43f5e" strokeDasharray="3 3" label={{ value: '50%', fill: '#f43f5e', fontSize: 10 }} />
                 </> : <>
-                  <ReferenceLine x={result.p50} stroke="#0d9488" strokeDasharray="3 3" label={{ value: '50%', fill: '#0d9488', fontSize: 10 }} />
+                  <ReferenceLine x={result.p50} stroke="#f43f5e" strokeDasharray="3 3" label={{ value: '50%', fill: '#f43f5e', fontSize: 10 }} />
                   <ReferenceLine x={result.p85} stroke="#7c3aed" strokeDasharray="3 3" label={{ value: '85%', fill: '#7c3aed', fontSize: 10 }} />
-                  <ReferenceLine x={result.p95} stroke="#f43f5e" strokeDasharray="3 3" label={{ value: '95%', fill: '#f43f5e', fontSize: 10 }} />
+                  <ReferenceLine x={result.p95} stroke="#0d9488" strokeDasharray="3 3" label={{ value: '95%', fill: '#0d9488', fontSize: 10 }} />
                 </>}
                 <Bar dataKey="count" radius={[3, 3, 0, 0]}>
                   {result.histogram.map(({ bucket }: { bucket: number; count: number }) => (
@@ -196,7 +221,8 @@ export default function ForecastPage() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Data basis */}
           <p className="text-[11px] text-gray-400 text-center">

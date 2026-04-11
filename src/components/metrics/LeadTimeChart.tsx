@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next'
 import {
   BarChart,
   Bar,
@@ -14,6 +13,7 @@ import { ChartTooltip } from './ChartTooltip'
 interface Props {
   values: number[]
   bucketSize?: number
+  color?: string
 }
 
 function LeadTooltip({ active, payload }: { active?: boolean; payload?: Array<{ value?: number; name?: string; color?: string; fill?: string; dataKey?: string; payload?: Record<string, unknown> }>; label?: string }) {
@@ -27,8 +27,7 @@ function LeadTooltip({ active, payload }: { active?: boolean; payload?: Array<{ 
   )
 }
 
-export function LeadTimeChart({ values, bucketSize = 5 }: Props) {
-  const { t } = useTranslation()
+export function LeadTimeChart({ values, bucketSize = 5, color = '#8b5cf6' }: Props) {
 
   if (values.length === 0) {
     return <div className="flex items-center justify-center h-48 text-gray-400 text-sm">No data</div>
@@ -51,14 +50,13 @@ export function LeadTimeChart({ values, bucketSize = 5 }: Props) {
 
   return (
     <div>
-      <h3 className="text-sm font-medium text-gray-700 mb-2">{t('metrics.leadTime')}</h3>
       <ResponsiveContainer width="100%" height={240}>
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="range" tick={{ fontSize: 11 }} />
           <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
           <Tooltip content={<LeadTooltip />} wrapperStyle={{ zIndex: 100 }} cursor={false} />
-          <Bar dataKey="count" fill="#8b5cf6" />
+          <Bar dataKey="count" fill={color} />
         </BarChart>
       </ResponsiveContainer>
     </div>

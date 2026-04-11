@@ -12,37 +12,53 @@ interface Section {
 
 const SECTIONS: Section[] = [
   {
-    headingKey: 'help.sections.metrics',
+    headingKey: 'nav.overview',
     entries: [
-      { titleKey: 'help.titles.cycleTime',     bodyKey: 'help.cycleTime' },
-      { titleKey: 'help.titles.leadTime',       bodyKey: 'help.leadTime' },
-      { titleKey: 'help.titles.throughput',     bodyKey: 'help.throughput' },
-      { titleKey: 'help.titles.analyzed',       bodyKey: 'help.analyzed' },
-      { titleKey: 'help.titles.rework',          bodyKey: 'help.rework' },
-      { titleKey: 'help.titles.reworkPaths',    bodyKey: 'help.reworkPaths' },
-      { titleKey: 'help.titles.flowEfficiency', bodyKey: 'help.flowEfficiency' },
+      { titleKey: 'help.titles.cycleTime',    bodyKey: 'help.cycleTime' },
+      { titleKey: 'help.titles.leadTime',     bodyKey: 'help.leadTime' },
+      { titleKey: 'help.titles.throughput',   bodyKey: 'help.throughput' },
+      { titleKey: 'help.titles.analyzed',     bodyKey: 'help.analyzed' },
+      { titleKey: 'help.titles.timeRange',    bodyKey: 'help.timeRange' },
+      { titleKey: 'help.titles.configContext',bodyKey: 'help.configContext' },
     ],
   },
   {
-    headingKey: 'help.sections.charts',
+    headingKey: 'nav.flow',
     entries: [
-      { titleKey: 'help.titles.cycleTimeTrend',   bodyKey: 'help.cycleTimeTrend' },
-      { titleKey: 'help.titles.leadTimeTrend',     bodyKey: 'help.leadTimeTrend' },
-      { titleKey: 'help.titles.weeklyThroughput',  bodyKey: 'help.weeklyThroughput' },
-      { titleKey: 'help.titles.cfd',               bodyKey: 'help.cfd' },
-      { titleKey: 'help.titles.boardVisualization',bodyKey: 'help.boardVisualization' },
-      { titleKey: 'help.titles.cycleTimeByType',   bodyKey: 'help.cycleTimeByType' },
-      { titleKey: 'help.titles.timeRange',         bodyKey: 'help.timeRange' },
-    ],
-  },
-  {
-    headingKey: 'help.sections.forecasting',
-    entries: [
+      { titleKey: 'help.titles.boardVisualization', bodyKey: 'help.boardVisualization' },
+      { titleKey: 'help.titles.boardColors',        bodyKey: 'help.boardColors' },
       { titleKey: 'help.titles.perTicketBreakdown', bodyKey: 'help.perTicketBreakdown' },
     ],
   },
   {
-    headingKey: 'help.sections.tickets',
+    headingKey: 'nav.health',
+    entries: [
+      { titleKey: 'help.titles.flowEfficiency',  bodyKey: 'help.flowEfficiency' },
+      { titleKey: 'help.titles.activeStatuses',  bodyKey: 'help.activeStatuses' },
+      { titleKey: 'help.titles.rework',          bodyKey: 'help.rework' },
+      { titleKey: 'help.titles.reworkPaths',     bodyKey: 'help.reworkPaths' },
+      { titleKey: 'help.titles.cycleTimeByType', bodyKey: 'help.cycleTimeByType' },
+      { titleKey: 'help.titles.cfd',             bodyKey: 'help.cfd' },
+    ],
+  },
+  {
+    headingKey: 'nav.trends',
+    entries: [
+      { titleKey: 'help.titles.cycleTimeTrend',         bodyKey: 'help.cycleTimeTrend' },
+      { titleKey: 'help.titles.leadTimeTrend',          bodyKey: 'help.leadTimeTrend' },
+      { titleKey: 'help.titles.cycleTimeDistribution',  bodyKey: 'help.cycleTimeDistribution' },
+      { titleKey: 'help.titles.leadTimeDistribution',   bodyKey: 'help.leadTimeDistribution' },
+      { titleKey: 'help.titles.weeklyThroughput',       bodyKey: 'help.weeklyThroughput' },
+    ],
+  },
+  {
+    headingKey: 'nav.forecast',
+    entries: [
+      { titleKey: 'help.titles.forecastDistribution', bodyKey: 'help.forecastDistribution' },
+    ],
+  },
+  {
+    headingKey: 'nav.tickets',
     entries: [
       { titleKey: 'help.titles.ticketColors',   bodyKey: 'help.ticketColors' },
       { titleKey: 'help.titles.analyzedOnly',   bodyKey: 'help.analyzedOnly' },
@@ -50,7 +66,16 @@ const SECTIONS: Section[] = [
     ],
   },
   {
-    headingKey: 'help.sections.configuration',
+    headingKey: 'nav.insights',
+    entries: [
+      { titleKey: 'help.titles.aiInsights',       bodyKey: 'help.aiInsights' },
+      { titleKey: 'help.titles.llmProvider',      bodyKey: 'help.llmProvider' },
+      { titleKey: 'help.titles.llmBaseUrl',       bodyKey: 'help.llmBaseUrl' },
+      { titleKey: 'help.titles.llmSystemPrompt',  bodyKey: 'help.llmSystemPrompt' },
+    ],
+  },
+  {
+    headingKey: 'nav.settings',
     entries: [
       { titleKey: 'help.titles.configMode',       bodyKey: 'help.configMode' },
       { titleKey: 'help.titles.modeFirstLast',    bodyKey: 'help.modeFirstLast' },
@@ -62,34 +87,18 @@ const SECTIONS: Section[] = [
       { titleKey: 'help.titles.cycleEndStatus',   bodyKey: 'help.cycleEndStatus' },
       { titleKey: 'help.titles.leadStartStatus',  bodyKey: 'help.leadStartStatus' },
       { titleKey: 'help.titles.leadEndStatus',    bodyKey: 'help.leadEndStatus' },
-      { titleKey: 'help.titles.statusOrder',       bodyKey: 'help.statusOrder' },
-      { titleKey: 'help.titles.activeStatuses',   bodyKey: 'help.activeStatuses' },
-      { titleKey: 'help.titles.configContext',    bodyKey: 'help.configContext' },
-      { titleKey: 'help.titles.boardColors',      bodyKey: 'help.boardColors' },
-    ],
-  },
-  {
-    headingKey: 'help.sections.import',
-    entries: [
-      { titleKey: 'help.titles.projectKey',        bodyKey: 'help.projectKey' },
-      { titleKey: 'help.titles.issueTypes',        bodyKey: 'help.issueTypes' },
-      { titleKey: 'help.titles.completedBetween',  bodyKey: 'help.completedBetween' },
-      { titleKey: 'help.titles.datasetName',       bodyKey: 'help.datasetName' },
-      { titleKey: 'help.titles.datasetConfig',     bodyKey: 'help.datasetConfig' },
-      { titleKey: 'help.titles.connName',          bodyKey: 'help.connName' },
-      { titleKey: 'help.titles.connBaseUrl',       bodyKey: 'help.connBaseUrl' },
-      { titleKey: 'help.titles.connEmail',         bodyKey: 'help.connEmail' },
-      { titleKey: 'help.titles.connApiToken',      bodyKey: 'help.connApiToken' },
-      { titleKey: 'help.titles.configName',        bodyKey: 'help.configName' },
-      { titleKey: 'help.titles.configBaseUrl',     bodyKey: 'help.configBaseUrl' },
-    ],
-  },
-  {
-    headingKey: 'help.sections.ai',
-    entries: [
-      { titleKey: 'help.titles.aiInsights',      bodyKey: 'help.aiInsights' },
-      { titleKey: 'help.titles.llmProvider',     bodyKey: 'help.llmProvider' },
-      { titleKey: 'help.titles.llmBaseUrl',      bodyKey: 'help.llmBaseUrl' },
+      { titleKey: 'help.titles.statusOrder',      bodyKey: 'help.statusOrder' },
+      { titleKey: 'help.titles.projectKey',       bodyKey: 'help.projectKey' },
+      { titleKey: 'help.titles.issueTypes',       bodyKey: 'help.issueTypes' },
+      { titleKey: 'help.titles.completedBetween', bodyKey: 'help.completedBetween' },
+      { titleKey: 'help.titles.datasetName',      bodyKey: 'help.datasetName' },
+      { titleKey: 'help.titles.datasetConfig',    bodyKey: 'help.datasetConfig' },
+      { titleKey: 'help.titles.connName',         bodyKey: 'help.connName' },
+      { titleKey: 'help.titles.connBaseUrl',      bodyKey: 'help.connBaseUrl' },
+      { titleKey: 'help.titles.connEmail',        bodyKey: 'help.connEmail' },
+      { titleKey: 'help.titles.connApiToken',     bodyKey: 'help.connApiToken' },
+      { titleKey: 'help.titles.configName',       bodyKey: 'help.configName' },
+      { titleKey: 'help.titles.configBaseUrl',    bodyKey: 'help.configBaseUrl' },
     ],
   },
 ]

@@ -215,7 +215,9 @@ metrics.get('/:importId/forecast', async (c) => {
     return c.json({ data: null, error: 'value must be ≤ 10000' }, 422)
   }
 
-  const agg = computeAggregate(ctx)
+  const { from, to } = parseDateFilter(c)
+  const filtered = applyDateFilter(ctx.tickets, from, to)
+  const agg = computeAggregate({ ...ctx, tickets: filtered })
   const buckets = computeWeeklyBuckets(agg.completedAtDates)
 
   if (buckets.length === 0) {

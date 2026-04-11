@@ -105,7 +105,7 @@ export function DateRangeSlider({ dataFrom, dataTo }: Props) {
     <Card className="shadow-sm">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold text-gray-700 flex items-center gap-1.5">
+          <CardTitle className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
             {t('dashboard.timeRange')}
             <Popover>
               <PopoverTrigger asChild>
@@ -113,7 +113,7 @@ export function DateRangeSlider({ dataFrom, dataTo }: Props) {
                   <Info className="w-3.5 h-3.5" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-64">
+              <PopoverContent className="w-72">
                 <div className="text-xs text-gray-600 space-y-1.5">
                   <p className="font-semibold text-gray-800 mb-1">{t('dashboard.timeRange')}</p>
                   <p>{t('help.timeRange')}</p>
@@ -122,9 +122,9 @@ export function DateRangeSlider({ dataFrom, dataTo }: Props) {
             </Popover>
           </CardTitle>
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-700">{formatDate(displayFrom)}</span>
-            <span className="text-gray-300">→</span>
-            <span className="text-sm font-medium text-gray-700">{formatDate(displayTo)}</span>
+            <span className="text-xs text-gray-500">{formatDate(displayFrom)}</span>
+            <span className="text-gray-300 text-xs">→</span>
+            <span className="text-xs text-gray-500">{formatDate(displayTo)}</span>
             {isFiltered ? (
               <button
                 onClick={clearDates}

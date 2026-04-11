@@ -7,7 +7,7 @@ function openUrl(url: string) {
 }
 import { useTranslation } from 'react-i18next'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
-import { LayoutDashboard, Ticket, Workflow, Sparkles, Settings, Plus, AlertTriangle, MoreHorizontal, Pencil, TrendingUp, Bug, Info, RefreshCw, HelpCircle } from 'lucide-react'
+import { LayoutDashboard, Ticket, Workflow, Sparkles, Settings, Plus, AlertTriangle, MoreHorizontal, Pencil, TrendingUp, LineChart, Activity, Bug, Info, RefreshCw, HelpCircle } from 'lucide-react'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import { api } from '@/services/api'
 import { Input } from '@/components/ui/input'
@@ -255,6 +255,8 @@ export function Sidebar() {
   const navItems = [
     { to: '', end: true, icon: LayoutDashboard, label: t('nav.overview') },
     { to: '/flow', icon: Workflow, label: t('nav.flow') },
+    { to: '/health', icon: Activity, label: t('nav.health') },
+    { to: '/trends', icon: LineChart, label: t('nav.trends') },
     { to: '/forecast', icon: TrendingUp, label: t('nav.forecast') },
     { to: '/tickets', icon: Ticket, label: t('nav.tickets') },
     { to: '/insights', icon: Sparkles, label: t('nav.insights') },

@@ -102,8 +102,8 @@ export const api = {
       request<ReworkResponse>(`/api/v1/metrics/${importId}/rework${dateParams(dates)}`),
     cycleTimeByType: (importId: string, dates?: DateFilter) =>
       request<CycleTimeByTypeResponse>(`/api/v1/metrics/${importId}/cycle-time-by-type${dateParams(dates)}`),
-    forecast: (importId: string, mode: 'how_many' | 'when', value: number) =>
-      request<ForecastResponse>(`/api/v1/metrics/${importId}/forecast?mode=${mode}&value=${value}`),
+    forecast: (importId: string, mode: 'how_many' | 'when', value: number, dates?: DateFilter) =>
+      request<ForecastResponse>(`/api/v1/metrics/${importId}/forecast?mode=${mode}&value=${value}${dateParams(dates).replace('?', '&')}`),
     throughput: (importId: string, dates?: DateFilter) =>
       request<ThroughputResponse>(`/api/v1/metrics/${importId}/throughput${dateParams(dates)}`),
     cfd: (importId: string, dates?: DateFilter) =>

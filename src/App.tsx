@@ -3,10 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { AppShell } from '@/components/layout/AppShell'
+import { ProjectLayout } from '@/components/layout/ProjectLayout'
 import DashboardPage from '@/pages/DashboardPage'
 import ImportPage from '@/pages/ImportPage'
 import TicketsPage from '@/pages/TicketsPage'
 import FlowPage from '@/pages/FlowPage'
+import HealthPage from '@/pages/HealthPage'
+import TrendsPage from '@/pages/TrendsPage'
 import InsightsPage from '@/pages/InsightsPage'
 import SettingsPage from '@/pages/SettingsPage'
 import ConfigFormPage from '@/pages/ConfigFormPage'
@@ -44,11 +47,15 @@ function App() {
           <Route element={<AppShell />}>
             <Route path="/" element={<WelcomePage />} />
             <Route path="/import" element={<ImportPage />} />
-            <Route path="/projects/:importId" element={<DashboardPage />} />
-            <Route path="/projects/:importId/tickets" element={<TicketsPage />} />
-            <Route path="/projects/:importId/flow" element={<FlowPage />} />
-            <Route path="/projects/:importId/forecast" element={<ForecastPage />} />
-            <Route path="/projects/:importId/insights" element={<InsightsPage />} />
+            <Route path="/projects/:importId" element={<ProjectLayout />}>
+              <Route index element={<DashboardPage />} />
+              <Route path="flow" element={<FlowPage />} />
+              <Route path="health" element={<HealthPage />} />
+              <Route path="trends" element={<TrendsPage />} />
+              <Route path="forecast" element={<ForecastPage />} />
+              <Route path="tickets" element={<TicketsPage />} />
+              <Route path="insights" element={<InsightsPage />} />
+            </Route>
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/help" element={<HelpPage />} />

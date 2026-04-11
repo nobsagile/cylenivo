@@ -1,20 +1,18 @@
 import { useState, useEffect } from 'react'
 import { TicketDetailDrawer } from '@/components/tickets/TicketDetailDrawer'
 import { useTranslation } from 'react-i18next'
-import { useParams } from 'react-router-dom'
+import { useParams, useOutletContext } from 'react-router-dom'
 import { api } from '@/services/api'
 import { useMetrics } from '@/hooks/useMetrics'
 import { useDateFilter } from '@/contexts/DateFilterContext'
-import type { TimeInStatusResponse, ReworkResponse, CycleTimeByTypeResponse } from '@/types'
+import type { TimeInStatusResponse } from '@/types'
 import { Card, CardContent } from '@/components/ui/card'
-import { DateRangeSlider } from '@/components/metrics/DateRangeSlider'
 import { AvgTimeInStatusChart, PerTicketBreakdownChart } from '@/components/metrics/TimeInStatusChart'
 import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 import { BoardVisualization } from '@/components/metrics/BoardVisualization'
-import { ReworkCard } from '@/components/metrics/ReworkCard'
-import { CycleTimeByTypeChart } from '@/components/metrics/CycleTimeByTypeChart'
-import { FlowEfficiencyCard } from '@/components/metrics/FlowEfficiencyCard'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { DateRangeSlider } from '@/components/metrics/DateRangeSlider'
+import type { ProjectLayoutContext } from '@/components/layout/ProjectLayout'
 
 export default function FlowPage() {
   const { t } = useTranslation()
@@ -22,17 +20,14 @@ export default function FlowPage() {
   const { fromDate, toDate } = useDateFilter()
   const dates = { from: fromDate || undefined, to: toDate || undefined }
   const { data: metrics, refetch: refetchMetrics } = useMetrics(importId, fromDate || undefined, toDate || undefined)
+  const { dateRange } = useOutletContext<ProjectLayoutContext>()
   const [statusData, setStatusData] = useState<TimeInStatusResponse | null>(null)
-  const [reworkData, setReworkData] = useState<ReworkResponse | null>(null)
-  const [typeData, setTypeData] = useState<CycleTimeByTypeResponse | null>(null)
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
   const [rev, setRev] = useState(0)
 
   useEffect(() => {
     if (!importId) return
     api.metrics.timeInStatus(importId, dates).then(setStatusData).catch(console.error)
-    api.metrics.rework(importId, dates).then(setReworkData).catch(console.error)
-    api.metrics.cycleTimeByType(importId, dates).then(setTypeData).catch(console.error)
   }, [importId, fromDate, toDate, rev])
 
   function handleExclusionToggle() {
@@ -59,15 +54,12 @@ export default function FlowPage() {
         excluded={metrics.excluded_ticket_count}
       />
 
-      {metrics.config_context && (
-        <ConfigContextBar config={metrics.config_context} />
+      {dateRange?.from && dateRange?.to && (
+        <DateRangeSlider dataFrom={dateRange.from} dataTo={dateRange.to} />
       )}
 
-      {metrics.date_range && (
-        <DateRangeSlider
-          dataFrom={metrics.date_range.from}
-          dataTo={metrics.date_range.to}
-        />
+      {metrics.config_context && (
+        <ConfigContextBar config={metrics.config_context} />
       )}
 
       {metrics.config_context && metrics.time_in_status && (
@@ -94,19 +86,6 @@ export default function FlowPage() {
       ) : (
         <div className="text-gray-400 text-sm">{t('common.loading')}</div>
       )}
-
-      {metrics.config_context && (
-        <FlowEfficiencyCard
-          data={metrics.flow_efficiency ?? null}
-          activeStatuses={metrics.config_context.active_statuses}
-          configId={metrics.config_context.config_id}
-        />
-      )}
-
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {typeData && <CycleTimeByTypeChart data={typeData} />}
-        {reworkData && <ReworkCard data={reworkData} />}
-      </div>
 
       <TicketDetailDrawer
         ticketId={selectedTicketId}

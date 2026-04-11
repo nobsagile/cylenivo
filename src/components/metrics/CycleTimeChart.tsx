@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next'
 import {
   ScatterChart,
   Scatter,
@@ -32,8 +31,6 @@ function CycleTooltip({ active, payload }: { active?: boolean; payload?: Array<{
 }
 
 export function CycleTimeChart({ tickets, p85, onTicketClick }: Props) {
-  const { t } = useTranslation()
-
   if (tickets.length === 0) {
     return (
       <div className="flex items-center justify-center h-48 text-gray-400 text-sm">
@@ -51,7 +48,6 @@ export function CycleTimeChart({ tickets, p85, onTicketClick }: Props) {
 
   return (
     <div>
-      <h3 className="text-sm font-medium text-gray-700 mb-2">{t('metrics.cycleTime')}</h3>
       <ResponsiveContainer width="100%" height={240}>
         <ScatterChart>
           <CartesianGrid strokeDasharray="3 3" />
