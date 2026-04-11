@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Zap, Settings, Info } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { FlowEfficiencyStats } from '@/types'
 
 interface FlowEfficiencyCardProps {
@@ -43,9 +43,9 @@ export function FlowEfficiencyCard({ data, activeStatuses, configId }: FlowEffic
 
   return (
     <Card className="shadow-sm">
-      <CardContent className="pt-6">
-        <div className="flex items-center gap-1.5 mb-5">
-          <h3 className="text-sm font-semibold text-gray-700">{t('metrics.flowEfficiency')}</h3>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+          {t('metrics.flowEfficiency')}
           <Popover>
             <PopoverTrigger asChild>
               <button className="text-gray-300 hover:text-gray-500 transition-colors">
@@ -53,10 +53,15 @@ export function FlowEfficiencyCard({ data, activeStatuses, configId }: FlowEffic
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-72">
-              <p className="text-xs text-gray-600">{t('help.flowEfficiency')}</p>
+              <div className="text-xs text-gray-600 space-y-1.5">
+                <p className="font-semibold text-gray-800 mb-1">{t('metrics.flowEfficiency')}</p>
+                <p>{t('help.flowEfficiency')}</p>
+              </div>
             </PopoverContent>
           </Popover>
-        </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
 
         <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-6 items-start">
           {/* Metrics */}

@@ -26,7 +26,7 @@ export function PercentileCard({ data, variant = 'cycle' }: Props) {
   return (
     <Card className="shadow-sm">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold text-gray-700 flex items-center gap-1.5">
+        <CardTitle className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
           {title}
           <Popover>
             <PopoverTrigger asChild>
@@ -34,7 +34,7 @@ export function PercentileCard({ data, variant = 'cycle' }: Props) {
                 <Info className="w-3.5 h-3.5" />
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-64">
+            <PopoverContent className="w-72">
               <div className="text-xs text-gray-600 space-y-1.5">
                 <p className="font-semibold text-gray-800 mb-1">{title}</p>
                 <p>{t('metrics.percentile.basedOn', { metricName })}</p>

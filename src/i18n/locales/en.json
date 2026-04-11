@@ -72,10 +72,12 @@
     "importing": "Importing…"
   },
   "nav": {
-    "overview": "Metrics",
+    "overview": "Overview",
     "tickets": "Tickets",
     "analytics": "Analytics",
-    "flow": "Analysis",
+    "flow": "Flow",
+    "health": "Health",
+    "trends": "Trends",
     "forecast": "Forecast",
     "insights": "AI Insights",
     "settings": "Settings",
@@ -121,7 +123,10 @@
     "explore": "Explore",
     "ownData": "Ready to analyze your own team?",
     "importCta": "Import my data",
-    "removeTip": "Remove demo projects anytime via Settings → Data Management"
+    "removeTip": "Remove demo projects anytime via Settings → Data Management",
+    "yourDatasets": "Your datasets",
+    "open": "Open",
+    "addDataset": "Import dataset"
   },
   "welcome": {
     "title": "Welcome to Cylenivo",
@@ -139,10 +144,11 @@
     "noDataset": "No dataset selected",
     "noDatasetHint": "Upload a Jira export to start analyzing",
     "uploadExport": "Upload export",
-    "subtitle": "Cycle time, lead time, throughput and delivery trends.",
-    "ticketsAnalyzed": "{{completed}} of {{total}} tickets analyzed",
+    "subtitle": "Cycle time, lead time, throughput and percentile forecasts.",
     "cycleTimeTrend": "Cycle Time Trend",
+    "cycleTimeDistribution": "Cycle Time Distribution",
     "leadTimeTrend": "Lead Time Trend",
+    "leadTimeDistribution": "Lead Time Distribution",
     "weeklyThroughput": "Weekly Throughput",
     "cfd": "Cumulative Flow",
     "timeRange": "Time Range",
@@ -487,8 +493,16 @@
     "reportBug": "Report a Bug"
   },
   "flow": {
-    "title": "Analysis",
-    "subtitle": "Understand where time is spent in your workflow"
+    "title": "Flow",
+    "subtitle": "Understand where tickets get stuck in your workflow"
+  },
+  "health": {
+    "title": "Health",
+    "subtitle": "Flow efficiency, rework patterns and cycle time distribution by type"
+  },
+  "trends": {
+    "title": "Trends",
+    "subtitle": "Cycle time, lead time and throughput over time"
   },
   "rework": {
     "title": "Rework Analysis",
@@ -503,6 +517,7 @@
     "footer": "Column width proportional to average time spent. Histogram shows ticket distribution."
   },
   "configBar": {
+    "title": "Measurement Configuration",
     "cycleTimeLabel": "Cycle Time: {{start}} → {{end}}",
     "leadTimeLabel": "Lead Time: {{start}} → {{end}}",
     "configuration": "Configuration",
@@ -518,7 +533,8 @@
     "howToReadDesc": "Shows the average time each ticket spent in a status during its cycle — from entry into {{start}} to last entry into {{end}}.",
     "howToReadExclude": "Only statuses within this window are shown. Tickets that did not complete the cycle are excluded.",
     "howToReadRework": "If {{status}} shows a value > 0, some tickets returned from {{status}} to an earlier status (rework) before completing.",
-    "perTicketTitle": "Per-Ticket Breakdown (last 30)"
+    "perTicketTitle": "Per-Ticket Breakdown (last 30)",
+    "perTicketSubtitle": "Status duration for each of the last 30 completed tickets. Click a bar to open ticket details."
   },
   "cycleTimeByType": {
     "title": "Cycle Time by Ticket Type",
@@ -600,13 +616,16 @@
       "rework": "Rework",
       "reworkPaths": "Rework Paths",
       "cycleTimeTrend": "Cycle Time Trend",
+      "cycleTimeDistribution": "Cycle Time Distribution",
       "leadTimeTrend": "Lead Time Trend",
+      "leadTimeDistribution": "Lead Time Distribution",
       "weeklyThroughput": "Weekly Throughput",
       "cfd": "Cumulative Flow Diagram",
       "boardVisualization": "Board Visualization",
       "cycleTimeByType": "Cycle Time by Type",
       "timeRange": "Time Range Filter",
       "perTicketBreakdown": "Per-Ticket Status Breakdown",
+      "forecastDistribution": "Forecast Distribution",
       "ticketColors": "Color Coding",
       "analyzedOnly": "Analyzed Only Filter",
       "ticketTimeline": "Ticket Timeline",
@@ -648,6 +667,8 @@
     "analyzed": "Only tickets with a valid cycle time are analyzed. Tickets that never entered the cycle start status or never completed are excluded.",
     "cycleTimeTrend": "Each dot is one completed ticket. X-axis: completion date. Y-axis: cycle time in days. The P85 line marks the 85th percentile — 85% of tickets finished faster.",
     "leadTimeTrend": "Each dot is one completed ticket. X-axis: completion date. Y-axis: lead time in days. The P85 line marks the 85th percentile.",
+    "cycleTimeDistribution": "Histogram of cycle times grouped in 5-day buckets. Shows the shape of your distribution — whether active work durations are predictable and concentrated or widely spread.",
+    "leadTimeDistribution": "Histogram of lead times grouped in 5-day buckets. Shows the shape of your distribution — whether delivery times are concentrated in a narrow range or spread out.",
     "weeklyThroughput": "Completed tickets per calendar week. The dashed line shows the weekly average. Empty weeks are included to make gaps visible.",
     "cfd": "Shows how many tickets are in each status on any given day. A widening band means tickets are piling up in that status — a bottleneck. The gap between two bands approximates cycle time at that point.",
     "timeRange": "Filter all charts to a specific date range. Drag the handles to narrow the window — only tickets completed within the selected range will be included.",
@@ -690,7 +711,8 @@
     "activeStatuses": "Mark which statuses represent active work — typically the ones where someone is actually doing something (coding, reviewing). Statuses where tickets wait for attention are not active. Only statuses within the cycle window are eligible.",
     "flowEfficiencyNotConfigured": "Select which statuses count as active work to unlock this metric.",
     "configureActiveStatuses": "Configure in Settings",
-    "aiInsights": "Analyzes all tickets in this dataset — cycle time, lead time, time in status, rework, and flow efficiency. The analysis always uses the full dataset regardless of any date filter you have applied on other pages."
+    "aiInsights": "Analyzes all tickets in this dataset — cycle time, lead time, time in status, rework, and flow efficiency. The analysis always uses the full dataset regardless of any date filter you have applied on other pages.",
+    "forecastDistribution": "Shows how 10,000 simulated outcomes are distributed. Each simulation samples your historical weekly throughput. The reference lines mark the P50, P85, and P95 thresholds — bars to the left of P95 represent the safest delivery scenarios."
   },
   "update": {
     "available": "Update available",

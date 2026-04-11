@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, TrendingUp, TrendingDown, Shuffle } from 'lucide-react'
+import { ArrowRight, BarChart2, TrendingUp, TrendingDown, Shuffle } from 'lucide-react'
 import { api } from '@/services/api'
 import { notifyImportsChanged } from '@/hooks/useImports'
 import { Button } from '@/components/ui/button'
@@ -19,47 +19,53 @@ function LogoIcon() {
   )
 }
 
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
 export default function WelcomePage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [checking, setChecking] = useState(true)
+  const [userImports, setUserImports] = useState<ImportSession[]>([])
   const [demoImports, setDemoImports] = useState<ImportSession[]>([])
 
   useEffect(() => {
     Promise.all([api.imports.list(), api.configs.list()])
-      .then(async ([imports, configs]) => {
-        const seen = !!localStorage.getItem(ONBOARDING_KEY)
+      .then(async ([imports]) => {
+        const users = imports.filter(i => !i.config_name?.startsWith('Demo:'))
+        const demos = imports.filter(i => i.config_name?.startsWith('Demo:'))
 
-        if (!seen) {
-          // New user → seed demo data if not already present, then show welcome page
-          let demoResult = imports
-          if (imports.length === 0) {
-            const seeded = await api.demo.seed()
-            notifyImportsChanged()
-            demoResult = seeded.imports
-              .filter(i => i.import_id)
-              .map(i => ({ id: i.import_id!, config_name: i.name } as ImportSession))
-          }
-          const onlyDemosNow = demoResult.length > 0 && demoResult.every(i => i.config_name?.startsWith('Demo:'))
-          if (onlyDemosNow) {
-            const sorted = [...demoResult].sort((a, b) => {
-              const aImproving = a.config_name?.includes('Improving') ? 0 : 1
-              const bImproving = b.config_name?.includes('Improving') ? 0 : 1
-              return aImproving - bImproving
-            })
-            setDemoImports(sorted)
-          }
+        if (users.length > 0) {
+          setUserImports(users)
           setChecking(false)
-        } else if (imports.length > 0) {
-          navigate(`/projects/${imports[0].id}`, { replace: true })
-        } else if (configs.length > 0) {
-          navigate('/import', { replace: true })
-        } else {
-          navigate('/import', { replace: true })
+          return
         }
+
+        // No own data — demo / new-user flow
+        let demoList = demos
+        if (imports.length === 0) {
+          const seeded = await api.demo.seed()
+          notifyImportsChanged()
+          demoList = seeded.imports
+            .filter(i => i.import_id)
+            .map(i => ({ id: i.import_id!, config_name: i.name } as ImportSession))
+        }
+
+        const sorted = [...demoList].sort((a, b) => {
+          const aImproving = a.config_name?.includes('Improving') ? 0 : 1
+          const bImproving = b.config_name?.includes('Improving') ? 0 : 1
+          return aImproving - bImproving
+        })
+        setDemoImports(sorted)
+        setChecking(false)
       })
       .catch(() => navigate('/import', { replace: true }))
   }, [navigate])
+
+  function openProject(importId: string) {
+    navigate(`/projects/${importId}`)
+  }
 
   function goToDemo(importId: string) {
     localStorage.setItem(ONBOARDING_KEY, '1')
@@ -88,97 +94,142 @@ export default function WelcomePage() {
         <p className="text-gray-400 mt-2 max-w-sm text-sm leading-relaxed">
           {t('onboarding.subtitle')}
         </p>
-        <p className="text-gray-300 mt-1 max-w-sm text-xs leading-relaxed">
-          {t('onboarding.pluginHint')}
-        </p>
+        {userImports.length === 0 && (
+          <p className="text-gray-300 mt-1 max-w-sm text-xs leading-relaxed">
+            {t('onboarding.pluginHint')}
+          </p>
+        )}
       </div>
 
-      {/* Demo section */}
       <div className="w-full max-w-3xl">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider text-center mb-4">
-          {t('onboarding.demosReady')}
-        </p>
-
-        <div className="grid grid-cols-3 gap-4">
-          {/* Improving Team */}
-          <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm p-5 gap-3">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-teal-50">
-                <TrendingUp className="w-4 h-4 text-teal-600" />
-              </div>
-              <span className="text-sm font-semibold text-gray-800">{t('onboarding.improvingTitle')}</span>
-            </div>
-            <p className="text-xs text-gray-500 leading-relaxed flex-1">
-              {t('onboarding.improvingDesc')}
+        {userImports.length > 0 ? (
+          <>
+            {/* User datasets */}
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+              {t('onboarding.yourDatasets')}
             </p>
-            <Button
-              size="sm"
-              variant="outline"
-              className="w-full gap-1.5 mt-1"
-              onClick={() => improving && goToDemo(improving.id)}
-              disabled={!improving}
-            >
-              {t('onboarding.explore')}
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Button>
-          </div>
-
-          {/* Complex Team */}
-          <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm p-5 gap-3">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-rose-50">
-                <TrendingDown className="w-4 h-4 text-rose-500" />
-              </div>
-              <span className="text-sm font-semibold text-gray-800">{t('onboarding.complexTitle')}</span>
+            <div className="grid grid-cols-3 gap-4">
+              {userImports.map(imp => (
+                <div key={imp.id} className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm p-5 gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-violet-50">
+                      <BarChart2 className="w-4 h-4 text-violet-600" />
+                    </div>
+                    <span className="text-sm font-semibold text-gray-800 truncate">
+                      {imp.name ?? imp.project_key}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 flex-1">
+                    {imp.ticket_count} tickets · {formatDate(imp.imported_at)}
+                  </p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full gap-1.5 mt-1"
+                    onClick={() => openProject(imp.id)}
+                  >
+                    {t('onboarding.open')}
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              ))}
             </div>
-            <p className="text-xs text-gray-500 leading-relaxed flex-1">
-              {t('onboarding.complexDesc')}
-            </p>
-            <Button
-              size="sm"
-              variant="outline"
-              className="w-full gap-1.5 mt-1"
-              onClick={() => complex && goToDemo(complex.id)}
-              disabled={!complex}
-            >
-              {t('onboarding.explore')}
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Button>
-          </div>
 
-          {/* Real World Team */}
-          <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm p-5 gap-3">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-amber-50">
-                <Shuffle className="w-4 h-4 text-amber-600" />
-              </div>
-              <span className="text-sm font-semibold text-gray-800">{t('onboarding.realworldTitle')}</span>
+            <div className="mt-8 flex flex-col items-center">
+              <Button onClick={goToImport} className="gap-2 px-6">
+                {t('onboarding.addDataset')}
+                <ArrowRight className="w-4 h-4" />
+              </Button>
             </div>
-            <p className="text-xs text-gray-500 leading-relaxed flex-1">
-              {t('onboarding.realworldDesc')}
+          </>
+        ) : (
+          <>
+            {/* Demo section */}
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider text-center mb-4">
+              {t('onboarding.demosReady')}
             </p>
-            <Button
-              size="sm"
-              variant="outline"
-              className="w-full gap-1.5 mt-1"
-              onClick={() => realworld && goToDemo(realworld.id)}
-              disabled={!realworld}
-            >
-              {t('onboarding.explore')}
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Button>
-          </div>
-        </div>
 
-        {/* Own data CTA */}
-        <div className="mt-8 flex flex-col items-center gap-3 text-center">
-          <p className="text-sm font-medium text-gray-700">{t('onboarding.ownData')}</p>
-          <Button onClick={goToImport} className="gap-2 px-6">
-            {t('onboarding.importCta')}
-            <ArrowRight className="w-4 h-4" />
-          </Button>
-          <p className="text-xs text-gray-400 mt-1">{t('onboarding.removeTip')}</p>
-        </div>
+            <div className="grid grid-cols-3 gap-4">
+              {/* Improving Team */}
+              <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm p-5 gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-teal-50">
+                    <TrendingUp className="w-4 h-4 text-teal-600" />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-800">{t('onboarding.improvingTitle')}</span>
+                </div>
+                <p className="text-xs text-gray-500 leading-relaxed flex-1">
+                  {t('onboarding.improvingDesc')}
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full gap-1.5 mt-1"
+                  onClick={() => improving && goToDemo(improving.id)}
+                  disabled={!improving}
+                >
+                  {t('onboarding.explore')}
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+
+              {/* Complex Team */}
+              <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm p-5 gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-rose-50">
+                    <TrendingDown className="w-4 h-4 text-rose-500" />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-800">{t('onboarding.complexTitle')}</span>
+                </div>
+                <p className="text-xs text-gray-500 leading-relaxed flex-1">
+                  {t('onboarding.complexDesc')}
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full gap-1.5 mt-1"
+                  onClick={() => complex && goToDemo(complex.id)}
+                  disabled={!complex}
+                >
+                  {t('onboarding.explore')}
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+
+              {/* Real World Team */}
+              <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm p-5 gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-amber-50">
+                    <Shuffle className="w-4 h-4 text-amber-600" />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-800">{t('onboarding.realworldTitle')}</span>
+                </div>
+                <p className="text-xs text-gray-500 leading-relaxed flex-1">
+                  {t('onboarding.realworldDesc')}
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full gap-1.5 mt-1"
+                  onClick={() => realworld && goToDemo(realworld.id)}
+                  disabled={!realworld}
+                >
+                  {t('onboarding.explore')}
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="mt-8 flex flex-col items-center gap-3 text-center">
+              <p className="text-sm font-medium text-gray-700">{t('onboarding.ownData')}</p>
+              <Button onClick={goToImport} className="gap-2 px-6">
+                {t('onboarding.importCta')}
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+              <p className="text-xs text-gray-400 mt-1">{t('onboarding.removeTip')}</p>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

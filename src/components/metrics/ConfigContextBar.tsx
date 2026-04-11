@@ -33,6 +33,25 @@ export function ConfigContextBar({ config }: Props) {
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4">
+      {/* Title */}
+      <div className="flex items-center gap-1.5 mb-3">
+        <h3 className="text-sm font-semibold text-gray-700">{t('configBar.title')}</h3>
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="text-gray-300 hover:text-gray-500 transition-colors">
+              <Info className="w-3.5 h-3.5" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-72">
+            <div className="text-xs text-gray-600 space-y-1.5">
+              <p className="font-semibold text-gray-800 mb-1">{t('configBar.title')}</p>
+              <p>{t('help.configContext')}</p>
+              <p className="font-medium text-gray-700 mt-2">{t('configBar.measurementMode', { mode: t(`configBar.mode${cycle_time_mode === 'first_last' ? 'FirstLast' : cycle_time_mode === 'first_first' ? 'FirstFirst' : 'LastLast'}`) })}</p>
+              <p>{cycle_time_mode === 'first_last' ? t('help.modeFirstLast') : cycle_time_mode === 'first_first' ? t('help.modeFirstFirst') : t('help.modeLastLast')}</p>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
       {/* Status pills */}
       <div className="flex gap-1.5 items-center overflow-x-auto">
         {!lead_time_start_status && (
@@ -61,21 +80,6 @@ export function ConfigContextBar({ config }: Props) {
             {t('configBar.cycleTimeLabel', { start: cycle_time_start_status, end: cycle_time_end_status })}
           </span>
           <span className="text-[10px] text-gray-400">({t(`configBar.mode${cycle_time_mode === 'first_last' ? 'FirstLast' : cycle_time_mode === 'first_first' ? 'FirstFirst' : 'LastLast'}`)})</span>
-          <Popover>
-            <PopoverTrigger asChild>
-              <button className="text-gray-300 hover:text-gray-500 transition-colors">
-                <Info className="w-3 h-3" />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="w-72">
-              <div className="text-xs text-gray-600 space-y-1.5">
-                <p className="font-semibold text-gray-800 mb-1">{t('configBar.configuration')}</p>
-                <p>{t('help.configContext')}</p>
-                <p className="font-medium text-gray-700 mt-2">{t('configBar.measurementMode', { mode: t(`configBar.mode${cycle_time_mode === 'first_last' ? 'FirstLast' : cycle_time_mode === 'first_first' ? 'FirstFirst' : 'LastLast'}`) })}</p>
-                <p>{cycle_time_mode === 'first_last' ? t('help.modeFirstLast') : cycle_time_mode === 'first_first' ? t('help.modeFirstFirst') : t('help.modeLastLast')}</p>
-              </div>
-            </PopoverContent>
-          </Popover>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-1.5 rounded-full bg-violet-400 shrink-0" />
