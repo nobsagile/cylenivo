@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your First Dataset — Cylenivo Getting Started Guide</title>
+  <meta name="description" content="Step-by-step guide to connect Jira, Trello, or OpenProject to Cylenivo and get your first flow metrics dataset." />
+  <link rel="canonical" href="https://cylenivo.org/guide" />
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --violet: #7c3aed;
+      --violet-light: #ede9fe;
+      --violet-dark: #6d28d9;
+      --gray-900: #111827;
+      --gray-700: #374151;
+      --gray-600: #4b5563;
+      --gray-500: #6b7280;
+      --gray-300: #d1d5db;
+      --gray-200: #e5e7eb;
+      --gray-100: #f3f4f6;
+      --gray-50: #f9fafb;
+      --white: #ffffff;
+      --jira: #0052cc;
+      --trello: #0079bf;
+      --openproject: #1a7f37;
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--gray-900);
+      background: var(--white);
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 60px;
+      background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    .nav-brand { display: flex; align-items: center; gap: .625rem; text-decoration: none; }
+    .nav-brand img { width: 28px; height: 28px; }
+    .nav-brand span { font-weight: 700; font-size: .9375rem; color: var(--gray-900); letter-spacing: -.01em; }
+    .nav-right { display: flex; align-items: center; gap: 1rem; }
+    .nav-link { font-size: .875rem; color: var(--gray-500); text-decoration: none; transition: color .15s; }
+    .nav-link:hover { color: var(--gray-900); }
+    .btn { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem 1.125rem; border-radius: 8px; font-size: .875rem; font-weight: 500; cursor: pointer; text-decoration: none; transition: all .15s; border: none; }
+    .btn-primary { background: var(--violet); color: var(--white); }
+    .btn-primary:hover { background: var(--violet-dark); }
+
+    /* LAYOUT */
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+    }
+
+    /* HERO */
+    .guide-hero {
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .guide-badge {
+      display: inline-flex; align-items: center; gap: .375rem;
+      background: var(--violet-light); color: var(--violet); border-radius: 999px;
+      font-size: .75rem; font-weight: 600; padding: .3rem .875rem; margin-bottom: 1.25rem;
+      letter-spacing: .02em; text-transform: uppercase;
+    }
+    .guide-hero h1 {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 800; letter-spacing: -.03em; line-height: 1.15;
+      color: var(--gray-900); margin-bottom: .75rem;
+    }
+    .guide-hero p {
+      font-size: 1.0625rem; color: var(--gray-500); max-width: 560px; line-height: 1.7;
+    }
+
+    /* TOC */
+    .toc {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .toc-title { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--gray-500); margin-bottom: .75rem; }
+    .toc ol { padding-left: 1.25rem; }
+    .toc li { margin-bottom: .35rem; }
+    .toc a { font-size: .9rem; color: var(--violet); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .toc .toc-sub { list-style: disc; padding-left: 1.25rem; margin-top: .35rem; }
+    .toc .toc-sub li { margin-bottom: .2rem; }
+    .toc .toc-sub a { color: var(--gray-600); }
+
+    /* SECTIONS */
+    .tool-section { margin-bottom: 4rem; }
+    .tool-header {
+      display: flex; align-items: center; gap: .875rem;
+      margin-bottom: 1.75rem; padding-bottom: 1rem;
+      border-bottom: 2px solid var(--gray-100);
+    }
+    .tool-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem; flex-shrink: 0;
+    }
+    .tool-icon.jira { background: #e6f0ff; }
+    .tool-icon.trello { background: #e0f0ff; }
+    .tool-icon.openproject { background: #dcfce7; }
+    .tool-header h2 { font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; }
+    .plugin-badge {
+      font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+      background: #f3e8ff; color: var(--violet); border-radius: 6px;
+      padding: .2rem .5rem; margin-left: .5rem; vertical-align: middle;
+    }
+
+    /* STEPS */
+    .steps { counter-reset: step; display: flex; flex-direction: column; gap: 1.5rem; }
+    .step {
+      display: flex; gap: 1rem;
+    }
+    .step-num {
+      counter-increment: step;
+      flex-shrink: 0;
+      width: 28px; height: 28px;
+      background: var(--violet); color: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; font-weight: 700;
+      margin-top: .1rem;
+    }
+    .step-num::before { content: counter(step); }
+    .step-body { flex: 1; }
+    .step-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: .4rem; color: var(--gray-900); }
+    .step-body p { font-size: .9375rem; color: var(--gray-600); margin-bottom: .5rem; }
+    .step-body p:last-child { margin-bottom: 0; }
+
+    /* CALLOUTS */
+    .callout {
+      border-radius: 10px; padding: .875rem 1.125rem;
+      font-size: .9rem; line-height: 1.6;
+      margin: .75rem 0;
+    }
+    .callout-tip { background: #f0fdf4; border-left: 3px solid #16a34a; color: #15803d; }
+    .callout-info { background: var(--violet-light); border-left: 3px solid var(--violet); color: #5b21b6; }
+    .callout-warn { background: #fffbeb; border-left: 3px solid #d97706; color: #92400e; }
+    .callout strong { font-weight: 700; }
+
+    /* CODE / URL */
+    code {
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: .825em;
+      background: var(--gray-100);
+      color: var(--gray-700);
+      padding: .15em .4em;
+      border-radius: 4px;
+    }
+    .url-example {
+      display: block;
+      background: var(--gray-100);
+      border-radius: 8px;
+      padding: .625rem 1rem;
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: .85rem;
+      color: var(--gray-700);
+      margin: .5rem 0;
+      word-break: break-all;
+    }
+    .url-highlight { color: var(--violet); font-weight: 700; }
+
+    /* FIELD TABLE */
+    .field-table { width: 100%; border-collapse: collapse; margin: .75rem 0; font-size: .9rem; }
+    .field-table th {
+      text-align: left; font-size: .75rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .06em; color: var(--gray-500);
+      padding: .5rem .75rem; border-bottom: 1px solid var(--gray-200);
+    }
+    .field-table td { padding: .6rem .75rem; border-bottom: 1px solid var(--gray-100); vertical-align: top; }
+    .field-table tr:last-child td { border-bottom: none; }
+    .field-table td:first-child { font-weight: 600; color: var(--gray-700); white-space: nowrap; }
+    .field-table td code { font-size: .8em; }
+
+    /* RESULT */
+    .result-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .result-box h4 { font-size: .9375rem; font-weight: 700; color: #15803d; margin-bottom: .4rem; }
+    .result-box p { font-size: .9rem; color: #166534; }
+
+    /* SECTION DIVIDER */
+    .section-intro {
+      font-size: .9375rem; color: var(--gray-500); margin-bottom: 1.5rem; line-height: 1.7;
+    }
+
+    /* CONCEPTS BOX */
+    .concept-box {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .concept-box h2 { font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem; }
+    .concept-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .concept-item h4 { font-size: .875rem; font-weight: 700; color: var(--violet); margin-bottom: .3rem; }
+    .concept-item p { font-size: .8375rem; color: var(--gray-600); line-height: 1.55; }
+
+    /* FOOTER */
+    footer {
+      max-width: 1100px; margin: 0 auto;
+      padding: 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid var(--gray-200);
+    }
+    .footer-brand { display: flex; align-items: center; gap: .5rem; text-decoration: none; }
+    .footer-brand img { width: 22px; height: 22px; }
+    .footer-brand span { font-size: .875rem; font-weight: 600; color: var(--gray-700); }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { font-size: .8125rem; color: var(--gray-500); text-decoration: none; }
+    .footer-links a:hover { color: var(--gray-900); }
+    .footer-copy { font-size: .75rem; color: var(--gray-300); }
+
+    @media (max-width: 600px) {
+      nav { padding: 0 1rem; }
+      .page { padding: 2rem 1rem 4rem; }
+      .concept-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 1rem; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="/">
+    <img src="assets/logo.png" alt="Cylenivo" />
+    <span>Cylenivo</span>
+  </a>
+  <div class="nav-right">
+    <a class="nav-link" href="https://github.com/nobsagile/cylenivo" target="_blank" rel="noopener">GitHub</a>
+    <a class="btn btn-primary" href="https://github.com/nobsagile/cylenivo/releases/latest" target="_blank" rel="noopener">Download</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="guide-hero">
+    <div class="guide-badge">Getting Started</div>
+    <h1>Your First Dataset from Jira, Trello, or OpenProject</h1>
+    <p>Follow this guide step by step. By the end you'll have your real project data in Cylenivo's sidebar and your first Cycle Time chart.</p>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">On this page</div>
+    <ol>
+      <li><a href="#before-you-start">Before you start</a></li>
+      <li><a href="#concepts">Understanding statuses and Cycle Time</a></li>
+      <li>
+        <a href="#jira">Jira</a>
+        <ul class="toc-sub">
+          <li><a href="#jira-token">Get an API token</a></li>
+          <li><a href="#jira-connect">Connect</a></li>
+          <li><a href="#jira-fetch">Fetch your project</a></li>
+          <li><a href="#jira-statuses">Review statuses</a></li>
+          <li><a href="#jira-measure">Set up measurement</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#trello">Trello <span class="plugin-badge">Plugin</span></a>
+        <ul class="toc-sub">
+          <li><a href="#trello-install">Install plugin</a></li>
+          <li><a href="#trello-credentials">Get credentials</a></li>
+          <li><a href="#trello-connect">Connect and fetch</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#openproject">OpenProject <span class="plugin-badge">Plugin</span></a>
+        <ul class="toc-sub">
+          <li><a href="#openproject-install">Install plugin</a></li>
+          <li><a href="#openproject-token">Get an API token</a></li>
+          <li><a href="#openproject-connect">Connect and fetch</a></li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <!-- BEFORE YOU START -->
+  <div class="tool-section" id="before-you-start">
+    <div class="tool-header">
+      <div class="tool-icon" style="background:#f3f4f6; font-size:1.375rem;">✅</div>
+      <h2>Before you start</h2>
+    </div>
+    <p class="section-intro">Make sure Cylenivo is installed and running. The app launches a local server in the background — it needs a moment on first start.</p>
+    <div class="callout callout-info">
+      <strong>Don't have Cylenivo yet?</strong> Download the latest version for your platform at <a href="https://github.com/nobsagile/cylenivo/releases/latest" target="_blank" rel="noopener" style="color:var(--violet)">github.com/nobsagile/cylenivo/releases/latest</a>.
+    </div>
+    <div style="margin-top:1rem">
+      <p style="font-size:.9375rem; color:var(--gray-600)">Click the <strong>+ New Dataset</strong> button in the left sidebar to open the import wizard. The wizard walks you through the rest.</p>
+    </div>
+  </div>
+
+  <!-- CONCEPTS -->
+  <div class="concept-box" id="concepts">
+    <h2>Understanding statuses and Cycle Time</h2>
+    <div class="concept-grid">
+      <div class="concept-item">
+        <h4>Status order</h4>
+        <p>Cylenivo imports your ticket statuses and asks you to sort them in the order work flows through your process — e.g. <em>Backlog → In Progress → Review → Done</em>.</p>
+      </div>
+      <div class="concept-item">
+        <h4>Cycle Time start &amp; end</h4>
+        <p>You pick which status marks the start of active work and which marks completion. Cylenivo measures the time between those two transitions per ticket.</p>
+      </div>
+      <div class="concept-item">
+        <h4>Lead Time</h4>
+        <p>Lead Time starts from when the ticket was created (or a status you define) and ends at the same completion status. It includes queue time before work begins.</p>
+      </div>
+      <div class="concept-item">
+        <h4>Why this matters</h4>
+        <p>There are no universal "right" statuses — your team decides what counts as active work. The wizard auto-suggests a sensible default, but you can adjust it any time.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── JIRA ─────────────────────────────────────────────────────────── -->
+  <div class="tool-section" id="jira">
+    <div class="tool-header">
+      <div class="tool-icon jira">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11.975 0C9.368 4.908 10.19 8.608 12.643 11.178L17.7 16.356C15.35 18.829 14.9 22.572 16.854 24c2.608-4.908 1.786-8.607-.667-11.178L11.13 7.644C13.48 5.17 13.93 1.428 11.975 0zM7.146 4.822C4.497 9.73 5.374 13.507 7.91 16.082L13 21.26C10.607 23.734 10.1 27.477 12.107 29c2.649-4.908 1.773-8.608-.763-11.178L6.258 12.644C8.65 10.17 9.15 6.35 7.146 4.822z" fill="#0052cc"/>
+        </svg>
+      </div>
+      <h2>Jira</h2>
+    </div>
+    <p class="section-intro">Jira is built into Cylenivo — no plugin required. You connect directly via the Jira REST API using your email and an API token.</p>
+
+    <div class="steps">
+
+      <div class="step" id="jira-token">
+        <div class="step-num"></div>
+        <div class="step-body">
+          <h3>Create an Atlassian API token</h3>
+          <p>Go to <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank" rel="noopener" style="color:var(--violet)">id.atlassian.com → Security → API tokens</a> and click <strong>Create API token</strong>. Give it any name (e.g. "Cylenivo"). Copy the token — you won't see it again.</p>
+          <div class="callout callout-tip">
+            <strong>Tip:</strong> Use your regular Atlassian account (the email you log into Jira with). The token inherits your Jira permissions — it only sees projects you can access.
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="jira-connect">
+        <div class="step-num"></div>
+        <div class="step-body">
+          <h3>Connect Cylenivo to Jira</h3>
+          <p>In the wizard, click <strong>Jira</strong> as your source. Fill in the four fields:</p>
+          <table class="field-table">
+            <thead><tr><th>Field</th><th>What to enter</th></tr></thead>
+            <tbody>
+              <tr><td>Name</td><td>Any label, e.g. "My Jira"</td></tr>
+              <tr><td>Jira Base URL</td><td>Your Atlassian URL: <code>https://yourcompany.atlassian.net</code></td></tr>
+              <tr><td>Email</td><td>The email you use to log into Jira</td></tr>
+              <tr><td>API Token</td><td>The token you created in step 1</td></tr>
+            </tbody>
+          </table>
+          <p>Click <strong>Connect</strong>. Cylenivo verifies your credentials before proceeding.</p>
+        </div>
+      </div>
+
+      <div class="step" id="jira-fetch">
+        <div class="step-num"></div>
+        <div class="step-body">
+          <h3>Choose your project and fetch data</h3>
+          <p>Enter your Jira <strong>project key</strong> — the uppercase code at the start of every ticket ID. If your tickets are named <em>ABC-123</em>, the key is <code>ABC</code>.</p>
+          <p>You can find it in the Jira board URL:</p>
+          <span class="url-example">jira.yourcompany.com/jira/software/projects/<span class="url-highlight">ABC</span>/boards</span>
+          <p>Optionally filter by issue types (Story, Task, Bug) and a date range. Then click <strong>Fetch</strong>. Cylenivo streams tickets live from Jira — larger projects take a moment.</p>
+          <div class="callout callout-tip">
+            <strong>Date range tip:</strong> Start with the last 6–12 months for a manageable first import. You can always re-import with a wider range later.
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="jira-statuses">
+        <div class="step-num"></div>
+        <div class="step-body">
+          <h3>Review and order your statuses</h3>
+          <p>Cylenivo reads all statuses from your imported tickets and suggests an order based on how work actually flowed. Drag statuses to match your real workflow from left (earliest) to right (latest).</p>
+          <div class="callout callout-warn">
+            <strong>Common mistake:</strong> Don't add statuses you never use. If "Reopened" only appears on 2 out of 500 tickets, leave it out — it will skew your Cycle Time.
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="jira-measure">
+        <div class="step-num"></div>
+        <div class="step-body">
+          <h3>Set Cycle Time start and end</h3>
+          <p>Pick which status marks <strong>active work begins</strong> (e.g. "In Progress") and which marks <strong>done</strong> (e.g. "Done" or "Released").</p>
+          <p>Click <strong>Start Analyzing</strong>. Your project appears in the left sidebar and the dashboard loads.</p>
+          <div class="result-box">
+            <h4>🎉 You're done!</h4>
+            <p>Your first dataset is in the sidebar. Explore the Dashboard, Flow, Health, and Forecast views. You can adjust statuses and Cycle Time settings anytime in <strong>Settings → Configurations</strong>.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── TRELLO ────────────────────────────────────────────────────────── -->
+  <div class="tool-section" id="trello">
+    <div class="tool-header">
+      <div class="tool-icon trello">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="24" height="24" rx="4" fill="#0079bf"/>
+          <rect x="3.5" y="3.5" width="7" height="13" rx="2" fill="white"/>
+          <rect x="13.5" y="3.5" width="7" height="9" rx="2" fill="white"/>
+        </svg>
+      </div>
+      <h2>Trello <span class="plugin-badge">Plugin</span></h2>
+    </div>
+    <p class="section-intro">Trello support requires the Trello plugin. In Trello, each <em>list</em> is a status — when a card moves between lists, Cylenivo records that as a transition and calculates Cycle Time from it.</p>
+
+    <div class="steps">
+
+      <div class="step" id="trello-install">
+        <div class="step-num"></div>
+        <div class="step-body">
+          <h3>Install the Trello plugin</h3>
+          <p>In Cylenivo, go to <strong>Settings → Plugins</strong> and click <strong>Browse plugins</strong>. Find <em>Trello</em> and click <strong>Install</strong>. No restart needed — the connector appears immediately in the New Dataset wizard.</p>
+        </div>
+      </div>
+
+      <div class="step" id="trello-credentials">
+        <div class="step-num"></div>
+        <div class="step-body">
+          <h3>Get your API Key and Token</h3>
+          <p><strong>API Key:</strong> Go to <a href="https://trello.com/power-ups/admin" target="_blank" rel="noopener" style="color:var(--violet)">trello.com/power-ups/admin</a>. Click <strong>New</strong> (or select an existing Power-Up). Copy the <strong>API Key</strong> shown on the page.</p>
+          <p style="margin-top:.75rem"><strong>API Token:</strong> Open this URL in your browser — replace <code>YOUR_API_KEY</code> with the key you just copied:</p>
+          <span class="url-example">https://trello.com/1/authorize?expiration=never&amp;scope=read&amp;response_type=token&amp;name=Cylenivo&amp;key=<span class="url-highlight">YOUR_API_KEY</span></span>
+          <p>Click <strong>Allow</strong> and copy the token shown on the next page.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-body">
+          <h3>Find your Board ID</h3>
+          <p>Open your Trello board in the browser. The URL looks like this:</p>
+          <span class="url-example">https://trello.com/b/<span class="url-highlight">ABC123de</span>/my-board-name</span>
+          <p>The short code between <code>/b/</code> and the board name is your Board ID.</p>
+        </div>
+      </div>
+
+      <div class="step" id="trello-connect">
+        <div class="step-num"></div>
+        <div class="step-body">
+          <h3>Connect and fetch</h3>
+          <p>In the New Dataset wizard, click <strong>Trello</strong>. Enter your API Key and Token, then fill in the Board ID. Click <strong>Fetch Data</strong>.</p>
+          <p style="margin-top:.5rem">After fetching, follow the same <a href="#jira-statuses" style="color:var(--violet)">status ordering</a> and <a href="#jira-measure" style="color:var(--violet)">Cycle Time setup</a> steps as Jira — your Trello lists become the statuses.</p>
+          <div class="callout callout-info">
+            <strong>Archived cards included:</strong> Cylenivo imports the full card history including archived items. This gives you accurate throughput data.
+          </div>
+          <div class="result-box">
+            <h4>🎉 You're done!</h4>
+            <p>Your Trello board appears as a dataset in the sidebar.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── OPENPROJECT ───────────────────────────────────────────────────── -->
+  <div class="tool-section" id="openproject">
+    <div class="tool-header">
+      <div class="tool-icon openproject">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#1a7f37"/>
+          <path d="M7 12a5 5 0 0 1 5-5v2a3 3 0 0 0-3 3 3 3 0 0 0 3 3v2a5 5 0 0 1-5-5z" fill="white"/>
+          <circle cx="15" cy="12" r="2.5" fill="white"/>
+        </svg>
+      </div>
+      <h2>OpenProject <span class="plugin-badge">Plugin</span></h2>
+    </div>
+    <p class="section-intro">OpenProject support requires the OpenProject plugin. Works with both cloud instances and self-hosted Community Edition.</p>
+
+    <div class="steps">
+
+      <div class="step" id="openproject-install">
+        <div class="step-num"></div>
+        <div class="step-body">
+          <h3>Install the OpenProject plugin</h3>
+          <p>In Cylenivo, go to <strong>Settings → Plugins</strong> and click <strong>Browse plugins</strong>. Find <em>OpenProject</em> and click <strong>Install</strong>. The connector is available immediately in the New Dataset wizard.</p>
+        </div>
+      </div>
+
+      <div class="step" id="openproject-token">
+        <div class="step-num"></div>
+        <div class="step-body">
+          <h3>Generate an API token in OpenProject</h3>
+          <p>Log into your OpenProject instance. Click your avatar (top-right) → <strong>My Account</strong> → <strong>Access Tokens</strong> → <strong>API</strong>. Click <strong>Generate</strong> and copy the token.</p>
+          <div class="callout callout-tip">
+            <strong>Self-hosted?</strong> Use your full instance URL, e.g. <code>https://openproject.yourcompany.com</code>. The token works the same way for cloud and self-hosted.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-body">
+          <h3>Find your project identifier</h3>
+          <p>Open your project in OpenProject. The URL looks like:</p>
+          <span class="url-example">https://yourinstance.openproject.com/projects/<span class="url-highlight">my-project</span>/work_packages</span>
+          <p>The slug after <code>/projects/</code> is your project identifier.</p>
+        </div>
+      </div>
+
+      <div class="step" id="openproject-connect">
+        <div class="step-num"></div>
+        <div class="step-body">
+          <h3>Connect and fetch</h3>
+          <p>In the New Dataset wizard, click <strong>OpenProject</strong>. Enter your server URL, API token, and project identifier. Click <strong>Fetch Data</strong>.</p>
+          <table class="field-table">
+            <thead><tr><th>Field</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td>Server URL</td><td><code>https://yourcompany.openproject.com</code></td></tr>
+              <tr><td>API Token</td><td>from My Account → Access Tokens → API</td></tr>
+              <tr><td>Project Identifier</td><td><code>my-project</code> (from the URL)</td></tr>
+            </tbody>
+          </table>
+          <p>After fetching, follow the same <a href="#jira-statuses" style="color:var(--violet)">status ordering</a> and <a href="#jira-measure" style="color:var(--violet)">Cycle Time setup</a> steps as Jira.</p>
+          <div class="callout callout-warn">
+            <strong>Large projects:</strong> The default limit is 100 work packages. Increase <em>Max Items</em> if your project has more.
+          </div>
+          <div class="result-box">
+            <h4>🎉 You're done!</h4>
+            <p>Your OpenProject data appears as a dataset in the sidebar.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BOTTOM CTA -->
+  <div style="background:var(--gray-50); border:1px solid var(--gray-200); border-radius:var(--radius); padding:2rem; text-align:center; margin-top:1rem;">
+    <p style="font-size:1.0625rem; font-weight:700; color:var(--gray-900); margin-bottom:.5rem;">Questions or issues?</p>
+    <p style="font-size:.9rem; color:var(--gray-500); margin-bottom:1.25rem;">Open an issue on GitHub or check the in-app Help page (sidebar → Help).</p>
+    <a href="https://github.com/nobsagile/cylenivo/issues" target="_blank" rel="noopener" class="btn btn-primary">Open an issue on GitHub</a>
+  </div>
+
+</div>
+
+<footer>
+  <a class="footer-brand" href="/">
+    <img src="assets/logo.png" alt="Cylenivo" />
+    <span>Cylenivo</span>
+  </a>
+  <div class="footer-links">
+    <a href="https://github.com/nobsagile/cylenivo" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/nobsagile/cylenivo-plugins" target="_blank" rel="noopener">Plugins</a>
+    <a href="https://github.com/nobsagile/cylenivo/issues" target="_blank" rel="noopener">Issues</a>
+    <a href="https://github.com/nobsagile/cylenivo/blob/master/LICENSE" target="_blank" rel="noopener">License</a>
+  </div>
+  <span class="footer-copy">© 2026 Thomas Esders</span>
+</footer>
+
+</body>
+</html>
