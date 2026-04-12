@@ -26,7 +26,7 @@ interface Props {
   connection: SourceConnection
   pluginManifest?: PluginManifest | null
   /** When refreshing an existing dataset, pass it so we can skip preflight */
-  importSession?: { id: string; project_key: string; config_id: string } | null
+  importSession?: { id: string; project_key: string; config_id: string; resolved_from?: string | null; resolved_to?: string | null } | null
   onClose: () => void
 }
 
@@ -78,8 +78,8 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
   // Pre-flight state — prefer importSession.project_key over connection default
   const [projectKey, setProjectKey] = useState(importSession?.project_key ?? connection.project_key ?? '')
   const [issueTypes, setIssueTypes] = useState<string[]>(connection.issue_types ?? ['Story', 'Task', 'Bug'])
-  const [resolvedFrom, setResolvedFrom] = useState(connection.resolved_from ?? '')
-  const [resolvedTo, setResolvedTo] = useState(connection.resolved_to ?? '')
+  const [resolvedFrom, setResolvedFrom] = useState(importSession?.resolved_from ?? connection.resolved_from ?? '')
+  const [resolvedTo, setResolvedTo] = useState(importSession?.resolved_to ?? connection.resolved_to ?? '')
   const [pluginOptions, setPluginOptions] = useState<Record<string, string>>(initialPluginOpts)
 
   // Fetch state
@@ -135,7 +135,7 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
 
       if (importSession) {
         // Replace existing dataset in-place (same ID → same project in sidebar)
-        await api.imports.replace(importSession.id, file)
+        await api.imports.replace(importSession.id, file, resolvedFrom || undefined, resolvedTo || undefined)
         notifyImportsChanged()
         notifyDataReplaced(importSession.id)
         onClose()
@@ -143,7 +143,7 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
       } else {
         const configId = await resolveConfigId()
         if (configId) {
-          const session = await api.imports.upload(file, configId, projectKey || undefined, connection.id)
+          const session = await api.imports.upload(file, configId, projectKey || undefined, connection.id, resolvedFrom || undefined, resolvedTo || undefined)
           notifyImportsChanged()
           onClose()
           navigate(`/projects/${session.id}`)
@@ -174,7 +174,7 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
       const file = new File([blob], `${connection.name}-refresh.json`, { type: 'application/json' })
 
       if (importSession) {
-        await api.imports.replace(importSession.id, file)
+        await api.imports.replace(importSession.id, file, resolvedFrom || undefined, resolvedTo || undefined)
         notifyImportsChanged()
         notifyDataReplaced(importSession.id)
         onClose()
@@ -182,7 +182,7 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
       } else {
         const configId = await resolveConfigId()
         if (configId) {
-          const session = await api.imports.upload(file, configId, connection.name || undefined, connection.id)
+          const session = await api.imports.upload(file, configId, connection.name || undefined, connection.id, resolvedFrom || undefined, resolvedTo || undefined)
           notifyImportsChanged()
           onClose()
           navigate(`/projects/${session.id}`)

@@ -42,7 +42,7 @@ export default function SettingsPage() {
   const [showSourcePicker, setShowSourcePicker] = useState(false)
   const [testingId, setTestingId] = useState<string | null>(null)
   const [refreshConn, setRefreshConn] = useState<SourceConnection | null>(null)
-  const [refreshImport, setRefreshImport] = useState<{ id: string; project_key: string; config_id: string } | null>(null)
+  const [refreshImport, setRefreshImport] = useState<{ id: string; project_key: string; config_id: string; resolved_from?: string | null; resolved_to?: string | null } | null>(null)
   const [testResults, setTestResults] = useState<Record<string, 'ok' | 'error'>>({})
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null)
   const [pendingReset, setPendingReset] = useState(false)
@@ -326,11 +326,11 @@ export default function SettingsPage() {
                 icon={FileJson}
                 actions={
                   <>
-                    {imp.connection_id && connections.find((c) => c.id === imp.connection_id && !c.resolved_to) && (
+                    {imp.connection_id && !imp.resolved_to && connections.find((c) => c.id === imp.connection_id) && (
                       <IconBtn
                         onClick={() => {
                           setRefreshConn(connections.find((c) => c.id === imp.connection_id)!)
-                          setRefreshImport({ id: imp.id, project_key: imp.project_key, config_id: imp.config_id })
+                          setRefreshImport({ id: imp.id, project_key: imp.project_key, config_id: imp.config_id, resolved_from: imp.resolved_from, resolved_to: imp.resolved_to })
                         }}
                         title={t('refresh.confirm')}
                       >

@@ -129,7 +129,7 @@ function HealthReportDialog({
 }
 
 function ProjectMenu({ imp, connection, pluginManifest, onRenamed }: {
-  imp: { id: string; config_id: string; name?: string | null; project_key: string; config_name?: string }
+  imp: { id: string; config_id: string; name?: string | null; project_key: string; config_name?: string; resolved_from?: string | null; resolved_to?: string | null; connection_id?: string | null }
   connection?: SourceConnection | null
   pluginManifest?: PluginManifest | null
   onRenamed: () => void
@@ -173,7 +173,7 @@ function ProjectMenu({ imp, connection, pluginManifest, onRenamed }: {
               <Pencil className="w-3.5 h-3.5 text-gray-400" />
               {t('sidebar.rename')}
             </DropdownMenuPrimitive.Item>
-            {connection && !connection.resolved_to && (
+            {connection && !imp.resolved_to && (
               <DropdownMenuPrimitive.Item
                 className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-gray-700 cursor-pointer hover:bg-gray-50 outline-none"
                 onSelect={() => setRefreshOpen(true)}
@@ -214,7 +214,7 @@ function ProjectMenu({ imp, connection, pluginManifest, onRenamed }: {
           open={refreshOpen}
           connection={connection}
           pluginManifest={pluginManifest}
-          importSession={{ id: imp.id, project_key: imp.project_key, config_id: imp.config_id }}
+          importSession={{ id: imp.id, project_key: imp.project_key, config_id: imp.config_id, resolved_from: imp.resolved_from, resolved_to: imp.resolved_to }}
           onClose={() => setRefreshOpen(false)}
         />
       )}
