@@ -42,21 +42,21 @@ export function AISection({ onConfigChange }: Props) {
     }).catch(console.error)
   }, [])
 
-  const loadModels = useCallback(async (provider: typeof llmProvider, baseUrl: string) => {
+  const loadModels = useCallback(async (provider: typeof llmProvider, baseUrl: string, currentModel?: string) => {
     setLlmModelsLoading(true)
     setLlmModels([])
     try {
       if (provider === 'ollama') {
         const { models } = await api.llmConfig.ollamaModels(baseUrl)
         setLlmModels(models)
-        if (models.length && !llmModel) setLlmModel(models[0])
+        if (models.length && !currentModel) setLlmModel(models[0])
       } else {
         setLlmModels(OPENAI_MODELS)
-        if (!llmModel) setLlmModel(OPENAI_MODELS[0])
+        if (!currentModel) setLlmModel(OPENAI_MODELS[0])
       }
     } catch { /* ignore */ }
     setLlmModelsLoading(false)
-  }, [llmModel])
+  }, [])
 
   async function handleProviderChange(p: typeof llmProvider) {
     setLlmProvider(p)
@@ -64,7 +64,7 @@ export function AISection({ onConfigChange }: Props) {
     setLlmTestResult(null)
     const defaultUrl = p === 'ollama' ? 'http://localhost:11434' : ''
     setLlmBaseUrl(defaultUrl)
-    await loadModels(p, defaultUrl)
+    await loadModels(p, defaultUrl, '')
   }
 
   async function handleSave() {
@@ -186,7 +186,7 @@ export function AISection({ onConfigChange }: Props) {
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-semibold text-gray-600">{t('settings.model')}</label>
               {llmProvider === 'ollama' && (
-                <button onClick={() => loadModels(llmProvider, llmBaseUrl)} disabled={llmModelsLoading}
+                <button onClick={() => loadModels(llmProvider, llmBaseUrl, llmModel)} disabled={llmModelsLoading}
                   className="text-xs text-violet-600 hover:text-violet-800 flex items-center gap-1 disabled:opacity-50">
                   <RefreshCw className={`w-3 h-3 ${llmModelsLoading ? 'animate-spin' : ''}`} />
                   {llmModelsLoading ? t('settings.discovering') : t('settings.discoverModels')}

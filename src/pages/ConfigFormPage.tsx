@@ -159,6 +159,7 @@ export default function ConfigFormPage() {
   const [activeStatuses, setActiveStatuses] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(isEdit)
+  const [loadError, setLoadError] = useState(false)
   const [formError, setFormError] = useState('')
   const [imports, setImports] = useState<ImportSession[]>([])
   const [loadingStatuses, setLoadingStatuses] = useState(false)
@@ -180,7 +181,7 @@ export default function ConfigFormPage() {
         setLeadStart(c.lead_time_start_status ?? '')
         setLeadEnd(c.lead_time_end_status ?? '')
         setActiveStatuses(c.active_statuses ?? [])
-      }).catch(console.error).finally(() => setLoading(false))
+      }).catch(() => setLoadError(true)).finally(() => setLoading(false))
     }
   }, [configId])
 
@@ -271,7 +272,25 @@ export default function ConfigFormPage() {
           <ArrowLeft className="w-3.5 h-3.5" />
           {t('config.backToSettings')}
         </Button>
-        <div className="text-sm text-gray-400">Loading…</div>
+        <div className="text-sm text-gray-400">{t('common.loading')}</div>
+      </div>
+    )
+  }
+
+  if (loadError) {
+    return (
+      <div className="max-w-lg">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/settings')}
+          className="gap-1.5 text-gray-500 mb-6 -ml-2"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          {t('config.backToSettings')}
+        </Button>
+        <div className="text-sm text-red-500">{t('common.loadError')}</div>
       </div>
     )
   }

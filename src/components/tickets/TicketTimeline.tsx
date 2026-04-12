@@ -34,6 +34,8 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
   const leadStartIdx = lead_time_start_status ? status_order.indexOf(lead_time_start_status) : -1
   const leadEndIdx = status_order.indexOf(leadEndStatus)
 
+  const [hoveredBar, setHoveredBar] = useState<number | null>(null)
+
   const sorted = [...transitions].sort(
     (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime()
   )
@@ -164,8 +166,6 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
   const completedAt = cycle_time_end_status
     ? [...sorted].reverse().find(t => t.to_status === cycle_time_end_status)?.transitioned_at ?? null
     : null
-
-  const [hoveredBar, setHoveredBar] = useState<number | null>(null)
 
   return (
     <div className="space-y-3">
