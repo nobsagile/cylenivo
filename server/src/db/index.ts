@@ -143,6 +143,16 @@ export async function migrate() {
   addColumn(`ALTER TABLE tickets ADD COLUMN exclusion_reason TEXT`)
   addColumn(`ALTER TABLE project_configs ADD COLUMN active_statuses TEXT`)
   addColumn(`ALTER TABLE source_connections ADD COLUMN max_tickets INTEGER`)
+  addColumn(`ALTER TABLE import_sessions ADD COLUMN resolved_from TEXT`)
+  addColumn(`ALTER TABLE import_sessions ADD COLUMN resolved_to TEXT`)
+  // Backfill: copy connection's resolved dates to existing import sessions (idempotent)
+  sqlite.exec(`
+    UPDATE import_sessions
+    SET resolved_from = (SELECT sc.resolved_from FROM source_connections sc WHERE sc.id = import_sessions.connection_id),
+        resolved_to   = (SELECT sc.resolved_to   FROM source_connections sc WHERE sc.id = import_sessions.connection_id)
+    WHERE connection_id IS NOT NULL
+      AND resolved_from IS NULL AND resolved_to IS NULL
+  `)
   // Indexes (safe to re-run — IF NOT EXISTS)
   sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_tickets_import_id ON tickets(import_id)`)
   sqlite.exec(`CREATE INDEX IF NOT EXISTS idx_transitions_ticket_id ON ticket_transitions(ticket_id)`)

@@ -434,6 +434,45 @@ describe('imports', () => {
     const after = await (await app.request(`/api/v1/imports/${importId}`)).json() as { data: { ticket_count: number } }
     expect(after.data.ticket_count).toBe(2)
   })
+
+  // ── resolved_from / resolved_to on import sessions ─────────────────────────
+
+  it('stores resolved_from and resolved_to on import', async () => {
+    const cfg = await createConfig()
+    const form = new FormData()
+    form.append('file', new Blob([JSON.stringify(V1)], { type: 'application/json' }), 'test.json')
+    form.append('config_id', cfg.id)
+    form.append('resolved_from', '2026-01-01')
+    form.append('resolved_to', '2026-06-30')
+    const res = await app.request('/api/v1/imports', { method: 'POST', body: form })
+    expect(res.status).toBe(201)
+    const { data } = await res.json() as { data: { resolved_from: string; resolved_to: string } }
+    expect(data.resolved_from).toBe('2026-01-01')
+    expect(data.resolved_to).toBe('2026-06-30')
+  })
+
+  it('returns null for unset resolved fields on import', async () => {
+    const cfg = await createConfig()
+    const importId = await doImport(cfg.id, V1)
+    const res = await app.request(`/api/v1/imports/${importId}`)
+    const { data } = await res.json() as { data: { resolved_from: string | null; resolved_to: string | null } }
+    expect(data.resolved_from).toBeNull()
+    expect(data.resolved_to).toBeNull()
+  })
+
+  it('PUT /data updates resolved_from and resolved_to', async () => {
+    const cfg = await createConfig()
+    const importId = await doImport(cfg.id, V1)
+    const form = new FormData()
+    form.append('file', new Blob([JSON.stringify(V2)], { type: 'application/json' }), 'refresh.json')
+    form.append('resolved_from', '2026-02-01')
+    form.append('resolved_to', '2026-07-31')
+    const res = await app.request(`/api/v1/imports/${importId}/data`, { method: 'PUT', body: form })
+    expect(res.status).toBe(200)
+    const { data } = await res.json() as { data: { resolved_from: string; resolved_to: string } }
+    expect(data.resolved_from).toBe('2026-02-01')
+    expect(data.resolved_to).toBe('2026-07-31')
+  })
 })
 
 // ─── metrics ──────────────────────────────────────────────────────────────────

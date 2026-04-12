@@ -790,7 +790,7 @@ export default function ImportPage() {
       const blob = new Blob([JSON.stringify(data)], { type: 'application/json' })
       const file = new File([blob], `${projectKey}-export.json`, { type: 'application/json' })
       const autoName = `${projectKey} – ${new Date().toLocaleDateString()}`
-      const session = await api.imports.upload(file, selectedConfigId, autoName, connection.id)
+      const session = await api.imports.upload(file, selectedConfigId, autoName, connection.id, resolvedFrom || undefined, resolvedTo || undefined)
       if (connection.source_type === 'jira') {
         api.connections.update(connection.id, {
           project_key: projectKey,
@@ -830,7 +830,7 @@ export default function ImportPage() {
       const blob = new Blob([JSON.stringify(fetchedData)], { type: 'application/json' })
       const file = new File([blob], `${fetchedProjectKey}-export.json`, { type: 'application/json' })
       const autoName = `${fetchedProjectKey} – ${new Date().toLocaleDateString()}`
-      const session = await api.imports.upload(file, config.id, autoName, connection.id)
+      const session = await api.imports.upload(file, config.id, autoName, connection.id, resolvedFrom || undefined, resolvedTo || undefined)
       // Save project defaults to connection so next Refresh auto-starts (no preflight)
       if (connection.source_type === 'jira') {
         api.connections.update(connection.id, {

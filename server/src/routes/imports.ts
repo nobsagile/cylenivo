@@ -124,6 +124,8 @@ imports.post('/', async (c) => {
   const configId = body['config_id'] as string
   const datasetName = (body['name'] as string) || null
   const connectionId = (body['connection_id'] as string) || null
+  const resolvedFrom = (body['resolved_from'] as string) || null
+  const resolvedTo = (body['resolved_to'] as string) || null
 
   if (!file || typeof file === 'string') {
     return c.json({ data: null, error: 'No file provided' }, 400)
@@ -171,6 +173,8 @@ imports.post('/', async (c) => {
     imported_at: now,
     health_report: JSON.stringify(healthReport),
     connection_id: connectionId,
+    resolved_from: resolvedFrom,
+    resolved_to: resolvedTo,
   }
 
   for (const t of data.tickets) {
@@ -203,6 +207,8 @@ imports.put('/:id/data', async (c) => {
 
   const body = await c.req.parseBody()
   const file = body['file']
+  const resolvedFrom = body['resolved_from'] as string | undefined
+  const resolvedTo = body['resolved_to'] as string | undefined
   if (!file || typeof file === 'string') {
     return c.json({ data: null, error: 'No file provided' }, 400)
   }
@@ -257,6 +263,8 @@ imports.put('/:id/data', async (c) => {
       ticket_count: data.tickets.length,
       imported_at: now,
       health_report: JSON.stringify(healthReport),
+      ...(resolvedFrom !== undefined ? { resolved_from: resolvedFrom || null } : {}),
+      ...(resolvedTo !== undefined ? { resolved_to: resolvedTo || null } : {}),
     }).where(eq(importSessions.id, id))
   })
 

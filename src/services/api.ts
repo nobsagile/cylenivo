@@ -69,17 +69,21 @@ export const api = {
   imports: {
     list: () => request<ImportSession[]>('/api/v1/imports'),
     get: (id: string) => request<ImportSession>(`/api/v1/imports/${id}`),
-    upload: (file: File, configId: string, name?: string, connectionId?: string) => {
+    upload: (file: File, configId: string, name?: string, connectionId?: string, resolvedFrom?: string, resolvedTo?: string) => {
       const form = new FormData()
       form.append('file', file)
       form.append('config_id', configId)
       if (name) form.append('name', name)
       if (connectionId) form.append('connection_id', connectionId)
+      if (resolvedFrom) form.append('resolved_from', resolvedFrom)
+      if (resolvedTo) form.append('resolved_to', resolvedTo)
       return request<ImportSession>('/api/v1/imports', { method: 'POST', body: form })
     },
-    replace: (id: string, file: File) => {
+    replace: (id: string, file: File, resolvedFrom?: string, resolvedTo?: string) => {
       const form = new FormData()
       form.append('file', file)
+      if (resolvedFrom) form.append('resolved_from', resolvedFrom)
+      if (resolvedTo) form.append('resolved_to', resolvedTo)
       return request<ImportSession>(`/api/v1/imports/${id}/data`, { method: 'PUT', body: form })
     },
     update: (id: string, body: { name?: string; config_id?: string }) =>
