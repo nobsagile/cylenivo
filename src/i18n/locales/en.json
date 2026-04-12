@@ -600,6 +600,7 @@
   },
   "help": {
     "subtitle": "Quick reference for all metrics, charts, and settings.",
+    "gettingStartedGuide": "Getting started? Step-by-step guide for Jira, Trello & OpenProject",
     "sections": {
       "metrics": "Metrics",
       "charts": "Charts & Visualizations",

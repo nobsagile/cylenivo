@@ -111,6 +111,14 @@ export default function HelpPage() {
       <div>
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('nav.help')}</h2>
         <p className="text-sm text-gray-400 mt-0.5">{t('help.subtitle')}</p>
+        <a
+          href="https://cylenivo.org/guide"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 mt-3 text-sm font-medium text-violet-600 hover:text-violet-800 transition-colors"
+        >
+          {t('help.gettingStartedGuide')} →
+        </a>
       </div>
 
       {SECTIONS.map((section) => (

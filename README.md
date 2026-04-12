@@ -33,6 +33,8 @@ Plugins are installed directly inside Cylenivo — no manual file management.
 
 ## Getting started
 
+→ **[Step-by-step guide: Your First Dataset from Jira, Trello, or OpenProject](https://cylenivo.org/guide)**
+
 Download the latest release for macOS or Windows from the [Releases](https://github.com/nobsagile/cylenivo/releases) page.
 
 > **Note:** Cylenivo is not code-signed. macOS and Windows will show a security warning on first launch — this is expected.
