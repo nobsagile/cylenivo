@@ -26,7 +26,7 @@ Cylenivo calculates metrics from **status transition timestamps**, not ticket fi
 | Source | Type | Notes |
 |---|---|---|
 | Jira | Built-in | Direct API connection (URL + API token) |
-| OpenProject | Community plugin | Via [cylenivo-plugins](https://github.com/nobsagile/cylenivo-plugins) |
+| OpenProject and Trello | Community plugin | Via [cylenivo-plugins](https://github.com/nobsagile/cylenivo-plugins) |
 | Any tool | Community plugin | [Build your own](https://github.com/nobsagile/cylenivo-plugins/blob/main/CONTRIBUTING.md) in ~50 lines of JS |
 
 Plugins are installed directly inside Cylenivo — no manual file management.
