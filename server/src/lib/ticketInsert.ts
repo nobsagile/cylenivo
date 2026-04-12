@@ -58,7 +58,8 @@ export function buildTicketRows(
     })
 
     const sorted = [...t.transitions].sort(
-      (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime(),
+      (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime()
+        || a.to_status.localeCompare(b.to_status),
     )
     for (const tr of sorted) {
       const transitionedAt = parseDate(tr.transitioned_at)

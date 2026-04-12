@@ -22,6 +22,7 @@ export default function DatasetEditPage() {
   const [configId, setConfigId] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [loadError, setLoadError] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -33,7 +34,7 @@ export default function DatasetEditPage() {
       setName(session.name ?? session.project_key)
       setConfigId(session.config_id)
       setConfigs(cfgs)
-    }).finally(() => setLoading(false))
+    }).catch(() => setLoadError(true)).finally(() => setLoading(false))
   }, [datasetId])
 
   async function handleSave() {
@@ -64,6 +65,24 @@ export default function DatasetEditPage() {
           {t('dataset.backToSettings')}
         </Button>
         <div className="text-sm text-gray-400">{t('common.loading')}</div>
+      </div>
+    )
+  }
+
+  if (loadError) {
+    return (
+      <div className="max-w-lg">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/settings', { state: { section: 'datasets' } })}
+          className="gap-1.5 text-gray-500 mb-6 -ml-2"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          {t('dataset.backToSettings')}
+        </Button>
+        <div className="text-sm text-red-500">{t('common.loadError')}</div>
       </div>
     )
   }

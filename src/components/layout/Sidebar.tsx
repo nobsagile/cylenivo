@@ -138,13 +138,15 @@ function ProjectMenu({ imp, connection, pluginManifest, onRenamed }: {
   const [renameOpen, setRenameOpen] = useState(false)
   const [renameValue, setRenameValue] = useState('')
   const [renaming, setRenaming] = useState(false)
+  const [renameError, setRenameError] = useState<string | null>(null)
   const [refreshOpen, setRefreshOpen] = useState(false)
 
   function handleRename() {
     setRenaming(true)
+    setRenameError(null)
     api.imports.update(imp.id, { name: renameValue })
       .then(() => { setRenameOpen(false); onRenamed() })
-      .catch(console.error)
+      .catch((e: unknown) => setRenameError(e instanceof Error ? e.message : 'Rename failed'))
       .finally(() => setRenaming(false))
   }
 
@@ -186,7 +188,7 @@ function ProjectMenu({ imp, connection, pluginManifest, onRenamed }: {
         </DropdownMenuPrimitive.Portal>
       </DropdownMenuPrimitive.Root>
 
-      <Dialog open={renameOpen} onOpenChange={(o) => { if (!o) setRenameOpen(false) }}>
+      <Dialog open={renameOpen} onOpenChange={(o) => { if (!o) { setRenameOpen(false); setRenameError(null) } }}>
         <DialogContent className="max-w-sm bg-white">
           <DialogHeader>
             <DialogTitle>{t('sidebar.renameTitle')}</DialogTitle>
@@ -198,6 +200,7 @@ function ProjectMenu({ imp, connection, pluginManifest, onRenamed }: {
             autoFocus
             className="mt-2"
           />
+          {renameError && <p className="text-xs text-red-500 mt-2">{renameError}</p>}
           <div className="flex justify-end gap-2 mt-4">
             <button onClick={() => setRenameOpen(false)} className="px-3 py-1.5 text-sm rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50">
               {t('common.cancel')}
