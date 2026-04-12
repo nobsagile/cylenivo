@@ -308,7 +308,7 @@
       <strong>Don't have Cylenivo yet?</strong> Download the latest version for your platform at <a href="https://github.com/nobsagile/cylenivo/releases/latest" target="_blank" rel="noopener" style="color:var(--violet)">github.com/nobsagile/cylenivo/releases/latest</a>.
     </div>
     <div style="margin-top:1rem">
-      <p style="font-size:.9375rem; color:var(--gray-600)">Click the <strong>+ New Dataset</strong> button in the left sidebar to open the import wizard. The wizard walks you through the rest.</p>
+      <p style="font-size:.9375rem; color:var(--gray-600)">Click the <strong>+</strong> icon next to <strong>Datasets</strong> in the left sidebar. This opens the import wizard — it walks you through the rest.</p>
     </div>
   </div>
 
@@ -385,9 +385,9 @@
           <p>Enter your Jira <strong>project key</strong> — the uppercase code at the start of every ticket ID. If your tickets are named <em>ABC-123</em>, the key is <code>ABC</code>.</p>
           <p>You can find it in the Jira board URL:</p>
           <span class="url-example">jira.yourcompany.com/jira/software/projects/<span class="url-highlight">ABC</span>/boards</span>
-          <p>Optionally filter by issue types (Story, Task, Bug) and a date range. Then click <strong>Fetch</strong>. Cylenivo streams tickets live from Jira — larger projects take a moment.</p>
+          <p>Optionally filter by issue types (Story, Task, Bug, Epic) and set a <strong>Completed between</strong> date range. Then click <strong>Fetch data</strong>. Cylenivo streams tickets live from Jira — larger projects take a moment.</p>
           <div class="callout callout-tip">
-            <strong>Date range tip:</strong> Start with the last 6–12 months for a manageable first import. You can always re-import with a wider range later.
+            <strong>Date range tip:</strong> Start with the last 6–12 months for a manageable first import. Without a date filter, all tickets since the beginning of the project are imported — this can be very slow for large projects.
           </div>
         </div>
       </div>
@@ -395,10 +395,11 @@
       <div class="step" id="jira-statuses">
         <div class="step-num"></div>
         <div class="step-body">
-          <h3>Review and order your statuses</h3>
-          <p>Cylenivo reads all statuses from your imported tickets and suggests an order based on how work actually flowed. Drag statuses to match your real workflow from left (earliest) to right (latest).</p>
+          <h3>Sort your statuses</h3>
+          <p>The <strong>Sort your statuses</strong> screen shows all statuses found in your tickets. Cylenivo auto-suggests an order based on how work actually flowed. Drag them into the right order — top = first in your workflow, bottom = last.</p>
+          <p>Remove any statuses you don't need using the × button — only what you keep will appear in the next step.</p>
           <div class="callout callout-warn">
-            <strong>Common mistake:</strong> Don't add statuses you never use. If "Reopened" only appears on 2 out of 500 tickets, leave it out — it will skew your Cycle Time.
+            <strong>Common mistake:</strong> Don't keep statuses you almost never use. If "Reopened" appears on 2 out of 500 tickets, remove it — it will skew your Cycle Time.
           </div>
         </div>
       </div>
@@ -406,9 +407,17 @@
       <div class="step" id="jira-measure">
         <div class="step-num"></div>
         <div class="step-body">
-          <h3>Set Cycle Time start and end</h3>
-          <p>Pick which status marks <strong>active work begins</strong> (e.g. "In Progress") and which marks <strong>done</strong> (e.g. "Done" or "Released").</p>
-          <p>Click <strong>Start Analyzing</strong>. Your project appears in the left sidebar and the dashboard loads.</p>
+          <h3>Set up measurement</h3>
+          <p>The <strong>Set up measurement</strong> screen has two dropdowns and a measurement mode:</p>
+          <table class="field-table">
+            <thead><tr><th>Question in the UI</th><th>What to pick</th></tr></thead>
+            <tbody>
+              <tr><td>Which status means work has started?</td><td>E.g. "In Progress" — the moment a developer picks up a ticket</td></tr>
+              <tr><td>Which status means it's done?</td><td>E.g. "Done" or "Released"</td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:.75rem">Below the dropdowns you'll see three <strong>measurement mode</strong> options. For most teams, keep the default <strong>Full time (incl. rework)</strong> — it captures re-opened tickets and gives the most honest picture.</p>
+          <p style="margin-top:.5rem">Click <strong>Start analyzing</strong>. Your dataset appears in the <strong>Datasets</strong> section of the sidebar and the dashboard loads.</p>
           <div class="result-box">
             <h4>🎉 You're done!</h4>
             <p>Your first dataset is in the sidebar. Explore the Dashboard, Flow, Health, and Forecast views. You can adjust statuses and Cycle Time settings anytime in <strong>Settings → Configurations</strong>.</p>
@@ -439,7 +448,7 @@
         <div class="step-num"></div>
         <div class="step-body">
           <h3>Install the Trello plugin</h3>
-          <p>In Cylenivo, go to <strong>Settings → Plugins</strong> and click <strong>Browse plugins</strong>. Find <em>Trello</em> and click <strong>Install</strong>. No restart needed — the connector appears immediately in the New Dataset wizard.</p>
+          <p>In Cylenivo, go to <strong>Settings → Plugins</strong> and click <strong>Browse plugins</strong>. Find <em>Trello</em> and click <strong>Install</strong>. No restart needed — the <strong>Trello</strong> tile appears immediately on the source picker when you click the <strong>+</strong> icon in the sidebar.</p>
         </div>
       </div>
 
@@ -468,8 +477,8 @@
         <div class="step-num"></div>
         <div class="step-body">
           <h3>Connect and fetch</h3>
-          <p>In the New Dataset wizard, click <strong>Trello</strong>. Enter your API Key and Token, then fill in the Board ID. Click <strong>Fetch Data</strong>.</p>
-          <p style="margin-top:.5rem">After fetching, follow the same <a href="#jira-statuses" style="color:var(--violet)">status ordering</a> and <a href="#jira-measure" style="color:var(--violet)">Cycle Time setup</a> steps as Jira — your Trello lists become the statuses.</p>
+          <p>Click the <strong>+</strong> icon in the sidebar and select <strong>Trello</strong>. A dialog opens asking for your API Key and API Token — enter them and click <strong>Connect</strong>. Cylenivo verifies the credentials, then shows the fetch form.</p>
+          <p style="margin-top:.5rem">Enter your <strong>Board ID</strong> and click <strong>Import your tickets</strong>. After fetching, follow the same <a href="#jira-statuses" style="color:var(--violet)">status sorting</a> and <a href="#jira-measure" style="color:var(--violet)">measurement setup</a> steps as Jira — your Trello lists become the statuses.</p>
           <div class="callout callout-info">
             <strong>Archived cards included:</strong> Cylenivo imports the full card history including archived items. This gives you accurate throughput data.
           </div>
@@ -503,7 +512,7 @@
         <div class="step-num"></div>
         <div class="step-body">
           <h3>Install the OpenProject plugin</h3>
-          <p>In Cylenivo, go to <strong>Settings → Plugins</strong> and click <strong>Browse plugins</strong>. Find <em>OpenProject</em> and click <strong>Install</strong>. The connector is available immediately in the New Dataset wizard.</p>
+          <p>In Cylenivo, go to <strong>Settings → Plugins</strong> and click <strong>Browse plugins</strong>. Find <em>OpenProject</em> and click <strong>Install</strong>. No restart needed — the <strong>OpenProject</strong> tile appears immediately on the source picker when you click the <strong>+</strong> icon in the sidebar.</p>
         </div>
       </div>
 
@@ -532,7 +541,7 @@
         <div class="step-num"></div>
         <div class="step-body">
           <h3>Connect and fetch</h3>
-          <p>In the New Dataset wizard, click <strong>OpenProject</strong>. Enter your server URL, API token, and project identifier. Click <strong>Fetch Data</strong>.</p>
+          <p>Click the <strong>+</strong> icon in the sidebar and select <strong>OpenProject</strong>. A dialog opens asking for your credentials — enter them and click <strong>Connect</strong>. Cylenivo verifies them, then shows the fetch form.</p>
           <table class="field-table">
             <thead><tr><th>Field</th><th>Example</th></tr></thead>
             <tbody>
@@ -541,7 +550,7 @@
               <tr><td>Project Identifier</td><td><code>my-project</code> (from the URL)</td></tr>
             </tbody>
           </table>
-          <p>After fetching, follow the same <a href="#jira-statuses" style="color:var(--violet)">status ordering</a> and <a href="#jira-measure" style="color:var(--violet)">Cycle Time setup</a> steps as Jira.</p>
+          <p style="margin-top:.75rem">Click <strong>Import your tickets</strong>. After fetching, follow the same <a href="#jira-statuses" style="color:var(--violet)">status sorting</a> and <a href="#jira-measure" style="color:var(--violet)">measurement setup</a> steps as Jira.</p>
           <div class="callout callout-warn">
             <strong>Large projects:</strong> The default limit is 100 work packages. Increase <em>Max Items</em> if your project has more.
           </div>
