@@ -473,6 +473,27 @@ describe('imports', () => {
     expect(data.resolved_from).toBe('2026-02-01')
     expect(data.resolved_to).toBe('2026-07-31')
   })
+
+  it('PUT /data with invalid data preserves old tickets', async () => {
+    const cfg = await createConfig()
+    const importId = await doImport(cfg.id, V1)
+
+    // Verify old data exists
+    const before = await app.request(`/api/v1/tickets?import_id=${importId}`)
+    const { data: beforeData } = await before.json() as { data: { tickets: { external_id: string }[]; total: number } }
+    expect(beforeData.total).toBe(1)
+
+    // Attempt refresh with invalid data (missing source_type → 422 from validateImportFile)
+    const badData = { project_key: 'PROJ', exported_at: '2026-02-01T00:00:00Z', tickets: [{ external_id: 'X-1', title: 'T', ticket_type: 'bug', created_at: '2026-01-01T00:00:00Z', transitions: [] }] }
+    const res = await putData(importId, badData)
+    expect(res.status).toBe(422)
+
+    // Old data must still be intact
+    const after = await app.request(`/api/v1/tickets?import_id=${importId}`)
+    const { data: afterData } = await after.json() as { data: { tickets: { external_id: string }[]; total: number } }
+    expect(afterData.total).toBe(1)
+    expect(afterData.tickets[0].external_id).toBe('PROJ-1')
+  })
 })
 
 // ─── metrics ──────────────────────────────────────────────────────────────────

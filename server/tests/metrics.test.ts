@@ -543,3 +543,117 @@ describe('metrics / config_context in summary', () => {
     expect(s.config_context.lead_time_end_status).toBe('Done')
   })
 })
+
+// ── throughput endpoint ───────────────────────────────────────────────────────
+describe('metrics / throughput', () => {
+  it('returns weeks array with weekly counts', async () => {
+    const configId = await createConfig()
+    const importId = await doImport(configId)
+    const res = await app.request(`/api/v1/metrics/${importId}/throughput`)
+    const { data } = await res.json() as { data: { weeks: { week: string; count: number }[] } }
+    expect(res.status).toBe(200)
+    expect(Array.isArray(data.weeks)).toBe(true)
+    for (const w of data.weeks) {
+      expect(typeof w.week).toBe('string')
+      expect(typeof w.count).toBe('number')
+      expect(w.count).toBeGreaterThan(0)
+    }
+  })
+
+  it('returns 404 for unknown import', async () => {
+    const res = await app.request('/api/v1/metrics/nonexistent/throughput')
+    expect(res.status).toBe(404)
+  })
+})
+
+// ── cfd endpoint ──────────────────────────────────────────────────────────────
+describe('metrics / cfd', () => {
+  it('returns statuses and data array', async () => {
+    const configId = await createConfig()
+    const importId = await doImport(configId)
+    const res = await app.request(`/api/v1/metrics/${importId}/cfd`)
+    const { data } = await res.json() as { data: { statuses: string[]; data: Record<string, unknown>[] } }
+    expect(res.status).toBe(200)
+    expect(Array.isArray(data.statuses)).toBe(true)
+    expect(data.statuses.length).toBeGreaterThan(0)
+    expect(Array.isArray(data.data)).toBe(true)
+    // Each data point has a date and status counts
+    if (data.data.length > 0) {
+      expect(data.data[0]).toHaveProperty('date')
+    }
+  })
+
+  it('filters by date range', async () => {
+    const configId = await createConfig()
+    const importId = await doImport(configId)
+    const resAll = await app.request(`/api/v1/metrics/${importId}/cfd`)
+    const { data: all } = await resAll.json() as { data: { data: Record<string, unknown>[] } }
+    // Filter to a narrow range — should have fewer or equal data points
+    const resFiltered = await app.request(`/api/v1/metrics/${importId}/cfd?from=2024-01-10&to=2024-01-15`)
+    const { data: filtered } = await resFiltered.json() as { data: { data: Record<string, unknown>[] } }
+    expect(filtered.data.length).toBeLessThanOrEqual(all.data.length)
+  })
+
+  it('returns 404 for unknown import', async () => {
+    const res = await app.request('/api/v1/metrics/nonexistent/cfd')
+    expect(res.status).toBe(404)
+  })
+})
+
+// ── forecast endpoint ─────────────────────────────────────────────────────────
+describe('metrics / forecast', () => {
+  it('returns forecast for mode=when', async () => {
+    const configId = await createConfig()
+    const importId = await doImport(configId)
+    const res = await app.request(`/api/v1/metrics/${importId}/forecast?mode=when&value=5`)
+    const { data } = await res.json() as { data: { mode: string; value: number; p50: number; p85: number; p95: number; histogram: number[]; weeks_of_data: number } }
+    expect(res.status).toBe(200)
+    expect(data.mode).toBe('when')
+    expect(data.value).toBe(5)
+    expect(typeof data.p50).toBe('number')
+    expect(typeof data.p85).toBe('number')
+    expect(typeof data.p95).toBe('number')
+    expect(data.p85).toBeGreaterThanOrEqual(data.p50)
+    expect(data.p95).toBeGreaterThanOrEqual(data.p85)
+    expect(Array.isArray(data.histogram)).toBe(true)
+    expect(data.weeks_of_data).toBeGreaterThan(0)
+  })
+
+  it('returns forecast for mode=how_many with inverted percentiles', async () => {
+    const configId = await createConfig()
+    const importId = await doImport(configId)
+    const res = await app.request(`/api/v1/metrics/${importId}/forecast?mode=how_many&value=4`)
+    const { data } = await res.json() as { data: { mode: string; p50: number; p85: number; p95: number } }
+    expect(res.status).toBe(200)
+    expect(data.mode).toBe('how_many')
+    // how_many uses lower tail: p85 is at 15th percentile, p95 at 5th
+    expect(data.p85).toBeLessThanOrEqual(data.p50)
+    expect(data.p95).toBeLessThanOrEqual(data.p85)
+  })
+
+  it('returns 400 for invalid mode', async () => {
+    const configId = await createConfig()
+    const importId = await doImport(configId)
+    const res = await app.request(`/api/v1/metrics/${importId}/forecast?mode=invalid&value=5`)
+    expect(res.status).toBe(400)
+  })
+
+  it('returns 400 for missing value', async () => {
+    const configId = await createConfig()
+    const importId = await doImport(configId)
+    const res = await app.request(`/api/v1/metrics/${importId}/forecast?mode=when`)
+    expect(res.status).toBe(400)
+  })
+
+  it('returns 422 for value exceeding limit', async () => {
+    const configId = await createConfig()
+    const importId = await doImport(configId)
+    const res = await app.request(`/api/v1/metrics/${importId}/forecast?mode=when&value=99999`)
+    expect(res.status).toBe(422)
+  })
+
+  it('returns 404 for unknown import', async () => {
+    const res = await app.request('/api/v1/metrics/nonexistent/forecast?mode=when&value=5')
+    expect(res.status).toBe(404)
+  })
+})
