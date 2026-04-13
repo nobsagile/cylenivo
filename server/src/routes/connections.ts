@@ -4,7 +4,7 @@ import { eq, desc } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { sourceConnections, importSessions, type ConnectionRow, type ConnectionInsert } from '../db/schema.js'
 import { ok } from '../lib/response.js'
-import { testConnection, buildImportFile } from '../connectors/jira.js'
+import { testConnection, buildImportFile, fetchProjectIssueTypes } from '../connectors/jira.js'
 import type { JiraCredentials } from '../connectors/jira.js'
 import { loadPlugin } from '../lib/pluginRunner.js'
 
@@ -186,6 +186,22 @@ connections.post('/:id/duplicate', async (c) => {
   }
   await db.insert(sourceConnections).values(row)
   return c.json(ok(serialize(row as ConnectionRow)), 201)
+})
+
+connections.get('/:id/issue-types', async (c) => {
+  const id = c.req.param('id')
+  const project = c.req.query('project')
+  if (!project) return c.json({ data: null, error: 'Missing project' }, 422)
+  const rows = await db.select().from(sourceConnections).where(eq(sourceConnections.id, id))
+  if (!rows.length) return c.json({ data: null, error: 'Connection not found' }, 404)
+  const conn = rows[0]
+  const creds: JiraCredentials = { base_url: conn.base_url, email: conn.email, api_token: conn.api_token, auth_type: (conn.auth_type ?? 'cloud') as 'cloud' | 'server' }
+  try {
+    const types = await fetchProjectIssueTypes(creds, project)
+    return c.json(ok(types))
+  } catch (e) {
+    return c.json({ data: null, error: e instanceof Error ? e.message : 'Failed to fetch issue types' }, 400)
+  }
 })
 
 connections.get('/:id/datasets', async (c) => {

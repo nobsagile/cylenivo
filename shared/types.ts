@@ -36,6 +36,7 @@ export interface ImportSession {
   connection_id?: string | null
   resolved_from?: string | null
   resolved_to?: string | null
+  issue_types?: string[] | null
 }
 
 export interface TicketTransition {

@@ -28,6 +28,7 @@ export const importSessions = sqliteTable('import_sessions', {
   connection_id: text('connection_id'),
   resolved_from: text('resolved_from'),
   resolved_to: text('resolved_to'),
+  issue_types: text('issue_types'), // JSON array: actual types used for this import
 })
 
 export const tickets = sqliteTable('tickets', {

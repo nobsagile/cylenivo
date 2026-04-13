@@ -120,6 +120,11 @@ async function jiraGet<T>(creds: JiraCredentials, path: string, attempt = 0): Pr
   return res.json()
 }
 
+export async function fetchProjectIssueTypes(creds: JiraCredentials, project: string): Promise<string[]> {
+  const data = await jiraGet<{ name: string; subtask: boolean }[]>(creds, `/project/${project}/issuetypes`)
+  return data.filter(t => !t.subtask).map(t => t.name)
+}
+
 export function mapIssueType(jiraType: string): string {
   const t = jiraType.toLowerCase()
   if (t === 'bug') return 'bug'

@@ -145,6 +145,7 @@ export async function migrate() {
   addColumn(`ALTER TABLE source_connections ADD COLUMN max_tickets INTEGER`)
   addColumn(`ALTER TABLE source_connections ADD COLUMN auth_type TEXT DEFAULT 'cloud'`)
   addColumn(`ALTER TABLE import_sessions ADD COLUMN resolved_from TEXT`)
+  addColumn(`ALTER TABLE import_sessions ADD COLUMN issue_types TEXT`)
   addColumn(`ALTER TABLE import_sessions ADD COLUMN resolved_to TEXT`)
   // Backfill: copy connection's resolved dates to existing import sessions (idempotent)
   sqlite.exec(`

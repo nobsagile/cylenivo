@@ -217,7 +217,7 @@ function ProjectMenu({ imp, connection, pluginManifest, onRenamed }: {
           open={refreshOpen}
           connection={connection}
           pluginManifest={pluginManifest}
-          importSession={{ id: imp.id, project_key: imp.project_key, config_id: imp.config_id, resolved_from: imp.resolved_from, resolved_to: imp.resolved_to }}
+          importSession={{ id: imp.id, project_key: imp.project_key, config_id: imp.config_id, resolved_from: imp.resolved_from, resolved_to: imp.resolved_to, issue_types: imp.issue_types }}
           onClose={() => setRefreshOpen(false)}
         />
       )}
