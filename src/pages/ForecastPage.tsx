@@ -16,6 +16,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { DateRangeSlider } from '@/components/metrics/DateRangeSlider'
+import { downloadCsv } from '@/lib/csvExport'
+import { ExportButton } from '@/components/ui/ExportButton'
 import type { ProjectLayoutContext } from '@/components/layout/ProjectLayout'
 
 type Mode = 'how_many' | 'when'
@@ -94,6 +96,7 @@ export default function ForecastPage() {
           completed={metrics.completed_ticket_count}
           total={metrics.ticket_count}
           excluded={metrics.excluded_ticket_count}
+          /* actions — hidden until #90 */
         />
       ) : (
         <div>

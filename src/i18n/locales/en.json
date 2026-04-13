@@ -26,6 +26,8 @@
     "created": "Created",
     "resolved": "Completed",
     "status": "Status",
+    "exportCsv": "Export CSV",
+    "exported": "Exported!",
     "reload": "Reload",
     "disconnect": "Disconnect",
     "connected": "Connected",

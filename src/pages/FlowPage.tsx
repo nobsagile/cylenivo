@@ -12,6 +12,8 @@ import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 import { BoardVisualization } from '@/components/metrics/BoardVisualization'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { DateRangeSlider } from '@/components/metrics/DateRangeSlider'
+import { downloadCsv } from '@/lib/csvExport'
+import { ExportButton } from '@/components/ui/ExportButton'
 import type { ProjectLayoutContext } from '@/components/layout/ProjectLayout'
 
 export default function FlowPage() {
@@ -52,6 +54,7 @@ export default function FlowPage() {
         completed={metrics.completed_ticket_count}
         total={metrics.ticket_count}
         excluded={metrics.excluded_ticket_count}
+        /* actions — hidden until #90 */
       />
 
       {dateRange?.from && dateRange?.to && (

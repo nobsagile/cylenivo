@@ -11,6 +11,8 @@ import { PercentileCard } from '@/components/metrics/PercentileCard'
 import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { DateRangeSlider } from '@/components/metrics/DateRangeSlider'
+import { downloadCsv } from '@/lib/csvExport'
+import { ExportButton } from '@/components/ui/ExportButton'
 import type { ProjectLayoutContext } from '@/components/layout/ProjectLayout'
 
 interface MetricCardProps {
@@ -177,6 +179,7 @@ export default function DashboardPage() {
         completed={data.completed_ticket_count}
         total={data.ticket_count}
         excluded={data.excluded_ticket_count}
+        /* actions — hidden until #90 */
       />
 
       {dateRange?.from && dateRange?.to && (

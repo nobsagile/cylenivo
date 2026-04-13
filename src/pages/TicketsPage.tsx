@@ -9,8 +9,10 @@ import type { Ticket } from '@/types'
 import { TicketTable, sortTickets, type SortKey, type SortDir } from '@/components/tickets/TicketTable'
 import { TicketDetailDrawer } from '@/components/tickets/TicketDetailDrawer'
 import { Button } from '@/components/ui/button'
+import { ExportButton } from '@/components/ui/ExportButton'
 import { Input } from '@/components/ui/input'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { downloadCsv } from '@/lib/csvExport'
 
 export default function TicketsPage() {
   const { t } = useTranslation()
@@ -64,80 +66,85 @@ export default function TicketsPage() {
     })
   }, [excludedOnly])
 
+  async function handleExportCsv() {
+    if (!importId) return
+    const res = await api.tickets.list(importId, { limit: 0 })
+    const headers = ['ID', 'Title', 'Type', 'Created', 'Status', 'Cycle Time (days)', 'Lead Time (days)', 'Completed At', 'Excluded', 'Exclusion Reason']
+    const rows = res.tickets.map(t => [
+      t.external_id, t.title, t.ticket_type, t.created_at, t.current_status,
+      t.cycle_time_days, t.lead_time_days, t.completed_at, t.excluded ? 'Yes' : 'No', t.exclusion_reason ?? '',
+    ])
+    downloadCsv(`tickets-${metrics?.project_key ?? 'export'}.csv`, headers, rows)
+  }
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <PageHeader
-          view={t('nav.tickets')}
-          name={metrics?.project_key ?? '…'}
-          subtitle={t('tickets.subtitle')}
-          completed={metrics?.completed_ticket_count}
-          total={metrics?.ticket_count}
-          excluded={metrics?.excluded_ticket_count}
-        />
+      <PageHeader
+        view={t('nav.tickets')}
+        name={metrics?.project_key ?? '…'}
+        subtitle={t('tickets.subtitle')}
+        completed={metrics?.completed_ticket_count}
+        total={metrics?.ticket_count}
+        excluded={metrics?.excluded_ticket_count}
+        /* actions={<ExportButton onClick={handleExportCsv} />} — hidden until #90 */
+      />
 
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={t('tickets.searchPlaceholder')}
-              className="pl-8 h-9 w-48 text-sm"
-            />
-          </div>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => { setAnalyzedOnly(!analyzedOnly); setExcludedOnly(false); setPage(1) }}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
-                analyzedOnly && !excludedOnly
-                  ? 'bg-blue-50 text-blue-700 border-blue-200'
-                  : 'bg-white text-gray-500 border-gray-200 hover:text-gray-700'
-              }`}
-            >
-              {t('tickets.analyzedOnly')}
-            </button>
-            <button
-              onClick={() => { setExcludedOnly(!excludedOnly); setAnalyzedOnly(false); setPage(1) }}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
-                excludedOnly
-                  ? 'bg-amber-50 text-amber-700 border-amber-200'
-                  : 'bg-white text-gray-500 border-gray-200 hover:text-gray-700'
-              }`}
-            >
-              {t('tickets.excludedOnly')}
-            </button>
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="text-gray-300 hover:text-gray-500 transition-colors">
-                  <Info className="w-3.5 h-3.5" />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-64">
-                <div className="text-xs text-gray-600 space-y-1.5">
-                  <p className="font-semibold text-gray-800 mb-1">{t('tickets.analyzedOnly')}</p>
-                  <p>{t('help.analyzedOnly')}</p>
-                  <p className="mt-2 font-medium text-gray-700">{t('tickets.colorCoding')}</p>
-                  <p>{t('help.ticketColors')}</p>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-          <div className="flex flex-wrap items-center gap-1.5 bg-gray-100 rounded-lg p-1">
-            {['', ...availableTypes].map((type) => (
-              <button
-                key={type}
-                onClick={() => { setTypeFilter(type); setPage(1) }}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                  typeFilter === type
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                {type ? t(`tickets.types.${type}`, { defaultValue: type.charAt(0).toUpperCase() + type.slice(1) }) : t('common.all')}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative">
+          <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t('tickets.searchPlaceholder')}
+            className="pl-8 h-9 w-48 text-sm"
+          />
+        </div>
+        <div className="flex items-center gap-1">
+          <Button
+            variant={analyzedOnly && !excludedOnly ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => { setAnalyzedOnly(!analyzedOnly); setExcludedOnly(false); setPage(1) }}
+          >
+            {t('tickets.analyzedOnly')}
+          </Button>
+          <Button
+            variant={excludedOnly ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => { setExcludedOnly(!excludedOnly); setAnalyzedOnly(false); setPage(1) }}
+            className={excludedOnly ? 'bg-amber-600 hover:bg-amber-700' : ''}
+          >
+            {t('tickets.excludedOnly')}
+          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="text-gray-300 hover:text-gray-500 transition-colors">
+                <Info className="w-3.5 h-3.5" />
               </button>
-            ))}
-          </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-64">
+              <div className="text-xs text-gray-600 space-y-1.5">
+                <p className="font-semibold text-gray-800 mb-1">{t('tickets.analyzedOnly')}</p>
+                <p>{t('help.analyzedOnly')}</p>
+                <p className="mt-2 font-medium text-gray-700">{t('tickets.colorCoding')}</p>
+                <p>{t('help.ticketColors')}</p>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5 bg-gray-100 rounded-lg p-1">
+          {['', ...availableTypes].map((type) => (
+            <button
+              key={type}
+              onClick={() => { setTypeFilter(type); setPage(1) }}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                typeFilter === type
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {type ? t(`tickets.types.${type}`, { defaultValue: type.charAt(0).toUpperCase() + type.slice(1) }) : t('common.all')}
+            </button>
+          ))}
         </div>
       </div>
 

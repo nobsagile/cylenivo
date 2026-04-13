@@ -7,12 +7,13 @@ interface Props {
   completed?: number
   total?: number
   excluded?: number
+  actions?: React.ReactNode
 }
 
-export function PageHeader({ view, name, subtitle, completed, total, excluded }: Props) {
+export function PageHeader({ view, name, subtitle, completed, total, excluded, actions }: Props) {
   const { t } = useTranslation()
-  return (
-    <div>
+  const content = (
+    <>
       <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{view} — {name}</h2>
       <p className="text-sm text-gray-400 mt-0.5">{subtitle}</p>
       {completed != null && total != null && (
@@ -25,6 +26,15 @@ export function PageHeader({ view, name, subtitle, completed, total, excluded }:
           )}
         </p>
       )}
+    </>
+  )
+
+  if (!actions) return <div>{content}</div>
+
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <div>{content}</div>
+      <div className="flex items-center gap-2 shrink-0">{actions}</div>
     </div>
   )
 }
