@@ -73,6 +73,14 @@ interface JiraChangelogResponse {
   total: number
 }
 
+// Jira Server v2: changelog embedded in issue via ?expand=changelog
+interface JiraIssueWithChangelog {
+  changelog: {
+    histories: JiraChangelogHistory[]
+    total: number
+  }
+}
+
 // ── API helpers ──────────────────────────────────────────────────────────────
 
 function authHeader(creds: JiraCredentials): string {
@@ -169,6 +177,12 @@ export async function fetchIssues(creds: JiraCredentials, options: JiraFetchOpti
 }
 
 export async function fetchChangelog(creds: JiraCredentials, issueKey: string): Promise<JiraChangelogHistory[]> {
+  if (creds.auth_type === 'server') {
+    // Jira Server / Data Center: no standalone changelog endpoint — must expand on issue
+    const data = await jiraGet<JiraIssueWithChangelog>(creds, `/issue/${issueKey}?expand=changelog&fields=`)
+    return data.changelog?.histories ?? []
+  }
+  // Atlassian Cloud: paginated dedicated endpoint
   const histories: JiraChangelogHistory[] = []
   let startAt = 0
   while (true) {
