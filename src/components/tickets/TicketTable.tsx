@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import type { Ticket, ConfigContext } from '@/types'
-import { TYPE_COLORS } from '@/lib/statusColors'
+import { getTypeColor } from '@/lib/statusColors'
 import { ExternalLink, ArrowUpDown, ArrowUp, ArrowDown, Ban, Undo2 } from 'lucide-react'
 
 interface Props {
@@ -142,9 +142,9 @@ export function TicketTable({ tickets, p50, p85, config: _config, onTicketClick,
               </TableCell>
               <TableCell>
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border ${
-                  TYPE_COLORS[ticket.ticket_type] ?? 'bg-gray-50 text-gray-600 border-gray-200'
+                  getTypeColor(ticket.ticket_type)
                 }`}>
-                  {t(`tickets.types.${ticket.ticket_type}`, { defaultValue: ticket.ticket_type })}
+                  {t(`tickets.types.${ticket.ticket_type}`, { defaultValue: ticket.ticket_type.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') })}
                 </span>
               </TableCell>
               <TableCell className={`text-right text-sm tabular-nums ${ticket.excluded ? 'text-gray-300' : cycleTimeColor(ticket.cycle_time_days, p50, p85)}`}>

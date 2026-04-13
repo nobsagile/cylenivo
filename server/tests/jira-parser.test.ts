@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'bun:test'
-import { extractTransitions, mapIssueType } from '../src/connectors/jira.js'
+import { extractTransitions, normalizeIssueType } from '../src/connectors/jira.js'
 import changelog from './fixtures/jira-api-changelog.json'
 
 // Jira history shape: { id, created, items: [{ field, fromString, toString }] }
@@ -84,28 +84,26 @@ describe('extractTransitions', () => {
   })
 })
 
-describe('mapIssueType', () => {
-  it('maps bug → bug (case-insensitive)', () => {
-    expect(mapIssueType('bug')).toBe('bug')
-    expect(mapIssueType('Bug')).toBe('bug')
-    expect(mapIssueType('BUG')).toBe('bug')
+describe('normalizeIssueType', () => {
+  it('lowercases type names', () => {
+    expect(normalizeIssueType('Bug')).toBe('bug')
+    expect(normalizeIssueType('BUG')).toBe('bug')
+    expect(normalizeIssueType('Epic')).toBe('epic')
+    expect(normalizeIssueType('Task')).toBe('task')
+    expect(normalizeIssueType('Story')).toBe('story')
   })
 
-  it('maps epic → epic', () => {
-    expect(mapIssueType('Epic')).toBe('epic')
+  it('preserves original type identity (no lossy mapping)', () => {
+    expect(normalizeIssueType('Improvement')).toBe('improvement')
+    expect(normalizeIssueType('User Story')).toBe('user story')
+    expect(normalizeIssueType('New Feature')).toBe('new feature')
+    expect(normalizeIssueType('Spike')).toBe('spike')
+    expect(normalizeIssueType('Change Request')).toBe('change request')
+    expect(normalizeIssueType('Sub-task')).toBe('sub-task')
   })
 
-  it('maps task variants → task', () => {
-    expect(mapIssueType('Task')).toBe('task')
-    expect(mapIssueType('Sub-task')).toBe('task')
-    expect(mapIssueType('Subtask')).toBe('task')
-  })
-
-  it('maps unknown types → story (default)', () => {
-    expect(mapIssueType('Story')).toBe('story')
-    expect(mapIssueType('User Story')).toBe('story')
-    expect(mapIssueType('Improvement')).toBe('story')
-    expect(mapIssueType('New Feature')).toBe('story')
-    expect(mapIssueType('')).toBe('story')
+  it('trims whitespace', () => {
+    expect(normalizeIssueType('  Bug  ')).toBe('bug')
+    expect(normalizeIssueType('Story ')).toBe('story')
   })
 })

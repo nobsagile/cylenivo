@@ -93,3 +93,26 @@ export const TYPE_COLORS: Record<string, string> = {
   'sub-task': 'bg-slate-50 text-slate-600 border-slate-200',
   'qa finding': 'bg-orange-50 text-orange-700 border-orange-200',
 }
+
+const HASH_PALETTE = [
+  'bg-teal-50 text-teal-700 border-teal-200',
+  'bg-cyan-50 text-cyan-700 border-cyan-200',
+  'bg-amber-50 text-amber-700 border-amber-200',
+  'bg-lime-50 text-lime-700 border-lime-200',
+  'bg-rose-50 text-rose-700 border-rose-200',
+  'bg-sky-50 text-sky-700 border-sky-200',
+  'bg-indigo-50 text-indigo-700 border-indigo-200',
+  'bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200',
+  'bg-emerald-50 text-emerald-700 border-emerald-200',
+  'bg-violet-50 text-violet-700 border-violet-200',
+]
+
+function hashString(s: string): number {
+  let h = 0
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0
+  return Math.abs(h)
+}
+
+export function getTypeColor(type: string): string {
+  return TYPE_COLORS[type] ?? HASH_PALETTE[hashString(type) % HASH_PALETTE.length]
+}

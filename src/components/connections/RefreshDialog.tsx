@@ -19,7 +19,6 @@ import ConfigureStep from '@/components/import/ConfigureStep'
 
 type RefreshStep = 'preflight' | 'fetching' | 'configure'
 
-const ISSUE_TYPE_OPTIONS = ['Story', 'Task', 'Bug', 'Epic']
 
 interface Props {
   open: boolean
@@ -77,7 +76,7 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
 
   // Pre-flight state — prefer importSession.project_key over connection default
   const [projectKey, setProjectKey] = useState(importSession?.project_key ?? connection.project_key ?? '')
-  const [issueTypes, setIssueTypes] = useState<string[]>(importSession?.issue_types ?? connection.issue_types ?? ['Story', 'Task', 'Bug'])
+  const [issueTypes, setIssueTypes] = useState<string[]>(importSession?.issue_types ?? connection.issue_types ?? [])
   const [availableIssueTypes, setAvailableIssueTypes] = useState<string[] | null>(null)
   const [issueTypesLoading, setIssueTypesLoading] = useState(false)
   const issueTypeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -305,7 +304,7 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
                 {issueTypesLoading && <Loader2 className="w-3 h-3 animate-spin text-gray-400" />}
               </div>
               <div className="flex flex-wrap gap-1.5">
-                {(availableIssueTypes ?? ISSUE_TYPE_OPTIONS).map((type) => (
+                {(availableIssueTypes ?? []).map((type) => (
                   <button
                     key={type}
                     type="button"

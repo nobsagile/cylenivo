@@ -12,8 +12,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PageHeader } from '@/components/layout/PageHeader'
 
-const TYPE_FILTERS = ['', 'story', 'task', 'bug']
-
 export default function TicketsPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
@@ -21,6 +19,7 @@ export default function TicketsPage() {
 
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [total, setTotal] = useState(0)
+  const [availableTypes, setAvailableTypes] = useState<string[]>([])
   const [page, setPage] = useState(1)
   const [typeFilter, setTypeFilter] = useState('')
   const [analyzedOnly, setAnalyzedOnly] = useState(true)
@@ -51,6 +50,7 @@ export default function TicketsPage() {
       .then((res) => {
         setTickets(res.tickets)
         setTotal(res.total)
+        if (res.available_types) setAvailableTypes(res.available_types)
       })
       .catch(console.error)
   }, [importId, page, typeFilter, analyzedOnly, excludedOnly, searchDebounced])
@@ -123,8 +123,8 @@ export default function TicketsPage() {
               </PopoverContent>
             </Popover>
           </div>
-          <div className="flex items-center gap-1.5 bg-gray-100 rounded-lg p-1">
-            {TYPE_FILTERS.map((type) => (
+          <div className="flex flex-wrap items-center gap-1.5 bg-gray-100 rounded-lg p-1">
+            {['', ...availableTypes].map((type) => (
               <button
                 key={type}
                 onClick={() => { setTypeFilter(type); setPage(1) }}
@@ -134,7 +134,7 @@ export default function TicketsPage() {
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                {type || t('common.all')}
+                {type ? t(`tickets.types.${type}`, { defaultValue: type.charAt(0).toUpperCase() + type.slice(1) }) : t('common.all')}
               </button>
             ))}
           </div>
