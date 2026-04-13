@@ -2,10 +2,11 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ExternalLink, CheckCircle2, XCircle, Loader2, Info } from 'lucide-react'
 import { api } from '@/services/api'
-import type { SourceConnection, PluginManifest } from '@/types'
+import type { SourceConnection, PluginManifest, PluginField } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -30,6 +31,7 @@ function initialCredentials(manifest: PluginManifest, connection?: SourceConnect
     if (connection.source_type === 'jira') {
       existing.base_url = connection.base_url ?? ''
       existing.email = connection.email ?? ''
+      existing.auth_type = connection.auth_type ?? 'cloud'
       // api_token intentionally blank — user must re-enter to change
     } else {
       const parsed = connection.credentials_json ? JSON.parse(connection.credentials_json) : {}
@@ -42,6 +44,11 @@ function initialCredentials(manifest: PluginManifest, connection?: SourceConnect
     acc[f.key] = existing[f.key] ?? String(f.default ?? '')
     return acc
   }, {})
+}
+
+function isFieldVisible(field: PluginField, credentials: Record<string, string>): boolean {
+  if (!field.showWhen) return true
+  return credentials[field.showWhen.field] === field.showWhen.value
 }
 
 export default function ConnectionDialog({ open, manifest, connection, onClose, onSaved }: Props) {
@@ -58,6 +65,7 @@ export default function ConnectionDialog({ open, manifest, connection, onClose, 
   const [pendingId, setPendingId] = useState<string | null>(connection?.id ?? null)
 
   const canSave = Boolean(name) && (manifest.credentials ?? []).every((f) => {
+    if (!isFieldVisible(f, credentials)) return true // hidden fields don't block save
     if (f.type === 'password' && isEdit) return true // keep existing
     return Boolean(credentials[f.key])
   })
@@ -72,11 +80,13 @@ export default function ConnectionDialog({ open, manifest, connection, onClose, 
 
   async function persist(): Promise<SourceConnection> {
     if (isJira) {
+      const isServer = credentials.auth_type === 'server'
       const base = {
         name,
         source_type: 'jira' as const,
         base_url: credentials.base_url,
-        email: credentials.email,
+        email: isServer ? '' : credentials.email,
+        auth_type: credentials.auth_type as 'cloud' | 'server',
       }
       if (pendingId) {
         const updates = credentials.api_token ? { ...base, api_token: credentials.api_token } : base
@@ -167,7 +177,7 @@ export default function ConnectionDialog({ open, manifest, connection, onClose, 
           </div>
 
           {/* Dynamic credential fields */}
-          {(manifest.credentials ?? []).map((field) => (
+          {(manifest.credentials ?? []).filter((f) => isFieldVisible(f, credentials)).map((field) => (
             <div key={field.key}>
               <div className="flex items-center gap-1 mb-1.5">
                 <span className="text-sm font-medium text-gray-700">{field.label}</span>
@@ -197,12 +207,25 @@ export default function ConnectionDialog({ open, manifest, connection, onClose, 
                   </Popover>
                 )}
               </div>
-              <Input
-                type={field.type === 'password' ? 'password' : field.type === 'number' ? 'number' : 'text'}
-                value={credentials[field.key] ?? ''}
-                onChange={(e) => set(field.key, e.target.value)}
-                placeholder={field.type === 'password' && isEdit ? '••••••••' : (field.placeholder ?? '')}
-              />
+              {field.type === 'select' ? (
+                <Select value={credentials[field.key] ?? String(field.default ?? '')} onValueChange={(v) => set(field.key, v)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(field.options ?? []).map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input
+                  type={field.type === 'password' ? 'password' : field.type === 'number' ? 'number' : 'text'}
+                  value={credentials[field.key] ?? ''}
+                  onChange={(e) => set(field.key, e.target.value)}
+                  placeholder={field.type === 'password' && isEdit ? '••••••••' : (field.placeholder ?? '')}
+                />
+              )}
             </div>
           ))}
 

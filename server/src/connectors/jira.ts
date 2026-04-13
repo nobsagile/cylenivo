@@ -2,6 +2,7 @@ export interface JiraCredentials {
   base_url: string
   email: string
   api_token: string
+  auth_type: 'cloud' | 'server'
 }
 
 export interface JiraFetchOptions {
@@ -51,9 +52,9 @@ interface JiraIssue {
 
 interface JiraSearchResponse {
   issues: JiraIssue[]
-  total?: number
-  nextPageToken?: string
-  isLast?: boolean
+  total: number      // used for server (v2) offset pagination
+  nextPageToken?: string  // cloud (v3) only
+  isLast?: boolean        // cloud (v3) only
 }
 
 interface JiraChangelogItem {
@@ -75,13 +76,17 @@ interface JiraChangelogResponse {
 // ── API helpers ──────────────────────────────────────────────────────────────
 
 function authHeader(creds: JiraCredentials): string {
+  if (creds.auth_type === 'server') {
+    return 'Bearer ' + creds.api_token
+  }
   return 'Basic ' + Buffer.from(`${creds.email}:${creds.api_token}`).toString('base64')
 }
 
 const MAX_RETRIES = 3
 
 async function jiraGet<T>(creds: JiraCredentials, path: string, attempt = 0): Promise<T> {
-  const url = `${creds.base_url}/rest/api/3${path}`
+  const apiVersion = creds.auth_type === 'server' ? '2' : '3'
+  const url = `${creds.base_url}/rest/api/${apiVersion}${path}`
   const res = await fetch(url, {
     headers: { Authorization: authHeader(creds), Accept: 'application/json' },
     signal: AbortSignal.timeout(15000),
@@ -130,18 +135,35 @@ export async function fetchIssues(creds: JiraCredentials, options: JiraFetchOpti
   const jql = `project = ${project} AND issuetype in (${typeList}) AND statusCategory = Done${fromFilter}${toFilter} ORDER BY resolved DESC`
 
   const all: JiraIssue[] = []
-  let nextPageToken: string | undefined
-  while (true) {
-    const tokenParam = nextPageToken ? `&nextPageToken=${encodeURIComponent(nextPageToken)}` : ''
-    const data = await jiraGet<JiraSearchResponse>(
-      creds,
-      `/search/jql?jql=${encodeURIComponent(jql)}&maxResults=${JIRA_PAGE_SIZE}&fields=summary,issuetype,created${tokenParam}`
-    )
-    const issues = data.issues ?? []
-    if (issues.length === 0) break
-    all.push(...issues)
-    if (data.isLast || !data.nextPageToken) break
-    nextPageToken = data.nextPageToken
+  if (creds.auth_type === 'server') {
+    // Jira Server / Data Center: v2 API, offset-based pagination
+    let startAt = 0
+    while (true) {
+      const data = await jiraGet<JiraSearchResponse>(
+        creds,
+        `/search?jql=${encodeURIComponent(jql)}&maxResults=${JIRA_PAGE_SIZE}&startAt=${startAt}&fields=summary,issuetype,created`
+      )
+      const issues = data.issues ?? []
+      if (issues.length === 0) break
+      all.push(...issues)
+      if (startAt + issues.length >= data.total) break
+      startAt += issues.length
+    }
+  } else {
+    // Atlassian Cloud: v3 API, token-based pagination
+    let nextPageToken: string | undefined
+    while (true) {
+      const tokenParam = nextPageToken ? `&nextPageToken=${encodeURIComponent(nextPageToken)}` : ''
+      const data = await jiraGet<JiraSearchResponse>(
+        creds,
+        `/search/jql?jql=${encodeURIComponent(jql)}&maxResults=${JIRA_PAGE_SIZE}&fields=summary,issuetype,created${tokenParam}`
+      )
+      const issues = data.issues ?? []
+      if (issues.length === 0) break
+      all.push(...issues)
+      if (data.isLast || !data.nextPageToken) break
+      nextPageToken = data.nextPageToken
+    }
   }
   return all
 }

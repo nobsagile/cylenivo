@@ -5,6 +5,16 @@ export const JIRA_MANIFEST: PluginManifest = {
   name: 'Jira',
   credentials: [
     {
+      key: 'auth_type',
+      label: 'Authentication type',
+      type: 'select',
+      default: 'cloud',
+      options: [
+        { value: 'cloud', label: 'Atlassian Cloud (API token)' },
+        { value: 'server', label: 'Jira Server / Data Center (Personal Access Token)' },
+      ],
+    },
+    {
       key: 'base_url',
       label: 'Jira Base URL',
       type: 'url',
@@ -17,15 +27,16 @@ export const JIRA_MANIFEST: PluginManifest = {
       type: 'string',
       placeholder: 'you@company.com',
       help: 'The email address of your Atlassian account.',
+      showWhen: { field: 'auth_type', value: 'cloud' },
     },
     {
       key: 'api_token',
-      label: 'API Token',
+      label: 'API Token / Personal Access Token',
       type: 'password',
-      help: 'Your Atlassian API token. Generate one at your Atlassian profile.',
+      help: 'Atlassian Cloud: generate an API token at id.atlassian.com. Jira Server / Data Center: generate a Personal Access Token in your Jira profile under Profile → Personal Access Tokens.',
       link: {
         url: 'https://id.atlassian.com/manage-profile/security/api-tokens',
-        label: 'Atlassian API tokens',
+        label: 'Atlassian API tokens (Cloud only)',
       },
     },
   ],

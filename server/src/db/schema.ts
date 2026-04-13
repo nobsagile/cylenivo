@@ -58,6 +58,7 @@ export const sourceConnections = sqliteTable('source_connections', {
   base_url: text('base_url').notNull().default(''),
   email: text('email').notNull().default(''),
   api_token: text('api_token').notNull().default(''),
+  auth_type: text('auth_type').default('cloud'), // 'cloud' (Basic auth) | 'server' (Bearer PAT)
   credentials_json: text('credentials_json'), // for plugins: JSON credentials
   created_at: text('created_at').notNull(),
   project_key: text('project_key'),

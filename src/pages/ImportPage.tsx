@@ -113,6 +113,7 @@ export default function ImportPage() {
   const [connBaseUrl, setConnBaseUrl] = useState('')
   const [connEmail, setConnEmail] = useState('')
   const [connApiToken, setConnApiToken] = useState('')
+  const [connAuthType, setConnAuthType] = useState<'cloud' | 'server'>('cloud')
   const [connecting, setConnecting] = useState(false)
 
   // active connection
@@ -350,7 +351,7 @@ export default function ImportPage() {
 
   // ── Step: Connect ─────────────────────────────────────────────────────────
   if (step === 'connect') {
-    const canConnect = Boolean(connName && connBaseUrl && connEmail && connApiToken)
+    const canConnect = Boolean(connName && connBaseUrl && connApiToken && (connAuthType === 'server' || connEmail))
 
     function parseConnectError(msg: string): string {
       if (msg.includes('401')) return t('connection.errUnauthorized')
@@ -370,8 +371,9 @@ export default function ImportPage() {
           name: connName,
           source_type: 'jira' as const,
           base_url: connBaseUrl,
-          email: connEmail,
+          email: connAuthType === 'server' ? '' : connEmail,
           api_token: connApiToken,
+          auth_type: connAuthType,
         }) as SourceConnection
         await api.connections.test(conn.id)
         setConnection(conn)
@@ -409,31 +411,47 @@ export default function ImportPage() {
         </div>
         <div className="space-y-4">
           <div>
+            <ConnFieldLabel label={t('connection.authType')} helpKey="help.connName" />
+            <Select value={connAuthType} onValueChange={(v) => setConnAuthType(v as 'cloud' | 'server')}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cloud">{t('connection.authTypeCloud')}</SelectItem>
+                <SelectItem value="server">{t('connection.authTypeServer')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
             <ConnFieldLabel label={t('connection.name')} helpKey="help.connName" />
             <Input value={connName} onChange={(e) => setConnName(e.target.value)} placeholder={t('connection.namePlaceholder')} />
           </div>
           <div>
             <ConnFieldLabel label={t('connection.jiraBaseUrl')} helpKey="help.connBaseUrl" />
-            <Input value={connBaseUrl} onChange={(e) => setConnBaseUrl(e.target.value)} placeholder="https://yourcompany.atlassian.net" />
+            <Input value={connBaseUrl} onChange={(e) => setConnBaseUrl(e.target.value)} placeholder={connAuthType === 'server' ? 'https://jira.yourcompany.com' : 'https://yourcompany.atlassian.net'} />
           </div>
+          {connAuthType === 'cloud' && (
+            <div>
+              <ConnFieldLabel label={t('connection.email')} helpKey="help.connEmail" />
+              <Input type="email" value={connEmail} onChange={(e) => setConnEmail(e.target.value)} placeholder={t('connection.emailPlaceholder')} />
+            </div>
+          )}
           <div>
-            <ConnFieldLabel label={t('connection.email')} helpKey="help.connEmail" />
-            <Input type="email" value={connEmail} onChange={(e) => setConnEmail(e.target.value)} placeholder={t('connection.emailPlaceholder')} />
-          </div>
-          <div>
-            <ConnFieldLabel label={t('connection.apiToken')} helpKey="help.connApiToken" />
+            <ConnFieldLabel label={t(connAuthType === 'server' ? 'connection.personalAccessToken' : 'connection.apiToken')} helpKey="help.connApiToken" />
             <Input type="password" value={connApiToken} onChange={(e) => setConnApiToken(e.target.value)} placeholder={t('connection.apiTokenPlaceholder')} />
-            <p className="mt-1.5 text-xs text-gray-400 flex items-center gap-1">
-              {t('connection.getTokenAt')}{' '}
-              <a
-                href="https://id.atlassian.com/manage-profile/security/api-tokens"
-                target="_blank"
-                rel="noreferrer"
-                className="text-blue-500 hover:underline inline-flex items-center gap-0.5"
-              >
-                {t('connection.atlassianTokens')} <ExternalLink className="w-3 h-3" />
-              </a>
-            </p>
+            {connAuthType === 'cloud' && (
+              <p className="mt-1.5 text-xs text-gray-400 flex items-center gap-1">
+                {t('connection.getTokenAt')}{' '}
+                <a
+                  href="https://id.atlassian.com/manage-profile/security/api-tokens"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-blue-500 hover:underline inline-flex items-center gap-0.5"
+                >
+                  {t('connection.atlassianTokens')} <ExternalLink className="w-3 h-3" />
+                </a>
+              </p>
+            )}
           </div>
         </div>
         <div className="flex gap-3 mt-6">
