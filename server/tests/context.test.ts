@@ -161,3 +161,56 @@ describe('buildEnrichedTicket — mode variants for TICK-3', () => {
     expect(t.cycle_time_days).toBeCloseTo(5, 0)
   })
 })
+
+describe('buildEnrichedTicket — lead_time_start_status', () => {
+  it('lead time uses created_at when lead_time_start_status is null (default)', async () => {
+    const importId = await setup({ lead_time_start_status: null })
+    const ctx = await loadImportContext(importId)
+    const t = ctx!.tickets.find(t => t.external_id === 'TICK-1')!
+    // TICK-1: created Jan 1, Done Jan 10 → lead = 9d
+    expect(t.lead_time_days).toBeCloseTo(9, 0)
+  })
+
+  it('lead time uses first transition to start status when configured', async () => {
+    const importId = await setup({ lead_time_start_status: 'Ready' })
+    const ctx = await loadImportContext(importId)
+    const t = ctx!.tickets.find(t => t.external_id === 'TICK-1')!
+    // TICK-1: Ready Jan 3, Done Jan 10 → lead = 7d (shorter than from created_at)
+    expect(t.lead_time_days).toBeLessThan(9)
+    expect(t.lead_time_days).not.toBeNull()
+  })
+})
+
+describe('buildEnrichedTicket — excluded tickets', () => {
+  it('excluded flag is false by default', async () => {
+    const importId = await setup()
+    const ctx = await loadImportContext(importId)
+    for (const t of ctx!.tickets) {
+      expect(t.excluded).toBe(false)
+    }
+  })
+
+  it('excluded ticket still has cycle_time_days computed', async () => {
+    const importId = await setup()
+    const ctx = await loadImportContext(importId)
+    // TICK-1 has cycle time even before exclusion
+    const t = ctx!.tickets.find(t => t.external_id === 'TICK-1')!
+    expect(t.cycle_time_days).not.toBeNull()
+
+    // Mark as excluded via API
+    const ticketRes = await app.request(`/api/v1/tickets?import_id=${importId}`)
+    const { data } = await ticketRes.json() as { data: { tickets: { id: string; external_id: string }[] } }
+    const tick1 = data.tickets.find(t => t.external_id === 'TICK-1')!
+    await app.request(`/api/v1/tickets/${tick1.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ excluded: true, exclusion_reason: 'test' }),
+    })
+
+    // Re-load context — excluded ticket should have excluded=true
+    const ctx2 = await loadImportContext(importId)
+    const t2 = ctx2!.tickets.find(t => t.external_id === 'TICK-1')!
+    expect(t2.excluded).toBe(true)
+    expect(t2.exclusion_reason).toBe('test')
+  })
+})
