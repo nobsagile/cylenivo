@@ -129,7 +129,7 @@ function HealthReportDialog({
 }
 
 function ProjectMenu({ imp, connection, pluginManifest, onRenamed }: {
-  imp: { id: string; config_id: string; name?: string | null; project_key: string; config_name?: string; resolved_from?: string | null; resolved_to?: string | null; connection_id?: string | null }
+  imp: { id: string; config_id: string; name?: string | null; project_key: string; config_name?: string; resolved_from?: string | null; resolved_to?: string | null; connection_id?: string | null; issue_types?: string[] | null }
   connection?: SourceConnection | null
   pluginManifest?: PluginManifest | null
   onRenamed: () => void
