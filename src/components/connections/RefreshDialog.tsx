@@ -79,6 +79,7 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
   const [issueTypes, setIssueTypes] = useState<string[]>(importSession?.issue_types ?? connection.issue_types ?? [])
   const [availableIssueTypes, setAvailableIssueTypes] = useState<string[] | null>(null)
   const [issueTypesLoading, setIssueTypesLoading] = useState(false)
+  const [issueTypesFailed, setIssueTypesFailed] = useState(false)
   const issueTypeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [resolvedFrom, setResolvedFrom] = useState(importSession?.resolved_from ?? connection.resolved_from ?? '')
   const [resolvedTo, setResolvedTo] = useState(importSession?.resolved_to ?? connection.resolved_to ?? '')
@@ -108,6 +109,7 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
         }
       } catch {
         setAvailableIssueTypes(null)
+        setIssueTypesFailed(true)
       } finally {
         setIssueTypesLoading(false)
       }
@@ -318,6 +320,9 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
                     {type}
                   </button>
                 ))}
+                {!issueTypesLoading && issueTypesFailed && (
+                  <p className="text-xs text-amber-600">{t('import.issueTypesFetchFailed')}</p>
+                )}
               </div>
             </div>
 
@@ -340,7 +345,7 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
 
           <DialogFooter>
             <Button variant="outline" onClick={onClose}>{t('common.cancel')}</Button>
-            <Button onClick={handleRefresh} disabled={!projectKey || issueTypes.length === 0}>
+            <Button onClick={handleRefresh} disabled={!projectKey || (issueTypes.length === 0 && !issueTypesFailed)}>
               {t('refresh.confirm')}
             </Button>
           </DialogFooter>

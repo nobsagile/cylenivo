@@ -113,6 +113,7 @@ function hashString(s: string): number {
   return Math.abs(h)
 }
 
-export function getTypeColor(type: string): string {
+export function getTypeColor(type: string | null | undefined): string {
+  if (!type) return 'bg-gray-50 text-gray-600 border-gray-200'
   return TYPE_COLORS[type] ?? HASH_PALETTE[hashString(type) % HASH_PALETTE.length]
 }
