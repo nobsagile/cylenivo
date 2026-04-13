@@ -101,13 +101,27 @@ export async function loadImportContext(importId: string): Promise<ImportContext
   if (!cfgRows.length) return null
   const raw = cfgRows[0]
 
+  let statusOrder: string[]
+  let activeStatuses: string[] | null = null
+  try {
+    statusOrder = JSON.parse(raw.status_order) as string[]
+  } catch {
+    console.error(`[context] import ${importId}: corrupted status_order JSON`)
+    return null
+  }
+  try {
+    activeStatuses = raw.active_statuses ? JSON.parse(raw.active_statuses) as string[] : null
+  } catch {
+    console.warn(`[context] import ${importId}: corrupted active_statuses JSON, ignoring`)
+  }
+
   const config: ParsedConfig = {
     ...raw,
-    status_order: JSON.parse(raw.status_order) as string[],
+    status_order: statusOrder,
     cycle_time_mode: (raw.cycle_time_mode ?? 'first_last') as CycleTimeMode,
     lead_time_start_status: raw.lead_time_start_status ?? null,
     lead_time_end_status: raw.lead_time_end_status ?? null,
-    active_statuses: raw.active_statuses ? JSON.parse(raw.active_statuses) as string[] : null,
+    active_statuses: activeStatuses,
   }
 
   if (config.status_order.length === 0) {

@@ -141,6 +141,7 @@ export default function ImportPage() {
   // fetch step
   const [jiraProject, setJiraProject] = useState('')
   const [jiraIssueTypes, setJiraIssueTypes] = useState<string[]>([])
+  const [issueTypesFailed, setIssueTypesFailed] = useState(false)
   const [resolvedFrom, setResolvedFrom] = useState('')
   const [resolvedTo, setResolvedTo] = useState('')
   const [fetching, setFetching] = useState(false)
@@ -170,9 +171,11 @@ export default function ImportPage() {
         if (types.length > 0) {
           setAvailableIssueTypes(types)
           setJiraIssueTypes(types)
+          setIssueTypesFailed(false)
         }
       } catch {
         setAvailableIssueTypes(null)
+        setIssueTypesFailed(true)
       } finally {
         setIssueTypesLoading(false)
       }
@@ -704,6 +707,9 @@ export default function ImportPage() {
                   {type}
                 </button>
               ))}
+              {!issueTypesLoading && issueTypesFailed && (
+                <p className="text-xs text-amber-600">{t('import.issueTypesFetchFailed')}</p>
+              )}
             </div>
           </div>
           <div>
@@ -751,7 +757,7 @@ export default function ImportPage() {
           </Button>
           <Button
             onClick={handleFetch}
-            disabled={fetching || importing || !jiraProject || jiraIssueTypes.length === 0}
+            disabled={fetching || importing || !jiraProject || (jiraIssueTypes.length === 0 && !issueTypesFailed)}
             className="flex-1 gap-2 h-11"
           >
             {importing

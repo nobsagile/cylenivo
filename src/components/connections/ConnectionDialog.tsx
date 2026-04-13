@@ -34,7 +34,8 @@ function initialCredentials(manifest: PluginManifest, connection?: SourceConnect
       existing.auth_type = connection.auth_type ?? 'cloud'
       // api_token intentionally blank — user must re-enter to change
     } else {
-      const parsed = connection.credentials_json ? JSON.parse(connection.credentials_json) : {}
+      let parsed: Record<string, string> = {}
+      try { parsed = connection.credentials_json ? JSON.parse(connection.credentials_json) : {} } catch { /* corrupted */ }
       for (const field of manifest.credentials) {
         existing[field.key] = parsed[field.key] ?? ''
       }

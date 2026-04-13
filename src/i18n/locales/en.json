@@ -243,6 +243,7 @@
     "projectKey": "Project Key",
     "projectKeyPlaceholder": "e.g. SN, PROJ, MYTEAM",
     "issueTypes": "Issue Types",
+    "issueTypesFetchFailed": "Could not load issue types — all types will be imported",
     "completedBetween": "Completed between",
     "untilToday": "No end date — imports all tickets until today",
     "fixedEndDateNoRefresh": "Fixed end date — Refresh won't be available for this dataset",

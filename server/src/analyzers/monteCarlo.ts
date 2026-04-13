@@ -74,7 +74,7 @@ export function simulateWhen(buckets: number[], targetTickets: number, iteration
 
 /** Returns value at given percentile from a sorted array. */
 export function percentileFromSorted(sorted: number[], p: number): number {
-  return sorted[Math.floor(sorted.length * p / 100)]
+  return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * p / 100))]
 }
 
 export interface WeeklyThroughput {

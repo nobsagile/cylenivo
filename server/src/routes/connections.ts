@@ -147,9 +147,10 @@ connections.post('/:id/fetch', async (c) => {
         const project = body.project || conn.project_key
         const creds: JiraCredentials = { base_url: conn.base_url, email: conn.email, api_token: conn.api_token, auth_type: (conn.auth_type ?? 'cloud') as 'cloud' | 'server' }
         const storedTypes = conn.issue_types ? JSON.parse(conn.issue_types) : null
+        const resolvedTypes = body.issue_types ?? storedTypes ?? await fetchProjectIssueTypes(creds, project)
         const options = {
           project,
-          issue_types: body.issue_types ?? storedTypes,
+          issue_types: resolvedTypes,
           resolved_from: body.resolved_from ?? conn.resolved_from ?? undefined,
           resolved_to: body.resolved_to ?? conn.resolved_to ?? undefined,
         }
