@@ -17,6 +17,7 @@ function serialize(row: ConnectionRow) {
     source_type: row.source_type,
     base_url: row.base_url,
     email: row.email,
+    auth_type: (row.auth_type ?? 'cloud') as 'cloud' | 'server',
     created_at: row.created_at,
     project_key: row.project_key,
     issue_types: row.issue_types ? JSON.parse(row.issue_types) : null,
@@ -40,13 +41,17 @@ connections.post('/', async (c) => {
   let row: ConnectionInsert
 
   if (body.source_type === 'jira') {
-    for (const field of ['base_url', 'email', 'api_token']) {
+    const authType: 'cloud' | 'server' = body.auth_type === 'server' ? 'server' : 'cloud'
+    const requiredFields = authType === 'cloud' ? ['base_url', 'email', 'api_token'] : ['base_url', 'api_token']
+    for (const field of requiredFields) {
       if (!body[field]) return c.json({ data: null, error: `Missing required field: ${field}` }, 422)
     }
     row = {
       id, name: body.name, source_type: 'jira',
       base_url: (body.base_url ?? '').replace(/\/$/, ''),
-      email: body.email, api_token: body.api_token,
+      email: authType === 'server' ? '' : body.email,
+      api_token: body.api_token,
+      auth_type: authType,
       credentials_json: null,
       created_at: now,
       project_key: body.project_key ?? null,
@@ -76,6 +81,7 @@ connections.put('/:id', async (c) => {
   const updates: Partial<ConnectionInsert> = {}
   if (body.name !== undefined) updates.name = body.name
   if (existing[0].source_type === 'jira') {
+    if (body.auth_type !== undefined) updates.auth_type = body.auth_type === 'server' ? 'server' : 'cloud'
     if (body.base_url !== undefined) updates.base_url = (body.base_url ?? '').replace(/\/$/, '')
     if (body.email !== undefined) updates.email = body.email
     if (body.api_token !== undefined) updates.api_token = body.api_token
@@ -108,7 +114,7 @@ connections.post('/:id/test', async (c) => {
   const conn = rows[0]
   try {
     if (conn.source_type === 'jira') {
-      const creds: JiraCredentials = { base_url: conn.base_url, email: conn.email, api_token: conn.api_token }
+      const creds: JiraCredentials = { base_url: conn.base_url, email: conn.email, api_token: conn.api_token, auth_type: (conn.auth_type ?? 'cloud') as 'cloud' | 'server' }
       const result = await testConnection(creds)
       return c.json(ok(result))
     } else {
@@ -139,7 +145,7 @@ connections.post('/:id/fetch', async (c) => {
     try {
       if (conn.source_type === 'jira') {
         const project = body.project || conn.project_key
-        const creds: JiraCredentials = { base_url: conn.base_url, email: conn.email, api_token: conn.api_token }
+        const creds: JiraCredentials = { base_url: conn.base_url, email: conn.email, api_token: conn.api_token, auth_type: (conn.auth_type ?? 'cloud') as 'cloud' | 'server' }
         const storedTypes = conn.issue_types ? JSON.parse(conn.issue_types) : null
         const options = {
           project,

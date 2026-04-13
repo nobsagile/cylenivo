@@ -187,6 +187,7 @@ export interface SourceConnection {
   source_type: string
   base_url: string
   email: string
+  auth_type?: 'cloud' | 'server'
   created_at: string
   project_key?: string | null
   issue_types?: string[] | null
@@ -202,7 +203,7 @@ export interface JiraFetchOptions {
   resolved_to?: string
 }
 
-export type PluginFieldType = 'string' | 'password' | 'url' | 'number'
+export type PluginFieldType = 'string' | 'password' | 'url' | 'number' | 'select'
 
 export interface PluginField {
   key: string
@@ -213,6 +214,8 @@ export interface PluginField {
   placeholder?: string
   help?: string
   link?: { url: string; label: string }
+  options?: { value: string; label: string }[]  // for type 'select'
+  showWhen?: { field: string; value: string }   // hide field unless sibling field matches value
 }
 
 export interface PluginManifest {
