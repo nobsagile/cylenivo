@@ -17,6 +17,8 @@ import { FlowEfficiencyCard } from '@/components/metrics/FlowEfficiencyCard'
 import { CfdChart } from '@/components/metrics/CfdChart'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
+import { downloadCsv } from '@/lib/csvExport'
+import { ExportButton } from '@/components/ui/ExportButton'
 
 export default function HealthPage() {
   const { t } = useTranslation()
@@ -52,6 +54,7 @@ export default function HealthPage() {
         completed={metrics.completed_ticket_count}
         total={metrics.ticket_count}
         excluded={metrics.excluded_ticket_count}
+        /* actions — hidden until #90 */
       />
 
       {dateRange?.from && dateRange?.to && (

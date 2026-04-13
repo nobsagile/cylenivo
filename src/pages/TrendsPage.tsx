@@ -15,6 +15,8 @@ import { TicketDetailDrawer } from '@/components/tickets/TicketDetailDrawer'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 import { DateRangeSlider } from '@/components/metrics/DateRangeSlider'
+import { downloadCsv } from '@/lib/csvExport'
+import { ExportButton } from '@/components/ui/ExportButton'
 import type { ProjectLayoutContext } from '@/components/layout/ProjectLayout'
 import { ErrorBanner } from '@/components/ui/ErrorBanner'
 
@@ -47,6 +49,8 @@ export default function TrendsPage() {
         completed={data.completed_ticket_count}
         total={data.ticket_count}
         excluded={data.excluded_ticket_count}
+        /* actions — hidden until #90 */
+        }
       />
 
       {dateRange?.from && dateRange?.to && (

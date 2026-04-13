@@ -16,7 +16,8 @@ ticketsRouter.get('/', async (c) => {
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
   const page = Math.max(1, Number(c.req.query('page') ?? 1))
-  const limit = Math.min(200, Math.max(1, Number(c.req.query('limit') ?? 50)))
+  const rawLimit = Number(c.req.query('limit') ?? 50)
+  const limit = rawLimit === 0 ? Infinity : Math.min(200, Math.max(1, rawLimit))
   const type = c.req.query('type')
   const completedOnly = c.req.query('completed_only') === '1'
   const excludedOnly = c.req.query('excluded_only') === '1'

@@ -120,7 +120,7 @@ export const api = {
       const p = new URLSearchParams({ import_id: importId })
       if (params?.type) p.set('type', params.type)
       if (params?.page) p.set('page', String(params.page))
-      if (params?.limit) p.set('limit', String(params.limit))
+      if (params?.limit != null) p.set('limit', String(params.limit))
       if (params?.completed_only) p.set('completed_only', '1')
       if (params?.excluded_only) p.set('excluded_only', '1')
       if (params?.search) p.set('search', params.search)
