@@ -11,8 +11,8 @@ import { PercentileCard } from '@/components/metrics/PercentileCard'
 import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { DateRangeSlider } from '@/components/metrics/DateRangeSlider'
-import { downloadCsv } from '@/lib/csvExport'
-import { ExportButton } from '@/components/ui/ExportButton'
+// import { downloadCsv } from '@/lib/csvExport' // #90
+// import { ExportButton } from '@/components/ui/ExportButton' // #90
 import type { ProjectLayoutContext } from '@/components/layout/ProjectLayout'
 
 interface MetricCardProps {

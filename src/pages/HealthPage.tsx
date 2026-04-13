@@ -17,8 +17,8 @@ import { FlowEfficiencyCard } from '@/components/metrics/FlowEfficiencyCard'
 import { CfdChart } from '@/components/metrics/CfdChart'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
-import { downloadCsv } from '@/lib/csvExport'
-import { ExportButton } from '@/components/ui/ExportButton'
+// import { downloadCsv } from '@/lib/csvExport' // #90
+// import { ExportButton } from '@/components/ui/ExportButton' // #90
 
 export default function HealthPage() {
   const { t } = useTranslation()
