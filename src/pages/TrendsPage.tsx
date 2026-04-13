@@ -50,7 +50,6 @@ export default function TrendsPage() {
         total={data.ticket_count}
         excluded={data.excluded_ticket_count}
         /* actions — hidden until #90 */
-        }
       />
 
       {dateRange?.from && dateRange?.to && (
