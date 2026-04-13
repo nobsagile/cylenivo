@@ -121,8 +121,10 @@ async function jiraGet<T>(creds: JiraCredentials, path: string, attempt = 0): Pr
 }
 
 export async function fetchProjectIssueTypes(creds: JiraCredentials, project: string): Promise<string[]> {
-  const data = await jiraGet<{ name: string; subtask: boolean }[]>(creds, `/project/${project}/issuetypes`)
-  return data.filter(t => !t.subtask).map(t => t.name)
+  // /project/{key}/issuetypes exists only on Cloud; Server embeds issueTypes inside /project/{key}
+  const data = await jiraGet<{ issueTypes?: { name: string; subtask: boolean }[]; name?: string; subtask?: boolean }>(creds, `/project/${project}`)
+  const types = data.issueTypes ?? []
+  return types.filter(t => !t.subtask).map(t => t.name)
 }
 
 export function mapIssueType(jiraType: string): string {
