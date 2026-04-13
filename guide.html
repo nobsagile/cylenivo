@@ -273,7 +273,7 @@
       <li>
         <a href="#jira">Jira</a>
         <ul class="toc-sub">
-          <li><a href="#jira-token">Get an API token</a></li>
+          <li><a href="#jira-token">Get your credentials</a></li>
           <li><a href="#jira-connect">Connect</a></li>
           <li><a href="#jira-fetch">Fetch your project</a></li>
           <li><a href="#jira-statuses">Review statuses</a></li>
@@ -350,17 +350,26 @@
       </div>
       <h2>Jira</h2>
     </div>
-    <p class="section-intro">Jira is built into Cylenivo — no plugin required. You connect directly via the Jira REST API using your email and an API token.</p>
+    <p class="section-intro">Jira is built into Cylenivo — no plugin required. Supports both <strong>Atlassian Cloud</strong> (email + API token) and <strong>Jira Server / Data Center</strong> (Personal Access Token).</p>
 
     <div class="steps">
 
       <div class="step" id="jira-token">
         <div class="step-num"></div>
         <div class="step-body">
-          <h3>Create an Atlassian API token</h3>
+          <h3>Get your credentials</h3>
+          <p>How you authenticate depends on where your Jira is hosted:</p>
+
+          <p><strong>Atlassian Cloud</strong> (<code>*.atlassian.net</code>)</p>
           <p>Go to <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank" rel="noopener" style="color:var(--violet)">id.atlassian.com → Security → API tokens</a> and click <strong>Create API token</strong>. Give it any name (e.g. "Cylenivo"). Copy the token — you won't see it again.</p>
           <div class="callout callout-tip">
             <strong>Tip:</strong> Use your regular Atlassian account (the email you log into Jira with). The token inherits your Jira permissions — it only sees projects you can access.
+          </div>
+
+          <p style="margin-top:1rem"><strong>Jira Server / Data Center</strong> (self-hosted)</p>
+          <p>In your Jira instance, click your avatar → <strong>Profile</strong> → <strong>Personal Access Tokens</strong> → <strong>Create token</strong>. Give it a name and set an expiry if required by your admin. Copy the token.</p>
+          <div class="callout callout-tip">
+            <strong>Note:</strong> Personal Access Tokens are a Jira Server / Data Center feature — you cannot create them at id.atlassian.com. If your Jira URL ends in <code>.atlassian.net</code>, use the Cloud method above.
           </div>
         </div>
       </div>
@@ -369,17 +378,32 @@
         <div class="step-num"></div>
         <div class="step-body">
           <h3>Connect Cylenivo to Jira</h3>
-          <p>In the import wizard, select <strong>Jira</strong> as your source. Fill in the four connection fields:</p>
+          <p>In the import wizard, select <strong>Jira</strong> as your source. First choose your <strong>Authentication type</strong>, then fill in the remaining fields:</p>
+
+          <p><strong>Atlassian Cloud</strong></p>
           <table class="field-table">
             <thead><tr><th>Field</th><th>What to enter</th></tr></thead>
             <tbody>
+              <tr><td>Authentication type</td><td>Atlassian Cloud (API token)</td></tr>
               <tr><td>Name</td><td>Any label, e.g. "My Jira"</td></tr>
-              <tr><td>Jira Base URL</td><td>Your Atlassian URL: <code>https://yourcompany.atlassian.net</code></td></tr>
+              <tr><td>Jira Base URL</td><td><code>https://yourcompany.atlassian.net</code></td></tr>
               <tr><td>Email</td><td>The email you use to log into Jira</td></tr>
               <tr><td>API Token</td><td>The token you created in step 1</td></tr>
             </tbody>
           </table>
-          <p>Click <strong>Connect</strong>. Cylenivo verifies your credentials before proceeding.</p>
+
+          <p style="margin-top:.75rem"><strong>Jira Server / Data Center</strong></p>
+          <table class="field-table">
+            <thead><tr><th>Field</th><th>What to enter</th></tr></thead>
+            <tbody>
+              <tr><td>Authentication type</td><td>Jira Server / Data Center (Personal Access Token)</td></tr>
+              <tr><td>Name</td><td>Any label, e.g. "My Jira"</td></tr>
+              <tr><td>Jira Base URL</td><td>Your server URL, e.g. <code>https://jira.yourcompany.com</code></td></tr>
+              <tr><td>Personal Access Token</td><td>The token you created in step 1</td></tr>
+            </tbody>
+          </table>
+
+          <p style="margin-top:.75rem">Click <strong>Connect</strong>. Cylenivo verifies your credentials before proceeding.</p>
         </div>
       </div>
 
