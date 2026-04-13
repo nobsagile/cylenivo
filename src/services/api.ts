@@ -134,7 +134,7 @@ export const api = {
   },
   connections: {
     list: () => request<SourceConnection[]>('/api/v1/connections'),
-    create: (body: { name: string; source_type: string; base_url?: string; email?: string; api_token?: string; credentials?: Record<string, string> }) =>
+    create: (body: { name: string; source_type: string; base_url?: string; email?: string; api_token?: string; auth_type?: string; credentials?: Record<string, string> }) =>
       request<SourceConnection>('/api/v1/connections', {
         method: 'POST',
         body: JSON.stringify(body),
