@@ -52,12 +52,8 @@ async function jiraGet(path: string): Promise<any> {
   return res.json()
 }
 
-function mapIssueType(jiraType: string): string {
-  const t = jiraType.toLowerCase()
-  if (t === 'bug') return 'bug'
-  if (t === 'epic') return 'epic'
-  if (t === 'task' || t === 'sub-task' || t === 'subtask') return 'task'
-  return 'story'
+function normalizeIssueType(jiraType: string): string {
+  return jiraType.toLowerCase().trim()
 }
 
 async function fetchIssues(): Promise<any[]> {
@@ -137,7 +133,7 @@ async function main() {
       tickets.push({
         external_id: key,
         title: issue.fields.summary,
-        ticket_type: mapIssueType(issue.fields.issuetype.name),
+        ticket_type: normalizeIssueType(issue.fields.issuetype.name),
         created_at: issue.fields.created,
         transitions,
       })

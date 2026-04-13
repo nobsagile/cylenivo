@@ -65,7 +65,6 @@ function SortableStatus({ id, onRemove }: { id: string; onRemove: () => void }) 
   )
 }
 
-const ISSUE_TYPE_OPTIONS = ['Story', 'Task', 'Bug', 'Epic']
 
 
 // ── Wizard step header ────────────────────────────────────────────────────────
@@ -141,7 +140,7 @@ export default function ImportPage() {
 
   // fetch step
   const [jiraProject, setJiraProject] = useState('')
-  const [jiraIssueTypes, setJiraIssueTypes] = useState(['Story', 'Task', 'Bug'])
+  const [jiraIssueTypes, setJiraIssueTypes] = useState<string[]>([])
   const [resolvedFrom, setResolvedFrom] = useState('')
   const [resolvedTo, setResolvedTo] = useState('')
   const [fetching, setFetching] = useState(false)
@@ -692,7 +691,7 @@ export default function ImportPage() {
               {issueTypesLoading && <Loader2 className="w-3.5 h-3.5 animate-spin text-gray-400" />}
             </div>
             <div className="flex flex-wrap gap-2">
-              {(availableIssueTypes ?? ISSUE_TYPE_OPTIONS).map((type) => (
+              {(availableIssueTypes ?? []).map((type) => (
                 <button
                   key={type}
                   onClick={() => toggleIssueType(type)}

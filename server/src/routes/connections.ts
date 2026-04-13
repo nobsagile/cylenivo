@@ -149,7 +149,7 @@ connections.post('/:id/fetch', async (c) => {
         const storedTypes = conn.issue_types ? JSON.parse(conn.issue_types) : null
         const options = {
           project,
-          issue_types: body.issue_types ?? storedTypes ?? ['Story', 'Task', 'Bug'],
+          issue_types: body.issue_types ?? storedTypes,
           resolved_from: body.resolved_from ?? conn.resolved_from ?? undefined,
           resolved_to: body.resolved_to ?? conn.resolved_to ?? undefined,
         }

@@ -181,6 +181,7 @@ export interface PaginatedTickets {
   total: number
   page: number
   limit: number
+  available_types: string[]
 }
 
 export interface SourceConnection {

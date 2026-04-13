@@ -48,7 +48,9 @@ ticketsRouter.get('/', async (c) => {
     exclusion_reason: t.exclusion_reason,
   }))
 
-  return c.json(ok({ tickets: paginated, total, page, limit }))
+  const availableTypes = [...new Set(ctx.tickets.map(t => t.ticket_type))].sort()
+
+  return c.json(ok({ tickets: paginated, total, page, limit, available_types: availableTypes }))
 })
 
 ticketsRouter.get('/:id', async (c) => {

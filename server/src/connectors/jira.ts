@@ -127,12 +127,8 @@ export async function fetchProjectIssueTypes(creds: JiraCredentials, project: st
   return types.filter(t => !t.subtask).map(t => t.name)
 }
 
-export function mapIssueType(jiraType: string): string {
-  const t = jiraType.toLowerCase()
-  if (t === 'bug') return 'bug'
-  if (t === 'epic') return 'epic'
-  if (t === 'task' || t === 'sub-task' || t === 'subtask') return 'task'
-  return 'story'
+export function normalizeIssueType(jiraType: string): string {
+  return jiraType.toLowerCase().trim()
 }
 
 export async function testConnection(creds: JiraCredentials): Promise<{ display_name: string; email: string }> {
@@ -143,11 +139,11 @@ export async function testConnection(creds: JiraCredentials): Promise<{ display_
 const JIRA_PAGE_SIZE = 100
 
 export async function fetchIssues(creds: JiraCredentials, options: JiraFetchOptions): Promise<JiraIssue[]> {
-  const { project, issue_types = ['Story', 'Task', 'Bug'], resolved_from, resolved_to } = options
-  const typeList = issue_types.map(t => `"${t}"`).join(', ')
+  const { project, issue_types, resolved_from, resolved_to } = options
+  const typeFilter = issue_types?.length ? ` AND issuetype in (${issue_types.map(t => `"${t}"`).join(', ')})` : ''
   const fromFilter = resolved_from ? ` AND resolved >= "${resolved_from}"` : ''
   const toFilter = resolved_to ? ` AND resolved <= "${resolved_to}"` : ''
-  const jql = `project = ${project} AND issuetype in (${typeList}) AND statusCategory = Done${fromFilter}${toFilter} ORDER BY resolved DESC`
+  const jql = `project = ${project}${typeFilter} AND statusCategory = Done${fromFilter}${toFilter} ORDER BY resolved DESC`
 
   const all: JiraIssue[] = []
   if (creds.auth_type === 'server') {
@@ -240,7 +236,7 @@ export async function buildImportFile(
         results[i] = {
           external_id: issue.key,
           title: issue.fields.summary,
-          ticket_type: mapIssueType(issue.fields.issuetype.name),
+          ticket_type: normalizeIssueType(issue.fields.issuetype.name),
           created_at: issue.fields.created,
           external_link: `${creds.base_url}/browse/${issue.key}`,
           transitions: extractTransitions(histories),

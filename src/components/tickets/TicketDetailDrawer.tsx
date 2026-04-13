@@ -4,7 +4,7 @@ import { X, ExternalLink, ChevronUp, ChevronDown, Ban, Undo2 } from 'lucide-reac
 import { useTranslation } from 'react-i18next'
 import { api } from '@/services/api'
 import type { TicketDetail, ConfigContext } from '@/types'
-import { TYPE_COLORS } from '@/lib/statusColors'
+import { getTypeColor } from '@/lib/statusColors'
 import { TicketTimeline } from './TicketTimeline'
 
 interface Props {
@@ -100,8 +100,8 @@ export function TicketDetailDrawer({ ticketId, config, onClose, onPrev, onNext, 
                     ) : (
                       <span className="text-sm font-semibold text-violet-600">{detail.external_id}</span>
                     )}
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border ${TYPE_COLORS[detail.ticket_type] ?? 'bg-gray-50 text-gray-600 border-gray-200'}`}>
-                      {t(`tickets.types.${detail.ticket_type}`, { defaultValue: detail.ticket_type })}
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border ${getTypeColor(detail.ticket_type)}`}>
+                      {t(`tickets.types.${detail.ticket_type}`, { defaultValue: detail.ticket_type.split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') })}
                     </span>
                   </div>
                   <DialogPrimitive.Title className="text-sm font-medium text-gray-800 leading-snug">
