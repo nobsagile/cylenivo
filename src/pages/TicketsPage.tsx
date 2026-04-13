@@ -9,10 +9,10 @@ import type { Ticket } from '@/types'
 import { TicketTable, sortTickets, type SortKey, type SortDir } from '@/components/tickets/TicketTable'
 import { TicketDetailDrawer } from '@/components/tickets/TicketDetailDrawer'
 import { Button } from '@/components/ui/button'
-import { ExportButton } from '@/components/ui/ExportButton'
+// import { ExportButton } from '@/components/ui/ExportButton' // #90
 import { Input } from '@/components/ui/input'
 import { PageHeader } from '@/components/layout/PageHeader'
-import { downloadCsv } from '@/lib/csvExport'
+// import { downloadCsv } from '@/lib/csvExport' // #90
 
 export default function TicketsPage() {
   const { t } = useTranslation()
@@ -66,6 +66,7 @@ export default function TicketsPage() {
     })
   }, [excludedOnly])
 
+  /* #90: handleExportCsv hidden until export is complete
   async function handleExportCsv() {
     if (!importId) return
     const res = await api.tickets.list(importId, { limit: 0 })
@@ -75,7 +76,7 @@ export default function TicketsPage() {
       t.cycle_time_days, t.lead_time_days, t.completed_at, t.excluded ? 'Yes' : 'No', t.exclusion_reason ?? '',
     ])
     downloadCsv(`tickets-${metrics?.project_key ?? 'export'}.csv`, headers, rows)
-  }
+  } */
 
   return (
     <div className="space-y-4">

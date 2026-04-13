@@ -16,8 +16,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { DateRangeSlider } from '@/components/metrics/DateRangeSlider'
-import { downloadCsv } from '@/lib/csvExport'
-import { ExportButton } from '@/components/ui/ExportButton'
+// import { downloadCsv } from '@/lib/csvExport' // #90
+// import { ExportButton } from '@/components/ui/ExportButton' // #90
 import type { ProjectLayoutContext } from '@/components/layout/ProjectLayout'
 
 type Mode = 'how_many' | 'when'
