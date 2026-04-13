@@ -139,27 +139,6 @@ export default function ImportPage() {
     }
   }, [step])
 
-  // Auto-fetch available issue types from Jira when project key changes
-  useEffect(() => {
-    if (!jiraProject || !connection?.id) return
-    if (issueTypeTimerRef.current) clearTimeout(issueTypeTimerRef.current)
-    issueTypeTimerRef.current = setTimeout(async () => {
-      setIssueTypesLoading(true)
-      try {
-        const types = await api.connections.issueTypes(connection.id, jiraProject)
-        if (types.length > 0) {
-          setAvailableIssueTypes(types)
-          setJiraIssueTypes(types)
-        }
-      } catch {
-        setAvailableIssueTypes(null)
-      } finally {
-        setIssueTypesLoading(false)
-      }
-    }, 600)
-    return () => { if (issueTypeTimerRef.current) clearTimeout(issueTypeTimerRef.current) }
-  }, [jiraProject, connection?.id])
-
   // fetch step
   const [jiraProject, setJiraProject] = useState('')
   const [jiraIssueTypes, setJiraIssueTypes] = useState(['Story', 'Task', 'Bug'])
@@ -180,6 +159,27 @@ export default function ImportPage() {
   const [cycleEnd, setCycleEnd] = useState('')
   const [cycleMode, setCycleMode] = useState<'first_last' | 'first_first' | 'last_last'>('first_last')
   const [importing, setImporting] = useState(false)
+
+  // Auto-fetch available issue types from Jira when project key changes
+  useEffect(() => {
+    if (!jiraProject || !connection?.id) return
+    if (issueTypeTimerRef.current) clearTimeout(issueTypeTimerRef.current)
+    issueTypeTimerRef.current = setTimeout(async () => {
+      setIssueTypesLoading(true)
+      try {
+        const types = await api.connections.issueTypes(connection.id, jiraProject)
+        if (types.length > 0) {
+          setAvailableIssueTypes(types)
+          setJiraIssueTypes(types)
+        }
+      } catch {
+        setAvailableIssueTypes(null)
+      } finally {
+        setIssueTypesLoading(false)
+      }
+    }, 600)
+    return () => { if (issueTypeTimerRef.current) clearTimeout(issueTypeTimerRef.current) }
+  }, [jiraProject, connection?.id])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
