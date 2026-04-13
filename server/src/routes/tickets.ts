@@ -43,6 +43,7 @@ ticketsRouter.get('/', async (c) => {
     lead_time_days: t.lead_time_days !== null ? Math.round(t.lead_time_days * 100) / 100 : null,
     current_status: t.current_status,
     completed: t.completed,
+    completed_at: t.completed_at ? t.completed_at.toISOString() : null,
     excluded: t.excluded,
     exclusion_reason: t.exclusion_reason,
   }))
@@ -86,6 +87,7 @@ ticketsRouter.get('/:id', async (c) => {
     lead_time_days: enriched.lead_time_days !== null ? Math.round(enriched.lead_time_days * 100) / 100 : null,
     current_status: enriched.current_status,
     completed: enriched.completed,
+    completed_at: enriched.completed_at ? enriched.completed_at.toISOString() : null,
     excluded: enriched.excluded,
     exclusion_reason: enriched.exclusion_reason,
     transitions: sorted.map(t => ({
@@ -139,6 +141,7 @@ ticketsRouter.patch('/:id', async (c) => {
     lead_time_days: enriched.lead_time_days !== null ? Math.round(enriched.lead_time_days * 100) / 100 : null,
     current_status: enriched.current_status,
     completed: enriched.completed,
+    completed_at: enriched.completed_at ? enriched.completed_at.toISOString() : null,
     excluded: enriched.excluded,
     exclusion_reason: enriched.exclusion_reason,
     transitions: sorted.map(t => ({

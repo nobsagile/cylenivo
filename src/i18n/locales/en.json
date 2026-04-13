@@ -191,7 +191,9 @@
       "type": "Type",
       "cycleTime": "Cycle Time",
       "leadTime": "Lead Time",
-      "completedAt": "Completed At"
+      "completedAt": "Completed At",
+      "resolvedDate": "Resolved",
+      "exclude": "Exclude"
     },
     "types": {
       "story": "Story",

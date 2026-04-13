@@ -25,7 +25,7 @@ interface Props {
   onSortChange?: (key: SortKey, dir: SortDir) => void
 }
 
-export type SortKey = 'external_id' | 'title' | 'ticket_type' | 'cycle_time_days' | 'lead_time_days' | 'current_status'
+export type SortKey = 'external_id' | 'title' | 'ticket_type' | 'cycle_time_days' | 'lead_time_days' | 'current_status' | 'completed_at'
 export type SortDir = 'asc' | 'desc'
 
 function cycleTimeColor(days: number | null, p50?: number | null, p85?: number | null) {
@@ -57,8 +57,8 @@ function SortIcon({ col, sortKey, sortDir }: { col: SortKey; sortKey: SortKey; s
 
 export function TicketTable({ tickets, p50, p85, config: _config, onTicketClick, onExclusionToggle, sortKey: sortKeyProp, sortDir: sortDirProp, onSortChange }: Props) {
   const { t } = useTranslation()
-  const [sortKeyLocal, setSortKeyLocal] = useState<SortKey>('external_id')
-  const [sortDirLocal, setSortDirLocal] = useState<SortDir>('asc')
+  const [sortKeyLocal, setSortKeyLocal] = useState<SortKey>('completed_at')
+  const [sortDirLocal, setSortDirLocal] = useState<SortDir>('desc')
 
   const handleExclusionClick = useCallback(async (ticketId: string, excluded: boolean) => {
     onExclusionToggle?.(ticketId, excluded)
@@ -105,7 +105,8 @@ export function TicketTable({ tickets, p50, p85, config: _config, onTicketClick,
             {th('cycle_time_days', t('tickets.table.cycleTime'), 'text-right w-28')}
             {th('lead_time_days', t('tickets.table.leadTime'), 'text-right w-28')}
             {th('current_status', t('common.status'), 'w-36')}
-            <TableHead className="w-10" />
+            {th('completed_at', t('tickets.table.resolvedDate'), 'w-32')}
+            <TableHead className="w-10 font-semibold text-gray-600">{t('tickets.table.exclude')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -165,6 +166,9 @@ export function TicketTable({ tickets, p50, p85, config: _config, onTicketClick,
                   <span className="text-gray-300">—</span>
                 )}
               </TableCell>
+              <TableCell className="text-sm text-gray-500 whitespace-nowrap">
+                {ticket.completed_at ? new Date(ticket.completed_at).toLocaleDateString() : '—'}
+              </TableCell>
               <TableCell>
                 {onExclusionToggle && (
                   <button
@@ -180,7 +184,7 @@ export function TicketTable({ tickets, p50, p85, config: _config, onTicketClick,
           ))}
           {tickets.length === 0 && (
             <TableRow>
-              <TableCell colSpan={7} className="text-center text-gray-400 py-12 text-sm">
+              <TableCell colSpan={8} className="text-center text-gray-400 py-12 text-sm">
                 {t('tickets.noTickets')}
               </TableCell>
             </TableRow>

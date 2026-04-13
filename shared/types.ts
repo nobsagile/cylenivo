@@ -57,6 +57,7 @@ export interface Ticket {
   lead_time_days: number | null
   current_status: string | null
   completed: boolean
+  completed_at: string | null
   excluded: boolean
   exclusion_reason: string | null
 }

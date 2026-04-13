@@ -28,8 +28,8 @@ export default function TicketsPage() {
   const [search, setSearch] = useState('')
   const [searchDebounced, setSearchDebounced] = useState('')
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
-  const [sortKey, setSortKey] = useState<SortKey>('external_id')
-  const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const [sortKey, setSortKey] = useState<SortKey>('completed_at')
+  const [sortDir, setSortDir] = useState<SortDir>('desc')
   const limit = 50
 
   useEffect(() => {
