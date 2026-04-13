@@ -26,7 +26,7 @@ interface Props {
   connection: SourceConnection
   pluginManifest?: PluginManifest | null
   /** When refreshing an existing dataset, pass it so we can skip preflight */
-  importSession?: { id: string; project_key: string; config_id: string; resolved_from?: string | null; resolved_to?: string | null } | null
+  importSession?: { id: string; project_key: string; config_id: string; resolved_from?: string | null; resolved_to?: string | null; issue_types?: string[] | null } | null
   onClose: () => void
 }
 
@@ -77,7 +77,10 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
 
   // Pre-flight state — prefer importSession.project_key over connection default
   const [projectKey, setProjectKey] = useState(importSession?.project_key ?? connection.project_key ?? '')
-  const [issueTypes, setIssueTypes] = useState<string[]>(connection.issue_types ?? ['Story', 'Task', 'Bug'])
+  const [issueTypes, setIssueTypes] = useState<string[]>(importSession?.issue_types ?? connection.issue_types ?? ['Story', 'Task', 'Bug'])
+  const [availableIssueTypes, setAvailableIssueTypes] = useState<string[] | null>(null)
+  const [issueTypesLoading, setIssueTypesLoading] = useState(false)
+  const issueTypeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [resolvedFrom, setResolvedFrom] = useState(importSession?.resolved_from ?? connection.resolved_from ?? '')
   const [resolvedTo, setResolvedTo] = useState(importSession?.resolved_to ?? connection.resolved_to ?? '')
   const [pluginOptions, setPluginOptions] = useState<Record<string, string>>(initialPluginOpts)
@@ -88,6 +91,30 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
   const [fetchResult, setFetchResult] = useState<Record<string, unknown> | null>(null)
   const [fetchedStatuses, setFetchedStatuses] = useState<string[]>([])
   const [ticketCount, setTicketCount] = useState(0)
+
+  // Auto-fetch available issue types when project key changes (preflight only)
+  useEffect(() => {
+    if (!projectKey || connection.source_type !== 'jira') return
+    if (issueTypeTimerRef.current) clearTimeout(issueTypeTimerRef.current)
+    issueTypeTimerRef.current = setTimeout(async () => {
+      setIssueTypesLoading(true)
+      try {
+        const types = await api.connections.issueTypes(connection.id, projectKey)
+        if (types.length > 0) {
+          setAvailableIssueTypes(types)
+          // Only auto-select all if no previous selection from importSession/connection
+          if (!importSession?.issue_types && !connection.issue_types) {
+            setIssueTypes(types)
+          }
+        }
+      } catch {
+        setAvailableIssueTypes(null)
+      } finally {
+        setIssueTypesLoading(false)
+      }
+    }, 600)
+    return () => { if (issueTypeTimerRef.current) clearTimeout(issueTypeTimerRef.current) }
+  }, [projectKey, connection.id])
 
   function toggleIssueType(type: string) {
     setIssueTypes((prev) =>
@@ -135,7 +162,7 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
 
       if (importSession) {
         // Replace existing dataset in-place (same ID → same project in sidebar)
-        await api.imports.replace(importSession.id, file, resolvedFrom || undefined, resolvedTo || undefined)
+        await api.imports.replace(importSession.id, file, resolvedFrom || undefined, resolvedTo || undefined, issueTypes)
         notifyImportsChanged()
         notifyDataReplaced(importSession.id)
         onClose()
@@ -143,7 +170,7 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
       } else {
         const configId = await resolveConfigId()
         if (configId) {
-          const session = await api.imports.upload(file, configId, projectKey || undefined, connection.id, resolvedFrom || undefined, resolvedTo || undefined)
+          const session = await api.imports.upload(file, configId, projectKey || undefined, connection.id, resolvedFrom || undefined, resolvedTo || undefined, issueTypes)
           notifyImportsChanged()
           onClose()
           navigate(`/projects/${session.id}`)
@@ -273,9 +300,12 @@ export default function RefreshDialog({ open, connection, pluginManifest, import
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">{t('connection.issueTypes')}</label>
+              <div className="flex items-center gap-2 mb-1">
+                <label className="block text-xs font-medium text-gray-600">{t('connection.issueTypes')}</label>
+                {issueTypesLoading && <Loader2 className="w-3 h-3 animate-spin text-gray-400" />}
+              </div>
               <div className="flex flex-wrap gap-1.5">
-                {ISSUE_TYPE_OPTIONS.map((type) => (
+                {(availableIssueTypes ?? ISSUE_TYPE_OPTIONS).map((type) => (
                   <button
                     key={type}
                     type="button"

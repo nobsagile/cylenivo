@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -109,6 +109,10 @@ export default function ImportPage() {
   const [selectedConnId, setSelectedConnId] = useState('')
 
   // connect step
+  const [availableIssueTypes, setAvailableIssueTypes] = useState<string[] | null>(null)
+  const [issueTypesLoading, setIssueTypesLoading] = useState(false)
+  const issueTypeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   const [connName, setConnName] = useState('')
   const [connBaseUrl, setConnBaseUrl] = useState('')
   const [connEmail, setConnEmail] = useState('')
@@ -134,6 +138,27 @@ export default function ImportPage() {
       api.configs.list().then(setAvailableConfigs).catch(() => {})
     }
   }, [step])
+
+  // Auto-fetch available issue types from Jira when project key changes
+  useEffect(() => {
+    if (!jiraProject || !connection?.id) return
+    if (issueTypeTimerRef.current) clearTimeout(issueTypeTimerRef.current)
+    issueTypeTimerRef.current = setTimeout(async () => {
+      setIssueTypesLoading(true)
+      try {
+        const types = await api.connections.issueTypes(connection.id, jiraProject)
+        if (types.length > 0) {
+          setAvailableIssueTypes(types)
+          setJiraIssueTypes(types)
+        }
+      } catch {
+        setAvailableIssueTypes(null)
+      } finally {
+        setIssueTypesLoading(false)
+      }
+    }, 600)
+    return () => { if (issueTypeTimerRef.current) clearTimeout(issueTypeTimerRef.current) }
+  }, [jiraProject, connection?.id])
 
   // fetch step
   const [jiraProject, setJiraProject] = useState('')
@@ -662,9 +687,12 @@ export default function ImportPage() {
             />
           </div>
           <div>
-            <ConnFieldLabel label={t('import.issueTypes')} helpKey="help.issueTypes" />
+            <div className="flex items-center gap-2 mb-1.5">
+              <ConnFieldLabel label={t('import.issueTypes')} helpKey="help.issueTypes" />
+              {issueTypesLoading && <Loader2 className="w-3.5 h-3.5 animate-spin text-gray-400" />}
+            </div>
             <div className="flex flex-wrap gap-2">
-              {ISSUE_TYPE_OPTIONS.map((type) => (
+              {(availableIssueTypes ?? ISSUE_TYPE_OPTIONS).map((type) => (
                 <button
                   key={type}
                   onClick={() => toggleIssueType(type)}
@@ -808,7 +836,7 @@ export default function ImportPage() {
       const blob = new Blob([JSON.stringify(data)], { type: 'application/json' })
       const file = new File([blob], `${projectKey}-export.json`, { type: 'application/json' })
       const autoName = `${projectKey} – ${new Date().toLocaleDateString()}`
-      const session = await api.imports.upload(file, selectedConfigId, autoName, connection.id, resolvedFrom || undefined, resolvedTo || undefined)
+      const session = await api.imports.upload(file, selectedConfigId, autoName, connection.id, resolvedFrom || undefined, resolvedTo || undefined, jiraIssueTypes)
       if (connection.source_type === 'jira') {
         api.connections.update(connection.id, {
           project_key: projectKey,
@@ -848,7 +876,7 @@ export default function ImportPage() {
       const blob = new Blob([JSON.stringify(fetchedData)], { type: 'application/json' })
       const file = new File([blob], `${fetchedProjectKey}-export.json`, { type: 'application/json' })
       const autoName = `${fetchedProjectKey} – ${new Date().toLocaleDateString()}`
-      const session = await api.imports.upload(file, config.id, autoName, connection.id, resolvedFrom || undefined, resolvedTo || undefined)
+      const session = await api.imports.upload(file, config.id, autoName, connection.id, resolvedFrom || undefined, resolvedTo || undefined, jiraIssueTypes)
       // Save project defaults to connection so next Refresh auto-starts (no preflight)
       if (connection.source_type === 'jira') {
         api.connections.update(connection.id, {

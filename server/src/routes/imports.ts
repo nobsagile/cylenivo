@@ -54,6 +54,7 @@ function serializeSession(
     cycle_time_start_status: cfg?.cycle_time_start_status ?? null,
     cycle_time_end_status: cfg?.cycle_time_end_status ?? null,
     health_report: row.health_report ? JSON.parse(row.health_report) : null,
+    issue_types: row.issue_types ? JSON.parse(row.issue_types) : null,
   }
 }
 
@@ -126,6 +127,7 @@ imports.post('/', async (c) => {
   const connectionId = (body['connection_id'] as string) || null
   const resolvedFrom = (body['resolved_from'] as string) || null
   const resolvedTo = (body['resolved_to'] as string) || null
+  const issueTypesRaw = (body['issue_types'] as string) || null
 
   if (!file || typeof file === 'string') {
     return c.json({ data: null, error: 'No file provided' }, 400)
@@ -175,6 +177,7 @@ imports.post('/', async (c) => {
     connection_id: connectionId,
     resolved_from: resolvedFrom,
     resolved_to: resolvedTo,
+    issue_types: issueTypesRaw,
   }
 
   for (const t of data.tickets) {
@@ -209,6 +212,7 @@ imports.put('/:id/data', async (c) => {
   const file = body['file']
   const resolvedFrom = body['resolved_from'] as string | undefined
   const resolvedTo = body['resolved_to'] as string | undefined
+  const issueTypesRaw = body['issue_types'] as string | undefined
   if (!file || typeof file === 'string') {
     return c.json({ data: null, error: 'No file provided' }, 400)
   }
@@ -265,6 +269,7 @@ imports.put('/:id/data', async (c) => {
       health_report: JSON.stringify(healthReport),
       ...(resolvedFrom !== undefined ? { resolved_from: resolvedFrom || null } : {}),
       ...(resolvedTo !== undefined ? { resolved_to: resolvedTo || null } : {}),
+      ...(issueTypesRaw !== undefined ? { issue_types: issueTypesRaw || null } : {}),
     }).where(eq(importSessions.id, id))
   })
 
