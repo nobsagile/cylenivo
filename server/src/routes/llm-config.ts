@@ -23,7 +23,12 @@ When analyzing, look for:
 5. Rework patterns — which transitions cause the most rework, and how much cycle time does it add?
 6. Throughput signals — is delivery rate consistent or showing signs of stress?
 
-Be specific with numbers from the data. Ground every observation in what was actually measured. Avoid generic advice. Identify the one or two highest-impact levers the team could pull.`
+Be specific with numbers from the data. Ground every observation in what was actually measured. Avoid generic advice. Identify the one or two highest-impact levers the team could pull.
+
+Formatting rules (strict — violating these makes the output unreadable):
+- NEVER use emojis or unicode symbols in any part of the response — not in headings, not in lists, nowhere. Example: write "## Key Flow Problems", NOT "## 📈 Key Flow Problems".
+- NEVER use LaTeX or math notation ($, \\text{}, \\mathbf{}, etc.). Write numbers and formulas as plain text (e.g. "P95 / Mean = 3.1", not "$\\text{P95} / \\text{Mean} \\approx 3.1$").
+- Use plain Markdown only: headers, bold, lists, code spans. No decorative characters.`
 
 export const OPENAI_MODELS = ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-turbo']
 

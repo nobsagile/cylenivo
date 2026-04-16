@@ -304,7 +304,7 @@ TOP 5 SLOWEST: ${slowest}
 
 Answer questions about this data concisely and specifically. Use numbers from the data above.`
 
-  const systemPrompt = (cfg.system_prompt || DEFAULT_SYSTEM_PROMPT) + '\n\n' + dataContext
+  const systemPrompt = DEFAULT_SYSTEM_PROMPT + '\n\n' + dataContext
   const messages = [{ role: 'system', content: systemPrompt }, ...body.messages]
 
   let reply: string
