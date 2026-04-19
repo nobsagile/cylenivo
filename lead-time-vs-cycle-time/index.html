@@ -156,6 +156,30 @@
       footer { padding: 1.5rem 1rem; flex-direction: column; align-items: flex-start; }
     }
   </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is the difference between lead time and cycle time?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Cycle time measures the time from when work starts on a ticket to when it's done. Lead time measures the time from when the request enters the system (e.g. backlog) to when it's done. The gap between the two is queue time — how long a request waits before anyone starts working on it."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why does the difference between lead time and cycle time matter?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "If cycle time looks good but lead time doesn't, requests are piling up before being picked — that's a backlog or prioritisation problem, not a speed problem. Stakeholders feel lead time (the total wait). Teams can directly influence cycle time. You need both to have the right conversations with the right people."
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 

@@ -166,6 +166,30 @@
       footer { padding: 1.5rem 1rem; flex-direction: column; align-items: flex-start; }
     }
   </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What are flow metrics?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Flow metrics measure how work moves through a system based on real data, not estimates. The four core metrics are Cycle Time (how fast work gets done), Lead Time (how long the requester waits), Throughput (how many items finish per week), and WIP (how many items are in progress). Flow Efficiency — the share of active work vs. waiting — rounds out the picture."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why not use velocity instead of flow metrics?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Velocity measures story points per sprint — but story points are estimates, not measurements. Velocity goes up when teams learn to estimate higher, not when they deliver faster. Flow metrics count real completions against real clock time, making them much harder to game."
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 

@@ -158,6 +158,30 @@
       footer { padding: 1.5rem 1rem; flex-direction: column; align-items: flex-start; }
     }
   </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is Monte Carlo forecasting in agile?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Monte Carlo forecasting uses your team's real throughput data — how many tickets you actually finish each week — to simulate thousands of possible futures. The result is a probability distribution: e.g. 50% chance done by May 12, 85% by May 28. It replaces single-date estimates with confidence levels based on historical data."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why do agile estimates fail?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Teams estimate optimistically. Velocity is an average that hides variance — a team with velocity 40 might deliver anywhere between 20 and 60 in any given sprint. Monte Carlo handles this by sampling from the full distribution of throughput data, including bad and great weeks, so variance is built into every forecast."
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 

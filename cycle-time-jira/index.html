@@ -155,6 +155,30 @@
       footer { padding: 1.5rem 1rem; flex-direction: column; align-items: flex-start; }
     }
   </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is cycle time in Jira?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Cycle time is the elapsed time from when work starts on a Jira ticket (e.g. status changes to 'In Progress') to when it's done (e.g. status changes to 'Done'). Jira doesn't show this natively — it requires reading the status transition history of each ticket."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do you measure cycle time in Jira?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "You measure cycle time by reading the status transition history of each Jira ticket via the API. Define which status marks 'work started' and which marks 'done', then calculate the elapsed time between those two transitions. Cylenivo is a free desktop app that does this automatically and shows percentiles, scatterplots, and trends."
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
