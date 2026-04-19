@@ -13,7 +13,15 @@ import plugins from './routes/plugins.js'
 
 export const app = new Hono()
 
-app.use('*', cors())
+const ALLOWED_ORIGINS = [
+  'tauri://localhost',
+  'http://tauri.localhost',
+  'https://tauri.localhost',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+]
+
+app.use('*', cors({ origin: ALLOWED_ORIGINS }))
 app.use('*', logger())
 
 app.get('/health', (c) => c.json({ status: 'ok' }))
