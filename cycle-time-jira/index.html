@@ -59,18 +59,18 @@
 
     /* HERO */
     .hero {
-      max-width: 800px; margin: 0 auto; padding: 4rem 2rem 2rem;
+      max-width: 760px; margin: 0 auto; padding: 3rem 2rem 2rem;
       display: flex; flex-direction: column; align-items: center; text-align: center;
     }
     .hero h1 {
-      font-size: clamp(2rem, 4.5vw, 3rem); font-weight: 800;
+      font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 800;
       letter-spacing: -.03em; line-height: 1.15; max-width: 680px;
       color: var(--gray-900);
     }
     .hero h1 em { font-style: normal; color: var(--violet); }
     .hero p {
       margin-top: 1.25rem; font-size: 1.0625rem; color: var(--gray-500);
-      max-width: 580px; line-height: 1.65;
+      max-width: 560px; line-height: 1.7;
     }
     .hero-actions { display: flex; align-items: center; gap: .875rem; margin-top: 2rem; flex-wrap: wrap; justify-content: center; }
     .btn-download {
@@ -101,7 +101,7 @@
     .screenshot-frame img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: top left; }
 
     /* SECTION */
-    .section { max-width: 820px; margin: 0 auto; padding: 3.5rem 2rem; }
+    .section { max-width: 760px; margin: 0 auto; padding: 3rem 2rem; }
     .section-label { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--violet); margin-bottom: .75rem; }
     .section-title { font-size: clamp(1.5rem, 2.5vw, 1.875rem); font-weight: 800; letter-spacing: -.02em; color: var(--gray-900); max-width: 640px; }
     .section-sub { margin-top: .75rem; font-size: 1rem; color: var(--gray-500); max-width: 560px; line-height: 1.65; }
@@ -147,10 +147,10 @@
     .footer-links a:hover { color: var(--gray-900); }
     .footer-copy { font-size: .75rem; color: var(--gray-300); }
 
-    @media (max-width: 640px) {
+    @media (max-width: 600px) {
       nav { padding: 0 1rem; }
-      .hero { padding: 2.5rem 1rem 1.5rem; }
-      .section { padding: 2.5rem 1rem; }
+      .hero { padding: 2rem 1rem 1.5rem; }
+      .section { padding: 2rem 1rem; }
       .screenshot-wrap { padding: 0 1rem; }
       footer { padding: 1.5rem 1rem; flex-direction: column; align-items: flex-start; }
     }
@@ -190,7 +190,7 @@
 
 <!-- WHY JIRA DOESN'T SHOW IT -->
 <section class="section" style="background: var(--gray-50); max-width: none;">
-  <div style="max-width: 820px; margin: 0 auto;">
+  <div style="max-width: 760px; margin: 0 auto;">
     <div class="section-label">The problem</div>
     <h2 class="section-title">Why Jira doesn't show cycle time</h2>
     <div class="section-body">
@@ -219,7 +219,7 @@
 
 <!-- GET STARTED -->
 <section class="section" style="background: var(--gray-50); max-width: none;">
-  <div style="max-width: 820px; margin: 0 auto;">
+  <div style="max-width: 760px; margin: 0 auto;">
     <div class="section-label">Try it</div>
     <h2 class="section-title">Get started</h2>
     <p class="section-sub">Download Cylenivo, connect to your Jira instance, and see your team's real cycle time in under 5 minutes.</p>
@@ -236,7 +236,7 @@
 </section>
 
 <!-- FURTHER READING -->
-<section class="section" style="max-width: 1100px;">
+<section class="section">
   <div class="section-label">Further reading</div>
   <h2 class="section-title">Beyond the numbers</h2>
   <p class="section-sub">Cycle time data tells you what's happening. These explain why.</p>
