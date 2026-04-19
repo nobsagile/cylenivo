@@ -180,6 +180,23 @@ describe('calculateLeadTime', () => {
     const createdAt = new Date('2024-01-05T08:00:00Z')
     expect(calculateLeadTime(createdAt, sampleTransitions, 'Done', 'Missing')).toBeNull()
   })
+
+  it('returns 0 (not null) when ticket completed at same instant as created_at', () => {
+    const sameInstant = new Date('2024-01-05T08:00:00Z')
+    const transitions = [
+      { from_status: null, to_status: 'Done', transitioned_at: '2024-01-05T08:00:00Z' },
+    ]
+    expect(calculateLeadTime(sameInstant, transitions, 'Done')).toBe(0)
+  })
+
+  it('returns 0 when lead_time_start and end transitions occur at same instant', () => {
+    const createdAt = new Date('2024-01-01T00:00:00Z')
+    const transitions = [
+      { from_status: null, to_status: 'In Progress', transitioned_at: '2024-01-05T08:00:00Z' },
+      { from_status: 'In Progress', to_status: 'Done', transitioned_at: '2024-01-05T08:00:00Z' },
+    ]
+    expect(calculateLeadTime(createdAt, transitions, 'Done', 'In Progress')).toBe(0)
+  })
 })
 
 describe('calculatePercentiles', () => {

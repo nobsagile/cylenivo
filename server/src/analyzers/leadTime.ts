@@ -26,6 +26,6 @@ export function calculateLeadTime(
     startTs = found
   }
 
-  if (endTs <= startTs) return null
+  if (endTs < startTs) return null
   return (endTs.getTime() - startTs.getTime()) / (1000 * 86400)
 }
