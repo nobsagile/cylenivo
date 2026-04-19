@@ -72,7 +72,7 @@ npm test
 
 - [The physics behind software delivery flow](https://no-bullshit-agile.de/wip/) — interactive guide to Little's Law, Kingman's formula, and why WIP limits work
 - [The Work-Feedback Loop](https://no-bullshit-agile.com/wfl/) — a framework for how work systems actually learn
-- [Cylenivo: a tool, not a cockpit](https://no-bullshit-agile.com/cylenivo-a-tool-not-a-cockpit/) — why metrics should trigger conversations, not control
+- [Cylenivo: a tool, not a cockpit](https://no-bullshit-agile.com/cylenivo-a-tool-not-a-cockpit.html) — why metrics should trigger conversations, not control
 
 ## License
 
@@ -80,4 +80,5 @@ MIT + Commons Clause — free to use (including commercially), source-available.
 Forks may not be sold or commercially redistributed. See [LICENSE](LICENSE) for details.
 
 Copyright (c) 2026 Thomas Esders
+
 Built by [Thomas Esders](https://no-bullshit-agile.com/contact.html)
