@@ -151,7 +151,7 @@ plugins.post('/:source_type/test', async (c) => {
 plugins.post('/:source_type/fetch', async (c) => {
   const sourceType = c.req.param('source_type')
   const body = await c.req.json()
-  console.log(`[plugin:fetch] source_type=${sourceType} options=${JSON.stringify(body.options ?? body)}`)
+  console.log(`[plugin:fetch] source_type=${sourceType}`)
   return streamSSE(c, async (stream) => {
     try {
       const plugin = await loadPlugin(sourceType)

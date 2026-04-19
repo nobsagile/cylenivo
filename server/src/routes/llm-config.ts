@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { llmConfig } from '../db/schema.js'
 import { ok } from '../lib/response.js'
+import { validateHttpUrl } from '../lib/urlValidation.js'
 
 const llmConfigRoute = new Hono()
 
@@ -34,25 +35,6 @@ export const OPENAI_MODELS = ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-t
 
 const CONFIG_ID = 'default'
 
-const BLOCKED_HOSTS = new Set([
-  '169.254.169.254',
-  'fd00:ec2::254',
-  'metadata.google.internal',
-  'metadata.azure.com',
-])
-
-function validateLlmBaseUrl(raw: string | undefined | null): void {
-  if (!raw) return
-  let u: URL
-  try { u = new URL(raw) } catch { throw new Error('base_url must be a valid URL') }
-  if (u.protocol !== 'http:' && u.protocol !== 'https:') {
-    throw new Error('base_url must use http or https')
-  }
-  if (BLOCKED_HOSTS.has(u.hostname)) {
-    throw new Error('base_url points to a blocked metadata host')
-  }
-}
-
 llmConfigRoute.get('/', async (c) => {
   const rows = await db.select().from(llmConfig).where(eq(llmConfig.id, CONFIG_ID))
   if (!rows.length) return c.json(ok(null))
@@ -68,7 +50,7 @@ llmConfigRoute.put('/', async (c) => {
     model: string
     system_prompt?: string
   }
-  try { validateLlmBaseUrl(body.base_url) } catch (e) {
+  try { validateHttpUrl(body.base_url, 'base_url') } catch (e) {
     return c.json({ data: null, error: e instanceof Error ? e.message : 'Invalid base_url' }, 400)
   }
   const existing = await db.select().from(llmConfig).where(eq(llmConfig.id, CONFIG_ID))
@@ -116,7 +98,7 @@ llmConfigRoute.delete('/', async (c) => {
 
 llmConfigRoute.get('/ollama-models', async (c) => {
   const baseUrl = c.req.query('base_url') ?? 'http://localhost:11434'
-  try { validateLlmBaseUrl(baseUrl) } catch (e) {
+  try { validateHttpUrl(baseUrl, 'base_url') } catch (e) {
     return c.json({ data: null, error: e instanceof Error ? e.message : 'Invalid base_url' }, 400)
   }
   try {
