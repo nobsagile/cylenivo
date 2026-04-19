@@ -709,6 +709,72 @@ describe('llm-config', () => {
     const { data } = await res.json() as { data: null }
     expect(data).toBeNull()
   })
+
+  it('PUT rejects file:// scheme in base_url', async () => {
+    const res = await app.request('/api/v1/llm-config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        provider: 'openai_compatible',
+        base_url: 'file:///etc/passwd',
+        model: 'x',
+      }),
+    })
+    expect(res.status).toBe(400)
+    const { error } = await res.json() as { error: string }
+    expect(error).toContain('http or https')
+  })
+
+  it('PUT rejects AWS metadata IP in base_url', async () => {
+    const res = await app.request('/api/v1/llm-config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        provider: 'openai_compatible',
+        base_url: 'http://169.254.169.254',
+        model: 'x',
+      }),
+    })
+    expect(res.status).toBe(400)
+    const { error } = await res.json() as { error: string }
+    expect(error).toContain('metadata')
+  })
+
+  it('PUT rejects malformed URL', async () => {
+    const res = await app.request('/api/v1/llm-config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        provider: 'openai_compatible',
+        base_url: 'not-a-url',
+        model: 'x',
+      }),
+    })
+    expect(res.status).toBe(400)
+  })
+
+  it('GET /ollama-models rejects metadata host', async () => {
+    const res = await app.request('/api/v1/llm-config/ollama-models?base_url=http://metadata.google.internal')
+    expect(res.status).toBe(400)
+  })
+
+  it('GET /ollama-models rejects non-http scheme', async () => {
+    const res = await app.request('/api/v1/llm-config/ollama-models?base_url=file:///etc/passwd')
+    expect(res.status).toBe(400)
+  })
+
+  it('PUT accepts LAN IP as Ollama base_url', async () => {
+    const res = await app.request('/api/v1/llm-config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        provider: 'ollama',
+        base_url: 'http://192.168.1.42:11434',
+        model: 'qwen3:14b',
+      }),
+    })
+    expect(res.status).toBe(200)
+  })
 })
 
 // ─── connections ──────────────────────────────────────────────────────────────
