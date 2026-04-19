@@ -2,7 +2,7 @@
 
 **[cylenivo.org](https://cylenivo.org)** — Download, screenshots and more.
 
-Flow metrics for software teams — local, private, no accounts.
+Free desktop app to measure cycle time, lead time and throughput from Jira, Trello and OpenProject. Monte Carlo delivery forecasts, flow efficiency, rework detection. No cloud, no account — your data stays local.
 
 Import your Jira export and instantly see **Cycle Time**, **Lead Time**, **Throughput**, and **Monte Carlo delivery forecasts**. All data stays on your machine.
 
@@ -68,9 +68,16 @@ Frontend tests:
 npm test
 ```
 
+## Further Reading
+
+- [The physics behind software delivery flow](https://no-bullshit-agile.de/wip/) — interactive guide to Little's Law, Kingman's formula, and why WIP limits work
+- [The Work-Feedback Loop](https://no-bullshit-agile.com/wfl/) — a framework for how work systems actually learn
+- [Cylenivo: a tool, not a cockpit](https://no-bullshit-agile.com/cylenivo-a-tool-not-a-cockpit/) — why metrics should trigger conversations, not control
+
 ## License
 
 MIT + Commons Clause — free to use (including commercially), source-available.
 Forks may not be sold or commercially redistributed. See [LICENSE](LICENSE) for details.
 
 Copyright (c) 2026 Thomas Esders
+Built by [Thomas Esders](https://no-bullshit-agile.com/contact.html)
