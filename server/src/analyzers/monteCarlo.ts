@@ -72,9 +72,10 @@ export function simulateWhen(buckets: number[], targetTickets: number, iteration
   return results.sort((a, b) => a - b)
 }
 
-/** Returns value at given percentile from a sorted array. */
+/** Returns value at given percentile from a sorted array (NIST nearest-rank). */
 export function percentileFromSorted(sorted: number[], p: number): number {
-  return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * p / 100))]
+  const idx = Math.ceil((sorted.length * p) / 100) - 1
+  return sorted[Math.min(Math.max(0, idx), sorted.length - 1)]
 }
 
 export interface WeeklyThroughput {

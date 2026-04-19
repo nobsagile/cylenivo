@@ -26,7 +26,10 @@ export function calculatePercentiles(values: number[]): PercentileResult {
   }
 
   const sorted = [...values].sort((a, b) => a - b)
-  const pct = (p: number) => sorted[Math.floor(sorted.length * p / 100)]
+  const pct = (p: number) => {
+    const idx = Math.ceil((sorted.length * p) / 100) - 1
+    return sorted[Math.min(Math.max(0, idx), sorted.length - 1)]
+  }
   const mean = sorted.reduce((a, b) => a + b, 0) / sorted.length
 
   return {

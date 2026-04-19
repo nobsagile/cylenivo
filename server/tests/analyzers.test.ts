@@ -73,9 +73,28 @@ describe('simulateWhen', () => {
 })
 
 describe('percentileFromSorted', () => {
-  it('returns correct value at p50', () => {
+  it('returns correct value at p50 (NIST nearest-rank)', () => {
     const sorted = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    expect(percentileFromSorted(sorted, 50)).toBe(6) // index 5
+    // ceil(10 * 0.50) - 1 = 4 → sorted[4] = 5
+    expect(percentileFromSorted(sorted, 50)).toBe(5)
+  })
+
+  it('returns max at p100', () => {
+    expect(percentileFromSorted([1, 2, 3, 4, 5], 100)).toBe(5)
+  })
+
+  it('returns min at p0', () => {
+    expect(percentileFromSorted([1, 2, 3, 4, 5], 0)).toBe(1)
+  })
+
+  it('handles single-element array', () => {
+    expect(percentileFromSorted([42], 95)).toBe(42)
+  })
+
+  it('p95 on 100 elements returns 95th value (NIST)', () => {
+    const sorted = Array.from({ length: 100 }, (_, i) => i + 1)
+    // ceil(100 * 0.95) - 1 = 94 → sorted[94] = 95
+    expect(percentileFromSorted(sorted, 95)).toBe(95)
   })
 })
 
