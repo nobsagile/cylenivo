@@ -7,6 +7,7 @@ import { ok } from '../lib/response.js'
 import { testConnection, buildImportFile, fetchProjectIssueTypes } from '../connectors/jira.js'
 import type { JiraCredentials } from '../connectors/jira.js'
 import { loadPlugin } from '../lib/pluginRunner.js'
+import { validateHttpUrl } from '../lib/urlValidation.js'
 
 const connections = new Hono()
 
@@ -46,6 +47,9 @@ connections.post('/', async (c) => {
     for (const field of requiredFields) {
       if (!body[field]) return c.json({ data: null, error: `Missing required field: ${field}` }, 422)
     }
+    try { validateHttpUrl(body.base_url, 'base_url') } catch (e) {
+      return c.json({ data: null, error: e instanceof Error ? e.message : 'Invalid base_url' }, 400)
+    }
     row = {
       id, name: body.name, source_type: 'jira',
       base_url: (body.base_url ?? '').replace(/\/$/, ''),
@@ -82,7 +86,12 @@ connections.put('/:id', async (c) => {
   if (body.name !== undefined) updates.name = body.name
   if (existing[0].source_type === 'jira') {
     if (body.auth_type !== undefined) updates.auth_type = body.auth_type === 'server' ? 'server' : 'cloud'
-    if (body.base_url !== undefined) updates.base_url = (body.base_url ?? '').replace(/\/$/, '')
+    if (body.base_url !== undefined) {
+      try { validateHttpUrl(body.base_url, 'base_url') } catch (e) {
+        return c.json({ data: null, error: e instanceof Error ? e.message : 'Invalid base_url' }, 400)
+      }
+      updates.base_url = (body.base_url ?? '').replace(/\/$/, '')
+    }
     if (body.email !== undefined) updates.email = body.email
     if (body.api_token !== undefined) updates.api_token = body.api_token
     if (body.project_key !== undefined) updates.project_key = body.project_key || null

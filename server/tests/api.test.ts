@@ -867,6 +867,26 @@ describe('connections', () => {
     expect(res.status).toBe(404)
   })
 
+  it('rejects create with AWS metadata base_url', async () => {
+    const { res } = await createConnection({ base_url: 'http://169.254.169.254' })
+    expect(res.status).toBe(400)
+  })
+
+  it('rejects create with file:// base_url', async () => {
+    const { res } = await createConnection({ base_url: 'file:///etc/passwd' })
+    expect(res.status).toBe(400)
+  })
+
+  it('rejects update with metadata host base_url', async () => {
+    const { data: created } = await createConnection()
+    const res = await app.request(`/api/v1/connections/${created.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ base_url: 'http://metadata.google.internal' }),
+    })
+    expect(res.status).toBe(400)
+  })
+
   it('deletes a connection', async () => {
     const { data } = await createConnection()
     const res = await app.request(`/api/v1/connections/${data.id}`, { method: 'DELETE' })
