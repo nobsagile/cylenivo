@@ -247,4 +247,62 @@ describe('POST /api/v1/plugins/install-url', () => {
     })
     expect(res.status).toBe(400)
   })
+
+  it('rejects http:// (non-HTTPS)', async () => {
+    const res = await app.request('/api/v1/plugins/install-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ github_url: 'http://github.com/user/repo' }),
+    })
+    expect(res.status).toBe(400)
+    const body = await res.json() as Record<string, unknown>
+    expect(String(body.error)).toContain('HTTPS')
+  })
+
+  it('rejects hostname spoofing (evil.github.com.attacker.com)', async () => {
+    const res = await app.request('/api/v1/plugins/install-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ github_url: 'https://github.com.attacker.com/user/repo' }),
+    })
+    expect(res.status).toBe(400)
+    const body = await res.json() as Record<string, unknown>
+    expect(String(body.error)).toContain('github.com')
+  })
+
+  it('rejects subdomains (gist.github.com)', async () => {
+    const res = await app.request('/api/v1/plugins/install-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ github_url: 'https://gist.github.com/user/repo' }),
+    })
+    expect(res.status).toBe(400)
+  })
+
+  it('returns sha256 of installed index.js', async () => {
+    globalThis.fetch = makeFetch([])
+    const res = await app.request('/api/v1/plugins/install-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ github_url: 'https://github.com/nobsagile/cylenivo-plugins' }),
+    })
+    expect(res.status).toBe(200)
+    const body = await res.json() as Record<string, unknown>
+    expect((body.data as Record<string, unknown>).sha256).toBe(TEST_PLUGIN_SHA256)
+  })
+
+  it('rejects install when expected_sha256 mismatches', async () => {
+    globalThis.fetch = makeFetch([])
+    const res = await app.request('/api/v1/plugins/install-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        github_url: 'https://github.com/nobsagile/cylenivo-plugins',
+        expected_sha256: 'deadbeef',
+      }),
+    })
+    expect(res.status).toBe(400)
+    const body = await res.json() as Record<string, unknown>
+    expect(String(body.error)).toContain('SHA256')
+  })
 })

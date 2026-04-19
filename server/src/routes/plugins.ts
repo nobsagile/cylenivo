@@ -95,20 +95,29 @@ plugins.post('/registry/:id/install', async (c) => {
 })
 
 plugins.post('/install-url', async (c) => {
-  const body = await c.req.json() as { github_url: string }
+  const body = await c.req.json() as { github_url: string; expected_sha256?: string }
   try {
-    const url = body.github_url?.trim()
-    if (!url) throw new Error('github_url is required')
+    const raw = body.github_url?.trim()
+    if (!raw) throw new Error('github_url is required')
 
-    // Normalise: https://github.com/user/repo → user/repo/main
-    const match = url.match(/github\.com\/([^/]+\/[^/]+?)(?:\.git)?(?:\/|$)/)
-    if (!match) throw new Error('Invalid GitHub URL — expected github.com/user/repo')
-    const repoPath = match[1]
+    let parsed: URL
+    try { parsed = new URL(raw) } catch { throw new Error('Invalid URL') }
+    if (parsed.protocol !== 'https:') throw new Error('URL must use HTTPS')
+    if (parsed.hostname !== 'github.com') throw new Error('URL must be on github.com')
 
-    // Override RAW_BASE for this third-party repo
+    const m = parsed.pathname.match(/^\/([^/]+)\/([^/]+?)(?:\.git)?(?:\/|$)/)
+    if (!m) throw new Error('Invalid GitHub URL — expected https://github.com/user/repo')
+    const repoPath = `${m[1]}/${m[2]}`
+
     const rawBase = `https://raw.githubusercontent.com/${repoPath}/main`
     const manifestText = await downloadText(`${rawBase}/manifest.json`)
     const indexText = await downloadText(`${rawBase}/index.js`)
+
+    const sha256 = createHash('sha256').update(indexText).digest('hex')
+    if (body.expected_sha256 && sha256 !== body.expected_sha256) {
+      throw new Error(`SHA256 mismatch — expected ${body.expected_sha256}, got ${sha256}`)
+    }
+
     const manifest = JSON.parse(manifestText) as { source_type: string; name: string }
     if (!manifest.source_type) throw new Error('manifest.json missing source_type')
     validateSourceType(manifest.source_type)
@@ -118,7 +127,7 @@ plugins.post('/install-url', async (c) => {
     await writeFile(join(destDir, 'manifest.json'), manifestText)
     await writeFile(join(destDir, 'index.js'), indexText)
 
-    return c.json(ok(manifest))
+    return c.json(ok({ ...manifest, sha256 }))
   } catch (e) {
     return c.json({ data: null, error: e instanceof Error ? e.message : 'Install failed' }, 400)
   }
