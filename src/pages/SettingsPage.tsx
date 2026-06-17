@@ -728,7 +728,7 @@ export default function SettingsPage() {
                     type="url"
                     value={githubUrl}
                     onChange={(e) => setGithubUrl(e.target.value)}
-                    placeholder="https://github.com/user/my-plugin"
+                    placeholder={t('settings.installFromUrlPlaceholder')}
                     className="flex-1 text-sm px-3 py-1.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300"
                   />
                   <Button

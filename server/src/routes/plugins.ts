@@ -117,18 +117,30 @@ plugins.post('/install-url', async (c) => {
     const raw = body.github_url?.trim()
     if (!raw) throw new Error('github_url is required')
 
-    let parsed: URL
-    try { parsed = new URL(raw) } catch { throw new Error('Invalid URL') }
-    if (parsed.protocol !== 'https:') throw new Error('URL must use HTTPS')
-    if (parsed.hostname !== 'github.com') throw new Error('URL must be on github.com')
+    let manifestText: string
+    let indexText: string
 
-    const m = parsed.pathname.match(/^\/([^/]+)\/([^/]+?)(?:\.git)?(?:\/|$)/)
-    if (!m) throw new Error('Invalid GitHub URL — expected https://github.com/user/repo')
-    const repoPath = `${m[1]}/${m[2]}`
+    const isLocalPath = raw.startsWith('/') || raw.startsWith('~') || raw.startsWith('file://')
+    if (isLocalPath) {
+      let localPath = raw
+      if (raw.startsWith('file://')) localPath = new URL(raw).pathname
+      if (localPath.startsWith('~')) localPath = localPath.replace('~', process.env.HOME ?? '')
+      manifestText = await readFile(join(localPath, 'manifest.json'), 'utf8')
+      indexText = await readFile(join(localPath, 'index.js'), 'utf8')
+    } else {
+      let parsed: URL
+      try { parsed = new URL(raw) } catch { throw new Error('Invalid URL') }
+      if (parsed.protocol !== 'https:') throw new Error('URL must use HTTPS')
+      if (parsed.hostname !== 'github.com') throw new Error('Please provide a github.com URL or a local path')
 
-    const rawBase = `https://raw.githubusercontent.com/${repoPath}/main`
-    const manifestText = await downloadText(`${rawBase}/manifest.json`)
-    const indexText = await downloadText(`${rawBase}/index.js`)
+      const m = parsed.pathname.match(/^\/([^/]+)\/([^/]+?)(?:\.git)?(?:\/|$)/)
+      if (!m) throw new Error('Invalid GitHub URL — expected https://github.com/user/repo')
+      const repoPath = `${m[1]}/${m[2]}`
+
+      const rawBase = `https://raw.githubusercontent.com/${repoPath}/main`
+      manifestText = await downloadText(`${rawBase}/manifest.json`)
+      indexText = await downloadText(`${rawBase}/index.js`)
+    }
 
     const sha256 = createHash('sha256').update(indexText).digest('hex')
     if (body.expected_sha256 && sha256 !== body.expected_sha256) {
