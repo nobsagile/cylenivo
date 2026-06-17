@@ -224,9 +224,14 @@ export const api = {
   },
   plugins: {
     list: () => request<import('@/types').PluginManifest[]>('/api/v1/plugins'),
-    registry: () => request<import('@/types').PluginRegistryEntry[]>('/api/v1/plugins/registry'),
-    installFromRegistry: (id: string) =>
-      request<import('@/types').PluginManifest>(`/api/v1/plugins/registry/${id}/install`, { method: 'POST' }),
+    registry: (registryUrl?: string) => request<import('@/types').PluginRegistryEntry[]>(
+      registryUrl ? `/api/v1/plugins/registry?registryUrl=${encodeURIComponent(registryUrl)}` : '/api/v1/plugins/registry'
+    ),
+    installFromRegistry: (id: string, registryUrl?: string) =>
+      request<import('@/types').PluginManifest>(
+        registryUrl ? `/api/v1/plugins/registry/${id}/install?registryUrl=${encodeURIComponent(registryUrl)}` : `/api/v1/plugins/registry/${id}/install`,
+        { method: 'POST' }
+      ),
     installFromUrl: (github_url: string) =>
       request<import('@/types').PluginManifest>('/api/v1/plugins/install-url', {
         method: 'POST',

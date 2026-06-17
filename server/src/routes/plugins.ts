@@ -7,10 +7,22 @@ import { loadPlugin, getPluginsDir, validateSourceType } from '../lib/pluginRunn
 import { scanPlugins } from '../lib/pluginScanner.js'
 import { ok } from '../lib/response.js'
 
-const REGISTRY_URL = 'https://raw.githubusercontent.com/nobsagile/cylenivo-plugins/main/registry.json'
-const RAW_BASE = 'https://raw.githubusercontent.com/nobsagile/cylenivo-plugins/main'
+const OFFICIAL_REGISTRY_URL = 'https://raw.githubusercontent.com/nobsagile/cylenivo-plugins/main/registry.json'
+const OFFICIAL_RAW_BASE = 'https://raw.githubusercontent.com/nobsagile/cylenivo-plugins/main'
 
 const GITHUB_HEADERS = { 'User-Agent': 'cylenivo-app' }
+
+function resolveRegistryUrls(registryUrl?: string): { registryJsonUrl: string; rawBase: string } {
+  if (!registryUrl) return { registryJsonUrl: OFFICIAL_REGISTRY_URL, rawBase: OFFICIAL_RAW_BASE }
+  let parsed: URL
+  try { parsed = new URL(registryUrl) } catch { throw new Error('Invalid registry URL') }
+  if (parsed.protocol !== 'https:') throw new Error('Registry URL must use HTTPS')
+  if (parsed.hostname !== 'github.com') throw new Error('Registry URL must be on github.com')
+  const m = parsed.pathname.match(/^\/([^/]+)\/([^/]+?)(?:\.git)?(?:\/|$)/)
+  if (!m) throw new Error('Invalid GitHub URL — expected https://github.com/user/repo')
+  const rawBase = `https://raw.githubusercontent.com/${m[1]}/${m[2]}/main`
+  return { registryJsonUrl: `${rawBase}/registry.json`, rawBase }
+}
 
 async function downloadText(url: string): Promise<string> {
   const res = await fetch(url, { headers: GITHUB_HEADERS })
@@ -18,9 +30,9 @@ async function downloadText(url: string): Promise<string> {
   return res.text()
 }
 
-async function installPlugin(pluginPath: string, expectedSha256: string | null): Promise<{ source_type: string; name: string }> {
-  const manifestText = await downloadText(`${RAW_BASE}/${pluginPath}/manifest.json`)
-  const indexText = await downloadText(`${RAW_BASE}/${pluginPath}/index.js`)
+async function installPlugin(pluginPath: string, expectedSha256: string | null, rawBase: string): Promise<{ source_type: string; name: string }> {
+  const manifestText = await downloadText(`${rawBase}/${pluginPath}/manifest.json`)
+  const indexText = await downloadText(`${rawBase}/${pluginPath}/index.js`)
 
   if (expectedSha256 !== null) {
     const hash = createHash('sha256').update(indexText).digest('hex')
@@ -41,6 +53,10 @@ async function installPlugin(pluginPath: string, expectedSha256: string | null):
   return manifest
 }
 
+function getRegistryUrl(c: { req: { query: (k: string) => string | undefined } }): string | undefined {
+  return c.req.query('registryUrl') || undefined
+}
+
 const plugins = new Hono()
 
 plugins.get('/', async (c) => {
@@ -51,7 +67,8 @@ plugins.get('/', async (c) => {
 plugins.get('/registry', async (c) => {
   let entries: Array<{ id: string; name: string; description: string; path: string; sha256: string }>
   try {
-    const raw = await fetch(REGISTRY_URL, { headers: GITHUB_HEADERS })
+    const { registryJsonUrl } = resolveRegistryUrls(getRegistryUrl(c))
+    const raw = await fetch(registryJsonUrl, { headers: GITHUB_HEADERS })
     if (!raw.ok) throw new Error(`GitHub returned ${raw.status}`)
     entries = await raw.json()
   } catch (e) {
@@ -80,14 +97,14 @@ plugins.get('/registry', async (c) => {
 plugins.post('/registry/:id/install', async (c) => {
   const id = c.req.param('id')
   try {
-    // fetch registry to get path + sha256
-    const regRes = await fetch(REGISTRY_URL, { headers: GITHUB_HEADERS })
+    const { registryJsonUrl, rawBase } = resolveRegistryUrls(getRegistryUrl(c))
+    const regRes = await fetch(registryJsonUrl, { headers: GITHUB_HEADERS })
     if (!regRes.ok) throw new Error(`Registry unavailable (${regRes.status})`)
     const entries = await regRes.json() as Array<{ id: string; path: string; sha256: string }>
     const entry = entries.find((e) => e.id === id)
     if (!entry) throw new Error(`Plugin '${id}' not found in registry`)
 
-    const manifest = await installPlugin(entry.path, entry.sha256)
+    const manifest = await installPlugin(entry.path, entry.sha256, rawBase)
     return c.json(ok(manifest))
   } catch (e) {
     return c.json({ data: null, error: e instanceof Error ? e.message : 'Install failed' }, 400)
