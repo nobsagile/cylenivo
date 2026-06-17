@@ -66,6 +66,8 @@ export default function SettingsPage() {
   const [urlInstalling, setUrlInstalling] = useState(false)
   const [urlInstallError, setUrlInstallError] = useState<string | null>(null)
   const [showUrlInstall, setShowUrlInstall] = useState(false)
+  const [customRegistryUrl, setCustomRegistryUrl] = useState(() => localStorage.getItem('cylenivo:customRegistryUrl') ?? '')
+  const [showCustomRegistry, setShowCustomRegistry] = useState(() => !!localStorage.getItem('cylenivo:customRegistryUrl'))
 
   useEffect(() => {
     api.configs.list().then(setConfigs).catch(console.error)
@@ -527,7 +529,7 @@ export default function SettingsPage() {
     setRegistryLoading(true)
     setRegistryError(null)
     try {
-      const entries = await api.plugins.registry()
+      const entries = await api.plugins.registry(customRegistryUrl || undefined)
       setRegistry(entries)
     } catch (e) {
       setRegistryError(e instanceof Error ? e.message : 'Failed to load registry')
@@ -540,7 +542,7 @@ export default function SettingsPage() {
     setInstallingId(entry.id)
     setInstallError(null)
     try {
-      const manifest = await api.plugins.installFromRegistry(entry.id)
+      const manifest = await api.plugins.installFromRegistry(entry.id, customRegistryUrl || undefined)
       setPlugins((prev) => [...prev.filter((p) => p.source_type !== manifest.source_type), manifest])
       setRegistry((prev) => prev?.map((e) => e.id === entry.id ? { ...e, installed: true, update_available: false } : e) ?? prev)
       notifyPluginUpdatesChanged()
@@ -605,7 +607,48 @@ export default function SettingsPage() {
           </div>
         )}
         <div className="mt-6">
-          <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">{t('settings.browsePlugins')}</p>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">{t('settings.browsePlugins')}</p>
+            {!showCustomRegistry ? (
+              <button
+                onClick={() => setShowCustomRegistry(true)}
+                className="text-xs text-gray-400 hover:text-gray-600 underline underline-offset-2"
+              >
+                {t('settings.customRegistry')}
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setCustomRegistryUrl('')
+                  localStorage.removeItem('cylenivo:customRegistryUrl')
+                  setShowCustomRegistry(false)
+                  setRegistry(null)
+                }}
+                className="text-xs text-gray-400 hover:text-gray-600 underline underline-offset-2"
+              >
+                {t('settings.customRegistryClear')}
+              </button>
+            )}
+          </div>
+          {showCustomRegistry && (
+            <div className="mb-3 flex gap-2 items-center">
+              <input
+                type="url"
+                value={customRegistryUrl}
+                onChange={(e) => {
+                  setCustomRegistryUrl(e.target.value)
+                  if (e.target.value.trim()) {
+                    localStorage.setItem('cylenivo:customRegistryUrl', e.target.value.trim())
+                  } else {
+                    localStorage.removeItem('cylenivo:customRegistryUrl')
+                  }
+                  setRegistry(null)
+                }}
+                placeholder={t('settings.customRegistryPlaceholder')}
+                className="flex-1 text-sm px-3 py-1.5 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300"
+              />
+            </div>
+          )}
           {registry === null && !registryLoading && (
             <button
               onClick={loadRegistry}
@@ -616,7 +659,7 @@ export default function SettingsPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-700">{t('settings.registryLoad')}</p>
-                <p className="text-xs text-gray-400">{t('settings.registryLoadDesc')}</p>
+                <p className="text-xs text-gray-400">{customRegistryUrl ? customRegistryUrl : t('settings.registryLoadDesc')}</p>
               </div>
             </button>
           )}
