@@ -147,12 +147,15 @@ describe('useKeyedFetch — the stale-response race', () => {
   })
 })
 
+type SummaryStub = { project_key: string; ticket_count?: number }
+type ScatterStub = { tickets: { id: string }[] }
+
 describe('useMetrics — race protection through the real hook', () => {
   it('does not show dataset A summary after switching to dataset B', async () => {
-    const slowA = deferred<any>()
-    const fastB = deferred<any>()
+    const slowA = deferred<SummaryStub>()
+    const fastB = deferred<SummaryStub>()
     vi.mocked(api.metrics.summary).mockImplementation((importId: string) =>
-      (importId === 'imp-A' ? slowA.promise : fastB.promise)
+      (importId === 'imp-A' ? slowA.promise : fastB.promise) as ReturnType<typeof api.metrics.summary>
     )
 
     const { result, rerender } = renderHook(
@@ -174,9 +177,9 @@ describe('useMetrics — race protection through the real hook', () => {
   })
 
   it('clears the previous summary while the new dataset loads', async () => {
-    const a = deferred<any>()
+    const a = deferred<SummaryStub>()
     vi.mocked(api.metrics.summary).mockImplementation((importId: string) =>
-      (importId === 'imp-A' ? a.promise : deferred<any>().promise)
+      (importId === 'imp-A' ? a.promise : deferred<SummaryStub>().promise) as ReturnType<typeof api.metrics.summary>
     )
 
     const { result, rerender } = renderHook(
@@ -194,10 +197,10 @@ describe('useMetrics — race protection through the real hook', () => {
 
 describe('useCycleTimes — race protection through a chart hook', () => {
   it('ignores the previous dataset scatter data', async () => {
-    const slowA = deferred<any>()
-    const fastB = deferred<any>()
+    const slowA = deferred<ScatterStub>()
+    const fastB = deferred<ScatterStub>()
     vi.mocked(api.metrics.cycleTimes).mockImplementation((importId: string) =>
-      (importId === 'imp-A' ? slowA.promise : fastB.promise)
+      (importId === 'imp-A' ? slowA.promise : fastB.promise) as ReturnType<typeof api.metrics.cycleTimes>
     )
 
     const { result, rerender } = renderHook(
@@ -217,9 +220,9 @@ describe('useCycleTimes — race protection through a chart hook', () => {
   })
 
   it('clears the scatter when the date filter changes', async () => {
-    const first = deferred<any>()
+    const first = deferred<ScatterStub>()
     vi.mocked(api.metrics.cycleTimes).mockImplementation((_id: string, dates?: { from?: string }) =>
-      (dates?.from === undefined ? first.promise : deferred<any>().promise)
+      (dates?.from === undefined ? first.promise : deferred<ScatterStub>().promise) as ReturnType<typeof api.metrics.cycleTimes>
     )
 
     const { result, rerender } = renderHook(

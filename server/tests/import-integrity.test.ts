@@ -63,13 +63,26 @@ async function createConfig(): Promise<string> {
   return data.id
 }
 
+type ImportedSession = {
+  id: string
+  ticket_count: number
+  health_report: {
+    tickets_incomplete: number
+    tickets_without_cycle_start: number
+    unknown_statuses: string[]
+    tickets_dropped: string[]
+    transitions_dropped: number
+    tickets_with_dropped_transitions: string[]
+  }
+}
+
 async function importTickets(configId: string, tix: unknown[]) {
   const form = new FormData()
   const file = { source_type: 'jira', project_key: 'INT', exported_at: GOOD_DATE, tickets: tix }
   form.append('file', new Blob([JSON.stringify(file)], { type: 'application/json' }), 'int.json')
   form.append('config_id', configId)
   const res = await app.request('/api/v1/imports', { method: 'POST', body: form })
-  const body = await res.json() as { data: any; error?: string }
+  const body = await res.json() as { data: ImportedSession; error?: string }
   return { status: res.status, session: body.data }
 }
 
@@ -219,7 +232,7 @@ describe('PUT /imports/:id/data — refresh keeps the count honest', () => {
     const file = { source_type: 'jira', project_key: 'INT', exported_at: GOOD_DATE, tickets: tix }
     form.append('file', new Blob([JSON.stringify(file)], { type: 'application/json' }), 'int.json')
     const res = await app.request(`/api/v1/imports/${importId}/data`, { method: 'PUT', body: form })
-    const body = await res.json() as { data: any }
+    const body = await res.json() as { data: ImportedSession }
     return { status: res.status, session: body.data }
   }
 
