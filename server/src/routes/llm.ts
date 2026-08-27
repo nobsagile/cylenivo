@@ -159,7 +159,7 @@ llm.post('/analyze/:importId', async (c) => {
   const { imp } = ctx
   const { cycleTimes, leadTimes, cycleTimePercentiles, leadTimePercentiles, throughput, dateRange, timeInStatus, flowEfficiency, completedTickets } = agg
 
-  const excludedCount = ctx.tickets.filter(t => t.excluded).length
+  const excludedCount = ctx.allTickets.filter(t => t.excluded).length
   const dateFrom = dateRange.from ? dateRange.from.slice(0, 10) : 'N/A'
   const dateTo = dateRange.to ? dateRange.to.slice(0, 10) : 'N/A'
 
@@ -205,7 +205,7 @@ llm.post('/analyze/:importId', async (c) => {
     .join('\n')
 
   const userContent = `PROJECT: ${imp.project_key}
-DATASET: ${ctx.tickets.length} total tickets, ${completedTickets.length} completed, ${excludedCount} excluded
+DATASET: ${ctx.allTickets.length} total tickets, ${completedTickets.length} completed, ${excludedCount} excluded
 DATE RANGE: ${dateFrom} to ${dateTo}
 THROUGHPUT: ${throughput != null ? `${Math.round(throughput * 10) / 10} tickets/week` : 'n/a (date range < 7 days)'}
 
@@ -295,7 +295,7 @@ llm.post('/chat/:importId', async (c) => {
 
   const dataContext = `You have access to the following data for project ${ctx.imp.project_key}:
 
-TICKETS: ${ctx.tickets.length} total, ${cycleTimes.length} completed
+TICKETS: ${ctx.allTickets.length} total, ${cycleTimes.length} completed
 CYCLE TIME (${ctx.config.cycle_time_start_status} → ${ctx.config.cycle_time_end_status}):
   Median: ${cycleTimes.length ? Math.round(median(cycleTimes) * 10) / 10 : 'N/A'} days
   P50: ${cycleTimePercentiles.p50} | P70: ${cycleTimePercentiles.p70} | P85: ${cycleTimePercentiles.p85} | P95: ${cycleTimePercentiles.p95} days

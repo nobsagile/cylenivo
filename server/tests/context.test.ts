@@ -207,10 +207,17 @@ describe('buildEnrichedTicket — excluded tickets', () => {
       body: JSON.stringify({ excluded: true, exclusion_reason: 'test' }),
     })
 
-    // Re-load context — excluded ticket should have excluded=true
+    // Re-load context — enrichment is unaffected by exclusion, but the ticket
+    // now lives only in allTickets. ctx.tickets is the metric-safe list.
     const ctx2 = await loadImportContext(importId)
-    const t2 = ctx2!.tickets.find(t => t.external_id === 'TICK-1')!
+    const t2 = ctx2!.allTickets.find(t => t.external_id === 'TICK-1')!
     expect(t2.excluded).toBe(true)
     expect(t2.exclusion_reason).toBe('test')
+    expect(t2.cycle_time_days).not.toBeNull()
+
+    // The invariant: excluded tickets are gone from ctx.tickets entirely
+    expect(ctx2!.tickets.find(t => t.external_id === 'TICK-1')).toBeUndefined()
+    expect(ctx2!.tickets.length).toBe(ctx2!.allTickets.length - 1)
+    expect(ctx2!.tickets.every(t => !t.excluded)).toBe(true)
   })
 })

@@ -28,6 +28,10 @@ export interface MetricsAggregate {
 export function computeAggregate(ctx: ImportContext): MetricsAggregate {
   const { config, tickets, cycleStatuses } = ctx
 
+  // ctx.tickets is already excluded-free (see ImportContext). The !t.excluded
+  // checks stay as a safety net: this function is the one place every metric
+  // flows through, and an excluded ticket leaking in here is exactly the bug
+  // that made Cards and Scatter disagree.
   const completedTickets = tickets.filter(t => t.cycle_time_days !== null && !t.excluded)
   const cycleTimes = completedTickets.map(t => t.cycle_time_days!)
   const leadTimes = tickets.filter(t => t.lead_time_days !== null && !t.excluded).map(t => t.lead_time_days!)
