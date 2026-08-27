@@ -10,6 +10,8 @@ export interface JiraFetchOptions {
   issue_types?: string[]
   resolved_from?: string
   resolved_to?: string
+  /** Stop after this many issues. Omit for all. Used by the CLI export script. */
+  limit?: number
 }
 
 export interface ImportTicket {
@@ -139,7 +141,7 @@ export async function testConnection(creds: JiraCredentials): Promise<{ display_
 const JIRA_PAGE_SIZE = 100
 
 export async function fetchIssues(creds: JiraCredentials, options: JiraFetchOptions): Promise<JiraIssue[]> {
-  const { project, issue_types, resolved_from, resolved_to } = options
+  const { project, issue_types, resolved_from, resolved_to, limit } = options
   const typeFilter = issue_types?.length ? ` AND issuetype in (${issue_types.map(t => `"${t}"`).join(', ')})` : ''
   const fromFilter = resolved_from ? ` AND resolved >= "${resolved_from}"` : ''
   const toFilter = resolved_to ? ` AND resolved <= "${resolved_to}"` : ''
@@ -157,6 +159,7 @@ export async function fetchIssues(creds: JiraCredentials, options: JiraFetchOpti
       const issues = data.issues ?? []
       if (issues.length === 0) break
       all.push(...issues)
+      if (limit !== undefined && all.length >= limit) break
       if (startAt + issues.length >= data.total) break
       startAt += issues.length
     }
@@ -172,11 +175,12 @@ export async function fetchIssues(creds: JiraCredentials, options: JiraFetchOpti
       const issues = data.issues ?? []
       if (issues.length === 0) break
       all.push(...issues)
+      if (limit !== undefined && all.length >= limit) break
       if (data.isLast || !data.nextPageToken) break
       nextPageToken = data.nextPageToken
     }
   }
-  return all
+  return limit !== undefined ? all.slice(0, limit) : all
 }
 
 export async function fetchChangelog(creds: JiraCredentials, issueKey: string): Promise<JiraChangelogHistory[]> {
@@ -219,6 +223,9 @@ export async function buildImportFile(
   creds: JiraCredentials,
   options: JiraFetchOptions,
   onProgress?: (current: number, total: number, key: string) => void,
+  /** Reports issues found vs. tickets skipped, so callers can fail loudly on an
+   *  incomplete export instead of writing a silently truncated file. */
+  onDone?: (stats: { found: number; skipped: string[] }) => void,
 ): Promise<ImportFile> {
   const issues = await fetchIssues(creds, options)
   const results: (ImportTicket | null)[] = new Array(issues.length).fill(null)
@@ -254,6 +261,7 @@ export async function buildImportFile(
   if (skipped.length > 0) {
     console.warn(`[jira] import completed with ${skipped.length} skipped ticket(s): ${skipped.join(', ')}`)
   }
+  onDone?.({ found: issues.length, skipped })
 
   return {
     source_type: 'jira',
