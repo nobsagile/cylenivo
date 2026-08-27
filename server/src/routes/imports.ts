@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { eq, inArray } from 'drizzle-orm'
 import { db } from '../db/index.js'
-import { projectConfigs, importSessions, tickets, ticketTransitions, type ImportSessionRow } from '../db/schema.js'
+import { projectConfigs, importSessions, tickets, ticketTransitions, llmInsights, type ImportSessionRow } from '../db/schema.js'
 import { ok } from '../lib/response.js'
 import { buildHealthReport } from '../analyzers/healthReport.js'
 import { inferStatusOrder } from '../analyzers/statusOrder.js'
@@ -282,14 +282,36 @@ imports.delete('/:id', async (c) => {
   const rows = await db.select().from(importSessions).where(eq(importSessions.id, id))
   if (!rows.length) return c.json({ data: null, error: 'Import not found' }, 404)
 
-  // cascade: delete transitions → tickets → import
-  const ticketRows = await db.select({ id: tickets.id }).from(tickets).where(eq(tickets.import_id, id))
-  if (ticketRows.length) {
-    const ticketIds = ticketRows.map(t => t.id)
-    await db.delete(ticketTransitions).where(inArray(ticketTransitions.ticket_id, ticketIds))
-    await db.delete(tickets).where(inArray(tickets.id, ticketIds))
-  }
-  await db.delete(importSessions).where(eq(importSessions.id, id))
+  // Cascade in one transaction: transitions → tickets → llm_insights → import.
+  // llm_insights was missing, and it has a FK on import_sessions with
+  // PRAGMA foreign_keys = ON — so after any AI analysis the delete failed with
+  // "FOREIGN KEY constraint failed" and the dataset became undeletable forever.
+  // Every table with a FK into import_sessions or tickets must be listed here.
+  //
+  // The callback is SYNCHRONOUS on purpose. bun:sqlite is a synchronous driver:
+  // with `db.transaction(async tx => …)` the await points break the BEGIN/COMMIT
+  // boundary and a failure does NOT roll back — verified, statements before the
+  // error stay committed. That is what turned a failed delete into a zombie
+  // dataset (tickets gone, session left claiming N tickets). Sync + .run() rolls
+  // back correctly.
+  const ticketIds = (
+    await db.select({ id: tickets.id }).from(tickets).where(eq(tickets.import_id, id))
+  ).map(t => t.id)
+
+  const CHUNK = 500
+  db.transaction((tx) => {
+    for (let i = 0; i < ticketIds.length; i += CHUNK) {
+      const slice = ticketIds.slice(i, i + CHUNK)
+      tx.delete(ticketTransitions).where(inArray(ticketTransitions.ticket_id, slice)).run()
+    }
+    for (let i = 0; i < ticketIds.length; i += CHUNK) {
+      const slice = ticketIds.slice(i, i + CHUNK)
+      tx.delete(tickets).where(inArray(tickets.id, slice)).run()
+    }
+    tx.delete(llmInsights).where(eq(llmInsights.import_id, id)).run()
+    tx.delete(importSessions).where(eq(importSessions.id, id)).run()
+  })
+
   return new Response(null, { status: 204 })
 })
 
