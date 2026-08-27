@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { TicketDetailDrawer } from '@/components/tickets/TicketDetailDrawer'
 import { useTranslation } from 'react-i18next'
 import { useParams, useOutletContext } from 'react-router-dom'
-import { api } from '@/services/api'
 import { useMetrics } from '@/hooks/useMetrics'
+import { useTimeInStatus } from '@/hooks/useChartData'
 import { useDateFilter } from '@/contexts/DateFilterContext'
-import type { TimeInStatusResponse } from '@/types'
 import { Card, CardContent } from '@/components/ui/card'
 import { AvgTimeInStatusChart, PerTicketBreakdownChart } from '@/components/metrics/TimeInStatusChart'
 import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
@@ -20,17 +19,11 @@ export default function FlowPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
   const { fromDate, toDate } = useDateFilter()
-  const dates = { from: fromDate || undefined, to: toDate || undefined }
   const { data: metrics, refetch: refetchMetrics } = useMetrics(importId, fromDate || undefined, toDate || undefined)
   const { dateRange } = useOutletContext<ProjectLayoutContext>()
-  const [statusData, setStatusData] = useState<TimeInStatusResponse | null>(null)
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
   const [rev, setRev] = useState(0)
-
-  useEffect(() => {
-    if (!importId) return
-    api.metrics.timeInStatus(importId, dates).then(setStatusData).catch(console.error)
-  }, [importId, fromDate, toDate, rev])
+  const { data: statusData } = useTimeInStatus(importId, fromDate, toDate, rev)
 
   function handleExclusionToggle() {
     refetchMetrics()
