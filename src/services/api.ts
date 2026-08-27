@@ -62,10 +62,28 @@ function dateParams(dates?: DateFilter): string {
   return s ? `?${s}` : ''
 }
 
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
+/** Plenty for reading metrics off a local SQLite file. */
+const DEFAULT_TIMEOUT_MS = 30_000
+
+/**
+ * For work that legitimately takes minutes: importing or replacing a large
+ * export (parse + insert), seeding demo data, and anything that talks to Jira
+ * (the server retries 429s with backoff, so a single call can exceed a minute).
+ *
+ * These all ran on the 30s default before. The frontend gave up while the
+ * server kept importing — the user saw a failure, retried, and ended up with a
+ * duplicate dataset.
+ */
+const LONG_TIMEOUT_MS = 10 * 60_000
+
+type RequestOptions = RequestInit & { timeoutMs?: number }
+
+async function request<T>(path: string, options?: RequestOptions): Promise<T> {
+  const { timeoutMs = DEFAULT_TIMEOUT_MS, ...init } = options ?? {}
   const res = await fetch(`${BASE_URL}${path}`, {
-    signal: AbortSignal.timeout(30000),
-    ...options,
+    ...init,
+    // An explicit signal from the caller wins; otherwise apply the timeout.
+    signal: init.signal ?? AbortSignal.timeout(timeoutMs),
   })
   if (res.status === 204) return null as T
   const json = await res.json()
@@ -104,7 +122,7 @@ export const api = {
       if (resolvedFrom) form.append('resolved_from', resolvedFrom)
       if (resolvedTo) form.append('resolved_to', resolvedTo)
       if (issueTypes) form.append('issue_types', JSON.stringify(issueTypes))
-      return request<ImportSession>('/api/v1/imports', { method: 'POST', body: form })
+      return request<ImportSession>('/api/v1/imports', { method: 'POST', body: form, timeoutMs: LONG_TIMEOUT_MS })
     },
     replace: (id: string, file: File, resolvedFrom?: string, resolvedTo?: string, issueTypes?: string[]) => {
       const form = new FormData()
@@ -112,14 +130,14 @@ export const api = {
       if (resolvedFrom) form.append('resolved_from', resolvedFrom)
       if (resolvedTo) form.append('resolved_to', resolvedTo)
       if (issueTypes) form.append('issue_types', JSON.stringify(issueTypes))
-      return request<ImportSession>(`/api/v1/imports/${id}/data`, { method: 'PUT', body: form })
+      return request<ImportSession>(`/api/v1/imports/${id}/data`, { method: 'PUT', body: form, timeoutMs: LONG_TIMEOUT_MS })
     },
     update: (id: string, body: { name?: string; config_id?: string }) =>
       request<ImportSession>(`/api/v1/imports/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }),
     delete: (id: string) =>
       request<null>(`/api/v1/imports/${id}`, { method: 'DELETE' }),
     statuses: (id: string) =>
-      request<string[]>(`/api/v1/imports/${id}/statuses`),
+      request<string[]>(`/api/v1/imports/${id}/statuses`, { timeoutMs: LONG_TIMEOUT_MS }),
   },
   metrics: {
     summary: (importId: string, dates?: DateFilter) =>
@@ -181,9 +199,9 @@ export const api = {
     datasets: (id: string) =>
       request<ImportSession[]>(`/api/v1/connections/${id}/datasets`),
     test: (id: string) =>
-      request<{ display_name: string; email: string }>(`/api/v1/connections/${id}/test`, { method: 'POST' }),
+      request<{ display_name: string; email: string }>(`/api/v1/connections/${id}/test`, { method: 'POST', timeoutMs: LONG_TIMEOUT_MS }),
     issueTypes: (id: string, project: string) =>
-      request<string[]>(`/api/v1/connections/${id}/issue-types?project=${encodeURIComponent(project)}`),
+      request<string[]>(`/api/v1/connections/${id}/issue-types?project=${encodeURIComponent(project)}`, { timeoutMs: LONG_TIMEOUT_MS }),
     fetchStream: async (
       id: string,
       options: JiraFetchOptions | Record<string, unknown>,
@@ -243,7 +261,7 @@ export const api = {
     seed: () =>
       request<{ seeded: boolean; imports: { import_id: string; name: string; project_key: string }[] }>(
         '/api/v1/demo/seed',
-        { method: 'POST' },
+        { method: 'POST', timeoutMs: LONG_TIMEOUT_MS },
       ),
     reset: () => request<null>('/api/v1/demo/reset', { method: 'DELETE' }),
     fullReset: () => request<null>('/api/v1/demo/full-reset', { method: 'DELETE' }),
