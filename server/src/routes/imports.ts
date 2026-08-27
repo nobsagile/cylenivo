@@ -3,11 +3,52 @@ import { eq, inArray } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { projectConfigs, importSessions, tickets, ticketTransitions, llmInsights, type ImportSessionRow } from '../db/schema.js'
 import { ok } from '../lib/response.js'
-import { buildHealthReport } from '../analyzers/healthReport.js'
+import { buildHealthReport, type ImportHealthReport } from '../analyzers/healthReport.js'
 import { inferStatusOrder } from '../analyzers/statusOrder.js'
-import { buildTicketRows } from '../lib/ticketInsert.js'
+import { buildTicketRows, type DroppedRows } from '../lib/ticketInsert.js'
 
 const imports = new Hono()
+
+/**
+ * Merges import-time row drops into the health report so the UI can show them.
+ * buildHealthReport only sees transitions, not why rows went missing, so the
+ * drop lists from buildTicketRows are attached here.
+ */
+function withDropped(report: ImportHealthReport, dropped: DroppedRows): ImportHealthReport {
+  return {
+    ...report,
+    tickets_dropped: dropped.tickets,
+    transitions_dropped: dropped.transitions,
+    tickets_with_dropped_transitions: dropped.ticketsWithDroppedTransitions,
+  }
+}
+
+/**
+ * Builds the health report from the rows that will actually be stored.
+ *
+ * Running it on the raw input instead was subtly wrong: a ticket dropped for a
+ * bad created_at still counted towards "started but never reached <end>", while
+ * a stored ticket that lost its end transition did not. The report described
+ * data that was never inserted.
+ */
+function buildHealthReportFromRows(
+  builtRows: ReturnType<typeof buildTicketRows>,
+  statusOrder: string[],
+  cycleStart: string,
+  cycleEnd: string,
+): ImportHealthReport {
+  const byTicket = new Map<string, { to_status: string; transitioned_at: string }[]>()
+  for (const tr of builtRows.transitionRows) {
+    const list = byTicket.get(tr.ticket_id)
+    if (list) list.push(tr)
+    else byTicket.set(tr.ticket_id, [tr])
+  }
+  const stored = builtRows.ticketRows.map(row => ({ transitions: byTicket.get(row.id) ?? [] }))
+  return withDropped(
+    buildHealthReport(stored, statusOrder, cycleStart, cycleEnd),
+    builtRows.dropped,
+  )
+}
 
 interface TransitionInput {
   from_status?: string | null
@@ -157,11 +198,17 @@ imports.post('/', async (c) => {
 
   const cfg = cfgRows[0]
   const statusOrder = JSON.parse(cfg.status_order) as string[]
-  const healthReport = buildHealthReport(
-    data.tickets,
-    statusOrder,
-    cfg.cycle_time_start_status,
-    cfg.cycle_time_end_status,
+
+  for (const t of data.tickets) {
+    if (!t.external_id) {
+      return c.json({ data: null, error: 'Ticket missing external_id' }, 422)
+    }
+  }
+
+  const built = buildTicketRows(importId, data.tickets)
+  const { ticketRows, transitionRows } = built
+  const healthReport = buildHealthReportFromRows(
+    built, statusOrder, cfg.cycle_time_start_status, cfg.cycle_time_end_status,
   )
 
   const sessionRow = {
@@ -171,7 +218,10 @@ imports.post('/', async (c) => {
     source_type: data.source_type,
     project_key: data.project_key,
     file_name: fileName,
-    ticket_count: data.tickets.length,
+    // Rows actually inserted, not rows offered. Using the input length made a
+    // dataset report 200 tickets while holding 195 — silently, because rows with
+    // an unparseable created_at are dropped in buildTicketRows.
+    ticket_count: ticketRows.length,
     imported_at: now,
     health_report: JSON.stringify(healthReport),
     connection_id: connectionId,
@@ -180,22 +230,18 @@ imports.post('/', async (c) => {
     issue_types: issueTypesRaw,
   }
 
-  for (const t of data.tickets) {
-    if (!t.external_id) {
-      return c.json({ data: null, error: 'Ticket missing external_id' }, 422)
-    }
-  }
-
-  const { ticketRows, transitionRows } = buildTicketRows(importId, data.tickets)
-
+  // Synchronous callback: bun:sqlite is a synchronous driver, and
+  // db.transaction(async tx => …) does NOT roll back on failure — statements
+  // before the error stay committed. A failed import would leave a partially
+  // written dataset behind. Sync + .run() rolls back correctly.
   const CHUNK = 500
-  await db.transaction(async (tx) => {
-    await tx.insert(importSessions).values(sessionRow)
+  db.transaction((tx) => {
+    tx.insert(importSessions).values(sessionRow).run()
     for (let i = 0; i < ticketRows.length; i += CHUNK) {
-      await tx.insert(tickets).values(ticketRows.slice(i, i + CHUNK))
+      tx.insert(tickets).values(ticketRows.slice(i, i + CHUNK)).run()
     }
     for (let i = 0; i < transitionRows.length; i += CHUNK) {
-      await tx.insert(ticketTransitions).values(transitionRows.slice(i, i + CHUNK))
+      tx.insert(ticketTransitions).values(transitionRows.slice(i, i + CHUNK)).run()
     }
   })
 
@@ -238,39 +284,48 @@ imports.put('/:id/data', async (c) => {
 
   const cfg = cfgRows[0]
   const statusOrder = JSON.parse(cfg.status_order) as string[]
-  const healthReport = buildHealthReport(data.tickets, statusOrder, cfg.cycle_time_start_status, cfg.cycle_time_end_status)
   const now = new Date().toISOString()
 
-  const { ticketRows: newTicketRows, transitionRows } = buildTicketRows(id, data.tickets)
+  const built = buildTicketRows(id, data.tickets)
+  const { ticketRows: newTicketRows, transitionRows } = built
+  const healthReport = buildHealthReportFromRows(
+    built, statusOrder, cfg.cycle_time_start_status, cfg.cycle_time_end_status,
+  )
   const CHUNK = 500
 
-  await db.transaction(async (tx) => {
+  // Synchronous callback — see the POST route above. A refresh that failed
+  // halfway through used to leave the dataset with the old data deleted and the
+  // new data only partly inserted, with no way to tell.
+  db.transaction((tx) => {
     // Delete old ticket data atomically — prevents double-insert if two requests race
-    const existing = await tx.select({ id: tickets.id }).from(tickets).where(eq(tickets.import_id, id))
-    if (existing.length) {
-      const existingIds = existing.map(t => t.id)
-      await tx.delete(ticketTransitions).where(inArray(ticketTransitions.ticket_id, existingIds))
-      await tx.delete(tickets).where(inArray(tickets.id, existingIds))
+    const existingIds = tx.select({ id: tickets.id }).from(tickets).where(eq(tickets.import_id, id)).all().map(t => t.id)
+    for (let i = 0; i < existingIds.length; i += CHUNK) {
+      const slice = existingIds.slice(i, i + CHUNK)
+      tx.delete(ticketTransitions).where(inArray(ticketTransitions.ticket_id, slice)).run()
+    }
+    for (let i = 0; i < existingIds.length; i += CHUNK) {
+      const slice = existingIds.slice(i, i + CHUNK)
+      tx.delete(tickets).where(inArray(tickets.id, slice)).run()
     }
 
     for (let i = 0; i < newTicketRows.length; i += CHUNK) {
-      await tx.insert(tickets).values(newTicketRows.slice(i, i + CHUNK))
+      tx.insert(tickets).values(newTicketRows.slice(i, i + CHUNK)).run()
     }
     for (let i = 0; i < transitionRows.length; i += CHUNK) {
-      await tx.insert(ticketTransitions).values(transitionRows.slice(i, i + CHUNK))
+      tx.insert(ticketTransitions).values(transitionRows.slice(i, i + CHUNK)).run()
     }
 
-    await tx.update(importSessions).set({
+    tx.update(importSessions).set({
       source_type: data.source_type,
       project_key: data.project_key,
       file_name: (file as File).name || 'upload.json',
-      ticket_count: data.tickets.length,
+      ticket_count: newTicketRows.length,
       imported_at: now,
       health_report: JSON.stringify(healthReport),
       ...(resolvedFrom !== undefined ? { resolved_from: resolvedFrom || null } : {}),
       ...(resolvedTo !== undefined ? { resolved_to: resolvedTo || null } : {}),
       ...(issueTypesRaw !== undefined ? { issue_types: issueTypesRaw || null } : {}),
-    }).where(eq(importSessions.id, id))
+    }).where(eq(importSessions.id, id)).run()
   })
 
   const updated = await db.select().from(importSessions).where(eq(importSessions.id, id))

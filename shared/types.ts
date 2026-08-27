@@ -18,6 +18,14 @@ export interface ImportHealthReport {
   tickets_incomplete: number
   unknown_statuses: string[]
   oldest_transition_date: string | null
+  /** external_ids of tickets rejected at import (unparseable created_at).
+   *  Optional: reports stored before this field existed do not have it. */
+  tickets_dropped?: string[]
+  /** transitions rejected at import (unparseable transitioned_at) */
+  transitions_dropped?: number
+  /** external_ids of tickets that lost at least one transition — their cycle
+   *  and lead times are computed from incomplete history */
+  tickets_with_dropped_transitions?: string[]
 }
 
 export interface ImportSession {
