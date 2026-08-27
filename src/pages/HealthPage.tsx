@@ -1,12 +1,9 @@
-import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams, useOutletContext } from 'react-router-dom'
 import { Info } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
 import { useDateFilter } from '@/contexts/DateFilterContext'
-import { useCfd } from '@/hooks/useChartData'
-import { api } from '@/services/api'
-import type { ReworkResponse, CycleTimeByTypeResponse } from '@/types'
+import { useCfd, useRework, useCycleTimeByType } from '@/hooks/useChartData'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DateRangeSlider } from '@/components/metrics/DateRangeSlider'
 import type { ProjectLayoutContext } from '@/components/layout/ProjectLayout'
@@ -24,18 +21,11 @@ export default function HealthPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
   const { fromDate, toDate } = useDateFilter()
-  const dates = { from: fromDate || undefined, to: toDate || undefined }
   const { data: metrics } = useMetrics(importId, fromDate || undefined, toDate || undefined)
   const { dateRange } = useOutletContext<ProjectLayoutContext>()
   const { data: cfdData } = useCfd(importId, fromDate, toDate)
-  const [reworkData, setReworkData] = useState<ReworkResponse | null>(null)
-  const [typeData, setTypeData] = useState<CycleTimeByTypeResponse | null>(null)
-
-  useEffect(() => {
-    if (!importId) return
-    api.metrics.rework(importId, dates).then(setReworkData).catch(console.error)
-    api.metrics.cycleTimeByType(importId, dates).then(setTypeData).catch(console.error)
-  }, [importId, fromDate, toDate])
+  const { data: reworkData } = useRework(importId, fromDate, toDate)
+  const { data: typeData } = useCycleTimeByType(importId, fromDate, toDate)
 
   if (!metrics) return (
     <div className="space-y-6">

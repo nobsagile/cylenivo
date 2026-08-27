@@ -27,15 +27,21 @@ export function TicketDetailDrawer({ ticketId, config, onClose, onPrev, onNext, 
   const [animKey, setAnimKey] = useState(0)
   const prevTicketId = useRef<string | null>(null)
 
+  // Kept as local state (not useKeyedFetch) because handleExclusionToggle
+  // updates `detail` optimistically. The cancelled guard is what matters:
+  // fast prev/next stepping could otherwise land an earlier ticket's response
+  // after a later one and show the wrong ticket's data.
   useEffect(() => {
     if (!ticketId) { setDetail(null); return }
+    let cancelled = false
     setLoading(true)
     setDetail(null)
     api.tickets.get(ticketId)
-      .then(setDetail)
-      .catch(console.error)
-      .finally(() => setLoading(false))
+      .then(d => { if (!cancelled) setDetail(d) })
+      .catch(e => { if (!cancelled) console.error('Failed to load ticket', e) })
+      .finally(() => { if (!cancelled) setLoading(false) })
     prevTicketId.current = ticketId
+    return () => { cancelled = true }
   }, [ticketId])
 
   async function handleExclusionToggle() {
