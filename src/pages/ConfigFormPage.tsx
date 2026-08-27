@@ -70,6 +70,7 @@ function SortableStatus({
   onRemove: () => void
   onToggleActive?: () => void
 }) {
+  const { t } = useTranslation()
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
   const style = { transform: CSS.Transform.toString(transform), transition }
 
@@ -97,6 +98,7 @@ function SortableStatus({
       <span
         {...attributes}
         {...listeners}
+        aria-label={t('common.reorderItem', { name: id })}
         className="cursor-grab text-gray-300 hover:text-gray-500 shrink-0"
       >
         <GripVertical className="w-4 h-4" />
@@ -118,7 +120,8 @@ function SortableStatus({
         <button
           type="button"
           onClick={onToggleActive}
-          title={isActive ? 'Active work status' : 'Mark as active work'}
+          title={isActive ? t('config.activeWorkStatus') : t('config.markAsActiveWork')}
+          aria-label={isActive ? t('config.activeWorkStatus') : t('config.markAsActiveWork')}
           className={`h-5 w-5 flex items-center justify-center rounded transition-colors shrink-0 ${
             isActive
               ? 'text-teal-600 hover:text-teal-700'
@@ -133,6 +136,7 @@ function SortableStatus({
         variant="ghost"
         size="sm"
         onClick={onRemove}
+        aria-label={t('common.removeItem', { name: id })}
         className="h-6 w-6 p-0 text-gray-300 hover:text-red-400 shrink-0"
       >
         <X className="w-3.5 h-3.5" />

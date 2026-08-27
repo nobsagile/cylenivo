@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
-  Link2, Clock, ArrowRight, ArrowLeft, Loader2, ExternalLink, GripVertical, X, Plus, Info, Puzzle,
+  Link2, Clock, ArrowRight, ArrowLeft, Loader2, ExternalLink, Plus, Info, Puzzle,
 } from 'lucide-react'
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor,
@@ -10,9 +10,8 @@ import {
 } from '@dnd-kit/core'
 import {
   arrayMove, SortableContext, sortableKeyboardCoordinates,
-  useSortable, verticalListSortingStrategy,
+  verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
 import { api } from '@/services/api'
 import type { SourceConnection, PluginManifest, ProjectConfig } from '@/types'
 import ConnectionDialog from '@/components/connections/ConnectionDialog'
@@ -22,6 +21,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/date-picker'
 import { ErrorBanner } from '@/components/ui/ErrorBanner'
+import { SortableStatusRow } from '@/components/ui/SortableStatusRow'
 import { inferStatusOrder } from '@/lib/inferStatusOrder'
 import { notifyImportsChanged } from '@/hooks/useImports'
 
@@ -46,24 +46,6 @@ function ConnFieldLabel({ label, helpKey }: { label: string; helpKey: string }) 
   )
 }
 
-function SortableStatus({ id, onRemove }: { id: string; onRemove: () => void }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
-  return (
-    <div
-      ref={setNodeRef}
-      style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm bg-white ${isDragging ? 'shadow-md border-blue-300' : 'border-gray-200'}`}
-    >
-      <span {...attributes} {...listeners} className="cursor-grab text-gray-300 hover:text-gray-500">
-        <GripVertical className="w-4 h-4" />
-      </span>
-      <span className="flex-1 text-gray-700">{id}</span>
-      <button onClick={onRemove} className="text-gray-300 hover:text-red-400">
-        <X className="w-3.5 h-3.5" />
-      </button>
-    </div>
-  )
-}
 
 
 
@@ -808,7 +790,7 @@ export default function ImportPage() {
           <SortableContext items={statuses} strategy={verticalListSortingStrategy}>
             <div className="space-y-1.5">
               {statuses.map((s) => (
-                <SortableStatus
+                <SortableStatusRow
                   key={s}
                   id={s}
                   onRemove={() => setStatuses((prev) => prev.filter((x) => x !== s))}

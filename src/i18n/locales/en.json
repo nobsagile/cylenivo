@@ -29,6 +29,8 @@
     "exportCsv": "Export CSV",
     "exported": "Exported!",
     "reload": "Reload",
+    "reorderItem": "Reorder {{name}}",
+    "removeItem": "Remove {{name}}",
     "disconnect": "Disconnect",
     "connected": "Connected",
     "notReachable": "Not reachable",
@@ -455,7 +457,9 @@
     "activeStatuses": "Active Work Statuses",
     "activeStatusesHint": "(optional)",
     "activeStatusesEmpty": "No statuses in the cycle window yet.",
-    "activeStatusToggle": "Toggle active"
+    "activeStatusToggle": "Toggle active",
+    "activeWorkStatus": "Active work status",
+    "markAsActiveWork": "Mark as active work"
   },
   "sidebar": {
     "project": "Datasets",

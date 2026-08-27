@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  Plus, GripVertical, X, Loader2, CheckCircle2, Info,
+  Plus, Loader2, CheckCircle2, Info,
 } from 'lucide-react'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import {
@@ -10,9 +10,8 @@ import {
 } from '@dnd-kit/core'
 import {
   arrayMove, SortableContext, sortableKeyboardCoordinates,
-  useSortable, verticalListSortingStrategy,
+  verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
 import { api } from '@/services/api'
 import type { ProjectConfig } from '@/types'
 import { Button } from '@/components/ui/button'
@@ -21,6 +20,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
 import { ErrorBanner } from '@/components/ui/ErrorBanner'
+import { SortableStatusRow } from '@/components/ui/SortableStatusRow'
 
 interface ConfigureStepProps {
   projectKey: string
@@ -33,24 +33,6 @@ interface ConfigureStepProps {
   compact?: boolean
 }
 
-function SortableStatus({ id, onRemove }: { id: string; onRemove: () => void }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
-  return (
-    <div
-      ref={setNodeRef}
-      style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm bg-white ${isDragging ? 'shadow-md border-blue-300' : 'border-gray-200'}`}
-    >
-      <span {...attributes} {...listeners} className="cursor-grab text-gray-300 hover:text-gray-500">
-        <GripVertical className="w-4 h-4" />
-      </span>
-      <span className="flex-1 text-gray-700">{id}</span>
-      <button onClick={onRemove} className="text-gray-300 hover:text-red-400">
-        <X className="w-3.5 h-3.5" />
-      </button>
-    </div>
-  )
-}
 
 export default function ConfigureStep({ projectKey, ticketCount, statuses, onComplete, onCancel, compact }: ConfigureStepProps) {
   const { t } = useTranslation()
@@ -238,7 +220,7 @@ export default function ConfigureStep({ projectKey, ticketCount, statuses, onCom
               <SortableContext items={statusOrder} strategy={verticalListSortingStrategy}>
                 <div className="space-y-1.5 mb-2">
                   {statusOrder.map((s) => (
-                    <SortableStatus key={s} id={s}
+                    <SortableStatusRow key={s} id={s}
                       onRemove={() => setStatusOrder((p) => p.filter((x) => x !== s))} />
                   ))}
                 </div>

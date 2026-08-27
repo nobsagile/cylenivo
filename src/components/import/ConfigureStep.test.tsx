@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { screen, within, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { renderUI, setupUser, stubVerticalLayout } from '@/test/ui'
 import ConfigureStep from './ConfigureStep'
 import { api } from '@/services/api'
@@ -43,25 +43,24 @@ function renderStep(statuses = STATUSES) {
   return { ...result, onComplete }
 }
 
-// Selectors live here, in one place, because they lean on DOM structure:
-// dnd-kit marks its handles with aria-roledescription="sortable", and neither
-// the handle nor the remove button has an accessible name to query by (both
-// contain only an aria-hidden icon). If those get aria-labels, only this block
-// needs to change.
+// Both controls carry an aria-label, so they can be addressed the way a user
+// would describe them ("Reorder Backlog") instead of by DOM position.
 
-/** Drag handles, in DOM order. */
-function dragHandles(): HTMLElement[] {
-  return Array.from(document.querySelectorAll<HTMLElement>('[aria-roledescription="sortable"]'))
+function dragHandle(status: string): HTMLElement {
+  return screen.getByRole('button', { name: `Reorder ${status}` })
 }
 
-/** The sortable rows, in DOM order. */
-function statusRows(): HTMLElement[] {
-  return dragHandles().map(handle => handle.parentElement as HTMLElement)
+function removeButton(status: string): HTMLElement {
+  return screen.getByRole('button', { name: `Remove ${status}` })
+}
+
+/** Drag handles in DOM order — used where position matters, not identity. */
+function dragHandles(): HTMLElement[] {
+  return screen.getAllByRole('button', { name: /^Reorder / })
 }
 
 function statusOrder(): string[] {
-  // row = [drag handle][label][remove button]
-  return statusRows().map(row => (row.children[1] as HTMLElement).textContent ?? '')
+  return dragHandles().map(h => (h.getAttribute('aria-label') ?? '').replace(/^Reorder /, ''))
 }
 
 describe('status list rendering', () => {
@@ -70,12 +69,16 @@ describe('status list rendering', () => {
     await waitFor(() => expect(statusOrder()).toEqual(STATUSES))
   })
 
-  it('each status has a drag handle and a remove button', async () => {
+  it('each status has a named drag handle and a named remove button', async () => {
     renderStep()
-    await waitFor(() => expect(statusRows()).toHaveLength(4))
+    await waitFor(() => expect(statusOrder()).toEqual(STATUSES))
 
-    for (const row of statusRows()) {
-      expect(within(row).getAllByRole('button').length).toBeGreaterThanOrEqual(2)
+    // Regression guard: both controls contain nothing but an aria-hidden icon.
+    // Without the label a screen reader announces "button, sortable" and
+    // "button" — no indication of which status is meant.
+    for (const status of STATUSES) {
+      expect(dragHandle(status)).toBeInTheDocument()
+      expect(removeButton(status)).toBeInTheDocument()
     }
   })
 })
@@ -86,7 +89,7 @@ describe('reordering by keyboard (dnd-kit)', () => {
     renderStep()
     await waitFor(() => expect(statusOrder()).toEqual(STATUSES))
 
-    const restore = stubVerticalLayout(statusRows())
+    const restore = stubVerticalLayout(dragHandles().map(h => h.parentElement!))
     try {
       dragHandles()[0].focus()
       await user.keyboard('{ }')          // pick up "Backlog"
@@ -104,7 +107,7 @@ describe('reordering by keyboard (dnd-kit)', () => {
     renderStep()
     await waitFor(() => expect(statusOrder()).toEqual(STATUSES))
 
-    const restore = stubVerticalLayout(statusRows())
+    const restore = stubVerticalLayout(dragHandles().map(h => h.parentElement!))
     try {
       dragHandles()[3].focus()            // "Done"
       await user.keyboard('{ }')
@@ -122,7 +125,7 @@ describe('reordering by keyboard (dnd-kit)', () => {
     renderStep()
     await waitFor(() => expect(statusOrder()).toEqual(STATUSES))
 
-    const restore = stubVerticalLayout(statusRows())
+    const restore = stubVerticalLayout(dragHandles().map(h => h.parentElement!))
     try {
       dragHandles()[0].focus()
       await user.keyboard('{ }')
@@ -140,7 +143,7 @@ describe('reordering by keyboard (dnd-kit)', () => {
     renderStep()
     await waitFor(() => expect(statusOrder()).toEqual(STATUSES))
 
-    const restore = stubVerticalLayout(statusRows())
+    const restore = stubVerticalLayout(dragHandles().map(h => h.parentElement!))
     try {
       dragHandles()[1].focus()
       await user.keyboard('{ }')
@@ -175,9 +178,7 @@ describe('adding and removing statuses', () => {
     renderStep()
     await waitFor(() => expect(statusOrder()).toEqual(STATUSES))
 
-    const reviewRow = statusRows()[2]
-    const buttons = within(reviewRow).getAllByRole('button')
-    await user.click(buttons[buttons.length - 1])   // the X
+    await user.click(removeButton('Review'))
 
     await waitFor(() => expect(statusOrder()).toEqual(['Backlog', 'In Dev', 'Done']))
   })
