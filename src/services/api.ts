@@ -20,10 +20,12 @@ import type {
   JiraFetchOptions,
 } from '@/types'
 
-let BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8765'
+// 127.0.0.1, not localhost: the server binds IPv4 loopback only, and on Windows
+// "localhost" can resolve to ::1 first — which would fail to connect.
+let BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8765'
 
 export function setApiPort(port: number) {
-  BASE_URL = `http://localhost:${port}`
+  BASE_URL = `http://127.0.0.1:${port}`
 }
 
 /**
