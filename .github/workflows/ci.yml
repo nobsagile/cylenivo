@@ -27,7 +27,12 @@ jobs:
     name: Frontend (types, lint, tests)
     runs-on: ubuntu-latest
     steps:
+      # fetch-depth: 0 — the "lint changed files" step needs the base commit.
+      # The default shallow checkout of the PR merge commit does not contain it,
+      # and it does not contain the PR head SHA either.
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -47,12 +52,12 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
-          git fetch --no-tags --depth=1 origin "$BASE_SHA" 2>/dev/null \
-            || git fetch --no-tags origin master
-          git diff --name-only --diff-filter=ACMR "$BASE_SHA" "$HEAD_SHA" -- '*.ts' '*.tsx' \
+          # HEAD is the PR merge commit that checkout produced, so its tree is
+          # the PR result. Diffing base..HEAD gives exactly the PR's changes —
+          # no need for the head SHA, which is not in this clone.
+          git diff --name-only --diff-filter=ACMR "$BASE_SHA" HEAD -- '*.ts' '*.tsx' \
             | tee /tmp/changed.txt
           if [ ! -s /tmp/changed.txt ]; then
             echo "No TypeScript files changed."
@@ -60,7 +65,7 @@ jobs:
           fi
           # -z / xargs -0 instead of relying on word splitting, so paths with
           # spaces and an empty list both behave.
-          git diff -z --name-only --diff-filter=ACMR "$BASE_SHA" "$HEAD_SHA" -- '*.ts' '*.tsx' \
+          git diff -z --name-only --diff-filter=ACMR "$BASE_SHA" HEAD -- '*.ts' '*.tsx' \
             | xargs -0 --no-run-if-empty npx eslint --no-error-on-unmatched-pattern
 
       - name: Tests
