@@ -24,7 +24,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      # fetch-depth: 0 — the release-notes step walks `git log PREV..TAG` and
+      # needs tags plus history. With the default shallow checkout there are no
+      # tags, so PREV is empty and the notes came out blank: v1.5.2, v1.5.3 and
+      # v1.5.4 all shipped with an empty body.
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Verify version matches tag
         shell: bash
