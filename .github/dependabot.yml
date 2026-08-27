@@ -15,6 +15,8 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 2
+    cooldown:
+      default-days: 5
     groups:
       actions:
         patterns: ["*"]
@@ -26,6 +28,8 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 2
+    cooldown:
+      default-days: 5
     groups:
       cargo-patch:
         patterns: ["*"]
@@ -45,6 +49,11 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 2
+    # Supply-chain cooldown: a compromised release is usually yanked within
+    # hours to days. Waiting means Dependabot never even proposes it.
+    # Applies to VERSION updates only — security updates ignore cooldown.
+    cooldown:
+      default-days: 5
     groups:
       npm-patch:
         patterns: ["*"]
@@ -56,18 +65,24 @@ updates:
           - "version-update:semver-minor"
     labels: ["chore", "app", "dependencies"]
 
-  # Server: 5 dependencies, covered by 370 tests. NOTE: this directory has both
-  # package-lock.json and bun.lock, but the server is built with bun
-  # (`bun build --compile`). Dependabot updates package-lock.json only, so check
-  # bun.lock after merging a server bump — see issue #115.
-  - package-ecosystem: "npm"
+  # Server: bun ecosystem against bun.lock — the lockfile the build actually
+  # uses (`bun build --compile`). The stale package-lock.json is gone (#118).
+  # Trade-off: Dependabot does NOT create security PRs for bun.lock, only
+  # version PRs. Acceptable at 2 prod dependencies (hono, drizzle-orm) —
+  # security alerts still arrive via the dependency graph, the fix is a manual
+  # bump. Longest cooldown here on purpose: a payload in the server ends up
+  # compiled into the sidecar binary with full process access; the frontend is
+  # sandboxed by the WebView and its CSP, the server is not.
+  - package-ecosystem: "bun"
     directory: "/server"
     schedule:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 2
+    cooldown:
+      default-days: 7
     groups:
-      npm-patch:
+      bun-patch:
         patterns: ["*"]
         update-types: ["patch"]
     ignore:

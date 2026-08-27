@@ -40,7 +40,14 @@ jobs:
           node-version: '24'
           cache: 'npm'
 
-      - run: npm ci
+      # --ignore-scripts: no frontend package needs an install hook (verified —
+      # zero preinstall/install/postinstall in the tree), and install scripts
+      # are the primary npm supply-chain vector. If a future dependency breaks
+      # under this, that is a prompt to look at it hard, not to drop the flag.
+      - run: npm ci --ignore-scripts
+
+      - name: Verify registry signatures and attestations
+        run: npm audit signatures
 
       - name: Typecheck
         run: npx tsc -b
@@ -84,7 +91,9 @@ jobs:
 
       - name: Install server deps
         working-directory: server
-        run: bun install
+        # --frozen-lockfile: install exactly what bun.lock pins, fail on drift.
+        # bun blocks untrusted postinstall scripts by default — keep it that way.
+        run: bun install --frozen-lockfile
 
       - name: Typecheck
         working-directory: server
