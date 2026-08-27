@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import './i18n'
 import App from './App.tsx'
-import { setApiPort } from '@/services/api'
+import { setApiPort, waitForServer } from '@/services/api'
 
 async function init() {
   document.addEventListener('contextmenu', (e) => e.preventDefault())
@@ -14,7 +14,16 @@ async function init() {
     setApiPort(port)
   }
 
-  createRoot(document.getElementById('root')!).render(
+  // Wait for the sidecar before rendering — otherwise the first data fetches
+  // race the server startup and fail (see waitForServer).
+  if (!(await waitForServer())) {
+    console.error('Server did not become reachable within the startup timeout')
+  }
+
+  const root = document.getElementById('root')!
+  document.getElementById('boot-splash')?.remove()
+
+  createRoot(root).render(
     <StrictMode>
       <App />
     </StrictMode>,

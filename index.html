@@ -7,7 +7,23 @@
     <title>Cylenivo</title>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Replaced by React once the sidecar server responds (see src/main.tsx).
+         Without this the window stays blank while waitForServer polls. -->
+    <div id="root">
+      <div id="boot-splash" style="min-height:100vh;display:flex;align-items:center;justify-content:center">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="40" height="40" aria-label="Loading">
+          <rect x="48" y="56" width="144" height="40" rx="20" fill="#7c3aed">
+            <animate attributeName="opacity" values="1;0.25;1" dur="1.4s" begin="0s" repeatCount="indefinite" />
+          </rect>
+          <rect x="48" y="108" width="64" height="40" rx="20" fill="#4f46e5">
+            <animate attributeName="opacity" values="1;0.25;1" dur="1.4s" begin="0.2s" repeatCount="indefinite" />
+          </rect>
+          <rect x="48" y="160" width="128" height="40" rx="20" fill="#0d9488">
+            <animate attributeName="opacity" values="1;0.25;1" dur="1.4s" begin="0.4s" repeatCount="indefinite" />
+          </rect>
+        </svg>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

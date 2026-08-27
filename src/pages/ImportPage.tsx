@@ -134,9 +134,15 @@ export default function ImportPage() {
 
   useEffect(() => {
     if (step === 'fetch') {
-      api.configs.list().then(setAvailableConfigs).catch(() => {})
+      api.configs.list()
+        .then(setAvailableConfigs)
+        .catch((err) => {
+          // Swallowing this made existing configs look deleted
+          console.error('Failed to load configs', err)
+          setErrorMsg(t('errors.configsLoadFailed'))
+        })
     }
-  }, [step])
+  }, [step, t])
 
   // fetch step
   const [jiraProject, setJiraProject] = useState('')

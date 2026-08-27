@@ -28,6 +28,8 @@ src-tauri/binaries/*
 CLAUDE.md
 SPEC.md
 DESIGN.md
+bughunt.md
+.claude/
 _marketing/
 test-export.json
 *.export.json
