@@ -1,0 +1,187 @@
+name: CI
+
+# Runs on every PR and on pushes to master. This exists so a dependency bump
+# gets a verdict before it is merged — release.yml runs the same tests, but only
+# on a v* tag, which is far too late: a bad bump would sit on master until the
+# next release and then break the build under release pressure.
+#
+# Deliberately does NOT build the Tauri app (that needs the full Rust + WebKit
+# toolchain on three OSes, ~15 min). This is the fast gate; release.yml stays
+# the thorough one.
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+# A new push supersedes the previous run for the same ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Frontend (types, lint, tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npx tsc -b
+
+      # Not `npm run lint`: the repo has pre-existing lint errors, so a blocking
+      # full-repo lint would fail every PR and train everyone to ignore it.
+      # Lint only what the PR touched — that keeps the signal honest.
+      - name: Lint changed files
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$BASE_SHA" 2>/dev/null \
+            || git fetch --no-tags origin master
+          git diff --name-only --diff-filter=ACMR "$BASE_SHA" "$HEAD_SHA" -- '*.ts' '*.tsx' \
+            | tee /tmp/changed.txt
+          if [ ! -s /tmp/changed.txt ]; then
+            echo "No TypeScript files changed."
+            exit 0
+          fi
+          # -z / xargs -0 instead of relying on word splitting, so paths with
+          # spaces and an empty list both behave.
+          git diff -z --name-only --diff-filter=ACMR "$BASE_SHA" "$HEAD_SHA" -- '*.ts' '*.tsx' \
+            | xargs -0 --no-run-if-empty npx eslint --no-error-on-unmatched-pattern
+
+      - name: Tests
+        run: npm test
+
+  server:
+    name: Server (types, tests, binary)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.13'
+
+      - name: Install server deps
+        working-directory: server
+        run: bun install
+
+      - name: Typecheck
+        working-directory: server
+        run: npx tsc --noEmit
+
+      - name: Tests
+        working-directory: server
+        run: bun test
+
+      # Compiling the sidecar catches breakage that unit tests miss — a
+      # dependency that cannot be bundled by `bun build --compile` fails here
+      # instead of during a release.
+      - name: Compile server binary
+        working-directory: server
+        run: bun build --compile --target=bun-linux-x64-baseline src/index.ts --outfile /tmp/cylenivo-server
+
+      - name: Server binary starts and answers /health
+        env:
+          DB_PATH: ":memory:"
+          SERVER_PORT: "9999"
+        run: |
+          /tmp/cylenivo-server &
+          SERVER_PID=$!
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:9999/health > /dev/null 2>&1; then
+              echo "Server answered /health after ${i}00ms"
+              kill $SERVER_PID
+              exit 0
+            fi
+            if ! kill -0 $SERVER_PID 2>/dev/null; then
+              echo "::error::Server binary exited during startup"
+              exit 1
+            fi
+            sleep 0.1
+          done
+          echo "::error::Server did not answer /health within 3s"
+          kill $SERVER_PID 2>/dev/null || true
+          exit 1
+
+  rust:
+    name: Tauri shell (cargo check)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      # The sidecar binary is not built in this job, but tauri.conf.json declares
+      # it — create a placeholder so cargo does not fail on the missing file.
+      - name: Placeholder sidecar binary
+        run: |
+          mkdir -p src-tauri/binaries
+          touch src-tauri/binaries/cylenivo-server-x86_64-unknown-linux-gnu
+          chmod +x src-tauri/binaries/cylenivo-server-x86_64-unknown-linux-gnu
+
+      # --locked: fails if Cargo.lock is out of date. Guards the bug fixed in
+      # f37accc, where the version bump did not write Cargo.lock.
+      - name: cargo check
+        working-directory: src-tauri
+        run: cargo check --locked --all-targets
+
+      - name: clippy
+        working-directory: src-tauri
+        run: cargo clippy --locked --all-targets -- -D warnings
+
+  version-sync:
+    name: Version files agree
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # release.yml checks tag vs. tauri.conf.json, but only once the tag exists.
+      # Catching drift on the PR means a release never fails on this.
+      - name: package.json, tauri.conf.json, Cargo.toml, Cargo.lock
+        run: |
+          PKG=$(node -p "require('./package.json').version")
+          CONF=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          TOML=$(grep -m1 '^version' src-tauri/Cargo.toml | sed 's/.*"\(.*\)".*/\1/')
+          LOCK=$(awk '/^name = "cylenivo"$/{getline; print}' src-tauri/Cargo.lock | sed 's/.*"\(.*\)".*/\1/')
+          echo "package.json:     $PKG"
+          echo "tauri.conf.json:  $CONF"
+          echo "Cargo.toml:       $TOML"
+          echo "Cargo.lock:       $LOCK"
+          FAIL=0
+          for pair in "tauri.conf.json:$CONF" "Cargo.toml:$TOML" "Cargo.lock:$LOCK"; do
+            name="${pair%%:*}"; value="${pair#*:}"
+            if [ "$value" != "$PKG" ]; then
+              echo "::error::$name is $value but package.json is $PKG — run 'npm version' to sync."
+              FAIL=1
+            fi
+          done
+          exit $FAIL

@@ -1,15 +1,78 @@
 version: 2
+
+# Strategy: security fixes always come through (they are enabled at repo level and
+# ignore this file entirely). Version updates are reduced to patches, grouped into
+# one PR per ecosystem per week, so a merge is a decision and not a reflex.
+# Majors and minors are deliberately NOT proposed — pick those up on purpose,
+# with time to read a changelog.
 updates:
+  # Actions tag as v6 → v7, which Dependabot reads as a major. Ignoring majors
+  # here would mean never updating actions again, so this one stays open —
+  # grouped, and small enough to review by eye.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 2
+    groups:
+      actions:
+        patterns: ["*"]
+    labels: ["chore", "app", "dependencies", "github_actions"]
 
   - package-ecosystem: "cargo"
     directory: "/src-tauri"
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 2
+    groups:
+      cargo-patch:
+        patterns: ["*"]
+        update-types: ["patch"]
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+    labels: ["chore", "app", "dependencies", "rust"]
+
+  # Frontend: 52 dependencies, and the ones most likely to break at runtime
+  # (Radix, dnd-kit) are the ones tests do not cover. Patches only.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 2
+    groups:
+      npm-patch:
+        patterns: ["*"]
+        update-types: ["patch"]
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+    labels: ["chore", "app", "dependencies"]
+
+  # Server: 5 dependencies, covered by 370 tests. NOTE: this directory has both
+  # package-lock.json and bun.lock, but the server is built with bun
+  # (`bun build --compile`). Dependabot updates package-lock.json only, so check
+  # bun.lock after merging a server bump — see issue #115.
+  - package-ecosystem: "npm"
+    directory: "/server"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 2
+    groups:
+      npm-patch:
+        patterns: ["*"]
+        update-types: ["patch"]
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+    labels: ["chore", "app", "dependencies"]

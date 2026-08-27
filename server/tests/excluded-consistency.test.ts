@@ -77,12 +77,32 @@ async function exclude(importId: string, externalId: string) {
   expect(res.status).toBe(200)
 }
 
-async function get(path: string) {
+/** Metric payloads differ per endpoint; tests narrow what they need. */
+async function get<T = Record<string, unknown>>(path: string): Promise<T> {
   const res = await app.request(path)
   expect(res.status).toBe(200)
-  const { data } = await res.json() as { data: any }
+  const { data } = await res.json() as { data: T }
   return data
 }
+
+type TicketRef = { external_id: string; excluded?: boolean; exclusion_reason?: string | null }
+type ScatterResponse = { tickets: TicketRef[] }
+type LeadTimesResponse = { tickets: TicketRef[]; values: number[] }
+type TimeInStatusResponse = { tickets: TicketRef[] }
+type ReworkResponse = {
+  tickets_with_rework: number
+  total_completed: number
+  rework_paths: unknown[]
+  avg_cycle_with_rework: number | null
+}
+type ByTypeResponse = { types: { type: string; count: number }[] }
+type CfdResponse = { data: Record<string, string | number>[] }
+type SummaryResponse = {
+  ticket_count: number
+  completed_ticket_count: number
+  excluded_ticket_count: number
+}
+type TicketListResponse = { tickets: TicketRef[]; available_types: string[] }
 
 // TICK-3 is the 14d rework ticket — the realistic "exclude this outlier" case,
 // and the only ticket that carries rework, so its removal is visible everywhere.
@@ -92,48 +112,48 @@ describe('excluded tickets are absent from every metric endpoint', () => {
   it('/cycle-times (scatter) drops the excluded ticket', async () => {
     const importId = await setup()
 
-    const before = await get(`/api/v1/metrics/${importId}/cycle-times`)
-    expect(before.tickets.map((t: any) => t.external_id)).toContain(OUTLIER)
+    const before = await get<ScatterResponse>(`/api/v1/metrics/${importId}/cycle-times`)
+    expect(before.tickets.map(t => t.external_id)).toContain(OUTLIER)
 
     await exclude(importId, OUTLIER)
 
-    const after = await get(`/api/v1/metrics/${importId}/cycle-times`)
-    expect(after.tickets.map((t: any) => t.external_id)).not.toContain(OUTLIER)
+    const after = await get<ScatterResponse>(`/api/v1/metrics/${importId}/cycle-times`)
+    expect(after.tickets.map(t => t.external_id)).not.toContain(OUTLIER)
     expect(after.tickets).toHaveLength(before.tickets.length - 1)
   })
 
   it('/lead-times drops the excluded ticket from both values and list', async () => {
     const importId = await setup()
-    const before = await get(`/api/v1/metrics/${importId}/lead-times`)
+    const before = await get<LeadTimesResponse>(`/api/v1/metrics/${importId}/lead-times`)
 
     await exclude(importId, OUTLIER)
 
-    const after = await get(`/api/v1/metrics/${importId}/lead-times`)
-    expect(after.tickets.map((t: any) => t.external_id)).not.toContain(OUTLIER)
+    const after = await get<LeadTimesResponse>(`/api/v1/metrics/${importId}/lead-times`)
+    expect(after.tickets.map(t => t.external_id)).not.toContain(OUTLIER)
     expect(after.values).toHaveLength(before.values.length - 1)
   })
 
   it('/time-in-status drops the excluded ticket', async () => {
     const importId = await setup()
-    const before = await get(`/api/v1/metrics/${importId}/time-in-status`)
+    const before = await get<TimeInStatusResponse>(`/api/v1/metrics/${importId}/time-in-status`)
 
     await exclude(importId, OUTLIER)
 
-    const after = await get(`/api/v1/metrics/${importId}/time-in-status`)
-    expect(after.tickets.map((t: any) => t.external_id)).not.toContain(OUTLIER)
+    const after = await get<TimeInStatusResponse>(`/api/v1/metrics/${importId}/time-in-status`)
+    expect(after.tickets.map(t => t.external_id)).not.toContain(OUTLIER)
     expect(after.tickets).toHaveLength(before.tickets.length - 1)
   })
 
   it('/rework recomputes without the excluded ticket', async () => {
     const importId = await setup()
-    const before = await get(`/api/v1/metrics/${importId}/rework`)
+    const before = await get<ReworkResponse>(`/api/v1/metrics/${importId}/rework`)
     // TICK-3 is the only fixture ticket with backward movement
     expect(before.tickets_with_rework).toBe(1)
     expect(before.total_completed).toBe(3)
 
     await exclude(importId, OUTLIER)
 
-    const after = await get(`/api/v1/metrics/${importId}/rework`)
+    const after = await get<ReworkResponse>(`/api/v1/metrics/${importId}/rework`)
     // The rework ticket is gone — so is the rework, and the denominator shrinks.
     // Before the fix this still reported 1 of 3 while the cards said 2 completed.
     expect(after.tickets_with_rework).toBe(0)
@@ -146,35 +166,35 @@ describe('excluded tickets are absent from every metric endpoint', () => {
     const importId = await setup()
     await exclude(importId, OUTLIER)
 
-    const rework = await get(`/api/v1/metrics/${importId}/rework`)
-    const summary = await get(`/api/v1/metrics/${importId}/summary`)
+    const rework = await get<ReworkResponse>(`/api/v1/metrics/${importId}/rework`)
+    const summary = await get<SummaryResponse>(`/api/v1/metrics/${importId}/summary`)
 
     expect(rework.total_completed).toBe(summary.completed_ticket_count)
   })
 
   it('/cycle-time-by-type drops the excluded ticket from its type group', async () => {
     const importId = await setup()
-    const before = await get(`/api/v1/metrics/${importId}/cycle-time-by-type`)
-    const countBefore = before.types.reduce((sum: number, t: any) => sum + t.count, 0)
+    const before = await get<ByTypeResponse>(`/api/v1/metrics/${importId}/cycle-time-by-type`)
+    const countBefore = before.types.reduce((sum, t) => sum + t.count, 0)
 
     await exclude(importId, OUTLIER)
 
-    const after = await get(`/api/v1/metrics/${importId}/cycle-time-by-type`)
-    const countAfter = after.types.reduce((sum: number, t: any) => sum + t.count, 0)
+    const after = await get<ByTypeResponse>(`/api/v1/metrics/${importId}/cycle-time-by-type`)
+    const countAfter = after.types.reduce((sum, t) => sum + t.count, 0)
     expect(countAfter).toBe(countBefore - 1)
   })
 
   it('/cfd drops the excluded ticket', async () => {
     const importId = await setup()
-    const before = await get(`/api/v1/metrics/${importId}/cfd`)
-    const peakBefore = Math.max(...before.data.map((d: any) =>
+    const before = await get<CfdResponse>(`/api/v1/metrics/${importId}/cfd`)
+    const peakBefore = Math.max(...before.data.map(d =>
       Object.values(d).filter((v): v is number => typeof v === 'number').reduce((a, b) => a + b, 0)
     ))
 
     await exclude(importId, OUTLIER)
 
-    const after = await get(`/api/v1/metrics/${importId}/cfd`)
-    const peakAfter = Math.max(...after.data.map((d: any) =>
+    const after = await get<CfdResponse>(`/api/v1/metrics/${importId}/cfd`)
+    const peakAfter = Math.max(...after.data.map(d =>
       Object.values(d).filter((v): v is number => typeof v === 'number').reduce((a, b) => a + b, 0)
     ))
     expect(peakAfter).toBeLessThan(peakBefore)
@@ -184,8 +204,8 @@ describe('excluded tickets are absent from every metric endpoint', () => {
     const importId = await setup()
     await exclude(importId, OUTLIER)
 
-    const summary = await get(`/api/v1/metrics/${importId}/summary`)
-    const scatter = await get(`/api/v1/metrics/${importId}/cycle-times`)
+    const summary = await get<SummaryResponse>(`/api/v1/metrics/${importId}/summary`)
+    const scatter = await get<ScatterResponse>(`/api/v1/metrics/${importId}/cycle-times`)
 
     // This is the contradiction the bug produced: cards said N, scatter said N+1
     expect(scatter.tickets).toHaveLength(summary.completed_ticket_count)
@@ -193,12 +213,12 @@ describe('excluded tickets are absent from every metric endpoint', () => {
 
   it('/summary still counts excluded tickets in its totals', async () => {
     const importId = await setup()
-    const before = await get(`/api/v1/metrics/${importId}/summary`)
+    const before = await get<SummaryResponse>(`/api/v1/metrics/${importId}/summary`)
     expect(before.excluded_ticket_count).toBe(0)
 
     await exclude(importId, OUTLIER)
 
-    const after = await get(`/api/v1/metrics/${importId}/summary`)
+    const after = await get<SummaryResponse>(`/api/v1/metrics/${importId}/summary`)
     // ticket_count is the dataset size — it must NOT shrink
     expect(after.ticket_count).toBe(before.ticket_count)
     expect(after.excluded_ticket_count).toBe(1)
@@ -211,8 +231,8 @@ describe('excluded tickets stay visible where the user manages them', () => {
     const importId = await setup()
     await exclude(importId, OUTLIER)
 
-    const data = await get(`/api/v1/tickets?import_id=${importId}&limit=0`)
-    const found = data.tickets.find((t: any) => t.external_id === OUTLIER)
+    const data = await get<TicketListResponse>(`/api/v1/tickets?import_id=${importId}&limit=0`)
+    const found = data.tickets.find(t => t.external_id === OUTLIER)
     expect(found).toBeDefined()
     expect(found.excluded).toBe(true)
     expect(found.exclusion_reason).toBe('outlier')
@@ -222,18 +242,18 @@ describe('excluded tickets stay visible where the user manages them', () => {
     const importId = await setup()
     await exclude(importId, OUTLIER)
 
-    const data = await get(`/api/v1/tickets?import_id=${importId}&excluded_only=1&limit=0`)
+    const data = await get<TicketListResponse>(`/api/v1/tickets?import_id=${importId}&excluded_only=1&limit=0`)
     expect(data.tickets).toHaveLength(1)
     expect(data.tickets[0].external_id).toBe(OUTLIER)
   })
 
   it('available_types is unaffected by exclusion', async () => {
     const importId = await setup()
-    const before = await get(`/api/v1/tickets?import_id=${importId}&limit=0`)
+    const before = await get<TicketListResponse>(`/api/v1/tickets?import_id=${importId}&limit=0`)
 
     await exclude(importId, OUTLIER)
 
-    const after = await get(`/api/v1/tickets?import_id=${importId}&limit=0`)
+    const after = await get<TicketListResponse>(`/api/v1/tickets?import_id=${importId}&limit=0`)
     expect(after.available_types).toEqual(before.available_types)
   })
 })
