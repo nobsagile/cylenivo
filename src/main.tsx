@@ -6,7 +6,16 @@ import App from './App.tsx'
 import { setApiPort, waitForServer } from '@/services/api'
 
 async function init() {
-  document.addEventListener('contextmenu', (e) => e.preventDefault())
+  // Suppress the WebView's browser-style context menu (Back/Reload/View Source
+  // make no sense in a desktop app) — but keep it where it does the user's
+  // work: on editable fields and on selected text, where right-click →
+  // copy/paste is how people get numbers out of a metrics tool.
+  document.addEventListener('contextmenu', (e) => {
+    const target = e.target as HTMLElement
+    const editable = target.closest('input, textarea, [contenteditable="true"]')
+    const hasSelection = !(window.getSelection()?.isCollapsed ?? true)
+    if (!editable && !hasSelection) e.preventDefault()
+  })
 
   if ('__TAURI_INTERNALS__' in window) {
     const { invoke } = await import('@tauri-apps/api/core')
