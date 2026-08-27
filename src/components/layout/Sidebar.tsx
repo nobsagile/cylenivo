@@ -38,10 +38,42 @@ interface Issue {
   severity: 'warn' | 'info'
 }
 
+/** Lists a handful of ticket IDs, then "…and N more" — the full list can be long. */
+function formatIds(ids: string[], max = 5): string {
+  if (ids.length <= max) return ids.join(', ')
+  return `${ids.slice(0, max).join(', ')} … (+${ids.length - max})`
+}
+
 function buildIssues(report: ImportHealthReport, cycleStart: string, cycleEnd: string, t: (key: string, opts?: Record<string, unknown>) => string): Issue[] {
   const issues: Issue[] = []
   const oldestYear = report.oldest_transition_date ? new Date(report.oldest_transition_date).getFullYear() : null
   const yearsOld = oldestYear ? new Date().getFullYear() - oldestYear : 0
+
+  // Dropped rows first: these are the only notices that mean data is actually
+  // missing from the dataset, so they outrank the interpretation hints below.
+  const droppedTickets = report.tickets_dropped ?? []
+  if (droppedTickets.length > 0) {
+    issues.push({
+      title: t('sidebar.droppedTickets', { count: droppedTickets.length }),
+      consequence: t('sidebar.droppedTicketsImpact', { ids: formatIds(droppedTickets) }),
+      recommendation: t('sidebar.droppedTicketsAction'),
+      severity: 'warn',
+    })
+  }
+
+  const droppedTransitions = report.transitions_dropped ?? 0
+  if (droppedTransitions > 0) {
+    const affected = report.tickets_with_dropped_transitions ?? []
+    issues.push({
+      title: t('sidebar.droppedTransitions', { count: droppedTransitions }),
+      consequence: t('sidebar.droppedTransitionsImpact', {
+        count: affected.length,
+        ids: formatIds(affected),
+      }),
+      recommendation: t('sidebar.droppedTransitionsAction'),
+      severity: 'warn',
+    })
+  }
 
   if (report.tickets_without_cycle_start > 0) {
     issues.push({

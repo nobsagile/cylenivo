@@ -252,20 +252,24 @@ Provide your analysis in clear sections. Identify the most significant flow prob
         await stream.writeSSE({ data: JSON.stringify({ type: 'token', content: token }) })
       }
       const now = new Date().toISOString()
-      await db.transaction(async (tx) => {
-        const existing = await tx.select().from(llmInsights).where(eq(llmInsights.import_id, importId))
+      // Synchronous callback: bun:sqlite is a synchronous driver, so
+      // db.transaction(async tx => …) does not roll back on failure.
+      const insightId = crypto.randomUUID()
+      db.transaction((tx) => {
+        const existing = tx.select().from(llmInsights).where(eq(llmInsights.import_id, importId)).all()
         if (existing.length) {
-          await tx.update(llmInsights)
+          tx.update(llmInsights)
             .set({ insight_text: insightText, model_used: model, generated_at: now })
             .where(eq(llmInsights.import_id, importId))
+            .run()
         } else {
-          await tx.insert(llmInsights).values({
-            id: crypto.randomUUID(),
+          tx.insert(llmInsights).values({
+            id: insightId,
             import_id: importId,
             model_used: model,
             insight_text: insightText,
             generated_at: now,
-          })
+          }).run()
         }
       })
       await stream.writeSSE({ data: JSON.stringify({ type: 'done', insight_text: insightText, model_used: model, generated_at: now }) })

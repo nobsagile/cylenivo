@@ -91,18 +91,19 @@ export async function seedDemoProject(
   )
 
   const importId = crypto.randomUUID()
+  const { ticketRows, transitionRows } = buildTicketRows(importId, fixture.tickets)
+
   await db.insert(importSessions).values({
     id: importId,
     config_id: configId,
     source_type: fixture.source_type,
     project_key: fixture.project_key,
     file_name: `${fixture.project_key.toLowerCase()}-demo.json`,
-    ticket_count: fixture.tickets.length,
+    // rows actually built, not rows offered — same reason as the import routes
+    ticket_count: ticketRows.length,
     imported_at: now,
     health_report: JSON.stringify(healthReport),
   })
-
-  const { ticketRows, transitionRows } = buildTicketRows(importId, fixture.tickets)
 
   const CHUNK = 500
   for (let i = 0; i < ticketRows.length; i += CHUNK) {
