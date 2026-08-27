@@ -26,6 +26,30 @@ export function setApiPort(port: number) {
   BASE_URL = `http://localhost:${port}`
 }
 
+/**
+ * Polls /health until the sidecar server accepts connections.
+ *
+ * Tauri hands out the port before the sidecar is spawned, and the server only
+ * calls Bun.serve() after migrate() + seedDemoIfEmpty(). Without this wait the
+ * first requests hit a closed port and fail with "connection refused".
+ *
+ * Resolves true once the server answers, false if it never came up in time —
+ * the app still renders in that case and surfaces its own error state.
+ */
+export async function waitForServer(timeoutMs = 10000): Promise<boolean> {
+  const start = performance.now()
+  while (performance.now() - start < timeoutMs) {
+    try {
+      const res = await fetch(`${BASE_URL}/health`, { signal: AbortSignal.timeout(1000) })
+      if (res.ok) return true
+    } catch {
+      // server not listening yet — keep polling
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100))
+  }
+  return false
+}
+
 type DateFilter = { from?: string; to?: string }
 
 function dateParams(dates?: DateFilter): string {

@@ -86,7 +86,11 @@ export default function ConfigureStep({ projectKey, ticketCount, statuses, onCom
         setConfigMode('existing')
         setSelectedConfigId(cfgs[0].id)
       }
-    }).catch(() => {})
+    }).catch((err) => {
+      // Swallowing this made existing configs look deleted
+      console.error('Failed to load configs', err)
+      setErrorMsg(t('errors.configsLoadFailed'))
+    })
   }
 
   function handleDragEnd(event: DragEndEvent) {

@@ -611,7 +611,11 @@
     "invalidFile": "Invalid file format",
     "somethingWentWrong": "Something went wrong",
     "serverCrashed": "The background server stopped unexpectedly. Please restart the app.",
-    "serverCrashedTitle": "Server crashed"
+    "serverCrashedTitle": "Server crashed",
+    "serverUnreachableTitle": "Could not load your data",
+    "serverUnreachable": "The local server did not answer in time. Your datasets and configurations are still on disk — nothing was lost.",
+    "retry": "Try again",
+    "configsLoadFailed": "Could not load your saved configurations. The local server may still be starting up."
   },
   "help": {
     "subtitle": "Quick reference for all metrics, charts, and settings.",

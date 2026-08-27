@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, BarChart2, TrendingUp, TrendingDown, Shuffle } from 'lucide-react'
+import { ArrowRight, BarChart2, TrendingUp, TrendingDown, Shuffle, AlertTriangle } from 'lucide-react'
 import { api } from '@/services/api'
 import { notifyImportsChanged } from '@/hooks/useImports'
 import { Button } from '@/components/ui/button'
@@ -27,6 +27,8 @@ export default function WelcomePage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [checking, setChecking] = useState(true)
+  const [loadFailed, setLoadFailed] = useState(false)
+  const [reloadKey, setReloadKey] = useState(0)
   const [userImports, setUserImports] = useState<ImportSession[]>([])
   const [demoImports, setDemoImports] = useState<ImportSession[]>([])
 
@@ -60,8 +62,20 @@ export default function WelcomePage() {
         setDemoImports(sorted)
         setChecking(false)
       })
-      .catch(() => navigate('/import', { replace: true }))
-  }, [navigate])
+      .catch((err) => {
+        // Do NOT silently redirect — a failed load here used to look like
+        // "my configs are gone" instead of "the server did not answer".
+        console.error('Failed to load datasets/configs', err)
+        setLoadFailed(true)
+        setChecking(false)
+      })
+  }, [reloadKey])
+
+  function retryLoad() {
+    setChecking(true)
+    setLoadFailed(false)
+    setReloadKey(k => k + 1)
+  }
 
   function openProject(importId: string) {
     navigate(`/projects/${importId}`)
@@ -78,6 +92,23 @@ export default function WelcomePage() {
   }
 
   if (checking) return null
+
+  if (loadFailed) {
+    return (
+      <div className="min-h-[90vh] flex flex-col items-center justify-center px-6 py-12">
+        <div className="flex flex-col items-center text-center max-w-sm gap-3">
+          <div className="p-2.5 rounded-lg bg-amber-50">
+            <AlertTriangle className="w-5 h-5 text-amber-600" />
+          </div>
+          <h1 className="text-lg font-semibold text-gray-900">{t('errors.serverUnreachableTitle')}</h1>
+          <p className="text-sm text-gray-500 leading-relaxed">{t('errors.serverUnreachable')}</p>
+          <Button onClick={retryLoad} className="gap-2 mt-2">
+            {t('errors.retry')}
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   const improving = demoImports.find(i => i.config_name?.includes('Improving'))
   const complex = demoImports.find(i => i.config_name?.includes('Complex'))
