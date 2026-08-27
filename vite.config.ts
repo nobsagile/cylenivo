@@ -22,7 +22,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': 'http://localhost:8765',
+      // 127.0.0.1, not localhost — the server binds IPv4 loopback only
+      '/api': 'http://127.0.0.1:8765',
     },
   },
   test: {
