@@ -43,7 +43,18 @@ export interface EnrichedTicket {
 export interface ImportContext {
   imp: ImportSessionRow
   config: ParsedConfig
+  /**
+   * Tickets for ALL metric calculations — user-excluded tickets are already
+   * filtered out. The UI promises "excluded from all metric calculations", so
+   * this is the safe default: forgetting to filter can no longer leak an
+   * excluded ticket into a chart.
+   */
   tickets: EnrichedTicket[]
+  /**
+   * Every ticket, including excluded ones. Only for listing tickets and for
+   * counts ("N of M excluded") — never for a metric.
+   */
+  allTickets: EnrichedTicket[]
   cycleStatuses: string[]   // status_order sliced to cycle window
 }
 
@@ -156,5 +167,12 @@ export async function loadImportContext(importId: string): Promise<ImportContext
     }
   }
 
-  return { imp, config, tickets: enrichedTickets, cycleStatuses }
+  // Derive the exclusion filter exactly once — same reasoning as cycleStatuses.
+  return {
+    imp,
+    config,
+    tickets: enrichedTickets.filter(t => !t.excluded),
+    allTickets: enrichedTickets,
+    cycleStatuses,
+  }
 }

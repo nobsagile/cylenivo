@@ -22,9 +22,12 @@ ticketsRouter.get('/', async (c) => {
   const completedOnly = c.req.query('completed_only') === '1'
   const excludedOnly = c.req.query('excluded_only') === '1'
   const search = c.req.query('search')?.toLowerCase()
-  const offset = (page - 1) * limit
+  // limit=0 means "all", so limit is Infinity — and (page - 1) * Infinity is
+  // NaN for page 1, which made slice() return an empty array.
+  const offset = limit === Infinity ? 0 : (page - 1) * limit
 
-  let filtered = ctx.tickets
+  // allTickets: the list must be able to show excluded tickets (excluded_only filter)
+  let filtered = ctx.allTickets
   if (type) filtered = filtered.filter(t => t.ticket_type === type)
   if (completedOnly) filtered = filtered.filter(t => t.cycle_time_days !== null)
   if (excludedOnly) filtered = filtered.filter(t => t.excluded)
@@ -49,7 +52,7 @@ ticketsRouter.get('/', async (c) => {
     exclusion_reason: t.exclusion_reason,
   }))
 
-  const availableTypes = [...new Set(ctx.tickets.map(t => t.ticket_type))].sort()
+  const availableTypes = [...new Set(ctx.allTickets.map(t => t.ticket_type))].sort()
 
   return c.json(ok({ tickets: paginated, total, page, limit, available_types: availableTypes }))
 })
