@@ -9,7 +9,7 @@
     "build": "bun build --compile src/index.ts --outfile dist/server"
   },
   "dependencies": {
-    "drizzle-orm": "^0.30.10",
+    "drizzle-orm": "^0.45.2",
     "hono": "^4.3.11"
   },
   "devDependencies": {
