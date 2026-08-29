@@ -1,0 +1,66 @@
+name: CodeQL
+
+# Static analysis of our OWN code. Dependabot covers the dependency tree; this
+# covers what we wrote. The classes it is here for are the ones this app
+# actually has surface for: path traversal in the plugin installer, SSRF via the
+# user-supplied LLM base_url, unsafe deserialisation of imported ticket data.
+#
+# Free: CodeQL default/advanced setup costs nothing on public repositories.
+#
+# JavaScript/TypeScript only, on purpose. src-tauri/src is ~120 lines of Tauri
+# boilerplate — a Rust analysis there would burn minutes and find nothing.
+#
+# Separate from ci.yml so the ~3 min it takes never slows down the 2 min gate.
+# Findings land in the Security tab; on a PR they show up as annotations. This
+# is NOT a required check — a new alert is something to read, not a merge block.
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  # Weekly, deliberately offset from Dependabot's Monday. The query packs get
+  # updated by GitHub, so this rerun finds new bug classes in code that has not
+  # changed since the last scan — that is the whole point of the schedule.
+  schedule:
+    - cron: '30 5 * * 3'
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze (JavaScript/TypeScript)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    permissions:
+      security-events: write   # upload the SARIF results
+      contents: read
+      actions: read
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+          # Query suite is `default` (implicit): high precision, low noise.
+          # `security-extended` exists and finds more, at a false-positive rate
+          # that gets a Security tab ignored. Switch only if the default suite
+          # goes quiet for a long stretch.
+          config: |
+            paths-ignore:
+              - dist
+              - src-tauri/target
+              - '**/*.test.ts'
+              - '**/*.test.tsx'
+              - server/tests
+
+      # No build step: JavaScript/TypeScript is extracted directly from source,
+      # so there is nothing to compile and no autobuild to configure.
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: '/language:javascript-typescript'
