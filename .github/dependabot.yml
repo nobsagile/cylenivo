@@ -58,6 +58,12 @@ updates:
       npm-patch:
         patterns: ["*"]
         update-types: ["patch"]
+    # Radix pins its internals to exact versions. A patch-only bump can move
+    # most @radix-ui/* packages while leaving those whose next release is a
+    # minor (react-select, react-slider in v1.5.14). npm then nests a second
+    # copy of the shared internals and Dialog/DropdownMenu stop seeing each
+    # other. src/test/radix-single-instance.test.ts turns such a PR red; fix by
+    # bumping the lagging Radix packages by hand in the same PR.
     ignore:
       - dependency-name: "*"
         update-types:
