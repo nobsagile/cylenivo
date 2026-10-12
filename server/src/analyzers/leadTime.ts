@@ -1,13 +1,19 @@
 import { firstTransitionTo, lastTransitionTo, type Transition } from './utils.js'
 import type { CycleTimeMode } from './cycleTime.js'
 
-export function calculateLeadTime(
+export interface LeadWindow {
+  start: Date
+  end: Date
+}
+
+/** Start and end of a ticket's lead time window; null if incomplete or inverted. */
+export function resolveLeadWindow(
   ticketCreatedAt: Date,
   transitions: Transition[],
   endStatus: string,
   leadTimeStartStatus?: string | null,
   mode: CycleTimeMode = 'first_last',
-): number | null {
+): LeadWindow | null {
   const endTs = mode === 'first_first'
     ? firstTransitionTo(transitions, endStatus)
     : lastTransitionTo(transitions, endStatus)
@@ -27,5 +33,16 @@ export function calculateLeadTime(
   }
 
   if (endTs < startTs) return null
-  return (endTs.getTime() - startTs.getTime()) / (1000 * 86400)
+  return { start: startTs, end: endTs }
+}
+
+export function calculateLeadTime(
+  ticketCreatedAt: Date,
+  transitions: Transition[],
+  endStatus: string,
+  leadTimeStartStatus?: string | null,
+  mode: CycleTimeMode = 'first_last',
+): number | null {
+  const w = resolveLeadWindow(ticketCreatedAt, transitions, endStatus, leadTimeStartStatus, mode)
+  return w ? (w.end.getTime() - w.start.getTime()) / (1000 * 86400) : null
 }

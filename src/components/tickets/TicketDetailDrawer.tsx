@@ -214,6 +214,8 @@ export function TicketDetailDrawer({ ticketId, config, onClose, onPrev, onNext, 
                   restart={detail.restart}
                   completedAt={detail.completed_at}
                   cycleStartedAt={detail.cycle_started_at}
+                  leadStartedAt={detail.lead_started_at}
+                  leadEndedAt={detail.lead_ended_at}
                 />
               )}
               {detail && !config && (

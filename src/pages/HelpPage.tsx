@@ -67,6 +67,7 @@ const SECTIONS: Section[] = [
       { titleKey: 'help.titles.restartedOnly',  bodyKey: 'help.restartedOnly' },
       { titleKey: 'help.titles.ticketTimeline', bodyKey: 'help.ticketTimeline' },
       { titleKey: 'help.titles.cycleCalculation', bodyKey: 'help.cycleCalculation' },
+      { titleKey: 'help.titles.leadCalculation',  bodyKey: 'help.leadCalculation' },
     ],
   },
   {

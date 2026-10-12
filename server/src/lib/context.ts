@@ -3,7 +3,7 @@ import { db } from '../db/index.js'
 import { projectConfigs, importSessions, tickets, ticketTransitions, type ImportSessionRow, type TicketRow } from '../db/schema.js'
 import type { CycleTimeMode } from '../analyzers/cycleTime.js'
 import { resolveCycleWindow, windowDays, type RestartInfo, type RestartOptions } from '../analyzers/cycleWindow.js'
-import { calculateLeadTime } from '../analyzers/leadTime.js'
+import { resolveLeadWindow } from '../analyzers/leadTime.js'
 import { calculateFlowEfficiency } from '../analyzers/flowEfficiency.js'
 import { sortTransitions, type Transition } from '../analyzers/utils.js'
 
@@ -36,6 +36,8 @@ export interface EnrichedTicket {
   lead_time_days: number | null
   completed_at: Date | null   // mode-aware completion timestamp
   cycle_started_at: Date | null   // mode-aware, restart-aware cycle start
+  lead_started_at: Date | null    // created_at or lead start status; null if lead time is null
+  lead_ended_at: Date | null      // mode-aware lead end; null if lead time is null
   restart: RestartInfo | null     // set when the ticket was moved to a restart status after starting
   current_status: string | null
   flow_efficiency: number | null
@@ -73,13 +75,14 @@ export function buildEnrichedTicket(
 
   const window = resolveCycleWindow(transitions, cycle_time_start_status, cycle_time_end_status, cycle_time_mode, restart)
   const ct = windowDays(window)
-  const lt = calculateLeadTime(
+  const leadWindow = resolveLeadWindow(
     new Date(ticket.created_at),
     transitions,
     lead_time_end_status ?? cycle_time_end_status,
     lead_time_start_status,
     cycle_time_mode,
   )
+  const lt = leadWindow ? (leadWindow.end.getTime() - leadWindow.start.getTime()) / (1000 * 86400) : null
 
   // An abandoned ticket (restarted, never came back) has no end even if it
   // reached the end status before the abort.
@@ -103,6 +106,8 @@ export function buildEnrichedTicket(
     lead_time_days: lt,
     completed_at: completedAt,
     cycle_started_at: window.start,
+    lead_started_at: leadWindow?.start ?? null,
+    lead_ended_at: leadWindow?.end ?? null,
     restart: window.restart,
     current_status: sorted.length ? sorted[sorted.length - 1].to_status : null,
     flow_efficiency: fe,

@@ -69,6 +69,9 @@ export interface Ticket {
   completed_at: string | null
   /** start of the cycle window (mode- and restart-aware); null if never started or abandoned */
   cycle_started_at: string | null
+  /** lead time window (#146); both null when lead_time_days is null */
+  lead_started_at: string | null
+  lead_ended_at: string | null
   excluded: boolean
   exclusion_reason: string | null
   /** set when the ticket was moved to a restart status after it had started (#143) */

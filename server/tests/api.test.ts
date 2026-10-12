@@ -622,6 +622,21 @@ describe('tickets', () => {
     expect(Math.round(days * 100) / 100).toBe(data.cycle_time_days)
   })
 
+  it('ticket detail exposes the lead window, matching lead_time_days (#146)', async () => {
+    const cfg = await createConfig()
+    const importId = await doImport(cfg.id)
+    const listRes = await app.request(`/api/v1/tickets?import_id=${importId}&completed_only=1&limit=1`)
+    const { data: list } = await listRes.json() as { data: { tickets: { id: string }[] } }
+
+    const res = await app.request(`/api/v1/tickets/${list.tickets[0].id}`)
+    const { data } = await res.json() as {
+      data: { lead_started_at: string | null; lead_ended_at: string | null; lead_time_days: number }
+    }
+    expect(data.lead_started_at).not.toBeNull()
+    const days = (Date.parse(data.lead_ended_at!) - Date.parse(data.lead_started_at!)) / 86400000
+    expect(Math.round(days * 100) / 100).toBe(data.lead_time_days)
+  })
+
   it('returns 404 for unknown ticket', async () => {
     const res = await app.request('/api/v1/tickets/nonexistent-id')
     expect(res.status).toBe(404)

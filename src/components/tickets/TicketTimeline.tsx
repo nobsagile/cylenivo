@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { ArrowLeftRight, Info, RotateCcw } from 'lucide-react'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import type { TicketTransition, ConfigContext, TicketRestart } from '@/types'
-import { CycleTimeCalculation } from './CycleTimeCalculation'
+import { TimeCalculation } from './TimeCalculation'
 
 interface Props {
   transitions: TicketTransition[]
@@ -16,6 +16,9 @@ interface Props {
   completedAt?: string | null
   /** server-side cycle window start (#145); without it the calculation table is hidden */
   cycleStartedAt?: string | null
+  /** server-side lead time window (#146); without it the lead table is hidden */
+  leadStartedAt?: string | null
+  leadEndedAt?: string | null
 }
 
 interface StatusAggregate {
@@ -32,7 +35,7 @@ interface ReworkMovement {
   count: number
 }
 
-export function TicketTimeline({ transitions, config, createdAt, externalLink, restart, completedAt: serverCompletedAt, cycleStartedAt }: Props) {
+export function TicketTimeline({ transitions, config, createdAt, externalLink, restart, completedAt: serverCompletedAt, cycleStartedAt, leadStartedAt, leadEndedAt }: Props) {
   const { t } = useTranslation()
   const { status_order, cycle_time_start_status, cycle_time_end_status, lead_time_start_status, lead_time_end_status } = config
 
@@ -302,15 +305,29 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink, r
         </div>
       )}
 
-      {/* 5. Calculation (#145) */}
+      {/* 5. Calculation (#145, #146) */}
       {cycleStartedAt && (
-        <CycleTimeCalculation
+        <TimeCalculation
+          variant="cycle"
           transitions={sorted}
+          createdAt={createdAt}
           mode={config.cycle_time_mode}
-          cycleStartedAt={cycleStartedAt}
-          completedAt={completedAt}
+          start={cycleStartedAt}
+          end={completedAt}
+          defaultOpen
           isReworkMove={isReworkMove}
           isDiscardedAt={isDiscardedAt}
+        />
+      )}
+      {leadStartedAt && leadEndedAt && (
+        <TimeCalculation
+          variant="lead"
+          transitions={sorted}
+          createdAt={createdAt}
+          mode={config.cycle_time_mode}
+          start={leadStartedAt}
+          end={leadEndedAt}
+          isReworkMove={isReworkMove}
         />
       )}
 

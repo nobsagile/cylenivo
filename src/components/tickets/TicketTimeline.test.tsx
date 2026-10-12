@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { renderUI, setupUser } from '@/test/ui'
 import { TicketTimeline } from './TicketTimeline'
 import type { ConfigContext, TicketTransition } from '@/types'
@@ -91,37 +91,50 @@ describe('TicketTimeline — restart status is not rework (#142)', () => {
   })
 })
 
-describe('TicketTimeline — cycle time calculation table (#145)', () => {
+describe('TicketTimeline — calculation tables (#145, #146)', () => {
   const renderRestarted = () => renderUI(
     <TicketTimeline
       transitions={TRANSITIONS}
       config={CONFIG}
-      createdAt="2024-01-01T12:00:00Z"
+      createdAt="2023-12-30T12:00:00Z"
       restart={{ count: 1, restarted_at: '2024-02-01T12:00:00Z', discarded_days: 22, abandoned: false }}
       completedAt="2024-02-11T12:00:00Z"
       cycleStartedAt="2024-02-01T12:00:00Z"
+      leadStartedAt="2023-12-30T12:00:00Z"
+      leadEndedAt="2024-02-11T12:00:00Z"
     />,
   )
+  const cycleButton = () => screen.getByRole('button', { name: 'How cycle time was calculated' })
+  const leadButton = () => screen.getByRole('button', { name: 'How lead time was calculated' })
+  const countedColumn = (table: HTMLElement) =>
+    within(table).getAllByRole('row').slice(1, -1).map(r => r.querySelectorAll('td')[3].textContent)
 
-  it('is collapsed by default', () => {
+  it('cycle table open, lead table collapsed by default', () => {
     renderRestarted()
-    expect(screen.getByRole('button', { name: 'How cycle time was calculated' })).toHaveAttribute('aria-expanded', 'false')
-    expect(screen.queryByRole('table')).not.toBeInTheDocument()
+    expect(cycleButton()).toHaveAttribute('aria-expanded', 'true')
+    expect(leadButton()).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.getAllByRole('table')).toHaveLength(1)
   })
 
-  it('splits rows along the server window and totals to the cycle time', async () => {
+  it('cycle: splits rows along the server window and totals to the cycle time', () => {
     renderRestarted()
-    await setupUser().click(screen.getByRole('button', { name: 'How cycle time was calculated' }))
-
-    const rows = screen.getAllByRole('row').slice(1, -1) // without header and footer
-    const counted = rows.map(r => r.querySelectorAll('td')[3].textContent)
-    expect(counted).toEqual(['before start', 'aborted attempt', 'aborted attempt', 'aborted attempt', 'start', 'end'])
+    const table = screen.getByRole('table')
+    expect(countedColumn(table)).toEqual(['before start', 'before start', 'aborted attempt', 'aborted attempt', 'aborted attempt', 'start', 'end'])
     expect(screen.getByText(/^Start: Development on /)).toBeInTheDocument()
-    expect(screen.getByText('Cycle time').closest('tr')).toHaveTextContent('10.00d')
+    expect(within(table).getByText('Cycle time').closest('tr')).toHaveTextContent('10.00d')
   })
 
-  it('hidden when the ticket never started (abandoned)', () => {
-    renderUI(<TicketTimeline transitions={TRANSITIONS} config={CONFIG} createdAt="2024-01-01T12:00:00Z" cycleStartedAt={null} />)
-    expect(screen.queryByRole('button', { name: 'How cycle time was calculated' })).not.toBeInTheDocument()
+  it('lead: starts at creation, ignores the restart, totals to the lead time', async () => {
+    renderRestarted()
+    await setupUser().click(leadButton())
+    const table = screen.getAllByRole('table')[1]
+    expect(countedColumn(table)).toEqual(['start', 'yes', 'yes', 'yes', 'yes', 'yes', 'end'])
+    expect(within(table).getAllByRole('row')[1]).toHaveTextContent('Created')
+    expect(within(table).getByText('Lead time').closest('tr')).toHaveTextContent('43.00d')
+  })
+
+  it('hidden when there is no window (abandoned, lead time incomplete)', () => {
+    renderUI(<TicketTimeline transitions={TRANSITIONS} config={CONFIG} createdAt="2024-01-01T12:00:00Z" cycleStartedAt={null} leadStartedAt={null} leadEndedAt={null} />)
+    expect(screen.queryByRole('button', { name: /was calculated/ })).not.toBeInTheDocument()
   })
 })
