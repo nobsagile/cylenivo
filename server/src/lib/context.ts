@@ -1,10 +1,11 @@
 import { eq, inArray } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { projectConfigs, importSessions, tickets, ticketTransitions, type ImportSessionRow, type TicketRow } from '../db/schema.js'
-import { calculateCycleTime, type CycleTimeMode } from '../analyzers/cycleTime.js'
+import type { CycleTimeMode } from '../analyzers/cycleTime.js'
+import { resolveCycleWindow, windowDays, type RestartInfo, type RestartOptions } from '../analyzers/cycleWindow.js'
 import { calculateLeadTime } from '../analyzers/leadTime.js'
 import { calculateFlowEfficiency } from '../analyzers/flowEfficiency.js'
-import { firstTransitionTo, lastTransitionTo, sortTransitions, type Transition } from '../analyzers/utils.js'
+import { sortTransitions, type Transition } from '../analyzers/utils.js'
 
 export interface ParsedConfig {
   id: string
@@ -18,6 +19,7 @@ export interface ParsedConfig {
   lead_time_start_status: string | null
   lead_time_end_status: string | null
   active_statuses: string[] | null
+  restart_statuses: string[]
   created_at: string
 }
 
@@ -33,6 +35,8 @@ export interface EnrichedTicket {
   cycle_time_days: number | null
   lead_time_days: number | null
   completed_at: Date | null   // mode-aware completion timestamp
+  cycle_started_at: Date | null   // mode-aware, restart-aware cycle start
+  restart: RestartInfo | null     // set when the ticket was moved to a restart status after starting
   current_status: string | null
   flow_efficiency: number | null
   completed: boolean
@@ -56,16 +60,19 @@ export interface ImportContext {
    */
   allTickets: EnrichedTicket[]
   cycleStatuses: string[]   // status_order sliced to cycle window
+  restart: RestartOptions   // derived once — pass to every cycle-window trim
 }
 
 export function buildEnrichedTicket(
   ticket: TicketRow,
   transitions: Transition[],
   config: ParsedConfig,
+  restart: RestartOptions,
 ): EnrichedTicket {
   const { cycle_time_start_status, cycle_time_end_status, cycle_time_mode, lead_time_start_status, lead_time_end_status, active_statuses } = config
 
-  const ct = calculateCycleTime(transitions, cycle_time_start_status, cycle_time_end_status, cycle_time_mode)
+  const window = resolveCycleWindow(transitions, cycle_time_start_status, cycle_time_end_status, cycle_time_mode, restart)
+  const ct = windowDays(window)
   const lt = calculateLeadTime(
     new Date(ticket.created_at),
     transitions,
@@ -74,14 +81,14 @@ export function buildEnrichedTicket(
     cycle_time_mode,
   )
 
-  const completedAt = cycle_time_mode === 'first_first'
-    ? firstTransitionTo(transitions, cycle_time_end_status)
-    : lastTransitionTo(transitions, cycle_time_end_status)
+  // An abandoned ticket (restarted, never came back) has no end even if it
+  // reached the end status before the abort.
+  const completedAt = window.end
 
   const sorted = sortTransitions(transitions)
 
   const fe = ct !== null && active_statuses?.length
-    ? calculateFlowEfficiency(transitions, active_statuses, cycle_time_start_status, cycle_time_end_status, cycle_time_mode, ct)
+    ? calculateFlowEfficiency(transitions, active_statuses, cycle_time_start_status, cycle_time_end_status, cycle_time_mode, ct, restart)
     : null
 
   return {
@@ -95,6 +102,8 @@ export function buildEnrichedTicket(
     cycle_time_days: ct,
     lead_time_days: lt,
     completed_at: completedAt,
+    cycle_started_at: window.start,
+    restart: window.restart,
     current_status: sorted.length ? sorted[sorted.length - 1].to_status : null,
     flow_efficiency: fe,
     completed: completedAt !== null,
@@ -114,6 +123,7 @@ export async function loadImportContext(importId: string): Promise<ImportContext
 
   let statusOrder: string[]
   let activeStatuses: string[] | null = null
+  let restartStatuses: string[] = []
   try {
     statusOrder = JSON.parse(raw.status_order) as string[]
   } catch {
@@ -125,6 +135,11 @@ export async function loadImportContext(importId: string): Promise<ImportContext
   } catch {
     console.warn(`[context] import ${importId}: corrupted active_statuses JSON, ignoring`)
   }
+  try {
+    restartStatuses = raw.restart_statuses ? JSON.parse(raw.restart_statuses) as string[] : []
+  } catch {
+    console.warn(`[context] import ${importId}: corrupted restart_statuses JSON, ignoring`)
+  }
 
   const config: ParsedConfig = {
     ...raw,
@@ -133,6 +148,7 @@ export async function loadImportContext(importId: string): Promise<ImportContext
     lead_time_start_status: raw.lead_time_start_status ?? null,
     lead_time_end_status: raw.lead_time_end_status ?? null,
     active_statuses: activeStatuses,
+    restart_statuses: restartStatuses,
   }
 
   if (config.status_order.length === 0) {
@@ -143,6 +159,12 @@ export async function loadImportContext(importId: string): Promise<ImportContext
   const cycleStatuses = startIdx !== -1 && endIdx !== -1 && startIdx <= endIdx
     ? config.status_order.slice(startIdx, endIdx + 1)
     : []
+  // A restart status inside the cycle window would abort every ticket passing
+  // through it — ignore such misconfiguration instead of corrupting metrics.
+  const restart: RestartOptions = {
+    cycleStatuses,
+    restartStatuses: config.restart_statuses.filter(s => !cycleStatuses.includes(s)),
+  }
 
   const ticketRows = await db.select().from(tickets).where(eq(tickets.import_id, importId))
   const enrichedTickets: EnrichedTicket[] = []
@@ -163,7 +185,7 @@ export async function loadImportContext(importId: string): Promise<ImportContext
     }
 
     for (const ticket of ticketRows) {
-      enrichedTickets.push(buildEnrichedTicket(ticket, transMap[ticket.id] ?? [], config))
+      enrichedTickets.push(buildEnrichedTicket(ticket, transMap[ticket.id] ?? [], config, restart))
     }
   }
 
@@ -174,5 +196,6 @@ export async function loadImportContext(importId: string): Promise<ImportContext
     tickets: enrichedTickets.filter(t => !t.excluded),
     allTickets: enrichedTickets,
     cycleStatuses,
+    restart,
   }
 }

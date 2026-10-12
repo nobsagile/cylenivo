@@ -1,6 +1,6 @@
 import { calculatePercentiles, calculateThroughputPerWeek, type PercentileResult } from '../analyzers/percentiles.js'
 import { calculateTimeInStatus } from '../analyzers/timeInStatus.js'
-import { trimTransitionsToCycleWindow } from '../analyzers/utils.js'
+import { trimToCycleWindow } from '../analyzers/cycleWindow.js'
 import { mean, median } from './stats.js'
 import type { ImportContext, EnrichedTicket } from './context.js'
 
@@ -26,7 +26,7 @@ export interface MetricsAggregate {
 }
 
 export function computeAggregate(ctx: ImportContext): MetricsAggregate {
-  const { config, tickets, cycleStatuses } = ctx
+  const { config, tickets, cycleStatuses, restart } = ctx
 
   // ctx.tickets is already excluded-free (see ImportContext). The !t.excluded
   // checks stay as a safety net: this function is the one place every metric
@@ -57,11 +57,12 @@ export function computeAggregate(ctx: ImportContext): MetricsAggregate {
   for (const s of cycleStatuses) timeInStatusByStatus[s] = []
 
   for (const ticket of completedTickets) {
-    const windowed = trimTransitionsToCycleWindow(
+    const windowed = trimToCycleWindow(
       ticket.transitions,
       config.cycle_time_start_status,
       config.cycle_time_end_status,
       config.cycle_time_mode,
+      restart,
     )
     const durations = calculateTimeInStatus(windowed, cycleStatuses)
     for (const [status, days] of Object.entries(durations)) {

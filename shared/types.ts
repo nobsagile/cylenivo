@@ -10,6 +10,7 @@ export interface ProjectConfig {
   lead_time_start_status: string | null
   lead_time_end_status: string | null
   active_statuses: string[] | null
+  restart_statuses: string[] | null
   created_at: string
 }
 
@@ -99,6 +100,7 @@ export interface ConfigContext {
   lead_time_start_status: string | null
   lead_time_end_status: string | null
   active_statuses: string[] | null
+  restart_statuses: string[] | null
 }
 
 export interface FlowEfficiencyStats {
@@ -286,4 +288,5 @@ export interface CreateConfigRequest {
   lead_time_start_status?: string
   lead_time_end_status?: string
   active_statuses?: string[]
+  restart_statuses?: string[]
 }

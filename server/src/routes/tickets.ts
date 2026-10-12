@@ -77,7 +77,7 @@ ticketsRouter.get('/:id', async (c) => {
     transitioned_at: tr.transitioned_at,
   }))
 
-  const enriched = buildEnrichedTicket(ticket, transitions, ctx.config)
+  const enriched = buildEnrichedTicket(ticket, transitions, ctx.config, ctx.restart)
   const sorted = [...transRows].sort(
     (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime(),
   )
@@ -131,7 +131,7 @@ ticketsRouter.patch('/:id', async (c) => {
   }))
 
   const updatedTicket: TicketRow = { ...ticket, excluded: body.excluded ? 1 : 0, exclusion_reason: body.excluded ? (body.exclusion_reason ?? null) : null }
-  const enriched = buildEnrichedTicket(updatedTicket, transitions, ctx.config)
+  const enriched = buildEnrichedTicket(updatedTicket, transitions, ctx.config, ctx.restart)
   const sorted = [...transRows].sort(
     (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime(),
   )

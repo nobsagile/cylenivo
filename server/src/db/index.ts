@@ -142,6 +142,7 @@ export async function migrate() {
   addColumn(`ALTER TABLE tickets ADD COLUMN excluded INTEGER NOT NULL DEFAULT 0`)
   addColumn(`ALTER TABLE tickets ADD COLUMN exclusion_reason TEXT`)
   addColumn(`ALTER TABLE project_configs ADD COLUMN active_statuses TEXT`)
+  addColumn(`ALTER TABLE project_configs ADD COLUMN restart_statuses TEXT`)
   addColumn(`ALTER TABLE source_connections ADD COLUMN max_tickets INTEGER`)
   addColumn(`ALTER TABLE source_connections ADD COLUMN auth_type TEXT DEFAULT 'cloud'`)
   addColumn(`ALTER TABLE import_sessions ADD COLUMN resolved_from TEXT`)

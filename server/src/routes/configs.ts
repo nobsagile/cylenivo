@@ -11,6 +11,7 @@ function serializeConfig(row: ProjectConfigRow) {
     ...row,
     status_order: JSON.parse(row.status_order) as string[],
     active_statuses: row.active_statuses ? JSON.parse(row.active_statuses) as string[] : null,
+    restart_statuses: row.restart_statuses ? JSON.parse(row.restart_statuses) as string[] : null,
   }
 }
 
@@ -51,6 +52,9 @@ configs.post('/', async (c) => {
     active_statuses: Array.isArray(body.active_statuses) && body.active_statuses.length > 0
       ? JSON.stringify(body.active_statuses)
       : null,
+    restart_statuses: Array.isArray(body.restart_statuses) && body.restart_statuses.length > 0
+      ? JSON.stringify(body.restart_statuses)
+      : null,
     created_at: now,
   }
   await db.insert(projectConfigs).values(row)
@@ -85,6 +89,12 @@ configs.put('/:id', async (c) => {
   if (body.active_statuses !== undefined) {
     updates.active_statuses = Array.isArray(body.active_statuses) && body.active_statuses.length > 0
       ? JSON.stringify(body.active_statuses)
+      : null
+  }
+
+  if (body.restart_statuses !== undefined) {
+    updates.restart_statuses = Array.isArray(body.restart_statuses) && body.restart_statuses.length > 0
+      ? JSON.stringify(body.restart_statuses)
       : null
   }
 

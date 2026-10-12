@@ -1,7 +1,7 @@
 import { Hono, type Context } from 'hono'
 import { ok } from '../lib/response.js'
 import { calculateTimeInStatus } from '../analyzers/timeInStatus.js'
-import { trimTransitionsToCycleWindow } from '../analyzers/utils.js'
+import { trimToCycleWindow } from '../analyzers/cycleWindow.js'
 import { loadImportContext } from '../lib/context.js'
 import { computeAggregate, buildStatsResponse } from '../lib/aggregate.js'
 import { aggregateRework } from '../analyzers/rework.js'
@@ -60,6 +60,7 @@ metrics.get('/:importId/summary', async (c) => {
       lead_time_start_status: ctx.config.lead_time_start_status,
       lead_time_end_status: ctx.config.lead_time_end_status,
       active_statuses: ctx.config.active_statuses,
+      restart_statuses: ctx.config.restart_statuses,
     },
   }))
 })
@@ -108,7 +109,7 @@ metrics.get('/:importId/time-in-status', async (c) => {
   const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
-  const { config, cycleStatuses } = ctx
+  const { config, cycleStatuses, restart } = ctx
   const { from, to } = parseDateFilter(c)
 
   const result = applyDateFilter(ctx.tickets, from, to)
@@ -119,11 +120,12 @@ metrics.get('/:importId/time-in-status', async (c) => {
       title: t.title,
       status_durations: Object.fromEntries(
         Object.entries(calculateTimeInStatus(
-          trimTransitionsToCycleWindow(
+          trimToCycleWindow(
             t.transitions,
             config.cycle_time_start_status,
             config.cycle_time_end_status,
             config.cycle_time_mode,
+            restart,
           ),
           cycleStatuses,
         )).map(([s, d]) => [s, Math.round(d * 100) / 100])

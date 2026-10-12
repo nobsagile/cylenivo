@@ -51,6 +51,7 @@ const mockSummary: MetricsSummary = {
     lead_time_start_status: null,
     lead_time_end_status: null,
     active_statuses: null,
+    restart_statuses: null,
   },
 }
 

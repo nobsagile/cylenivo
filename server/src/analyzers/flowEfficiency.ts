@@ -1,4 +1,5 @@
-import { trimTransitionsToCycleWindow, type Transition } from './utils.js'
+import type { Transition } from './utils.js'
+import { trimToCycleWindow, type RestartOptions } from './cycleWindow.js'
 import { calculateTimeInStatus } from './timeInStatus.js'
 import type { CycleTimeMode } from './cycleTime.js'
 
@@ -14,10 +15,11 @@ export function calculateFlowEfficiency(
   cycleEndStatus: string,
   mode: CycleTimeMode,
   cycleDays: number,
+  restart?: RestartOptions,
 ): number | null {
   if (!activeStatuses.length || cycleDays <= 0) return null
 
-  const windowed = trimTransitionsToCycleWindow(transitions, cycleStartStatus, cycleEndStatus, mode)
+  const windowed = trimToCycleWindow(transitions, cycleStartStatus, cycleEndStatus, mode, restart)
   if (!windowed.length) return null
 
   const timeByStatus = calculateTimeInStatus(windowed, activeStatuses)
