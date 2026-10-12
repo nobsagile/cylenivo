@@ -82,6 +82,7 @@ const SECTIONS: Section[] = [
       { titleKey: 'help.titles.modeFirstFirst',   bodyKey: 'help.modeFirstFirst' },
       { titleKey: 'help.titles.modeLastLast',     bodyKey: 'help.modeLastLast' },
       { titleKey: 'help.titles.cycleTimeConfig',  bodyKey: 'help.cycleTimeConfig' },
+      { titleKey: 'help.titles.restartStatuses',  bodyKey: 'help.restartStatuses' },
       { titleKey: 'help.titles.leadTimeConfig',   bodyKey: 'help.leadTimeConfig' },
       { titleKey: 'help.titles.cycleStartStatus', bodyKey: 'help.cycleStartStatus' },
       { titleKey: 'help.titles.cycleEndStatus',   bodyKey: 'help.cycleEndStatus' },

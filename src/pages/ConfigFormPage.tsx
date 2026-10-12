@@ -161,6 +161,9 @@ export default function ConfigFormPage() {
   const [leadStart, setLeadStart] = useState('')
   const [leadEnd, setLeadEnd] = useState('')
   const [activeStatuses, setActiveStatuses] = useState<string[]>([])
+  const [restartStatuses, setRestartStatuses] = useState<string[]>([])
+  // statuses seen in this config's imports — Backlog usually is not in status_order
+  const [importStatuses, setImportStatuses] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(isEdit)
   const [loadError, setLoadError] = useState(false)
@@ -185,9 +188,20 @@ export default function ConfigFormPage() {
         setLeadStart(c.lead_time_start_status ?? '')
         setLeadEnd(c.lead_time_end_status ?? '')
         setActiveStatuses(c.active_statuses ?? [])
+        setRestartStatuses(c.restart_statuses ?? [])
       }).catch(() => setLoadError(true)).finally(() => setLoading(false))
     }
   }, [configId])
+
+  useEffect(() => {
+    if (!configId) return
+    const own = imports.filter((imp) => imp.config_id === configId)
+    if (!own.length) return
+    let cancelled = false
+    Promise.all(own.map((imp) => api.imports.statuses(imp.id).catch(() => [] as string[])))
+      .then((lists) => { if (!cancelled) setImportStatuses([...new Set(lists.flat())]) })
+    return () => { cancelled = true }
+  }, [configId, imports])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -211,6 +225,7 @@ export default function ConfigFormPage() {
     try {
       const statuses = await api.imports.statuses(importId)
       setStatusOrder(statuses)
+      setImportStatuses(statuses)
       setCycleStart('')
       setCycleEnd('')
       setLeadStart('')
@@ -230,6 +245,15 @@ export default function ConfigFormPage() {
   }
 
 
+  const cycleWindow = (() => {
+    const a = statusOrder.indexOf(cycleStart)
+    const b = statusOrder.indexOf(cycleEnd)
+    return a !== -1 && b !== -1 && a <= b ? statusOrder.slice(a, b + 1) : []
+  })()
+  // A restart status inside the cycle window would abort every ticket — the server ignores those.
+  const restartCandidates = [...new Set([...statusOrder, ...importStatuses, ...restartStatuses])]
+    .filter((s) => !cycleWindow.includes(s))
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setFormError('')
@@ -248,6 +272,8 @@ export default function ConfigFormPage() {
       lead_time_start_status: leadStart || undefined,
       lead_time_end_status: leadEnd || undefined,
       active_statuses: activeStatuses.length > 0 ? activeStatuses : undefined,
+      // always sent: an empty list must clear the field on update
+      restart_statuses: restartStatuses.filter((s) => !cycleWindow.includes(s)),
     }
     try {
       if (isEdit && configId) {
@@ -522,6 +548,36 @@ export default function ConfigFormPage() {
               </SelectContent>
             </Select>
           </div>
+        </div>
+
+        {/* Restart */}
+        <div className="rounded-xl border border-gray-200 p-4 bg-gray-50 space-y-2">
+          <FieldLabel label={t('config.restartStatuses')} helpKey="help.restartStatuses" optional={t('config.optional')} />
+          {restartCandidates.length === 0 ? (
+            <p className="text-xs text-gray-400">{t('config.restartStatusesEmpty')}</p>
+          ) : (
+            <div className="flex flex-wrap gap-1.5">
+              {restartCandidates.map((s) => {
+                const on = restartStatuses.includes(s)
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => setRestartStatuses((prev) => on ? prev.filter((x) => x !== s) : [...prev, s])}
+                    className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${
+                      on
+                        ? 'bg-amber-100 border-amber-300 text-amber-800'
+                        : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300'
+                    }`}
+                  >
+                    {s}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+          <p className="text-[11px] text-gray-400">{t('config.restartStatusesHint')}</p>
         </div>
 
         {/* Lead time */}
