@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams, useOutletContext } from 'react-router-dom'
 import { AlertTriangle, TrendingUp, Info } from 'lucide-react'
@@ -37,9 +37,9 @@ function PercentileResult({ label, value, unit, color }: {
 export default function ForecastPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
-  const { fromDate, toDate } = useDateFilter()
-  const { data: metrics } = useMetrics(importId, fromDate || undefined, toDate || undefined)
-  const { dateRange } = useOutletContext<ProjectLayoutContext>()
+  const { filter } = useDateFilter()
+  const { data: metrics } = useMetrics(importId, filter)
+  const { dateRange, completedCount } = useOutletContext<ProjectLayoutContext>()
 
   const [mode, setMode] = useState<Mode>('how_many')
   const [value, setValue] = useState(4)
@@ -47,12 +47,15 @@ export default function ForecastPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // A result belongs to the filter it was simulated with
+  useEffect(() => { setResult(null) }, [filter])
+
   async function simulate() {
     if (!importId || !value) return
     setLoading(true)
     setError(null)
     try {
-      const res = await api.metrics.forecast(importId, mode, value, { from: fromDate || undefined, to: toDate || undefined })
+      const res = await api.metrics.forecast(importId, mode, value, filter)
       setResult(res)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Simulation failed')
@@ -62,6 +65,7 @@ export default function ForecastPage() {
   }
 
   const lowData = result && result.total_completed < 8
+  const fewWeeks = result && !lowData && result.weeks_of_data < 8
   const inputLabel = mode === 'how_many' ? t('forecast.weeks') : t('forecast.tickets')
   const unitLabel = mode === 'how_many' ? t('forecast.tickets') : t('forecast.weeks')
 
@@ -106,7 +110,7 @@ export default function ForecastPage() {
       )}
 
       {dateRange?.from && dateRange?.to && (
-        <DateRangeSlider dataFrom={dateRange.from} dataTo={dateRange.to} />
+        <DateRangeSlider dataFrom={dateRange.from} dataTo={dateRange.to} completedCount={completedCount} selectedRange={metrics?.date_range} />
       )}
 
       {/* Simulation controls */}
@@ -150,6 +154,12 @@ export default function ForecastPage() {
             <div className="flex items-center gap-2 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-700">
               <AlertTriangle className="w-4 h-4 shrink-0" />
               {t('forecast.lowDataWarning', { count: result.total_completed })}
+            </div>
+          )}
+          {fewWeeks && (
+            <div className="flex items-center gap-2 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-700">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              {t('forecast.fewWeeksWarning', { count: result.weeks_of_data })}
             </div>
           )}
 

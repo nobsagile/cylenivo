@@ -50,7 +50,7 @@ describe('useCycleTimes', () => {
   it('re-fetches when date filter changes', async () => {
     vi.mocked(api.metrics.cycleTimes).mockResolvedValue(mockCycleTimes as any)
     const { result, rerender } = renderHook(
-      ({ from }) => useCycleTimes('imp-1', from),
+      ({ from }) => useCycleTimes('imp-1', { from: from ?? undefined }),
       { initialProps: { from: null as string | null } },
     )
 
@@ -60,6 +60,21 @@ describe('useCycleTimes', () => {
     rerender({ from: '2026-01-01' })
     await waitFor(() => expect(api.metrics.cycleTimes).toHaveBeenCalledTimes(2))
     expect(api.metrics.cycleTimes).toHaveBeenLastCalledWith('imp-1', { from: '2026-01-01', to: undefined })
+  })
+
+  it('re-fetches when last N changes and sends it to the API', async () => {
+    vi.mocked(api.metrics.cycleTimes).mockResolvedValue(mockCycleTimes as any)
+    const { result, rerender } = renderHook(
+      ({ last }) => useCycleTimes('imp-1', { last }),
+      { initialProps: { last: 30 as number | undefined } },
+    )
+
+    await waitFor(() => expect(result.current.data).not.toBeNull())
+    expect(api.metrics.cycleTimes).toHaveBeenLastCalledWith('imp-1', { from: undefined, to: undefined, last: 30 })
+
+    rerender({ last: 50 })
+    await waitFor(() => expect(api.metrics.cycleTimes).toHaveBeenCalledTimes(2))
+    expect(api.metrics.cycleTimes).toHaveBeenLastCalledWith('imp-1', { from: undefined, to: undefined, last: 50 })
   })
 
   it('re-fetches on DATA_REPLACED event', async () => {

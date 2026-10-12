@@ -23,12 +23,12 @@ import { ErrorBanner } from '@/components/ui/ErrorBanner'
 export default function TrendsPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
-  const { fromDate, toDate } = useDateFilter()
-  const { data } = useMetrics(importId, fromDate || undefined, toDate || undefined)
-  const { dateRange } = useOutletContext<ProjectLayoutContext>()
-  const { data: cycleTimesData, error: cycleError } = useCycleTimes(importId, fromDate, toDate)
-  const { data: leadTimesData, error: leadError } = useLeadTimes(importId, fromDate, toDate)
-  const { data: throughputData, error: throughputError } = useThroughput(importId, fromDate, toDate)
+  const { filter } = useDateFilter()
+  const { data } = useMetrics(importId, filter)
+  const { dateRange, completedCount } = useOutletContext<ProjectLayoutContext>()
+  const { data: cycleTimesData, error: cycleError } = useCycleTimes(importId, filter)
+  const { data: leadTimesData, error: leadError } = useLeadTimes(importId, filter)
+  const { data: throughputData, error: throughputError } = useThroughput(importId, filter)
   const chartError = cycleError ?? leadError ?? throughputError
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
 
@@ -53,7 +53,7 @@ export default function TrendsPage() {
       />
 
       {dateRange?.from && dateRange?.to && (
-        <DateRangeSlider dataFrom={dateRange.from} dataTo={dateRange.to} />
+        <DateRangeSlider dataFrom={dateRange.from} dataTo={dateRange.to} completedCount={completedCount} selectedRange={data?.date_range} />
       )}
 
       <ErrorBanner message={chartError} />

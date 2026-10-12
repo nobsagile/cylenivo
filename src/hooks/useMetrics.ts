@@ -1,16 +1,17 @@
 import { useState, useEffect, useCallback } from 'react'
-import { api } from '@/services/api'
+import { api, type MetricFilter } from '@/services/api'
 import type { MetricsSummary } from '@/types'
 import { DATA_REPLACED } from '@/hooks/useImports'
 import { useKeyedFetch, fetchKey } from '@/hooks/useKeyedFetch'
 
-export function useMetrics(importId: string | undefined, from?: string, to?: string) {
+export function useMetrics(importId: string | undefined, filter: MetricFilter = {}) {
+  const { from, to, last } = filter
   const [rev, setRev] = useState(0)
   const refetch = useCallback(() => setRev(r => r + 1), [])
 
   const { data, loading, error } = useKeyedFetch<MetricsSummary>(
-    fetchKey(importId, from, to, rev),
-    () => api.metrics.summary(importId!, { from: from || undefined, to: to || undefined }),
+    fetchKey(importId, from, to, last, rev),
+    () => api.metrics.summary(importId!, { from: from || undefined, to: to || undefined, last: last || undefined }),
   )
 
   useEffect(() => {

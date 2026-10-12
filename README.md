@@ -15,6 +15,7 @@ Import your Jira export and instantly see **Cycle Time**, **Lead Time**, **Throu
 - **Delivery Forecast** — Monte Carlo simulation: "How many tickets in N weeks?" or "When will N tickets be done?"
 - **Flow breakdown** — Time in Status, Cycle Time by ticket type, Rework analysis
 - **Restarts** — a ticket moved back to the backlog after work started restarts its cycle time; aborted attempts are counted separately instead of turning into false outliers
+- **Time range or last N tickets** — filter every chart to a date range, or to the last 20/30/50/100 completed tickets
 - **AI Insights** — connect your own Ollama or OpenAI-compatible model for narrative analysis
 - **Multiple projects** — manage separate configs per team or workflow
 

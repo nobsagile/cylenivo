@@ -131,9 +131,9 @@ function TicketsAnalyzedCard({ completed, total, withoutCycleStart, incomplete }
 export default function DashboardPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
-  const { fromDate, toDate } = useDateFilter()
-  const { data } = useMetrics(importId, fromDate || undefined, toDate || undefined)
-  const { dateRange } = useOutletContext<ProjectLayoutContext>()
+  const { filter } = useDateFilter()
+  const { data } = useMetrics(importId, filter)
+  const { dateRange, completedCount } = useOutletContext<ProjectLayoutContext>()
   const { data: imports } = useImports()
   const navigate = useNavigate()
 
@@ -184,7 +184,7 @@ export default function DashboardPage() {
       />
 
       {dateRange?.from && dateRange?.to && (
-        <DateRangeSlider dataFrom={dateRange.from} dataTo={dateRange.to} />
+        <DateRangeSlider dataFrom={dateRange.from} dataTo={dateRange.to} completedCount={completedCount} selectedRange={data?.date_range} />
       )}
 
       {data.config_context && (

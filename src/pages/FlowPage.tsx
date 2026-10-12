@@ -18,12 +18,12 @@ import type { ProjectLayoutContext } from '@/components/layout/ProjectLayout'
 export default function FlowPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
-  const { fromDate, toDate } = useDateFilter()
-  const { data: metrics, refetch: refetchMetrics } = useMetrics(importId, fromDate || undefined, toDate || undefined)
-  const { dateRange } = useOutletContext<ProjectLayoutContext>()
+  const { filter } = useDateFilter()
+  const { data: metrics, refetch: refetchMetrics } = useMetrics(importId, filter)
+  const { dateRange, completedCount } = useOutletContext<ProjectLayoutContext>()
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
   const [rev, setRev] = useState(0)
-  const { data: statusData } = useTimeInStatus(importId, fromDate, toDate, rev)
+  const { data: statusData } = useTimeInStatus(importId, filter, rev)
 
   function handleExclusionToggle() {
     refetchMetrics()
@@ -51,7 +51,7 @@ export default function FlowPage() {
       />
 
       {dateRange?.from && dateRange?.to && (
-        <DateRangeSlider dataFrom={dateRange.from} dataTo={dateRange.to} />
+        <DateRangeSlider dataFrom={dateRange.from} dataTo={dateRange.to} completedCount={completedCount} selectedRange={metrics?.date_range} />
       )}
 
       {metrics.config_context && (

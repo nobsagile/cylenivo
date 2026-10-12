@@ -1,7 +1,7 @@
 const ITERATIONS = 10_000
 
 /** Returns the Monday (UTC midnight) of the ISO week containing `d`. */
-function weekStart(d: Date): number {
+export function weekStart(d: Date): number {
   const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()))
   const day = date.getUTCDay() || 7 // Mon=1 … Sun=7
   date.setUTCDate(date.getUTCDate() - day + 1)
@@ -11,11 +11,13 @@ function weekStart(d: Date): number {
 /**
  * Groups completion dates into weekly buckets (ISO week).
  * Includes empty weeks (0 completions) between first and last completion.
+ * `since` drops earlier dates — used to skip a partially selected first week.
  */
-export function computeWeeklyBuckets(completedAtDates: Date[]): number[] {
-  if (completedAtDates.length === 0) return []
+export function computeWeeklyBuckets(completedAtDates: Date[], since?: Date): number[] {
+  const dates = since ? completedAtDates.filter(d => d >= since) : completedAtDates
+  if (dates.length === 0) return []
 
-  const timestamps = completedAtDates.map(weekStart)
+  const timestamps = dates.map(weekStart)
   const minWeek = Math.min(...timestamps)
   const maxWeek = Math.max(...timestamps)
 
@@ -85,11 +87,13 @@ export interface WeeklyThroughput {
 
 /**
  * Returns completed ticket count per calendar week (Mon–Sun), including empty weeks.
+ * `since` drops earlier dates — used to skip a partially selected first week.
  */
-export function computeWeeklyThroughput(completedAtDates: Date[]): WeeklyThroughput[] {
-  if (completedAtDates.length === 0) return []
+export function computeWeeklyThroughput(completedAtDates: Date[], since?: Date): WeeklyThroughput[] {
+  const dates = since ? completedAtDates.filter(d => d >= since) : completedAtDates
+  if (dates.length === 0) return []
 
-  const timestamps = completedAtDates.map(weekStart)
+  const timestamps = dates.map(weekStart)
   const minWeek = Math.min(...timestamps)
   const maxWeek = Math.max(...timestamps)
 

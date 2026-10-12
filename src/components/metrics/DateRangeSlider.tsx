@@ -5,11 +5,18 @@ import { useTranslation } from 'react-i18next'
 import { useDateFilter } from '@/contexts/DateFilterContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { Input } from '@/components/ui/input'
 
 interface Props {
   dataFrom: string | null
   dataTo: string | null
+  /** completed tickets in the unfiltered dataset — disables chips above it */
+  completedCount?: number
+  /** date range of the current selection (filtered summary) — shown while "last N" is active */
+  selectedRange?: { from: string | null; to: string | null }
 }
+
+const LAST_N_PRESETS = [20, 30, 50, 100]
 
 function toDateOnly(iso: string): string {
   return iso.slice(0, 10)
@@ -29,17 +36,22 @@ function formatDate(dateOnly: string): string {
   return new Date(y, m - 1, d).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-export function DateRangeSlider({ dataFrom, dataTo }: Props) {
+export function DateRangeSlider({ dataFrom, dataTo, completedCount, selectedRange }: Props) {
   const { t } = useTranslation()
-  const { fromDate, toDate, setFromDate, setToDate, clearDates, originalRange, setOriginalRange } = useDateFilter()
+  const { fromDate, toDate, lastN, setFromDate, setToDate, setLastN, clearDates, originalRange, setOriginalRange } = useDateFilter()
+
+  // While "last N" is active the slider shows the period those N tickets cover.
+  // Dragging it switches back to a date range, starting from that period.
+  const shownFrom = lastN ? (selectedRange?.from ? toDateOnly(selectedRange.from) : '') : fromDate
+  const shownTo = lastN ? (selectedRange?.to ? toDateOnly(selectedRange.to) : '') : toDate
 
   // Capture original range once — only when no filter is active and real data is available.
   // Stored in context so it survives component unmounts (e.g. loading skeleton).
   useEffect(() => {
-    if (!fromDate && !toDate && dataFrom && dataTo) {
+    if (!fromDate && !toDate && !lastN && dataFrom && dataTo) {
       setOriginalRange({ from: toDateOnly(dataFrom), to: toDateOnly(dataTo) })
     }
-  }, [dataFrom, dataTo, fromDate, toDate])
+  }, [dataFrom, dataTo, fromDate, toDate, lastN])
 
   // Stable slider bounds always come from the original (unfiltered) range
   const baseFrom = originalRange?.from ?? (dataFrom ? toDateOnly(dataFrom) : null)
@@ -51,14 +63,14 @@ export function DateRangeSlider({ dataFrom, dataTo }: Props) {
   }, [baseFrom, baseTo])
 
   const contextStart = useMemo(() => {
-    if (!fromDate || !baseFrom || totalDays === 0) return 0
-    return Math.max(0, Math.min(totalDays, Math.round((dateOnlyToMs(fromDate) - dateOnlyToMs(baseFrom)) / 86400000)))
-  }, [fromDate, baseFrom, totalDays])
+    if (!shownFrom || !baseFrom || totalDays === 0) return 0
+    return Math.max(0, Math.min(totalDays, Math.round((dateOnlyToMs(shownFrom) - dateOnlyToMs(baseFrom)) / 86400000)))
+  }, [shownFrom, baseFrom, totalDays])
 
   const contextEnd = useMemo(() => {
-    if (!toDate || !baseFrom || totalDays === 0) return totalDays
-    return Math.max(0, Math.min(totalDays, Math.round((dateOnlyToMs(toDate) - dateOnlyToMs(baseFrom)) / 86400000)))
-  }, [toDate, baseFrom, totalDays])
+    if (!shownTo || !baseFrom || totalDays === 0) return totalDays
+    return Math.max(0, Math.min(totalDays, Math.round((dateOnlyToMs(shownTo) - dateOnlyToMs(baseFrom)) / 86400000)))
+  }, [shownTo, baseFrom, totalDays])
 
   // Local state drives the slider for smooth dragging.
   // Synced from context only when context changes externally (clear, project switch).
@@ -93,11 +105,13 @@ export function DateRangeSlider({ dataFrom, dataTo }: Props) {
   }
 
   function handleCommit([start, end]: number[]) {
+    setLastN(null)
     setFromDate(start === 0 ? '' : dayToDate(start))
     setToDate(end === totalDays ? '' : dayToDate(end))
   }
 
-  const isFiltered = !!(fromDate || toDate)
+  const isFiltered = !!(fromDate || toDate || lastN)
+  const tooFew = lastN !== null && completedCount !== undefined && lastN > completedCount
   const displayFrom = localValue[0] === 0 ? baseFrom : dayToDate(localValue[0])
   const displayTo = localValue[1] === totalDays ? baseTo : dayToDate(localValue[1])
 
@@ -122,6 +136,11 @@ export function DateRangeSlider({ dataFrom, dataTo }: Props) {
             </Popover>
           </CardTitle>
           <div className="flex items-center gap-2">
+            {lastN && (
+              <span className="text-xs font-medium text-violet-700">
+                {t('dashboard.lastNActive', { count: lastN })} ·
+              </span>
+            )}
             <span className="text-xs text-gray-500">{formatDate(displayFrom)}</span>
             <span className="text-gray-300 text-xs">→</span>
             <span className="text-xs text-gray-500">{formatDate(displayTo)}</span>
@@ -148,7 +167,7 @@ export function DateRangeSlider({ dataFrom, dataTo }: Props) {
             value={localValue}
             onValueChange={(v) => setLocalValue(v as [number, number])}
             onValueCommit={handleCommit}
-            className="w-full"
+            className={lastN ? 'w-full opacity-60' : 'w-full'}
           />
           <div className="relative mt-2 h-5">
             {ticks.map(({ day, label }) => (
@@ -162,7 +181,81 @@ export function DateRangeSlider({ dataFrom, dataTo }: Props) {
             ))}
           </div>
         </div>
+        {/* keyed: the custom field restarts from lastN whenever it changes from outside */}
+        <LastNPicker key={lastN ?? ''} lastN={lastN} completedCount={completedCount} onSelect={setLastN} />
+        {tooFew && (
+          <p className="text-xs text-amber-600 mt-2">{t('dashboard.lastNTooFew', { count: completedCount })}</p>
+        )}
       </CardContent>
     </Card>
+  )
+}
+
+function LastNPicker({ lastN, completedCount, onSelect }: {
+  lastN: number | null
+  completedCount?: number
+  onSelect: (n: number | null) => void
+}) {
+  const { t } = useTranslation()
+  const isCustom = lastN !== null && !LAST_N_PRESETS.includes(lastN)
+  const [draft, setDraft] = useState(isCustom ? String(lastN) : '')
+
+  function commitDraft() {
+    const n = parseInt(draft, 10)
+    if (!draft.trim()) return
+    if (Number.isInteger(n) && n >= 1) onSelect(n)
+    else setDraft(isCustom ? String(lastN) : '')
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-1.5 mt-3">
+      <span className="text-xs text-gray-500">{t('dashboard.lastNPrefix')}</span>
+      {LAST_N_PRESETS.map(n => {
+        const active = lastN === n
+        return (
+          <button
+            key={n}
+            type="button"
+            aria-pressed={active}
+            aria-label={t('dashboard.lastNActive', { count: n })}
+            disabled={completedCount !== undefined && n > completedCount}
+            onClick={() => onSelect(active ? null : n)}
+            className={`px-2.5 py-0.5 rounded-full text-xs font-medium border transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+              active
+                ? 'bg-violet-600 border-violet-600 text-white'
+                : 'bg-white border-gray-200 text-gray-600 hover:border-violet-300 hover:text-violet-700'
+            }`}
+          >
+            {n}
+          </button>
+        )
+      })}
+      <Input
+        type="number"
+        min={1}
+        inputMode="numeric"
+        value={draft}
+        placeholder={t('dashboard.lastNCustomPlaceholder')}
+        aria-label={t('dashboard.lastNCustomLabel')}
+        onChange={e => setDraft(e.target.value)}
+        onBlur={commitDraft}
+        onKeyDown={e => { if (e.key === 'Enter') commitDraft() }}
+        className={`h-6 w-16 px-2 py-0 text-xs md:text-xs rounded-full ${isCustom ? 'border-violet-600 ring-1 ring-violet-600' : ''}`}
+      />
+      <span className="text-xs text-gray-500">{t('dashboard.lastNSuffix')}</span>
+      <Popover>
+        <PopoverTrigger asChild>
+          <button type="button" aria-label={t('help.titles.lastNTickets')} className="text-gray-300 hover:text-gray-500 transition-colors">
+            <Info className="w-3.5 h-3.5" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-72">
+          <div className="text-xs text-gray-600 space-y-1.5">
+            <p className="font-semibold text-gray-800 mb-1">{t('help.titles.lastNTickets')}</p>
+            <p>{t('help.lastNTickets')}</p>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
   )
 }

@@ -20,12 +20,12 @@ import { ConfigContextBar } from '@/components/metrics/ConfigContextBar'
 export default function HealthPage() {
   const { t } = useTranslation()
   const { importId } = useParams<{ importId: string }>()
-  const { fromDate, toDate } = useDateFilter()
-  const { data: metrics } = useMetrics(importId, fromDate || undefined, toDate || undefined)
-  const { dateRange } = useOutletContext<ProjectLayoutContext>()
-  const { data: cfdData } = useCfd(importId, fromDate, toDate)
-  const { data: reworkData } = useRework(importId, fromDate, toDate)
-  const { data: typeData } = useCycleTimeByType(importId, fromDate, toDate)
+  const { filter } = useDateFilter()
+  const { data: metrics } = useMetrics(importId, filter)
+  const { dateRange, completedCount } = useOutletContext<ProjectLayoutContext>()
+  const { data: cfdData } = useCfd(importId, filter)
+  const { data: reworkData } = useRework(importId, filter)
+  const { data: typeData } = useCycleTimeByType(importId, filter)
 
   if (!metrics) return (
     <div className="space-y-6">
@@ -48,7 +48,7 @@ export default function HealthPage() {
       />
 
       {dateRange?.from && dateRange?.to && (
-        <DateRangeSlider dataFrom={dateRange.from} dataTo={dateRange.to} />
+        <DateRangeSlider dataFrom={dateRange.from} dataTo={dateRange.to} completedCount={completedCount} selectedRange={metrics?.date_range} />
       )}
 
       {metrics.config_context && (

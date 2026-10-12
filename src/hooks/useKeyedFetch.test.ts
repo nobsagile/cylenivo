@@ -226,7 +226,7 @@ describe('useCycleTimes — race protection through a chart hook', () => {
     )
 
     const { result, rerender } = renderHook(
-      ({ from }) => useCycleTimes('imp-1', from),
+      ({ from }) => useCycleTimes('imp-1', { from: from ?? undefined }),
       { initialProps: { from: null as string | null } },
     )
     first.resolve({ tickets: [{ id: 'x' }] })

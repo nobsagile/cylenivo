@@ -270,3 +270,14 @@ describe('ImportContext invariant', () => {
     expect(ctx!.allTickets.some(t => t.excluded)).toBe(true)
   })
 })
+
+describe('last N tickets (#144)', () => {
+  it('an excluded ticket never counts toward the N', async () => {
+    const importId = await setup()
+    await exclude(importId, OUTLIER)
+
+    // first_last completions: TICK-2 Jan22, TICK-3 Jan15 (excluded), TICK-1 Jan10
+    const data = await get<ScatterResponse>(`/api/v1/metrics/${importId}/cycle-times?last=2`)
+    expect(data.tickets.map(t => t.external_id).sort()).toEqual(['TICK-1', 'TICK-2'])
+  })
+})

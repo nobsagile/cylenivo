@@ -8,6 +8,7 @@ import { aggregateRework } from '../analyzers/rework.js'
 import { aggregateRestarts } from '../analyzers/restarts.js'
 import { computeWeeklyBuckets, computeWeeklyThroughput, simulateHowMany, simulateWhen, percentileFromSorted, buildHistogram } from '../analyzers/monteCarlo.js'
 import { computeCFD } from '../analyzers/cfd.js'
+import { selectLastN } from '../analyzers/lastN.js'
 import { mean, median } from '../lib/stats.js'
 import type { EnrichedTicket } from '../lib/context.js'
 
@@ -30,15 +31,41 @@ function applyDateFilter(tickets: EnrichedTicket[], from?: Date, to?: Date): Enr
   })
 }
 
+interface MetricFilter {
+  tickets: EnrichedTicket[]
+  /** period the selection covers — for date-based views (CFD, restarts) */
+  from?: Date
+  to?: Date
+  /** weekly views start here; set when `last` cut the oldest week */
+  weeksFrom?: Date
+}
+
+/**
+ * Either a date range (`from`/`to`) or the last N completed tickets (`last`),
+ * never both (#144).
+ */
+function resolveFilter(c: Context, tickets: EnrichedTicket[]): MetricFilter | { error: string } {
+  const last = c.req.query('last')
+  if (last === undefined) {
+    const { from, to } = parseDateFilter(c)
+    return { tickets: applyDateFilter(tickets, from, to), from, to }
+  }
+  if (c.req.query('from') || c.req.query('to')) return { error: 'last cannot be combined with from/to' }
+  const n = Number(last)
+  if (!/^\d+$/.test(last) || n < 1 || n > 100000) return { error: 'last must be a positive integer' }
+  const sel = selectLastN(tickets, n)
+  return { tickets: sel.tickets, from: sel.from ?? undefined, weeksFrom: sel.fullWeeksFrom ?? undefined }
+}
+
 const metrics = new Hono()
 
 metrics.get('/:importId/summary', async (c) => {
   const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
-  const { from, to } = parseDateFilter(c)
-  const filtered = applyDateFilter(ctx.tickets, from, to)
-  const agg = computeAggregate({ ...ctx, tickets: filtered })
+  const f = resolveFilter(c, ctx.tickets)
+  if ('error' in f) return c.json({ data: null, error: f.error }, 400)
+  const agg = computeAggregate({ ...ctx, tickets: f.tickets })
 
   return c.json(ok({
     import_id: ctx.imp.id,
@@ -54,7 +81,7 @@ metrics.get('/:importId/summary', async (c) => {
     flow_efficiency: agg.flowEfficiency,
     restarts: ctx.restart.restartStatuses.length
       ? (() => {
-          const r = aggregateRestarts(ctx.tickets, from, to)
+          const r = aggregateRestarts(ctx.tickets, f.from, f.to)
           return { ...r, discarded_days: Math.round(r.discarded_days * 100) / 100 }
         })()
       : null,
@@ -76,8 +103,9 @@ metrics.get('/:importId/cycle-times', async (c) => {
   const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
-  const { from, to } = parseDateFilter(c)
-  const result = applyDateFilter(ctx.tickets, from, to)
+  const f = resolveFilter(c, ctx.tickets)
+  if ('error' in f) return c.json({ data: null, error: f.error }, 400)
+  const result = f.tickets
     .filter(t => t.cycle_time_days !== null && t.completed_at !== null)
     .map(t => ({
       id: t.id,
@@ -95,8 +123,9 @@ metrics.get('/:importId/lead-times', async (c) => {
   const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
-  const { from, to } = parseDateFilter(c)
-  const tickets = applyDateFilter(ctx.tickets, from, to)
+  const f = resolveFilter(c, ctx.tickets)
+  if ('error' in f) return c.json({ data: null, error: f.error }, 400)
+  const tickets = f.tickets
     .filter(t => t.lead_time_days !== null && t.completed_at !== null)
     .map(t => ({
       id: t.id,
@@ -117,9 +146,10 @@ metrics.get('/:importId/time-in-status', async (c) => {
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
   const { config, cycleStatuses, restart } = ctx
-  const { from, to } = parseDateFilter(c)
+  const f = resolveFilter(c, ctx.tickets)
+  if ('error' in f) return c.json({ data: null, error: f.error }, 400)
 
-  const result = applyDateFilter(ctx.tickets, from, to)
+  const result = f.tickets
     .filter(t => t.cycle_time_days !== null)
     .map(t => ({
       id: t.id,
@@ -146,8 +176,9 @@ metrics.get('/:importId/rework', async (c) => {
   const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
-  const { from, to } = parseDateFilter(c)
-  const result = aggregateRework(applyDateFilter(ctx.tickets, from, to), ctx.config.status_order, ctx.restart.restartStatuses)
+  const f = resolveFilter(c, ctx.tickets)
+  if ('error' in f) return c.json({ data: null, error: f.error }, 400)
+  const result = aggregateRework(f.tickets, ctx.config.status_order, ctx.restart.restartStatuses)
   return c.json(ok(result))
 })
 
@@ -155,8 +186,9 @@ metrics.get('/:importId/cycle-time-by-type', async (c) => {
   const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
-  const { from, to } = parseDateFilter(c)
-  const completed = applyDateFilter(ctx.tickets, from, to).filter(t => t.cycle_time_days !== null)
+  const f = resolveFilter(c, ctx.tickets)
+  if ('error' in f) return c.json({ data: null, error: f.error }, 400)
+  const completed = f.tickets.filter(t => t.cycle_time_days !== null)
   const groups = new Map<string, number[]>()
 
   for (const t of completed) {
@@ -188,9 +220,10 @@ metrics.get('/:importId/throughput', async (c) => {
   const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
-  const { from, to } = parseDateFilter(c)
-  const agg = computeAggregate({ ...ctx, tickets: applyDateFilter(ctx.tickets, from, to) })
-  const weeks = computeWeeklyThroughput(agg.completedAtDates)
+  const f = resolveFilter(c, ctx.tickets)
+  if ('error' in f) return c.json({ data: null, error: f.error }, 400)
+  const agg = computeAggregate({ ...ctx, tickets: f.tickets })
+  const weeks = computeWeeklyThroughput(agg.completedAtDates, f.weeksFrom)
   return c.json(ok({ weeks }))
 })
 
@@ -198,7 +231,11 @@ metrics.get('/:importId/cfd', async (c) => {
   const ctx = await loadImportContext(c.req.param('importId'))
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
-  const { from, to } = parseDateFilter(c)
+  const f = resolveFilter(c, ctx.tickets)
+  if ('error' in f) return c.json({ data: null, error: f.error }, 400)
+  // CFD filters days on the chart, not tickets: with `last`, the chart starts
+  // at the oldest completion of the N tickets but still shows every ticket.
+  const { from, to } = f
   const result = computeCFD(ctx.tickets, ctx.config.status_order)
   if (from || to) {
     result.data = result.data.filter(d => {
@@ -224,10 +261,10 @@ metrics.get('/:importId/forecast', async (c) => {
     return c.json({ data: null, error: 'value must be ≤ 10000' }, 422)
   }
 
-  const { from, to } = parseDateFilter(c)
-  const filtered = applyDateFilter(ctx.tickets, from, to)
-  const agg = computeAggregate({ ...ctx, tickets: filtered })
-  const buckets = computeWeeklyBuckets(agg.completedAtDates)
+  const f = resolveFilter(c, ctx.tickets)
+  if ('error' in f) return c.json({ data: null, error: f.error }, 400)
+  const agg = computeAggregate({ ...ctx, tickets: f.tickets })
+  const buckets = computeWeeklyBuckets(agg.completedAtDates, f.weeksFrom)
 
   if (buckets.length === 0) {
     return c.json({ data: null, error: 'No completed tickets to simulate from' }, 422)
@@ -248,7 +285,7 @@ metrics.get('/:importId/forecast', async (c) => {
     histogram: buildHistogram(sorted),
     weeks_of_data: buckets.length,
     weeks_with_completions: buckets.filter(b => b > 0).length,
-    total_completed: agg.completedAtDates.length,
+    total_completed: buckets.reduce((a, b) => a + b, 0),
   }))
 })
 
