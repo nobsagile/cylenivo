@@ -85,16 +85,40 @@ function validateImportFile(raw: unknown): ImportFile {
   return data as unknown as ImportFile
 }
 
+function parseList(json: string | null | undefined): string[] {
+  try { return json ? JSON.parse(json) as string[] : [] } catch { return [] }
+}
+
+/**
+ * The health report is stored at import time, but the config can change later.
+ * Drop "unknown" statuses the config now knows — added to the status order, or
+ * chosen as restart status (#142). Those are configured, not untracked.
+ */
+function withCurrentConfig(
+  report: { unknown_statuses?: string[] },
+  cfg?: { status_order?: string; restart_statuses?: string | null } | null,
+) {
+  if (!cfg || !Array.isArray(report.unknown_statuses)) return report
+  const known = new Set([...parseList(cfg.status_order), ...parseList(cfg.restart_statuses)])
+  return { ...report, unknown_statuses: report.unknown_statuses.filter(s => !known.has(s)) }
+}
+
 function serializeSession(
   row: ImportSessionRow,
-  cfg?: { name: string | null; cycle_time_start_status: string; cycle_time_end_status: string } | null,
+  cfg?: {
+    name: string | null
+    cycle_time_start_status: string
+    cycle_time_end_status: string
+    status_order?: string
+    restart_statuses?: string | null
+  } | null,
 ) {
   return {
     ...row,
     config_name: cfg?.name ?? null,
     cycle_time_start_status: cfg?.cycle_time_start_status ?? null,
     cycle_time_end_status: cfg?.cycle_time_end_status ?? null,
-    health_report: row.health_report ? JSON.parse(row.health_report) : null,
+    health_report: row.health_report ? withCurrentConfig(JSON.parse(row.health_report), cfg) : null,
     issue_types: row.issue_types ? JSON.parse(row.issue_types) : null,
   }
 }

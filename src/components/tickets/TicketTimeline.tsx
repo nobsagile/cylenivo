@@ -41,6 +41,15 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink, r
 
   const [hoveredBar, setHoveredBar] = useState<number | null>(null)
 
+  // Same rule as server detectRework: moves into/out of a restart status are aborts, not rework (#142)
+  const restartStatuses = config.restart_statuses ?? []
+  const isReworkMove = (from: string, to: string) => {
+    if (restartStatuses.includes(from) || restartStatuses.includes(to)) return false
+    const fromIdx = status_order.indexOf(from)
+    const toIdx = status_order.indexOf(to)
+    return fromIdx !== -1 && toIdx !== -1 && toIdx < fromIdx
+  }
+
   const sorted = [...transitions].sort(
     (a, b) => new Date(a.transitioned_at).getTime() - new Date(b.transitioned_at).getTime()
   )
@@ -77,12 +86,7 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink, r
       : startTime
     const durationDays = (endTime - startTime) / (1000 * 86400)
 
-    let isBackward = false
-    if (i > 0 && tr.from_status) {
-      const fromIdx = status_order.indexOf(tr.from_status)
-      const toIdx = status_order.indexOf(tr.to_status)
-      if (fromIdx !== -1 && toIdx !== -1 && toIdx < fromIdx) isBackward = true
-    }
+    const isBackward = i > 0 && !!tr.from_status && isReworkMove(tr.from_status, tr.to_status)
 
     if (durationDays > 0 || i === sorted.length - 1) {
       segments.push({ status: tr.to_status, startTime, endTime, durationDays, isBackward, isDiscarded: isDiscardedAt(startTime) })
@@ -171,9 +175,7 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink, r
   const movementMap = new Map<string, ReworkMovement>()
   for (const tr of sorted) {
     if (!tr.from_status) continue
-    const fromIdx = status_order.indexOf(tr.from_status)
-    const toIdx = status_order.indexOf(tr.to_status)
-    if (fromIdx !== -1 && toIdx !== -1 && toIdx < fromIdx) {
+    if (isReworkMove(tr.from_status, tr.to_status)) {
       const key = `${tr.from_status}→${tr.to_status}`
       const existing = movementMap.get(key)
       if (existing) existing.count++

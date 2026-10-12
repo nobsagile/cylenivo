@@ -75,3 +75,18 @@ describe('TicketTimeline — restart', () => {
     expect(screen.queryByText(/Resolved|Completed/)).not.toBeInTheDocument()
   })
 })
+
+describe('TicketTimeline — restart status is not rework (#142)', () => {
+  // Backlog in status_order made Preparation → Backlog a rework movement
+  const withBacklog: ConfigContext = { ...CONFIG, status_order: ['Backlog', ...CONFIG.status_order] }
+
+  it('no rework box when the only backward move goes into a restart status', () => {
+    renderUI(<TicketTimeline transitions={TRANSITIONS} config={withBacklog} createdAt="2024-01-01T12:00:00Z" />)
+    expect(screen.queryByText(/rework movement/)).not.toBeInTheDocument()
+  })
+
+  it('without restart statuses the move still shows as rework', () => {
+    renderUI(<TicketTimeline transitions={TRANSITIONS} config={{ ...withBacklog, restart_statuses: null }} createdAt="2024-01-01T12:00:00Z" />)
+    expect(screen.getByText(/1 rework movement/)).toBeInTheDocument()
+  })
+})

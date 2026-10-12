@@ -15,6 +15,7 @@ import { loadImportContext } from '../src/lib/context.js'
 import { computeAggregate } from '../src/lib/aggregate.js'
 import { resolveCycleWindow, trimToCycleWindow } from '../src/analyzers/cycleWindow.js'
 import { calculateCycleTime } from '../src/analyzers/cycleTime.js'
+import { detectRework, aggregateRework } from '../src/analyzers/rework.js'
 import type { Transition } from '../src/analyzers/utils.js'
 
 const t = (from: string | null, to: string, day: string): Transition =>
@@ -237,5 +238,56 @@ describe('restarts in /summary', () => {
     const { data } = await res.json() as { data: { tickets: { external_id: string; restart: { abandoned: boolean } }[] } }
     expect(data.tickets.map(x => x.external_id).sort()).toEqual(['RST-1', 'RST-2'])
     expect(data.tickets.find(x => x.external_id === 'RST-2')!.restart.abandoned).toBe(true)
+  })
+})
+
+// ── #142: restart moves are aborts, not rework; health report follows the config ──
+
+describe('rework vs restart (#142)', () => {
+  // Backlog is part of status_order here — that made Preparation → Backlog count as rework
+  const ORDER = ['Backlog', 'Up Next', 'Preparation', 'Development', 'Customer Feedback']
+
+  it('a move into a restart status is not rework', () => {
+    expect(detectRework(RESTARTED, ORDER, ['Backlog']).has_rework).toBe(false)
+  })
+
+  it('without restart statuses the same move still is rework', () => {
+    expect(detectRework(RESTARTED, ORDER).backward_moves).toEqual([{ from_status: 'Preparation', to_status: 'Backlog' }])
+  })
+
+  it('real rework next to a restart is still found', () => {
+    const transitions = [...RESTARTED, t('Customer Feedback', 'Development', '02-12'), t('Development', 'Customer Feedback', '02-14')]
+    const result = aggregateRework([{ transitions, cycle_time_days: 10 }], ORDER, ['Backlog'])
+    expect(result.rework_paths).toEqual([{ from: 'Customer Feedback', to: 'Development', count: 1 }])
+  })
+
+  it('/rework endpoint applies the config restart statuses', async () => {
+    const { importId } = await setup({ status_order: ['Backlog', ...CONFIG.status_order], restart_statuses: ['Backlog'] })
+    const res = await app.request(`/api/v1/metrics/${importId}/rework`)
+    const { data } = await res.json() as { data: { tickets_with_rework: number } }
+    expect(data.tickets_with_rework).toBe(0)
+  })
+})
+
+describe('health report unknown statuses follow the current config (#142)', () => {
+  async function unknownStatuses(importId: string) {
+    const res = await app.request(`/api/v1/imports/${importId}`)
+    const { data } = await res.json() as { data: { health_report: { unknown_statuses: string[] } } }
+    return data.health_report.unknown_statuses
+  }
+
+  it('Backlog is untracked without restart statuses', async () => {
+    const { importId } = await setup()
+    expect(await unknownStatuses(importId)).toEqual(['Backlog'])
+  })
+
+  it('a restart status chosen after the import is no longer reported', async () => {
+    const { importId, cfg } = await setup()
+    await app.request(`/api/v1/configs/${cfg.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ restart_statuses: ['Backlog'] }),
+    })
+    expect(await unknownStatuses(importId)).toEqual([])
   })
 })

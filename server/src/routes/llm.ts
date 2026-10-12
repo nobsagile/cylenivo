@@ -164,7 +164,7 @@ llm.post('/analyze/:importId', async (c) => {
   const dateTo = dateRange.to ? dateRange.to.slice(0, 10) : 'N/A'
 
   // Rework
-  const rework = aggregateRework(completedTickets, ctx.config.status_order)
+  const rework = aggregateRework(completedTickets, ctx.config.status_order, ctx.restart.restartStatuses)
   const reworkPct = completedTickets.length ? Math.round((rework.tickets_with_rework / completedTickets.length) * 100) : 0
   const topReworkPaths = rework.rework_paths.slice(0, 3).map(p => `  ${p.from} → ${p.to}: ${p.count}x`).join('\n')
   const reworkLine = rework.tickets_with_rework > 0

@@ -147,7 +147,7 @@ metrics.get('/:importId/rework', async (c) => {
   if (!ctx) return c.json({ data: null, error: 'Import not found' }, 404)
 
   const { from, to } = parseDateFilter(c)
-  const result = aggregateRework(applyDateFilter(ctx.tickets, from, to), ctx.config.status_order)
+  const result = aggregateRework(applyDateFilter(ctx.tickets, from, to), ctx.config.status_order, ctx.restart.restartStatuses)
   return c.json(ok(result))
 })
 

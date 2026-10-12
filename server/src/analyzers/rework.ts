@@ -14,14 +14,17 @@ export interface ReworkResult {
 /**
  * Detects backward movements in a ticket's transitions based on status_order index.
  * A backward move = to_status has a lower index in status_order than from_status.
+ * Moves into or out of a restart status (#143) are aborts, not rework — even
+ * when that status is part of status_order (e.g. Backlog at index 0).
  */
-export function detectRework(transitions: Transition[], statusOrder: string[]): ReworkResult {
+export function detectRework(transitions: Transition[], statusOrder: string[], restartStatuses: string[] = []): ReworkResult {
   const sorted = sortTransitions(transitions)
 
   const backward_moves: ReworkMove[] = []
 
   for (const t of sorted) {
     if (!t.from_status) continue
+    if (restartStatuses.includes(t.to_status) || restartStatuses.includes(t.from_status)) continue
     const fromIdx = statusOrder.indexOf(t.from_status)
     const toIdx = statusOrder.indexOf(t.to_status)
     if (fromIdx === -1 || toIdx === -1) continue
@@ -53,6 +56,7 @@ export interface AggregateReworkResult {
 export function aggregateRework(
   tickets: { transitions: Transition[]; cycle_time_days: number | null }[],
   statusOrder: string[],
+  restartStatuses: string[] = [],
 ): AggregateReworkResult {
   const completed = tickets.filter(t => t.cycle_time_days !== null)
   const pathCounts = new Map<string, number>()
@@ -64,7 +68,7 @@ export function aggregateRework(
   let count_norework = 0
 
   for (const ticket of completed) {
-    const result = detectRework(ticket.transitions, statusOrder)
+    const result = detectRework(ticket.transitions, statusOrder, restartStatuses)
     if (result.has_rework) {
       withRework++
       cycleSum_rework += ticket.cycle_time_days!
