@@ -1,11 +1,11 @@
 /**
- * Restart display (#143). Transitions follow MHPLUS-212: started in
+ * Restart display (#143). Transitions follow a real-world case: started in
  * Preparation, back to Backlog, re-entered the cycle at Development.
  */
 
 import { describe, it, expect } from 'vitest'
 import { screen } from '@testing-library/react'
-import { renderUI } from '@/test/ui'
+import { renderUI, setupUser } from '@/test/ui'
 import { TicketTimeline } from './TicketTimeline'
 import type { ConfigContext, TicketTransition } from '@/types'
 
@@ -88,5 +88,40 @@ describe('TicketTimeline — restart status is not rework (#142)', () => {
   it('without restart statuses the move still shows as rework', () => {
     renderUI(<TicketTimeline transitions={TRANSITIONS} config={{ ...withBacklog, restart_statuses: null }} createdAt="2024-01-01T12:00:00Z" />)
     expect(screen.getByText(/1 rework movement/)).toBeInTheDocument()
+  })
+})
+
+describe('TicketTimeline — cycle time calculation table (#145)', () => {
+  const renderRestarted = () => renderUI(
+    <TicketTimeline
+      transitions={TRANSITIONS}
+      config={CONFIG}
+      createdAt="2024-01-01T12:00:00Z"
+      restart={{ count: 1, restarted_at: '2024-02-01T12:00:00Z', discarded_days: 22, abandoned: false }}
+      completedAt="2024-02-11T12:00:00Z"
+      cycleStartedAt="2024-02-01T12:00:00Z"
+    />,
+  )
+
+  it('is collapsed by default', () => {
+    renderRestarted()
+    expect(screen.getByRole('button', { name: 'How cycle time was calculated' })).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.queryByRole('table')).not.toBeInTheDocument()
+  })
+
+  it('splits rows along the server window and totals to the cycle time', async () => {
+    renderRestarted()
+    await setupUser().click(screen.getByRole('button', { name: 'How cycle time was calculated' }))
+
+    const rows = screen.getAllByRole('row').slice(1, -1) // without header and footer
+    const counted = rows.map(r => r.querySelectorAll('td')[3].textContent)
+    expect(counted).toEqual(['before start', 'aborted attempt', 'aborted attempt', 'aborted attempt', 'start', 'end'])
+    expect(screen.getByText(/^Start: Development on /)).toBeInTheDocument()
+    expect(screen.getByText('Cycle time').closest('tr')).toHaveTextContent('10.00d')
+  })
+
+  it('hidden when the ticket never started (abandoned)', () => {
+    renderUI(<TicketTimeline transitions={TRANSITIONS} config={CONFIG} createdAt="2024-01-01T12:00:00Z" cycleStartedAt={null} />)
+    expect(screen.queryByRole('button', { name: 'How cycle time was calculated' })).not.toBeInTheDocument()
   })
 })

@@ -67,6 +67,8 @@ export interface Ticket {
   current_status: string | null
   completed: boolean
   completed_at: string | null
+  /** start of the cycle window (mode- and restart-aware); null if never started or abandoned */
+  cycle_started_at: string | null
   excluded: boolean
   exclusion_reason: string | null
   /** set when the ticket was moved to a restart status after it had started (#143) */

@@ -607,6 +607,21 @@ describe('tickets', () => {
     expect(Array.isArray(data.transitions)).toBe(true)
   })
 
+  it('ticket detail exposes the cycle window, matching cycle_time_days (#145)', async () => {
+    const cfg = await createConfig()
+    const importId = await doImport(cfg.id)
+    const listRes = await app.request(`/api/v1/tickets?import_id=${importId}&completed_only=1&limit=1`)
+    const { data: list } = await listRes.json() as { data: { tickets: { id: string }[] } }
+
+    const res = await app.request(`/api/v1/tickets/${list.tickets[0].id}`)
+    const { data } = await res.json() as {
+      data: { cycle_started_at: string | null; completed_at: string | null; cycle_time_days: number }
+    }
+    expect(data.cycle_started_at).not.toBeNull()
+    const days = (Date.parse(data.completed_at!) - Date.parse(data.cycle_started_at!)) / 86400000
+    expect(Math.round(days * 100) / 100).toBe(data.cycle_time_days)
+  })
+
   it('returns 404 for unknown ticket', async () => {
     const res = await app.request('/api/v1/tickets/nonexistent-id')
     expect(res.status).toBe(404)

@@ -3,7 +3,7 @@
  * after it started is an aborted attempt. The clock restarts at the next entry
  * into any cycle status. A ticket that never comes back is abandoned.
  *
- * Shape of the transitions follows MHPLUS-212, where the restart re-enters the
+ * Shape of the transitions follows a real-world case where the restart re-enters the
  * cycle at Development, not at the start status. All times 12:00Z.
  */
 

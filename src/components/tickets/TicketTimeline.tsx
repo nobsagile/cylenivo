@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { ArrowLeftRight, Info, RotateCcw } from 'lucide-react'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import type { TicketTransition, ConfigContext, TicketRestart } from '@/types'
+import { CycleTimeCalculation } from './CycleTimeCalculation'
 
 interface Props {
   transitions: TicketTransition[]
@@ -13,6 +14,8 @@ interface Props {
   restart?: TicketRestart | null
   /** server-side completion — an abandoned ticket has none even if it reached the end status */
   completedAt?: string | null
+  /** server-side cycle window start (#145); without it the calculation table is hidden */
+  cycleStartedAt?: string | null
 }
 
 interface StatusAggregate {
@@ -29,7 +32,7 @@ interface ReworkMovement {
   count: number
 }
 
-export function TicketTimeline({ transitions, config, createdAt, externalLink, restart, completedAt: serverCompletedAt }: Props) {
+export function TicketTimeline({ transitions, config, createdAt, externalLink, restart, completedAt: serverCompletedAt, cycleStartedAt }: Props) {
   const { t } = useTranslation()
   const { status_order, cycle_time_start_status, cycle_time_end_status, lead_time_start_status, lead_time_end_status } = config
 
@@ -299,7 +302,19 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink, r
         </div>
       )}
 
-      {/* 5. Footer */}
+      {/* 5. Calculation (#145) */}
+      {cycleStartedAt && (
+        <CycleTimeCalculation
+          transitions={sorted}
+          mode={config.cycle_time_mode}
+          cycleStartedAt={cycleStartedAt}
+          completedAt={completedAt}
+          isReworkMove={isReworkMove}
+          isDiscardedAt={isDiscardedAt}
+        />
+      )}
+
+      {/* 6. Footer */}
       <div className="flex gap-3 text-[10px]">
         <span className="text-gray-400">{t('common.created')}: {new Date(createdAt).toLocaleDateString()}</span>
         {completedAt && (

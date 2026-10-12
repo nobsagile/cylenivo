@@ -22,6 +22,7 @@ function serializeTicket(t: EnrichedTicket) {
     current_status: t.current_status,
     completed: t.completed,
     completed_at: t.completed_at ? t.completed_at.toISOString() : null,
+    cycle_started_at: t.cycle_started_at ? t.cycle_started_at.toISOString() : null,
     excluded: t.excluded,
     exclusion_reason: t.exclusion_reason,
     restart: t.restart
