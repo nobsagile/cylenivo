@@ -69,6 +69,16 @@ export interface Ticket {
   completed_at: string | null
   excluded: boolean
   exclusion_reason: string | null
+  /** set when the ticket was moved to a restart status after it had started (#143) */
+  restart: TicketRestart | null
+}
+
+export interface TicketRestart {
+  count: number
+  /** re-entry into the cycle; null when the ticket never came back */
+  restarted_at: string | null
+  discarded_days: number
+  abandoned: boolean
 }
 
 export interface TicketDetail extends Ticket {

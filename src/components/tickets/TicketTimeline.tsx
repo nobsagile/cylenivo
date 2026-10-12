@@ -1,14 +1,18 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeftRight, Info } from 'lucide-react'
+import { ArrowLeftRight, Info, RotateCcw } from 'lucide-react'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
-import type { TicketTransition, ConfigContext } from '@/types'
+import type { TicketTransition, ConfigContext, TicketRestart } from '@/types'
 
 interface Props {
   transitions: TicketTransition[]
   config: ConfigContext
   createdAt: string
   externalLink?: string | null
+  /** server-side restart info (#143); time before the restart is shown greyed out */
+  restart?: TicketRestart | null
+  /** server-side completion — an abandoned ticket has none even if it reached the end status */
+  completedAt?: string | null
 }
 
 interface StatusAggregate {
@@ -16,6 +20,7 @@ interface StatusAggregate {
   totalDays: number
   visitCount: number
   isBackward: boolean
+  isDiscarded: boolean
 }
 
 interface ReworkMovement {
@@ -24,7 +29,7 @@ interface ReworkMovement {
   count: number
 }
 
-export function TicketTimeline({ transitions, config, createdAt, externalLink }: Props) {
+export function TicketTimeline({ transitions, config, createdAt, externalLink, restart, completedAt: serverCompletedAt }: Props) {
   const { t } = useTranslation()
   const { status_order, cycle_time_start_status, cycle_time_end_status, lead_time_start_status, lead_time_end_status } = config
 
@@ -51,7 +56,17 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
     endTime: number
     durationDays: number
     isBackward: boolean
+    isDiscarded: boolean
   }
+
+  // Aborted attempt: from the first cycle start up to the re-entry (or forever, if abandoned)
+  const firstStart = sorted.find(tr => tr.to_status === cycle_time_start_status)
+  const discardFrom = restart && firstStart ? new Date(firstStart.transitioned_at).getTime() : null
+  const discardUntil = restart
+    ? (restart.restarted_at ? new Date(restart.restarted_at).getTime() : Infinity)
+    : null
+  const isDiscardedAt = (time: number) =>
+    discardFrom !== null && discardUntil !== null && time >= discardFrom && time < discardUntil
 
   const segments: Segment[] = []
   for (let i = 0; i < sorted.length; i++) {
@@ -70,7 +85,7 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
     }
 
     if (durationDays > 0 || i === sorted.length - 1) {
-      segments.push({ status: tr.to_status, startTime, endTime, durationDays, isBackward })
+      segments.push({ status: tr.to_status, startTime, endTime, durationDays, isBackward, isDiscarded: isDiscardedAt(startTime) })
     }
   }
 
@@ -103,7 +118,8 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
     return arr[Math.max(0, Math.min(idx, arr.length - 1))]
   }
 
-  function getSegmentBg(status: string, isBackward: boolean): string {
+  function getSegmentBg(status: string, isBackward: boolean, isDiscarded: boolean): string {
+    if (isDiscarded) return 'bg-gray-100'
     if (isBackward) return 'bg-rose-400'
     const idx = status_order.indexOf(status)
     if (inCycleFn(idx)) return pickShade(CYCLE_SHADES, cycleAll, status).bg
@@ -111,7 +127,8 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
     return 'bg-gray-200'
   }
 
-  function getRowColors(status: string, isBackward: boolean) {
+  function getRowColors(status: string, isBackward: boolean, isDiscarded: boolean) {
+    if (isDiscarded) return { bar: 'bg-gray-300', border: 'border-l-gray-200' }
     if (isBackward) return { bar: 'bg-rose-300', border: 'border-l-rose-400' }
     const idx = status_order.indexOf(status)
     if (inCycleFn(idx)) {
@@ -125,16 +142,19 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
     return { bar: 'bg-gray-300', border: 'border-l-gray-300' }
   }
 
-  // --- Aggregate segments by status (rework as separate bucket) ---
+  // --- Aggregate segments by status (rework and discarded as separate buckets) ---
+  const aggKey = (a: { status: string; isBackward: boolean; isDiscarded: boolean }) =>
+    a.isDiscarded ? `__discarded__${a.status}` : a.isBackward ? `__rework__${a.status}` : a.status
+  const aggRank = (a: StatusAggregate) => a.isDiscarded ? 2 : a.isBackward ? 1 : 0
   const aggregateMap = new Map<string, StatusAggregate>()
   for (const seg of segments) {
-    const key = seg.isBackward ? `__rework__${seg.status}` : seg.status
+    const key = aggKey(seg)
     const existing = aggregateMap.get(key)
     if (existing) {
       existing.totalDays += seg.durationDays
       existing.visitCount += 1
     } else {
-      aggregateMap.set(key, { status: seg.status, totalDays: seg.durationDays, visitCount: 1, isBackward: seg.isBackward })
+      aggregateMap.set(key, { status: seg.status, totalDays: seg.durationDays, visitCount: 1, isBackward: seg.isBackward, isDiscarded: seg.isDiscarded })
     }
   }
 
@@ -142,7 +162,7 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
     const ai = status_order.indexOf(a.status)
     const bi = status_order.indexOf(b.status)
     if (ai !== bi) return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi)
-    return Number(a.isBackward) - Number(b.isBackward)
+    return aggRank(a) - aggRank(b)
   })
 
   const aggregateTotalDuration = aggregates.reduce((sum, a) => sum + a.totalDays, 0) || 1
@@ -163,9 +183,11 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
   const reworkMovements = [...movementMap.values()].sort((a, b) => b.count - a.count)
   const totalReworkCount = reworkMovements.reduce((sum, m) => sum + m.count, 0)
 
-  const completedAt = cycle_time_end_status
-    ? [...sorted].reverse().find(t => t.to_status === cycle_time_end_status)?.transitioned_at ?? null
-    : null
+  const completedAt = serverCompletedAt !== undefined
+    ? serverCompletedAt
+    : cycle_time_end_status
+      ? [...sorted].reverse().find(t => t.to_status === cycle_time_end_status)?.transitioned_at ?? null
+      : null
 
   return (
     <div className="space-y-3">
@@ -195,7 +217,7 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
           {segments.filter(s => s.durationDays > 0).map((seg, i) => (
             <div
               key={`${seg.status}-${seg.startTime}`}
-              className={getSegmentBg(seg.status, seg.isBackward)}
+              className={getSegmentBg(seg.status, seg.isBackward, seg.isDiscarded)}
               style={{ flex: seg.durationDays / totalDuration, minWidth: 4 }}
               onMouseEnter={() => setHoveredBar(i)}
               onMouseLeave={() => setHoveredBar(null)}
@@ -205,7 +227,7 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
         <div className="h-4 mt-1">
           {hoveredBar !== null && (
             <p className="text-[10px] text-gray-500 tabular-nums">
-              {segments[hoveredBar].isBackward ? '↺ ' : ''}{segments[hoveredBar].status}: {segments[hoveredBar].durationDays.toFixed(1)}d
+              {segments[hoveredBar].isDiscarded ? '⊘ ' : segments[hoveredBar].isBackward ? '↺ ' : ''}{segments[hoveredBar].status}: {segments[hoveredBar].durationDays.toFixed(1)}d
             </p>
           )}
         </div>
@@ -214,14 +236,16 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
       {/* 2. Status table */}
       <div className="space-y-0.5">
         {aggregates.map((agg) => {
-          const key = agg.isBackward ? `__rework__${agg.status}` : agg.status
+          const key = aggKey(agg)
           const pct = (agg.totalDays / aggregateTotalDuration) * 100
-          const { bar, border } = getRowColors(agg.status, agg.isBackward)
+          const { bar, border } = getRowColors(agg.status, agg.isBackward, agg.isDiscarded)
 
           return (
             <div key={key} className={`flex items-center gap-3 py-1 pl-2.5 border-l-2 ${border}`}>
-              <span className="text-xs text-gray-700 flex-1 min-w-0">
-                {agg.isBackward ? <span className="text-rose-500 mr-1">↺</span> : null}{agg.status}
+              <span className={`text-xs flex-1 min-w-0 ${agg.isDiscarded ? 'text-gray-400' : 'text-gray-700'}`}>
+                {agg.isDiscarded
+                  ? <span className="mr-1" title={t('timeline.discardedRow')} aria-label={t('timeline.discardedRow')}>⊘</span>
+                  : agg.isBackward ? <span className="text-rose-500 mr-1">↺</span> : null}{agg.status}
               </span>
               {agg.visitCount > 1 && (
                 <span className="text-[10px] text-gray-400 shrink-0">×{agg.visitCount}</span>
@@ -239,7 +263,19 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
         })}
       </div>
 
-      {/* 3. Rework section */}
+      {/* 3. Restart (#143) */}
+      {restart && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 flex items-start gap-2">
+          <RotateCcw className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-800">
+            {restart.restarted_at
+              ? t('timeline.restarted', { date: new Date(restart.restarted_at).toLocaleDateString(), days: restart.discarded_days.toFixed(1) })
+              : t('timeline.abandoned', { days: restart.discarded_days.toFixed(1) })}
+          </p>
+        </div>
+      )}
+
+      {/* 4. Rework section */}
       {reworkMovements.length > 0 && (
         <div className="rounded-lg border border-rose-100 bg-rose-50 px-3 py-2.5">
           <div className="flex items-center gap-2 mb-1.5">
@@ -261,7 +297,7 @@ export function TicketTimeline({ transitions, config, createdAt, externalLink }:
         </div>
       )}
 
-      {/* 4. Footer */}
+      {/* 5. Footer */}
       <div className="flex gap-3 text-[10px]">
         <span className="text-gray-400">{t('common.created')}: {new Date(createdAt).toLocaleDateString()}</span>
         {completedAt && (

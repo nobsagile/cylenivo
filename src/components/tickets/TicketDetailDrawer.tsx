@@ -211,6 +211,8 @@ export function TicketDetailDrawer({ ticketId, config, onClose, onPrev, onNext, 
                   config={config}
                   createdAt={detail.created_at}
                   externalLink={detail.external_link}
+                  restart={detail.restart}
+                  completedAt={detail.completed_at}
                 />
               )}
               {detail && !config && (

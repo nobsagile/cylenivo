@@ -3,10 +3,37 @@ import { eq } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { importSessions, tickets, ticketTransitions, type TicketRow } from '../db/schema.js'
 import { ok } from '../lib/response.js'
-import { loadImportContext, buildEnrichedTicket } from '../lib/context.js'
+import { loadImportContext, buildEnrichedTicket, type EnrichedTicket } from '../lib/context.js'
 import type { Transition } from '../analyzers/utils.js'
 
 const ticketsRouter = new Hono()
+
+/** Shared HTTP shape of a ticket — rounding happens here, at the boundary. */
+function serializeTicket(t: EnrichedTicket) {
+  return {
+    id: t.id,
+    external_id: t.external_id,
+    title: t.title,
+    ticket_type: t.ticket_type,
+    created_at: t.created_at,
+    external_link: t.external_link,
+    cycle_time_days: t.cycle_time_days !== null ? Math.round(t.cycle_time_days * 100) / 100 : null,
+    lead_time_days: t.lead_time_days !== null ? Math.round(t.lead_time_days * 100) / 100 : null,
+    current_status: t.current_status,
+    completed: t.completed,
+    completed_at: t.completed_at ? t.completed_at.toISOString() : null,
+    excluded: t.excluded,
+    exclusion_reason: t.exclusion_reason,
+    restart: t.restart
+      ? {
+          count: t.restart.count,
+          restarted_at: t.restart.restarted_at ? t.restart.restarted_at.toISOString() : null,
+          discarded_days: Math.round(t.restart.discarded_days * 100) / 100,
+          abandoned: t.restart.abandoned,
+        }
+      : null,
+  }
+}
 
 ticketsRouter.get('/', async (c) => {
   const importId = c.req.query('import_id')
@@ -21,6 +48,7 @@ ticketsRouter.get('/', async (c) => {
   const type = c.req.query('type')
   const completedOnly = c.req.query('completed_only') === '1'
   const excludedOnly = c.req.query('excluded_only') === '1'
+  const restartedOnly = c.req.query('restarted_only') === '1'
   const search = c.req.query('search')?.toLowerCase()
   // limit=0 means "all", so limit is Infinity — and (page - 1) * Infinity is
   // NaN for page 1, which made slice() return an empty array.
@@ -31,26 +59,13 @@ ticketsRouter.get('/', async (c) => {
   if (type) filtered = filtered.filter(t => t.ticket_type === type)
   if (completedOnly) filtered = filtered.filter(t => t.cycle_time_days !== null)
   if (excludedOnly) filtered = filtered.filter(t => t.excluded)
+  if (restartedOnly) filtered = filtered.filter(t => t.restart !== null)
   if (search) filtered = filtered.filter(t =>
     t.external_id.toLowerCase().includes(search) || t.title.toLowerCase().includes(search)
   )
 
   const total = filtered.length
-  const paginated = filtered.slice(offset, offset + limit).map(t => ({
-    id: t.id,
-    external_id: t.external_id,
-    title: t.title,
-    ticket_type: t.ticket_type,
-    created_at: t.created_at,
-    external_link: t.external_link,
-    cycle_time_days: t.cycle_time_days !== null ? Math.round(t.cycle_time_days * 100) / 100 : null,
-    lead_time_days: t.lead_time_days !== null ? Math.round(t.lead_time_days * 100) / 100 : null,
-    current_status: t.current_status,
-    completed: t.completed,
-    completed_at: t.completed_at ? t.completed_at.toISOString() : null,
-    excluded: t.excluded,
-    exclusion_reason: t.exclusion_reason,
-  }))
+  const paginated = filtered.slice(offset, offset + limit).map(serializeTicket)
 
   const availableTypes = [...new Set(ctx.allTickets.map(t => t.ticket_type))].sort()
 
@@ -83,19 +98,7 @@ ticketsRouter.get('/:id', async (c) => {
   )
 
   return c.json(ok({
-    id: enriched.id,
-    external_id: enriched.external_id,
-    title: enriched.title,
-    ticket_type: enriched.ticket_type,
-    created_at: enriched.created_at,
-    external_link: enriched.external_link,
-    cycle_time_days: enriched.cycle_time_days !== null ? Math.round(enriched.cycle_time_days * 100) / 100 : null,
-    lead_time_days: enriched.lead_time_days !== null ? Math.round(enriched.lead_time_days * 100) / 100 : null,
-    current_status: enriched.current_status,
-    completed: enriched.completed,
-    completed_at: enriched.completed_at ? enriched.completed_at.toISOString() : null,
-    excluded: enriched.excluded,
-    exclusion_reason: enriched.exclusion_reason,
+    ...serializeTicket(enriched),
     transitions: sorted.map(t => ({
       id: t.id,
       from_status: t.from_status,
@@ -137,19 +140,7 @@ ticketsRouter.patch('/:id', async (c) => {
   )
 
   return c.json(ok({
-    id: enriched.id,
-    external_id: enriched.external_id,
-    title: enriched.title,
-    ticket_type: enriched.ticket_type,
-    created_at: enriched.created_at,
-    external_link: enriched.external_link,
-    cycle_time_days: enriched.cycle_time_days !== null ? Math.round(enriched.cycle_time_days * 100) / 100 : null,
-    lead_time_days: enriched.lead_time_days !== null ? Math.round(enriched.lead_time_days * 100) / 100 : null,
-    current_status: enriched.current_status,
-    completed: enriched.completed,
-    completed_at: enriched.completed_at ? enriched.completed_at.toISOString() : null,
-    excluded: enriched.excluded,
-    exclusion_reason: enriched.exclusion_reason,
+    ...serializeTicket(enriched),
     transitions: sorted.map(t => ({
       id: t.id,
       from_status: t.from_status,

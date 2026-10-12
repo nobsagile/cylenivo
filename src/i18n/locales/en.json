@@ -568,6 +568,9 @@
   },
   "timeline": {
     "hoverToExplore": "Hover to explore",
+    "restarted": "Restarted on {{date}} after a return to the backlog. {{days}}d before that are not counted.",
+    "abandoned": "Moved back to the backlog after starting and never came back. Not counted as completed ({{days}}d discarded).",
+    "discardedRow": "Aborted attempt, not counted",
     "reworkMovements": "{{count}} rework movement",
     "reworkMovementsPlural": "{{count}} rework movements",
     "noTransitions": "No transitions recorded",

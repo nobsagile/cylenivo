@@ -6,6 +6,7 @@ export type {
   TicketTransition,
   Ticket,
   TicketDetail,
+  TicketRestart,
   PercentileStats,
   StatusDuration,
   ConfigContext,
