@@ -139,6 +139,12 @@ export default function TicketsPage() {
               <div className="text-xs text-gray-600 space-y-1.5">
                 <p className="font-semibold text-gray-800 mb-1">{t('tickets.analyzedOnly')}</p>
                 <p>{t('help.analyzedOnly')}</p>
+                {(metrics?.restarts || restartedOnly) && (
+                  <>
+                    <p className="mt-2 font-medium text-gray-700">{t('tickets.restartedOnly')}</p>
+                    <p>{t('help.restartedOnly')}</p>
+                  </>
+                )}
                 <p className="mt-2 font-medium text-gray-700">{t('tickets.colorCoding')}</p>
                 <p>{t('help.ticketColors')}</p>
               </div>
