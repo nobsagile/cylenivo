@@ -55,6 +55,7 @@ describe('resolveCycleWindow — restart', () => {
     const w = resolveCycleWindow(RESTARTED, 'Preparation', 'Customer Feedback', 'first_last', OPTS)
     expect(w.restart).toEqual({
       count: 1,
+      aborted_at: new Date('2024-01-15T12:00:00Z'),
       restarted_at: new Date('2024-02-01T12:00:00Z'),
       discarded_days: 22,
       abandoned: false,
@@ -72,7 +73,7 @@ describe('resolveCycleWindow — restart', () => {
     const w = resolveCycleWindow(ABANDONED, 'Preparation', 'Customer Feedback', 'first_last', OPTS)
     expect(w.start).toBeNull()
     expect(w.end).toBeNull()
-    expect(w.restart).toEqual({ count: 1, restarted_at: null, discarded_days: 10, abandoned: true })
+    expect(w.restart).toEqual({ count: 1, aborted_at: new Date('2024-01-20T12:00:00Z'), restarted_at: null, discarded_days: 10, abandoned: true })
   })
 
   it('first_first: end is the first end entry after the new start', () => {
@@ -203,5 +204,38 @@ describe('restart_statuses — pipeline', () => {
     const ctx = (await loadImportContext(importId))!
     expect(ctx.restart.restartStatuses).toEqual([])
     expect(ctx.tickets.find(x => x.external_id === 'RST-1')!.cycle_time_days).toBeCloseTo(32, 5)
+  })
+})
+
+describe('restarts in /summary', () => {
+  it('null without restart statuses', async () => {
+    const { importId } = await setup()
+    const res = await app.request(`/api/v1/metrics/${importId}/summary`)
+    const { data } = await res.json() as { data: { restarts: unknown } }
+    expect(data.restarts).toBeNull()
+  })
+
+  it('counts restarted and abandoned, sums discarded days', async () => {
+    const { importId } = await setup({ restart_statuses: ['Backlog'] })
+    const res = await app.request(`/api/v1/metrics/${importId}/summary`)
+    const { data } = await res.json() as { data: { restarts: unknown; completed_ticket_count: number } }
+    expect(data.restarts).toEqual({ restarted: 1, abandoned: 1, discarded_days: 32 })
+    expect(data.completed_ticket_count).toBe(1)
+  })
+
+  it('date filter applies to the restart event, so abandoned tickets stay visible', async () => {
+    const { importId } = await setup({ restart_statuses: ['Backlog'] })
+    // abandoned abort on Jan 20, restart re-entry on Feb 1
+    const res = await app.request(`/api/v1/metrics/${importId}/summary?from=2024-01-16&to=2024-01-25`)
+    const { data } = await res.json() as { data: { restarts: unknown } }
+    expect(data.restarts).toEqual({ restarted: 0, abandoned: 1, discarded_days: 10 })
+  })
+
+  it('tickets list: restarted_only filter', async () => {
+    const { importId } = await setup({ restart_statuses: ['Backlog'] })
+    const res = await app.request(`/api/v1/tickets?import_id=${importId}&restarted_only=1`)
+    const { data } = await res.json() as { data: { tickets: { external_id: string; restart: { abandoned: boolean } }[] } }
+    expect(data.tickets.map(x => x.external_id).sort()).toEqual(['RST-1', 'RST-2'])
+    expect(data.tickets.find(x => x.external_id === 'RST-2')!.restart.abandoned).toBe(true)
   })
 })

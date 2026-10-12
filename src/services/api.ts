@@ -160,13 +160,14 @@ export const api = {
       request<CfdResponse>(`/api/v1/metrics/${importId}/cfd${dateParams(dates)}`),
   },
   tickets: {
-    list: (importId: string, params?: { type?: string; page?: number; limit?: number; completed_only?: boolean; excluded_only?: boolean; search?: string }) => {
+    list: (importId: string, params?: { type?: string; page?: number; limit?: number; completed_only?: boolean; excluded_only?: boolean; restarted_only?: boolean; search?: string }) => {
       const p = new URLSearchParams({ import_id: importId })
       if (params?.type) p.set('type', params.type)
       if (params?.page) p.set('page', String(params.page))
       if (params?.limit != null) p.set('limit', String(params.limit))
       if (params?.completed_only) p.set('completed_only', '1')
       if (params?.excluded_only) p.set('excluded_only', '1')
+      if (params?.restarted_only) p.set('restarted_only', '1')
       if (params?.search) p.set('search', params.search)
       return request<PaginatedTickets>(`/api/v1/tickets?${p}`)
     },

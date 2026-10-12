@@ -5,6 +5,7 @@ import { trimToCycleWindow } from '../analyzers/cycleWindow.js'
 import { loadImportContext } from '../lib/context.js'
 import { computeAggregate, buildStatsResponse } from '../lib/aggregate.js'
 import { aggregateRework } from '../analyzers/rework.js'
+import { aggregateRestarts } from '../analyzers/restarts.js'
 import { computeWeeklyBuckets, computeWeeklyThroughput, simulateHowMany, simulateWhen, percentileFromSorted, buildHistogram } from '../analyzers/monteCarlo.js'
 import { computeCFD } from '../analyzers/cfd.js'
 import { mean, median } from '../lib/stats.js'
@@ -51,6 +52,12 @@ metrics.get('/:importId/summary', async (c) => {
     time_in_status: agg.timeInStatus,
     throughput_per_week: agg.throughput,
     flow_efficiency: agg.flowEfficiency,
+    restarts: ctx.restart.restartStatuses.length
+      ? (() => {
+          const r = aggregateRestarts(ctx.tickets, from, to)
+          return { ...r, discarded_days: Math.round(r.discarded_days * 100) / 100 }
+        })()
+      : null,
     config_context: {
       config_id: ctx.config.id,
       status_order: ctx.config.status_order,

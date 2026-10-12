@@ -11,6 +11,8 @@ export interface RestartOptions {
 export interface RestartInfo {
   /** entries into a restart status after the ticket had started */
   count: number
+  /** last move into a restart status */
+  aborted_at: Date
   /** re-entry into the cycle after the last restart; null if the ticket never came back */
   restarted_at: Date | null
   /** time between the original start and the new start (or the abort, if abandoned) — unrounded */
@@ -84,6 +86,7 @@ export function resolveCycleWindow(
       end: null,
       restart: {
         count: restartIdx.length,
+        aborted_at: abortedAt,
         restarted_at: null,
         discarded_days: Math.max(0, (abortedAt.getTime() - origin.getTime()) / DAY_MS),
         abandoned: true,
@@ -102,6 +105,7 @@ export function resolveCycleWindow(
     end,
     restart: {
       count: restartIdx.length,
+      aborted_at: ts(sorted[lastRestartIdx])!,
       restarted_at: reentryAt,
       discarded_days: Math.max(0, (start.getTime() - origin.getTime()) / DAY_MS),
       abandoned: false,

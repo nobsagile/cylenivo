@@ -42,6 +42,7 @@ const mockSummary: MetricsSummary = {
   time_in_status: {},
   throughput_per_week: 2.5,
   flow_efficiency: null,
+  restarts: null,
   config_context: {
     config_id: 'test-config',
     status_order: ['Backlog', 'In Progress', 'Done'],

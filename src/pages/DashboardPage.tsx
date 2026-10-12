@@ -14,6 +14,7 @@ import { DateRangeSlider } from '@/components/metrics/DateRangeSlider'
 // import { downloadCsv } from '@/lib/csvExport' // #90
 // import { ExportButton } from '@/components/ui/ExportButton' // #90
 import type { ProjectLayoutContext } from '@/components/layout/ProjectLayout'
+import { RestartsCard } from '@/components/metrics/RestartsCard'
 
 interface MetricCardProps {
   title: string
@@ -190,7 +191,7 @@ export default function DashboardPage() {
         <ConfigContextBar config={data.config_context} />
       )}
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className={`grid grid-cols-2 gap-4 lg:grid-cols-4 ${data.restarts ? 'xl:grid-cols-5' : ''}`}>
         <MetricCard
           title={t('metrics.cycleTime')}
           value={data.cycle_time.median_days != null ? +data.cycle_time.median_days.toFixed(1) : null}
@@ -240,6 +241,9 @@ export default function DashboardPage() {
           withoutCycleStart={currentImport?.health_report?.tickets_without_cycle_start ?? 0}
           incomplete={currentImport?.health_report?.tickets_incomplete ?? 0}
         />
+        {data.restarts && (
+          <RestartsCard data={data.restarts} onShowTickets={() => navigate(`/projects/${importId}/tickets?filter=restarted`)} />
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

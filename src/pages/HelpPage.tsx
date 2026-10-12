@@ -18,6 +18,7 @@ const SECTIONS: Section[] = [
       { titleKey: 'help.titles.leadTime',     bodyKey: 'help.leadTime' },
       { titleKey: 'help.titles.throughput',   bodyKey: 'help.throughput' },
       { titleKey: 'help.titles.analyzed',     bodyKey: 'help.analyzed' },
+      { titleKey: 'help.titles.restarts',     bodyKey: 'help.restarts' },
       { titleKey: 'help.titles.timeRange',    bodyKey: 'help.timeRange' },
       { titleKey: 'help.titles.configContext',bodyKey: 'help.configContext' },
     ],

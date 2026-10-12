@@ -131,7 +131,15 @@ export interface MetricsSummary {
   time_in_status: Record<string, StatusDuration>
   throughput_per_week: number | null
   flow_efficiency: FlowEfficiencyStats | null
+  /** null when the config has no restart statuses (#143) */
+  restarts: RestartSummary | null
   config_context: ConfigContext
+}
+
+export interface RestartSummary {
+  restarted: number
+  abandoned: number
+  discarded_days: number
 }
 
 export interface CycleTimeTicket {

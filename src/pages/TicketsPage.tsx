@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, Search, Info } from 'lucide-react'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { api } from '@/services/api'
@@ -24,8 +24,11 @@ export default function TicketsPage() {
   const [availableTypes, setAvailableTypes] = useState<string[]>([])
   const [page, setPage] = useState(1)
   const [typeFilter, setTypeFilter] = useState('')
-  const [analyzedOnly, setAnalyzedOnly] = useState(true)
   const [excludedOnly, setExcludedOnly] = useState(false)
+  // ?filter=restarted — the dashboard's Aborts card links here
+  const [searchParams] = useSearchParams()
+  const [restartedOnly, setRestartedOnly] = useState(searchParams.get('filter') === 'restarted')
+  const [analyzedOnly, setAnalyzedOnly] = useState(!restartedOnly)
   const [search, setSearch] = useState('')
   const [searchDebounced, setSearchDebounced] = useState('')
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
@@ -47,6 +50,7 @@ export default function TicketsPage() {
         limit,
         completed_only: analyzedOnly || undefined,
         excluded_only: excludedOnly || undefined,
+        restarted_only: restartedOnly || undefined,
         search: searchDebounced || undefined,
       })
       .then((res) => {
@@ -55,7 +59,7 @@ export default function TicketsPage() {
         if (res.available_types) setAvailableTypes(res.available_types)
       })
       .catch(console.error)
-  }, [importId, page, typeFilter, analyzedOnly, excludedOnly, searchDebounced])
+  }, [importId, page, typeFilter, analyzedOnly, excludedOnly, restartedOnly, searchDebounced])
 
   const totalPages = Math.ceil(total / limit)
 
@@ -104,18 +108,27 @@ export default function TicketsPage() {
           <Button
             variant={analyzedOnly && !excludedOnly ? 'default' : 'outline'}
             size="sm"
-            onClick={() => { setAnalyzedOnly(!analyzedOnly); setExcludedOnly(false); setPage(1) }}
+            onClick={() => { setAnalyzedOnly(!analyzedOnly); setExcludedOnly(false); setRestartedOnly(false); setPage(1) }}
           >
             {t('tickets.analyzedOnly')}
           </Button>
           <Button
             variant={excludedOnly ? 'default' : 'outline'}
             size="sm"
-            onClick={() => { setExcludedOnly(!excludedOnly); setAnalyzedOnly(false); setPage(1) }}
+            onClick={() => { setExcludedOnly(!excludedOnly); setAnalyzedOnly(false); setRestartedOnly(false); setPage(1) }}
             className={excludedOnly ? 'bg-amber-600 hover:bg-amber-700' : ''}
           >
             {t('tickets.excludedOnly')}
           </Button>
+          {(metrics?.restarts || restartedOnly) && (
+            <Button
+              variant={restartedOnly ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => { setRestartedOnly(!restartedOnly); setAnalyzedOnly(false); setExcludedOnly(false); setPage(1) }}
+            >
+              {t('tickets.restartedOnly')}
+            </Button>
+          )}
           <Popover>
             <PopoverTrigger asChild>
               <button className="text-gray-300 hover:text-gray-500 transition-colors">

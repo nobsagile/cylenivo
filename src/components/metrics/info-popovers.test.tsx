@@ -19,6 +19,7 @@ import { renderUI, renderUIWithRouter, setupUser } from '@/test/ui'
 import { PercentileCard } from './PercentileCard'
 import { ReworkCard } from './ReworkCard'
 import { FlowEfficiencyCard } from './FlowEfficiencyCard'
+import { RestartsCard } from './RestartsCard'
 import type { PercentileStats, ReworkResponse } from '@/types'
 
 const percentiles: PercentileStats = {
@@ -113,6 +114,21 @@ describe('FlowEfficiencyCard', () => {
     )
     // Must still say something rather than render an empty card
     expect((container.textContent ?? '').trim().length).toBeGreaterThan(10)
+  })
+})
+
+describe('RestartsCard', () => {
+  it('reveals help text and the breakdown on click', async () => {
+    const { container } = renderUI(
+      <RestartsCard data={{ restarted: 3, abandoned: 2, discarded_days: 41.5 }} onShowTickets={() => {}} />
+    )
+    expect(container.textContent).toContain('5')
+    await openFirstInfo(container)
+
+    const text = screen.getAllByRole('dialog').map(d => d.textContent ?? '').join(' ')
+    expect(text).not.toMatch(/\bhelp\.[a-zA-Z]/)
+    expect(text).toContain('Still in backlog')
+    expect(text).toContain('41.5')
   })
 })
 
