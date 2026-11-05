@@ -1,5 +1,5 @@
 import { homedir } from 'os'
-import { basename, join, resolve } from 'path'
+import { basename, posix, resolve, win32 } from 'path'
 
 /** Tauri bundle identifier — appDataDir is named after it. */
 const APP_IDENTIFIER = 'com.cylenivo.app'
@@ -17,6 +17,9 @@ export function defaultAppDbPath(
   env: NodeJS.ProcessEnv = process.env,
   home: string = homedir(),
 ): string {
+  // Join with the target platform's separator, not the host's — keeps the
+  // result (and its tests) the same no matter where this runs.
+  const { join } = platform === 'win32' ? win32 : posix
   let base: string
   if (platform === 'darwin') base = join(home, 'Library', 'Application Support')
   else if (platform === 'win32') base = env.APPDATA ?? join(home, 'AppData', 'Roaming')

@@ -241,7 +241,9 @@ describe('mcp env', () => {
     expect(defaultAppDbPath('linux', {}, '/home/x')).toBe('/home/x/.local/share/com.cylenivo.app/cylenivo.db')
     expect(defaultAppDbPath('linux', { XDG_DATA_HOME: '/data' }, '/home/x')).toBe('/data/com.cylenivo.app/cylenivo.db')
     expect(defaultAppDbPath('win32', { APPDATA: 'C:\\Users\\x\\AppData\\Roaming' }, 'C:\\Users\\x'))
-      .toContain(path.join('com.cylenivo.app', 'cylenivo.db'))
+      .toBe('C:\\Users\\x\\AppData\\Roaming\\com.cylenivo.app\\cylenivo.db')
+    expect(defaultAppDbPath('win32', {}, 'C:\\Users\\x'))
+      .toBe('C:\\Users\\x\\AppData\\Roaming\\com.cylenivo.app\\cylenivo.db')
   })
 })
 
@@ -305,7 +307,8 @@ describe('mcp launch spec (settings UI)', () => {
   it('dev (bun): runs the entry file and passes DB_PATH', () => {
     const spec = mcpLaunchSpec('/usr/local/bin/bun', '/repo/server/dev.db', '/repo/server/src/index.ts')
     expect(spec.args).toEqual(['/repo/server/src/index.ts', '--mcp'])
-    expect(spec.env).toEqual({ DB_PATH: '/repo/server/dev.db' })
+    // resolve() makes it absolute for the host (D:\\repo\\... on Windows)
+    expect(spec.env).toEqual({ DB_PATH: path.resolve('/repo/server/dev.db') })
   })
 
   it('flags macOS App Translocation', () => {
