@@ -7,6 +7,7 @@ import type { LlmConfig } from '@/types'
 import { Button } from '@/components/ui/button'
 import { SectionHeader } from './shared'
 import { ErrorBanner } from '@/components/ui/ErrorBanner'
+import { McpCard } from './McpCard'
 
 const OPENAI_MODELS = ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-turbo']
 
@@ -220,6 +221,9 @@ export function AISection({ onConfigChange }: Props) {
           </div>
         </div>
       )}
+      <div className="mt-8">
+        <McpCard />
+      </div>
     </>
   )
 }

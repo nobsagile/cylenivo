@@ -6,55 +6,18 @@ import { loadImportContext } from '../lib/context.js'
 import { computeAggregate, buildStatsResponse } from '../lib/aggregate.js'
 import { aggregateRework } from '../analyzers/rework.js'
 import { aggregateRestarts } from '../analyzers/restarts.js'
-import { computeWeeklyBuckets, computeWeeklyThroughput, simulateHowMany, simulateWhen, percentileFromSorted, buildHistogram } from '../analyzers/monteCarlo.js'
+import { computeWeeklyThroughput, runForecast } from '../analyzers/monteCarlo.js'
 import { computeCFD } from '../analyzers/cfd.js'
-import { selectLastN } from '../analyzers/lastN.js'
+import { filterTickets, type MetricFilter } from '../lib/filter.js'
 import { mean, median } from '../lib/stats.js'
 import type { EnrichedTicket } from '../lib/context.js'
 
-function parseDateFilter(c: Context): { from?: Date; to?: Date } {
-  const f = c.req.query('from')
-  const t = c.req.query('to')
-  return {
-    from: f ? new Date(f) : undefined,
-    to: t ? new Date(t + 'T23:59:59.999Z') : undefined,
-  }
-}
-
-function applyDateFilter(tickets: EnrichedTicket[], from?: Date, to?: Date): EnrichedTicket[] {
-  if (!from && !to) return tickets
-  return tickets.filter(t => {
-    if (!t.completed_at) return false
-    if (from && t.completed_at < from) return false
-    if (to && t.completed_at > to) return false
-    return true
-  })
-}
-
-interface MetricFilter {
-  tickets: EnrichedTicket[]
-  /** period the selection covers — for date-based views (CFD, restarts) */
-  from?: Date
-  to?: Date
-  /** weekly views start here; set when `last` cut the oldest week */
-  weeksFrom?: Date
-}
-
-/**
- * Either a date range (`from`/`to`) or the last N completed tickets (`last`),
- * never both (#144).
- */
 function resolveFilter(c: Context, tickets: EnrichedTicket[]): MetricFilter | { error: string } {
-  const last = c.req.query('last')
-  if (last === undefined) {
-    const { from, to } = parseDateFilter(c)
-    return { tickets: applyDateFilter(tickets, from, to), from, to }
-  }
-  if (c.req.query('from') || c.req.query('to')) return { error: 'last cannot be combined with from/to' }
-  const n = Number(last)
-  if (!/^\d+$/.test(last) || n < 1 || n > 100000) return { error: 'last must be a positive integer' }
-  const sel = selectLastN(tickets, n)
-  return { tickets: sel.tickets, from: sel.from ?? undefined, weeksFrom: sel.fullWeeksFrom ?? undefined }
+  return filterTickets(tickets, {
+    from: c.req.query('from') || undefined,
+    to: c.req.query('to') || undefined,
+    last: c.req.query('last'),
+  })
 }
 
 const metrics = new Hono()
@@ -264,29 +227,11 @@ metrics.get('/:importId/forecast', async (c) => {
   const f = resolveFilter(c, ctx.tickets)
   if ('error' in f) return c.json({ data: null, error: f.error }, 400)
   const agg = computeAggregate({ ...ctx, tickets: f.tickets })
-  const buckets = computeWeeklyBuckets(agg.completedAtDates, f.weeksFrom)
-
-  if (buckets.length === 0) {
+  const result = runForecast(agg.completedAtDates, mode, value, f.weeksFrom)
+  if (!result) {
     return c.json({ data: null, error: 'No completed tickets to simulate from' }, 422)
   }
-
-  const sorted = mode === 'how_many'
-    ? simulateHowMany(buckets, value)
-    : simulateWhen(buckets, value)
-
-  return c.json(ok({
-    mode,
-    value,
-    // how_many: "at least X tickets with Y% confidence" → use lower tail (inverted)
-    // when:     "within X weeks Y% of the time"         → use upper tail (normal)
-    p50: percentileFromSorted(sorted, 50),
-    p85: mode === 'how_many' ? percentileFromSorted(sorted, 15) : percentileFromSorted(sorted, 85),
-    p95: mode === 'how_many' ? percentileFromSorted(sorted, 5)  : percentileFromSorted(sorted, 95),
-    histogram: buildHistogram(sorted),
-    weeks_of_data: buckets.length,
-    weeks_with_completions: buckets.filter(b => b > 0).length,
-    total_completed: buckets.reduce((a, b) => a + b, 0),
-  }))
+  return c.json(ok(result))
 })
 
 export default metrics

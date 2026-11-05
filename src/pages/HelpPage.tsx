@@ -77,6 +77,7 @@ const SECTIONS: Section[] = [
       { titleKey: 'help.titles.llmProvider',      bodyKey: 'help.llmProvider' },
       { titleKey: 'help.titles.llmBaseUrl',       bodyKey: 'help.llmBaseUrl' },
       { titleKey: 'help.titles.llmSystemPrompt',  bodyKey: 'help.llmSystemPrompt' },
+      { titleKey: 'help.titles.mcp',              bodyKey: 'help.mcp' },
     ],
   },
   {

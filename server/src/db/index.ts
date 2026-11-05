@@ -2,11 +2,38 @@ import { Database } from 'bun:sqlite'
 import { drizzle } from 'drizzle-orm/bun-sqlite'
 import * as schema from './schema.js'
 
-const DB_PATH = process.env.DB_PATH ?? 'dev.db'
+import { existsSync } from 'fs'
+import { isMcpMode, defaultAppDbPath } from '../mcp/env.js'
 
-const sqlite = new Database(DB_PATH)
-sqlite.exec('PRAGMA journal_mode = WAL')
+/**
+ * MCP mode (`--mcp`) is started by an AI client, not by Tauri, and opens the
+ * database read-only: the app may be running and writing at the same time,
+ * and no MCP tool may ever change data. Without DB_PATH it falls back to the
+ * path Tauri uses (appDataDir/cylenivo.db), so the client config needs no env.
+ */
+const MCP = isMcpMode()
+const DB_PATH = process.env.DB_PATH ?? (MCP ? defaultAppDbPath() : 'dev.db')
+
+function open(): Database {
+  if (!MCP) {
+    const db = new Database(DB_PATH)
+    db.exec('PRAGMA journal_mode = WAL')
+    return db
+  }
+  if (!existsSync(DB_PATH)) {
+    // No app data yet: serve an empty in-memory DB so the tools answer
+    // "no datasets" instead of the client showing a crashed server.
+    console.error(`[mcp] database not found at ${DB_PATH} — open Cylenivo once and import data`)
+    return new Database(':memory:')
+  }
+  return new Database(DB_PATH, { readonly: true })
+}
+
+const sqlite = open()
 sqlite.exec('PRAGMA foreign_keys = ON')
+
+/** true when the real app DB is open read-only (MCP mode). migrate() must not run then. */
+export const dbReadonly = MCP && sqlite.filename !== ':memory:' && sqlite.filename !== ''
 
 export const db = drizzle(sqlite, { schema })
 

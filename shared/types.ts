@@ -313,3 +313,13 @@ export interface CreateConfigRequest {
   active_statuses?: string[]
   restart_statuses?: string[]
 }
+
+/** GET /api/v1/mcp/setup — how an MCP client starts `cylenivo-server --mcp`. */
+export interface McpSetup {
+  command: string
+  args: string[]
+  /** only set when the client must pass DB_PATH (dev, or a non-default path) */
+  env: Record<string, string> | null
+  db_path: string
+  warning: 'translocated' | null
+}

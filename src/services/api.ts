@@ -269,6 +269,9 @@ export const api = {
     reset: () => request<null>('/api/v1/demo/reset', { method: 'DELETE' }),
     fullReset: () => request<null>('/api/v1/demo/full-reset', { method: 'DELETE' }),
   },
+  mcp: {
+    setup: () => request<import('@/types').McpSetup>('/api/v1/mcp/setup'),
+  },
   plugins: {
     list: () => request<import('@/types').PluginManifest[]>('/api/v1/plugins'),
     registry: (registryUrl?: string) => request<import('@/types').PluginRegistryEntry[]>(

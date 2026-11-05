@@ -18,6 +18,7 @@ Import your Jira export and instantly see **Cycle Time**, **Lead Time**, **Throu
 - **Traceable numbers** — each ticket shows step by step how its cycle time and lead time were calculated
 - **Time range or last N tickets** — filter every chart to a date range, or to the last 20/30/50/100 completed tickets
 - **AI Insights** — connect your own Ollama or OpenAI-compatible model for narrative analysis
+- **MCP server** — ask Claude Desktop, Cursor, LM Studio or VS Code about your metrics; read-only, runs locally
 - **Multiple projects** — manage separate configs per team or workflow
 
 ## How it works
@@ -33,6 +34,30 @@ Cylenivo calculates metrics from **status transition timestamps**, not ticket fi
 | Any tool | Community plugin | [Build your own](https://github.com/nobsagile/cylenivo-plugins/blob/main/CONTRIBUTING.md) in ~50 lines of JS |
 
 Plugins are installed directly inside Cylenivo — no manual file management.
+
+## Use it from your AI assistant (MCP)
+
+Cylenivo ships an [MCP](https://modelcontextprotocol.io) server. Any MCP client can read your metrics and answer questions like *"Why did our cycle time go up in March?"*, *"Which tickets are stuck right now?"* or *"When will the next 20 tickets be done?"*.
+
+**Setup:** Settings → AI → *Use Cylenivo from your AI assistant*. Pick your client, copy the snippet, paste it into the client's config file. Tested formats: Claude Desktop, Cursor, LM Studio, VS Code.
+
+The client starts Cylenivo's server binary with `--mcp` on its own. The app does not need to be open.
+
+| Tool | What it answers |
+|---|---|
+| `list_datasets` | Which teams/projects are imported |
+| `get_flow_metrics` | Cycle time, lead time, throughput, time in status, flow efficiency |
+| `get_rework` | How often tickets move backwards, and on which paths |
+| `list_tickets` | Outliers by cycle time, or work in progress by age |
+| `forecast` | Monte Carlo: when N tickets are done, or how many fit into N weeks |
+
+All tools accept an optional dataset and a filter (`from`/`to` or `last` N tickets), the same as the app.
+
+**Privacy:**
+- Read-only. The database is opened read-only; no tool can change data.
+- The tools never return Jira tokens or AI keys.
+- Only stdio, no network port.
+- Your metrics go to whatever model your client uses. With a local model (e.g. LM Studio) nothing leaves your computer.
 
 ## Getting started
 

@@ -34,6 +34,7 @@ export type {
   PluginManifest,
   PluginRegistryEntry,
   FlowEfficiencyStats,
+  McpSetup,
 } from '../../shared/types'
 
 // Frontend-only types

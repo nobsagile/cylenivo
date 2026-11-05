@@ -116,3 +116,39 @@ export function buildHistogram(sorted: number[]): { bucket: number; count: numbe
     .map(([bucket, count]) => ({ bucket, count }))
     .sort((a, b) => a.bucket - b.bucket)
 }
+
+export type ForecastMode = 'how_many' | 'when'
+
+export interface ForecastResult {
+  mode: ForecastMode
+  value: number
+  p50: number
+  p85: number
+  p95: number
+  histogram: { bucket: number; count: number }[]
+  weeks_of_data: number
+  weeks_with_completions: number
+  total_completed: number
+}
+
+/**
+ * Monte Carlo forecast from completion dates. null = nothing to sample from.
+ * how_many: "at least X tickets with Y% confidence" → lower tail (inverted)
+ * when:     "within X weeks Y% of the time"         → upper tail (normal)
+ */
+export function runForecast(completedAtDates: Date[], mode: ForecastMode, value: number, since?: Date): ForecastResult | null {
+  const buckets = computeWeeklyBuckets(completedAtDates, since)
+  if (buckets.length === 0) return null
+  const sorted = mode === 'how_many' ? simulateHowMany(buckets, value) : simulateWhen(buckets, value)
+  return {
+    mode,
+    value,
+    p50: percentileFromSorted(sorted, 50),
+    p85: mode === 'how_many' ? percentileFromSorted(sorted, 15) : percentileFromSorted(sorted, 85),
+    p95: mode === 'how_many' ? percentileFromSorted(sorted, 5) : percentileFromSorted(sorted, 95),
+    histogram: buildHistogram(sorted),
+    weeks_of_data: buckets.length,
+    weeks_with_completions: buckets.filter(b => b > 0).length,
+    total_completed: buckets.reduce((a, b) => a + b, 0),
+  }
+}

@@ -430,7 +430,30 @@
     "tabLanguage": "Language",
     "languageDesc": "Choose the display language for the interface.",
     "language": "Language",
-    "languageComingSoon": "Additional languages are coming soon. The interface is currently English only."
+    "languageComingSoon": "Additional languages are coming soon. The interface is currently English only.",
+    "mcp": {
+      "title": "Use Cylenivo from your AI assistant (MCP)",
+      "desc": "Ask questions about your metrics in Claude Desktop, Cursor, LM Studio or VS Code. The assistant can only read metrics. It cannot change data and never sees your Jira token.",
+      "client": "AI client",
+      "clients": {
+        "claude": "Claude Desktop",
+        "cursor": "Cursor",
+        "lmstudio": "LM Studio",
+        "vscode": "VS Code (Copilot)"
+      },
+      "where": {
+        "claude": "In Claude Desktop open Settings → Developer → Edit Config. Paste this into claude_desktop_config.json, save, and restart Claude Desktop.",
+        "cursor": "In Cursor open Settings → MCP → Add new MCP server. Paste this into mcp.json and save.",
+        "lmstudio": "In LM Studio open the Program tab → Install → Edit mcp.json. Paste this and save.",
+        "vscode": "In VS Code run \"MCP: Open User Configuration\" from the Command Palette. Paste this into mcp.json and save."
+      },
+      "copy": "Copy",
+      "copied": "Copied",
+      "merge": "If the file already lists other servers, add only the \"cylenivo\" entry next to them.",
+      "privacy": "Your metrics go to the model your client uses. With a local model, for example in LM Studio, nothing leaves your computer.",
+      "translocated": "Cylenivo runs from a temporary location. Move it to the Applications folder and reopen it first, otherwise this path stops working.",
+      "loadError": "Could not load the setup. Restart Cylenivo and try again."
+    }
   },
   "dataset": {
     "backToSettings": "Back to Settings",
@@ -739,7 +762,8 @@
       "llmSystemPrompt": "System Prompt",
       "flowEfficiency": "Flow Efficiency",
       "activeStatuses": "Active Work Statuses",
-      "aiInsights": "AI Analysis"
+      "aiInsights": "AI Analysis",
+      "mcp": "AI Assistants (MCP)"
     },
     "cycleTime": "Time from when work starts (cycle start status) to when it's done (cycle end status). Measures how long active work takes.",
     "leadTime": "Time from ticket creation (or lead time start status) to completion. Includes wait time before work begins — always ≥ cycle time.",
@@ -799,7 +823,8 @@
     "flowEfficiencyNotConfigured": "Select which statuses count as active work to unlock this metric.",
     "configureActiveStatuses": "Configure in Settings",
     "aiInsights": "Analyzes all tickets in this dataset — cycle time, lead time, time in status, rework, and flow efficiency. The analysis always uses the full dataset regardless of any date filter you have applied on other pages.",
-    "forecastDistribution": "Shows how 10,000 simulated outcomes are distributed. Each simulation samples your historical weekly throughput. The reference lines mark the P50, P85, and P95 thresholds — bars to the left of P95 represent the safest delivery scenarios. The simulation uses the throughput of the selected time range or of the last N tickets."
+    "forecastDistribution": "Shows how 10,000 simulated outcomes are distributed. Each simulation samples your historical weekly throughput. The reference lines mark the P50, P85, and P95 thresholds — bars to the left of P95 represent the safest delivery scenarios. The simulation uses the throughput of the selected time range or of the last N tickets.",
+    "mcp": "MCP lets AI assistants like Claude Desktop, Cursor, LM Studio or VS Code read your Cylenivo metrics: datasets, cycle and lead time, rework, single tickets and forecasts. Access is read-only. The assistant starts Cylenivo in the background itself, the app does not have to be open. Setup: Settings → AI."
   },
   "update": {
     "available": "Update available",
