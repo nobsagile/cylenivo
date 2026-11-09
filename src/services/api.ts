@@ -162,7 +162,7 @@ export const api = {
       request<CfdResponse>(`/api/v1/metrics/${importId}/cfd${dateParams(dates)}`),
   },
   tickets: {
-    list: (importId: string, params?: { type?: string; page?: number; limit?: number; completed_only?: boolean; excluded_only?: boolean; restarted_only?: boolean; search?: string }) => {
+    list: (importId: string, params?: { type?: string; page?: number; limit?: number; completed_only?: boolean; excluded_only?: boolean; restarted_only?: boolean; search?: string; finished_since?: string }) => {
       const p = new URLSearchParams({ import_id: importId })
       if (params?.type) p.set('type', params.type)
       if (params?.page) p.set('page', String(params.page))
@@ -171,6 +171,7 @@ export const api = {
       if (params?.excluded_only) p.set('excluded_only', '1')
       if (params?.restarted_only) p.set('restarted_only', '1')
       if (params?.search) p.set('search', params.search)
+      if (params?.finished_since) p.set('finished_since', params.finished_since)
       return request<PaginatedTickets>(`/api/v1/tickets?${p}`)
     },
     get: (id: string) => request<TicketDetail>(`/api/v1/tickets/${id}`),

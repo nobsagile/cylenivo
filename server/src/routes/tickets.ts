@@ -53,6 +53,12 @@ ticketsRouter.get('/', async (c) => {
   const excludedOnly = c.req.query('excluded_only') === '1'
   const restartedOnly = c.req.query('restarted_only') === '1'
   const search = c.req.query('search')?.toLowerCase()
+  // finished_since=YYYY-MM-DD: lead time ended on or after that day (UTC date).
+  // Weekly review: "what got done since last Monday" — completed_at can be weeks earlier.
+  const finishedSince = c.req.query('finished_since')
+  if (finishedSince && !/^\d{4}-\d{2}-\d{2}$/.test(finishedSince)) {
+    return c.json({ data: null, error: 'finished_since must be YYYY-MM-DD' }, 400)
+  }
   // limit=0 means "all", so limit is Infinity — and (page - 1) * Infinity is
   // NaN for page 1, which made slice() return an empty array.
   const offset = limit === Infinity ? 0 : (page - 1) * limit
@@ -63,6 +69,9 @@ ticketsRouter.get('/', async (c) => {
   if (completedOnly) filtered = filtered.filter(t => t.cycle_time_days !== null)
   if (excludedOnly) filtered = filtered.filter(t => t.excluded)
   if (restartedOnly) filtered = filtered.filter(t => t.restart !== null)
+  if (finishedSince) filtered = filtered.filter(t =>
+    t.lead_ended_at !== null && t.lead_ended_at.toISOString().slice(0, 10) >= finishedSince
+  )
   if (search) filtered = filtered.filter(t =>
     t.external_id.toLowerCase().includes(search) || t.title.toLowerCase().includes(search)
   )

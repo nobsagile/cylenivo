@@ -637,6 +637,30 @@ describe('tickets', () => {
     expect(Math.round(days * 100) / 100).toBe(data.lead_time_days)
   })
 
+  it('finished_since keeps only tickets whose lead time ended on or after that day', async () => {
+    const cfg = await createConfig()
+    const importId = await doImport(cfg.id)
+    const allRes = await app.request(`/api/v1/tickets?import_id=${importId}&limit=0`)
+    const { data: all } = await allRes.json() as { data: { tickets: { id: string; lead_ended_at: string | null }[] } }
+    const days = [...new Set(all.tickets.map(t => t.lead_ended_at?.slice(0, 10)).filter(Boolean) as string[])].sort()
+    expect(days.length).toBeGreaterThan(1)
+    const since = days[1]
+    const expected = all.tickets.filter(t => t.lead_ended_at && t.lead_ended_at.slice(0, 10) >= since).map(t => t.id).sort()
+
+    const res = await app.request(`/api/v1/tickets?import_id=${importId}&limit=0&finished_since=${since}`)
+    const { data } = await res.json() as { data: { tickets: { id: string }[]; total: number } }
+    expect(data.tickets.map(t => t.id).sort()).toEqual(expected)
+    expect(data.total).toBe(expected.length)
+    expect(data.total).toBeLessThan(all.tickets.length)
+  })
+
+  it('finished_since rejects a malformed date', async () => {
+    const cfg = await createConfig()
+    const importId = await doImport(cfg.id)
+    const res = await app.request(`/api/v1/tickets?import_id=${importId}&finished_since=last-monday`)
+    expect(res.status).toBe(400)
+  })
+
   it('returns 404 for unknown ticket', async () => {
     const res = await app.request('/api/v1/tickets/nonexistent-id')
     expect(res.status).toBe(404)

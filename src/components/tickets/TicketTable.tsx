@@ -105,7 +105,7 @@ export function TicketTable({ tickets, p50, p85, config: _config, onTicketClick,
             {th('cycle_time_days', t('tickets.table.cycleTime'), 'text-right w-28')}
             {th('lead_time_days', t('tickets.table.leadTime'), 'text-right w-28')}
             {th('current_status', t('common.status'), 'w-36')}
-            {th('completed_at', t('tickets.table.resolvedDate'), 'w-32')}
+            {th('completed_at', t('tickets.table.completedAt'), 'w-32')}
             <TableHead className="w-10 font-semibold text-gray-600">{t('tickets.table.exclude')}</TableHead>
           </TableRow>
         </TableHeader>

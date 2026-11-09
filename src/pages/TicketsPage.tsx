@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams, useSearchParams } from 'react-router-dom'
-import { ChevronLeft, ChevronRight, Search, Info } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Search, Info, X } from 'lucide-react'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { api } from '@/services/api'
 import { useMetrics } from '@/hooks/useMetrics'
@@ -31,6 +31,8 @@ export default function TicketsPage() {
   const [analyzedOnly, setAnalyzedOnly] = useState(!restartedOnly)
   const [search, setSearch] = useState('')
   const [searchDebounced, setSearchDebounced] = useState('')
+  // YYYY-MM-DD from <input type=date>; '' = off
+  const [finishedSince, setFinishedSince] = useState('')
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
   const [sortKey, setSortKey] = useState<SortKey>('completed_at')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
@@ -52,6 +54,7 @@ export default function TicketsPage() {
         excluded_only: excludedOnly || undefined,
         restarted_only: restartedOnly || undefined,
         search: searchDebounced || undefined,
+        finished_since: finishedSince || undefined,
       })
       .then((res) => {
         setTickets(res.tickets)
@@ -59,7 +62,7 @@ export default function TicketsPage() {
         if (res.available_types) setAvailableTypes(res.available_types)
       })
       .catch(console.error)
-  }, [importId, page, typeFilter, analyzedOnly, excludedOnly, restartedOnly, searchDebounced])
+  }, [importId, page, typeFilter, analyzedOnly, excludedOnly, restartedOnly, searchDebounced, finishedSince])
 
   const totalPages = Math.ceil(total / limit)
 
@@ -129,6 +132,25 @@ export default function TicketsPage() {
               {t('tickets.restartedOnly')}
             </Button>
           )}
+          <label className="flex items-center gap-1.5 text-sm text-gray-600 ml-1">
+            {t('tickets.finishedSince')}
+            <Input
+              type="date"
+              value={finishedSince}
+              onChange={(e) => { setFinishedSince(e.target.value); setPage(1) }}
+              className="h-9 w-36 text-sm"
+            />
+          </label>
+          {finishedSince && (
+            <button
+              onClick={() => { setFinishedSince(''); setPage(1) }}
+              className="text-gray-400 hover:text-gray-600"
+              aria-label={t('tickets.clearFinishedSince')}
+              title={t('tickets.clearFinishedSince')}
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
           <Popover>
             <PopoverTrigger asChild>
               <button className="text-gray-300 hover:text-gray-500 transition-colors">
@@ -145,6 +167,8 @@ export default function TicketsPage() {
                     <p>{t('help.restartedOnly')}</p>
                   </>
                 )}
+                <p className="mt-2 font-medium text-gray-700">{t('tickets.finishedSince')}</p>
+                <p>{t('help.finishedSince')}</p>
                 <p className="mt-2 font-medium text-gray-700">{t('tickets.colorCoding')}</p>
                 <p>{t('help.ticketColors')}</p>
               </div>

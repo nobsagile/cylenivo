@@ -65,6 +65,7 @@ const SECTIONS: Section[] = [
       { titleKey: 'help.titles.ticketColors',   bodyKey: 'help.ticketColors' },
       { titleKey: 'help.titles.analyzedOnly',   bodyKey: 'help.analyzedOnly' },
       { titleKey: 'help.titles.restartedOnly',  bodyKey: 'help.restartedOnly' },
+      { titleKey: 'help.titles.finishedSince',  bodyKey: 'help.finishedSince' },
       { titleKey: 'help.titles.ticketTimeline', bodyKey: 'help.ticketTimeline' },
       { titleKey: 'help.titles.cycleCalculation', bodyKey: 'help.cycleCalculation' },
       { titleKey: 'help.titles.leadCalculation',  bodyKey: 'help.leadCalculation' },
