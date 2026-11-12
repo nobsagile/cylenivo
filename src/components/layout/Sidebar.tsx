@@ -30,6 +30,8 @@ import type { ImportHealthReport, SourceConnection, PluginManifest } from '@/typ
 import type { Update } from '@tauri-apps/plugin-updater'
 import { UpdateDialog } from '@/components/UpdateDialog'
 import RefreshDialog from '@/components/connections/RefreshDialog'
+import RefreshAllDialog, { type RefreshJob } from '@/components/connections/RefreshAllDialog'
+import { canRefreshUnattended } from '@/lib/refreshDataset'
 
 interface Issue {
   title: string
@@ -268,6 +270,7 @@ export function Sidebar() {
   const [healthOpen, setHealthOpen] = useState(false)
   const [appVersion, setAppVersion] = useState<string>(__APP_VERSION__)
   const [pendingUpdate, setPendingUpdate] = useState<Update | null>(null)
+  const [refreshJobs, setRefreshJobs] = useState<RefreshJob[] | null>(null)
 
   useEffect(() => {
     import('@tauri-apps/api/app').then(({ getVersion }) => getVersion().then(setAppVersion)).catch(() => {})
@@ -286,6 +289,18 @@ export function Sidebar() {
   const sortedImports = [...imports].sort((a, b) =>
     a.project_key.localeCompare(b.project_key) || a.imported_at.localeCompare(b.imported_at)
   )
+
+  function pluginManifestFor(conn: SourceConnection | null | undefined) {
+    if (!conn || conn.source_type === 'jira') return null
+    return installedPlugins.find(p => p.source_type === conn.source_type) ?? null
+  }
+
+  const refreshableJobs: RefreshJob[] = sortedImports.flatMap((imp) => {
+    const connection = imp.connection_id ? connections.find(c => c.id === imp.connection_id) : undefined
+    if (!connection) return []
+    const pluginManifest = pluginManifestFor(connection)
+    return canRefreshUnattended(imp, connection, pluginManifest) ? [{ dataset: imp, connection, pluginManifest }] : []
+  })
 
   const navItems = [
     { to: '', end: true, icon: LayoutDashboard, label: t('nav.overview') },
@@ -318,13 +333,25 @@ export function Sidebar() {
           <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider">
             {t('sidebar.project')}
           </p>
-          <button
-            onClick={() => navigate('/import')}
-            className="text-gray-300 hover:text-gray-500 transition-colors"
-            title={t('nav.import')}
-          >
-            <Plus className="w-3.5 h-3.5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {refreshableJobs.length > 0 && (
+              <button
+                onClick={() => setRefreshJobs(refreshableJobs)}
+                className="text-gray-300 hover:text-gray-500 transition-colors"
+                title={t('sidebar.refreshAll')}
+                aria-label={t('sidebar.refreshAll')}
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+              </button>
+            )}
+            <button
+              onClick={() => navigate('/import')}
+              className="text-gray-300 hover:text-gray-500 transition-colors"
+              title={t('nav.import')}
+            >
+              <Plus className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
         <div className="space-y-0.5 max-h-48 overflow-y-auto">
           {sortedImports.map((imp) => (
@@ -350,11 +377,7 @@ export function Sidebar() {
                 <ProjectMenu
                   imp={imp}
                   connection={imp.connection_id ? connections.find(c => c.id === imp.connection_id) ?? null : null}
-                  pluginManifest={(() => {
-                    const conn = imp.connection_id ? connections.find(c => c.id === imp.connection_id) : null
-                    if (!conn || conn.source_type === 'jira') return null
-                    return installedPlugins.find(p => p.source_type === conn.source_type) ?? null
-                  })()}
+                  pluginManifest={pluginManifestFor(imp.connection_id ? connections.find(c => c.id === imp.connection_id) : null)}
                   onRenamed={reload}
                 />
               </div>
@@ -447,6 +470,9 @@ export function Sidebar() {
         </button>
 
       </div>
+      {refreshJobs && (
+        <RefreshAllDialog open jobs={refreshJobs} onClose={() => setRefreshJobs(null)} />
+      )}
       {pendingUpdate && (
         <UpdateDialog update={pendingUpdate} onClose={() => setPendingUpdate(null)} />
       )}

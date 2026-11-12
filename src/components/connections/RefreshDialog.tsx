@@ -16,6 +16,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import ConfigureStep from '@/components/import/ConfigureStep'
+import { buildInitialPluginOptions } from '@/lib/refreshDataset'
 
 type RefreshStep = 'preflight' | 'fetching' | 'configure'
 
@@ -40,25 +41,6 @@ function extractStatuses(data: Record<string, unknown>): string[] {
     }
   }
   return [...statuses].sort()
-}
-
-/** Pre-fill plugin options from a known project_key (e.g. from a previous import) */
-function buildInitialPluginOptions(
-  pluginManifest: PluginManifest | null | undefined,
-  projectKey: string | undefined,
-): Record<string, string> {
-  const fetchOptions = pluginManifest?.fetch_options ?? []
-  const opts = fetchOptions.reduce<Record<string, string>>((acc, f) => {
-    acc[f.key] = String(f.default ?? '')
-    return acc
-  }, {})
-  if (projectKey) {
-    const idField = fetchOptions.find(f =>
-      ['project', 'board', 'workspace', 'repo'].some(k => f.key.toLowerCase().includes(k))
-    ) ?? fetchOptions.find(f => f.required)
-    if (idField) opts[idField.key] = projectKey
-  }
-  return opts
 }
 
 export default function RefreshDialog({ open, connection, pluginManifest, importSession, onClose }: Props) {

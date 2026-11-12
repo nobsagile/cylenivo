@@ -59,6 +59,7 @@ const dataset: ImportSession = {
 let finishFetch: (result: unknown) => void
 
 beforeEach(() => {
+  vi.clearAllMocks()
   document.body.style.pointerEvents = ''
   vi.mocked(api.imports.list).mockResolvedValue([dataset])
   vi.mocked(api.imports.replace).mockResolvedValue(dataset)
@@ -110,5 +111,51 @@ describe('Sidebar — refresh a dataset from its menu', () => {
     // it refuses to click an element that inherits `pointer-events: none`.
     const strictUser = userEvent.setup()
     await strictUser.click(screen.getByRole('link', { name: 'Flow' }))
+  })
+})
+
+describe('Sidebar — refresh all datasets', () => {
+  const second: ImportSession = { ...dataset, id: 'imp-2', name: 'CON', project_key: 'CON' }
+  const fixedEnd: ImportSession = { ...dataset, id: 'imp-3', name: 'OLD', project_key: 'OLD', resolved_to: '2025-12-31' }
+  const noConnection: ImportSession = { ...dataset, id: 'imp-4', name: 'FILE', project_key: 'FILE', connection_id: null }
+
+  it('refreshes every dataset with a live connection, one after another', async () => {
+    vi.mocked(api.imports.list).mockResolvedValue([dataset, second, fixedEnd, noConnection])
+    vi.mocked(api.connections.fetchStream).mockResolvedValue({ tickets: [] })
+    const user = setupUser()
+    renderSidebar()
+
+    await user.click(await screen.findByRole('button', { name: 'Refresh all datasets' }))
+
+    await screen.findByText('All datasets are up to date.')
+    const refreshed = vi.mocked(api.imports.replace).mock.calls.map(c => c[0])
+    expect(refreshed.sort()).toEqual(['imp-1', 'imp-2'])
+
+    // Footer button, not the dialog's own X (which is also labelled "Close")
+    await user.click(screen.getByText('Close', { selector: 'button' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    expect(document.body.style.pointerEvents).toBe('')
+  })
+
+  it('keeps going when one dataset fails and reports it', async () => {
+    vi.mocked(api.imports.list).mockResolvedValue([dataset, second])
+    vi.mocked(api.connections.fetchStream)
+      .mockRejectedValueOnce(new Error('Jira down'))
+      .mockResolvedValueOnce({ tickets: [] })
+    const user = setupUser()
+    renderSidebar()
+
+    await user.click(await screen.findByRole('button', { name: 'Refresh all datasets' }))
+
+    await screen.findByText('1 dataset(s) could not be refreshed.')
+    expect(screen.getByText('Jira down')).toBeInTheDocument()
+    expect(api.imports.replace).toHaveBeenCalledTimes(1)
+  })
+
+  it('hides the button when no dataset can be refreshed', async () => {
+    vi.mocked(api.imports.list).mockResolvedValue([fixedEnd, noConnection])
+    renderSidebar()
+    await screen.findByRole('button', { name: 'OLD' })
+    expect(screen.queryByRole('button', { name: 'Refresh all datasets' })).toBeNull()
   })
 })

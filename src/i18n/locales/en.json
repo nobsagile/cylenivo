@@ -508,6 +508,7 @@
     "rename": "Rename",
     "renameTitle": "Rename dataset",
     "refresh": "Refresh data",
+    "refreshAll": "Refresh all datasets",
     "changeConfig": "Change config",
     "deleteProject": "Delete dataset",
     "deleteConfirmTitle": "Delete dataset?",
@@ -682,6 +683,14 @@
     "fetchingTicket": "Fetching ticket {{current}}/{{total}} ({{key}})…",
     "confirm": "Refresh",
     "configNeeded": "Set up your workflow"
+  },
+  "refreshAll": {
+    "title": "Refresh all datasets",
+    "running": "Refreshing…",
+    "close": "Close",
+    "allDone": "All datasets are up to date.",
+    "someFailed": "{{count}} dataset(s) could not be refreshed.",
+    "failed": "Refresh failed"
   },
   "errors": {
     "notFound": "Not found",
