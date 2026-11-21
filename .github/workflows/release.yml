@@ -111,6 +111,17 @@ jobs:
         working-directory: server
         run: bun build --compile --target=${{ matrix.bun-target }} src/index.ts --outfile ../src-tauri/binaries/cylenivo-server-${{ matrix.target }}
 
+      # bun's linker-only ad-hoc signature has page hashes that macOS 27.2+
+      # rejects ("Code Signature Invalid", SIGKILL at launch). Replace it with
+      # a real ad-hoc signature, or the sidecar and MCP mode die on start.
+      - name: Re-sign server binary (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          BIN=src-tauri/binaries/cylenivo-server-${{ matrix.target }}
+          codesign --remove-signature "$BIN"
+          codesign --sign - --force "$BIN"
+          codesign --verify --strict --verbose=2 "$BIN"
+
       - name: Build server binary (Windows)
         if: matrix.os == 'windows-latest'
         working-directory: server
